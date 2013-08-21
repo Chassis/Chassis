@@ -29,7 +29,10 @@ git clone --recursive git@github.com:sennza/WordPress-Skeleton.git myproject
 cd myproject
 
 # Clone the content/ directory!
-git clone git@github.com:sennza/myproject.git content
+# git clone git@github.com:sennza/myproject.git content
+
+# Use https://github.com/sennza/wp-content as a base, and follow the
+# instructions there.
 
 # Boot up a VM
 vagrant up
