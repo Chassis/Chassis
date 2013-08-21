@@ -2,7 +2,8 @@
 apt::ppa { "ppa:ondrej/php5-oldstable": }
 
 package {'php5-fpm':
-	ensure => latest
+	ensure => latest,
+	require => Apt::Ppa['ppa:ondrej/php5-oldstable']
 }
 class { 'mysql::php':
 	require => [ Class['mysql::server'], Package['php5-fpm'] ],
