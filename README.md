@@ -33,3 +33,16 @@ vagrant up
 ```
 
 Make sure you copy `local-config-sample.php` to `local-config.php`
+
+## Updating
+
+```bash
+# Pull and rebase (in case you have project-specific commits)
+git pull --rebase
+
+# Update submodules (Puppet modules and WP)
+git submodule update --init
+
+# Ensure your VM is up-to-date
+vagrant provision
+```
