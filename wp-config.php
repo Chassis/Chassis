@@ -75,4 +75,10 @@ elseif ( ! defined( 'WP_DEBUG_DISPLAY' ) ) {
 if ( !defined( 'ABSPATH' ) )
 	define( 'ABSPATH', dirname( __FILE__ ) . '/wp/' );
 
+if ( ! file_exists( ABSPATH . 'wp-settings.php' ) ) {
+	header('X-WP-Error: wpmissing', true, 500);
+	echo '<h1>WordPress is missing.</h1>';
+	echo "<p>Did you forget to clone recursively? Try <code>git submodule update --init</code>.</p>";
+	die();
+}
 require_once( ABSPATH . 'wp-settings.php' );
