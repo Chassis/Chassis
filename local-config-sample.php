@@ -17,3 +17,6 @@ define( 'DB_HOST', 'localhost' ); // Probably 'localhost'
 // URL to the content directory
 // You'll probably want to change this.
 define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
+
+// Loopback connections can suck, disable if you don't need cron
+# define( 'DISABLE_WP_CRON', true );
