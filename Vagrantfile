@@ -10,6 +10,7 @@ Vagrant.configure("2") do |config|
 
 	# Having access would be nice.
 	config.vm.network :private_network, ip: "192.168.33.10"
+	config.vm.hostname = "vagrant.local"
 
 	# Before any other provisioning, ensure that we're up-to-date
 	config.vm.provision :shell, :inline => "apt-get update"
