@@ -35,6 +35,12 @@ if ( ! defined( 'DB_HOST' ) || strpos( DB_HOST, '%%' ) !== false ) {
 defined('WP_CONTENT_DIR') or define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/content' );
 defined('WP_CONTENT_URL') or define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
 
+// =============================
+// Configuration for the Content
+// =============================
+if ( file_exists( dirname( __FILE__ ) . '/content/config.php' ) ) {
+	include( dirname( __FILE__ ) . '/content/config.php' );
+}
 
 // =====================
 // URL hacks for Vagrant
