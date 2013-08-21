@@ -35,6 +35,18 @@ if ( ! defined( 'DB_HOST' ) || strpos( DB_HOST, '%%' ) !== false ) {
 defined('WP_CONTENT_DIR') or define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/content' );
 defined('WP_CONTENT_URL') or define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
 
+
+// =====================
+// URL hacks for Vagrant
+// =====================
+if ( WP_LOCAL_DEV && ! defined('WP_SITEURL') ) {
+	define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . '/wp');
+
+	if ( ! defined( 'WP_HOME' ) ) {
+		define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
+	}
+}
+
 // ================================================
 // You almost certainly do not want to change these
 // ================================================
