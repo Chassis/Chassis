@@ -23,6 +23,9 @@ Before using Skeleton, this is how your system should be set up:
 ```bash
 # Clone this repo
 git clone --recursive git@github.com:sennza/WordPress-Skeleton.git myproject
+# If you forget --recursive:
+# git submodule update --init
+
 cd myproject
 
 # Clone the content/ directory!
