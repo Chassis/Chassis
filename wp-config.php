@@ -2,6 +2,10 @@
 // ===================================================
 // Load database info and local development parameters
 // ===================================================
+if ( file_exists( dirname( __FILE__ ) . '/local-config-db.php' ) ) {
+	include( dirname( __FILE__ ) . '/local-config-db.php' );
+}
+
 if ( file_exists( dirname( __FILE__ ) . '/local-config.php' ) ) {
 	define( 'WP_LOCAL_DEV', true );
 	include( dirname( __FILE__ ) . '/local-config.php' );
@@ -16,7 +20,7 @@ if ( file_exists( dirname( __FILE__ ) . '/local-config.php' ) ) {
 // =======================================
 // Check that we actually have a DB config
 // =======================================
-if (strpos(DB_HOST, '%%') !== false) {
+if ( ! defined( 'DB_HOST' ) || strpos( DB_HOST, '%%' ) !== false ) {
 	header('X-WP-Error: dbconf', true, 500);
 	echo '<h1>Database configuration is incomplete.</h1>';
 	echo "<p>If you're developing locally, ensure you have a local-config.php.

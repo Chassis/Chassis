@@ -1,5 +1,7 @@
 /shared
+/.vagrant
 /local-config.php
+/local-config-db.php
 /sql-dump-*.sql
 /db-sync
 /content
