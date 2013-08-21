@@ -13,6 +13,16 @@ if ( file_exists( dirname( __FILE__ ) . '/local-config.php' ) ) {
 	define( 'DB_HOST', '%%DB_HOST%%' ); // Probably 'localhost'
 }
 
+// =======================================
+// Check that we actually have a DB config
+// =======================================
+if (strpos(DB_HOST, '%%') !== false) {
+	echo '<h1>Database configuration is incomplete.</h1>';
+	echo "<p>If you're developing locally, ensure you have a local-config.php.
+	If this is in production, deployment is broken.</p>";
+	die();
+}
+
 // ========================
 // Custom Content Directory
 // ========================
