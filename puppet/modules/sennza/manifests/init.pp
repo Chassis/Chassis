@@ -16,4 +16,9 @@ class sennza {
 		restart    => '/etc/init.d/nginx reload',
 		require    => Package['nginx']
 	}
+
+	file {'/etc/nginx/nginx.conf':
+		content => template('sennza/nginx.conf.erb'),
+		require => Package['nginx']
+	}
 }
