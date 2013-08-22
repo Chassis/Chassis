@@ -23,5 +23,8 @@ Vagrant.configure("2") do |config|
 		# puppet.options = "--verbose --debug"
 	end
 
+	# Ensure that WordPress can install/update plugins, themes and core
+	config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"
+
 	# Success?
 end
