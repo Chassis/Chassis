@@ -5,6 +5,10 @@ package {'php5-fpm':
 	ensure => latest,
 	require => Apt::Ppa['ppa:ondrej/php5-oldstable']
 }
+package { 'php5-curl':
+	ensure => latest,
+	require => Package['php5-fpm']
+}
 class { 'mysql::php':
 	require => [ Class['mysql::server'], Package['php5-fpm'] ],
 }
