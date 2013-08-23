@@ -9,6 +9,11 @@ package { 'php5-curl':
 	ensure => latest,
 	require => Package['php5-fpm']
 }
+
+package { 'php5-imagick':
+	ensure => latest,
+	require => Package['php5-fpm']
+}
 class { 'mysql::php':
 	require => [ Class['mysql::server'], Package['php5-fpm'] ],
 }
@@ -27,6 +32,7 @@ sennza::wp {'vagrant.local':
 
 	require  => [
 		Package['php5-fpm'],
+		Package['php5-imagick'],
 		Class['mysql::server'],
 		Class['mysql::php']
 	]
