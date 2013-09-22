@@ -2,6 +2,11 @@
 # vi: set ft=ruby :
 
 Vagrant.configure("2") do |config|
+
+	# Store the current version of Vagrant for use in conditionals when dealing
+  # with possible backward compatible issues.
+  vagrant_version = Vagrant::VERSION.sub(/^v/, '')
+
 	# We <3 Ubuntu LTS
 	config.vm.box = "precise32"
 
@@ -24,7 +29,11 @@ Vagrant.configure("2") do |config|
 	end
 
 	# Ensure that WordPress can install/update plugins, themes and core
-	config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"
+	if vagrant_version >= "1.3.0"
+		config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ]
+	else
+		config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"
+	end
 
 	# Success?
 end
