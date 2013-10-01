@@ -24,7 +24,7 @@ class { 'mysql::server':
 
 class {'sennza': }
 
-sennza::wp {'vagrant.local':
+sennza::wp {'jawbone.wpdemo.com.au':
 	location => '/vagrant',
 	database => 'wordpress',
 	database_user => 'wordpress',
