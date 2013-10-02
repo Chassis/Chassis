@@ -28,8 +28,6 @@ config_files.each do |filename|
 	end
 end
 
-puts YAML::dump(_config)
-
 CONF = _config
 
 Vagrant.configure("2") do |config|
