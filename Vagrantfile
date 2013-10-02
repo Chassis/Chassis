@@ -1,11 +1,41 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-Vagrant.configure("2") do |config|
+require "yaml"
 
+# Load git-managed configuration
+_config = YAML.load(
+	File.open(
+		File.join(File.dirname(__FILE__), "config.yaml"),
+		File::RDONLY
+	).read
+)
+
+# Load other configuration files
+config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
+config_files.each do |filename|
+	begin
+		_config.merge!(
+			YAML.load(
+				File.open(
+					File.join(File.dirname(__FILE__), filename),
+					File::RDONLY
+				).read
+			)
+		)
+	rescue Errno::ENOENT
+		# No overriden YAML found -- that's OK; just use the defaults.
+	end
+end
+
+puts YAML::dump(_config)
+
+CONF = _config
+
+Vagrant.configure("2") do |config|
 	# Store the current version of Vagrant for use in conditionals when dealing
-  # with possible backward compatible issues.
-  vagrant_version = Vagrant::VERSION.sub(/^v/, '')
+	# with possible backward compatible issues.
+	vagrant_version = Vagrant::VERSION.sub(/^v/, '')
 
 	# We <3 Ubuntu LTS
 	config.vm.box = "precise32"
@@ -14,10 +44,11 @@ Vagrant.configure("2") do |config|
 	config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
 	# Having access would be nice.
-	config.vm.network :private_network, ip: "192.168.33.10"
-	config.vm.hostname = "vagrant.local"
+	config.vm.network :private_network, ip: CONF['ip']
+	config.vm.hostname = CONF['hosts'][0]
+
 	# You can configure an alias to handle other domains for testing.
-	config.hostsupdater.aliases = ["example.wpdemo.com.au"]
+	config.hostsupdater.aliases = CONF['hosts'][1..-1]
 
 	# Before any other provisioning, ensure that we're up-to-date
 	config.vm.provision :shell, :inline => "apt-get update"

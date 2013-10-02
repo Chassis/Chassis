@@ -1,0 +1,22 @@
+# Sennza Skeleton Configuration
+#
+# This file is the default configuration for all projects. The fallback order of
+# configuration files is:
+#
+# - project/content/config.yaml.local   (project-specific overrides)
+# - project/content/config.yaml         (project-specific defaults)
+# - project/config.yaml.local           (global overrides)
+# - project/config.yaml                 (global defaults)
+
+# Domain names to use for Vagrant
+#
+# The first name will be used as the machine's name, subsequent names will be
+# aliased in your hosts file and in nginx
+#
+# (When overriding, include vagrant.local if you need it)
+hosts:
+    - vagrant.local
+
+# IP address to use on the private network
+# (Only change this if you have a conflict)
+ip: 192.168.33.10
