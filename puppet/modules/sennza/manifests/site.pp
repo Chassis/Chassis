@@ -7,7 +7,7 @@ define sennza::site (
 	$database_host = 'localhost'
 ) {
 	$extra_hosts = join($hosts, ' ')
-	$server_name = "${name} ${extra_hosts}"
+	$server_name = rstrip("${name} ${extra_hosts}")
 	file { $location:
 		ensure => directory
 	}
