@@ -15,7 +15,9 @@ Vagrant.configure("2") do |config|
 
 	# Having access would be nice.
 	config.vm.network :private_network, ip: "192.168.33.10"
-	config.vm.hostname = "jawbone.wpdemo.com.au"
+	config.vm.hostname = "vagrant.local"
+	# You can configure an alias to handle other domains for testing.
+	config.hostsupdater.aliases = ["example.wpdemo.com.au"]
 
 	# Before any other provisioning, ensure that we're up-to-date
 	config.vm.provision :shell, :inline => "apt-get update"
@@ -25,6 +27,9 @@ Vagrant.configure("2") do |config|
 		puppet.manifests_path = "puppet/manifests"
 		puppet.module_path    = "puppet/modules"
 		puppet.manifest_file  = "development.pp"
+		puppet.facter = {
+			"extra_hosts" => config.hostsupdater.aliases
+		}
 		# puppet.options = "--verbose --debug"
 	end
 

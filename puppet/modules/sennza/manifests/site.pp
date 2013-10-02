@@ -1,10 +1,13 @@
 define sennza::site (
 	$location,
+	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost'
 ) {
+	$extra_hosts = join($hosts, ' ')
+	$server_name = "${name} ${extra_hosts}"
 	file { $location:
 		ensure => directory
 	}

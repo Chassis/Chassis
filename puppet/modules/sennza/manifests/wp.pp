@@ -1,5 +1,6 @@
 define sennza::wp (
 	$location,
+	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
 	$database_password = 'password',
@@ -7,6 +8,7 @@ define sennza::wp (
 ) {
 	sennza::site { $name:
 		location => $location,
+		hosts => $hosts,
 		database => $database,
 		database_user => $database_user,
 		database_password => $database_password,
