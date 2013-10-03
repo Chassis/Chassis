@@ -40,6 +40,24 @@ vagrant up
 
 Make sure you copy `local-config-sample.php` to `local-config.php`
 
+## Adding 'real' domains
+
+We've realized internally that using vagrant.local doesn't always cut it for development as you might be working on an OAuth/OAuth2 plugin that needs a 'real' domain to function. Thankfully we can fake it 'til we make it with a custom .yaml file.
+
+```bash
+# Clone this repo
+git clone --recursive git@github.com:sennza/WordPress-Skeleton.git myproject
+
+Copy `config.yaml` and paste it as `config.local.yaml`
+# Edit config.local.yaml on line #17 and add your 'real' domain e.g.
+hosts:
+    - vagrant.local
+    - example.sennza.com.au
+```
+
+# Boot up a VM
+vagrant up
+
 ## Updating
 
 ```bash
