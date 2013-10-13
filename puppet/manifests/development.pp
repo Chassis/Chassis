@@ -25,6 +25,10 @@ package { 'php5-xdebug':
 	require => Package['php5-fpm']
 }
 
+class { 'apt':
+  update_timeout       => undef
+}
+
 class { 'mysql::php':
 	require => [ Class['mysql::server'], Package['php5-fpm'] ],
 }
