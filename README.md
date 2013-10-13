@@ -66,6 +66,7 @@ git pull --rebase
 
 # Update submodules (Puppet modules and WP)
 git submodule update --init
+```
 
 
 # Update your submodules if we change to a new repository
