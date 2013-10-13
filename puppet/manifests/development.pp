@@ -40,6 +40,7 @@ sennza::wp {'vagrant.local':
 	require  => [
 		Package['php5-fpm'],
 		Package['php5-imagick'],
+		Package['php5-xdebug'],
 		Class['mysql::server'],
 		Class['mysql::php']
 	]

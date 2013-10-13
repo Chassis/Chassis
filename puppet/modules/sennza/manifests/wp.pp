@@ -19,7 +19,7 @@ define sennza::wp (
 		content => template('sennza/local-config-db.php.erb')
 	}
 
-	file { '/etc/php5/conf.d/xdebug.ini':
+	file { '/etc/php5/fpm/conf.d/xdebug.ini':
         content => template('sennza/xdebug.ini.erb'),
         owner   => 'root',
         group   => 'root',
