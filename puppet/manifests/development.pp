@@ -14,6 +14,12 @@ package { 'php5-imagick':
 	ensure => latest,
 	require => Package['php5-fpm']
 }
+
+package { 'php5-xdebug':
+	ensure => latest,
+	require => Package['php5-fpm']
+}
+
 class { 'mysql::php':
 	require => [ Class['mysql::server'], Package['php5-fpm'] ],
 }
