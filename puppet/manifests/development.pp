@@ -19,6 +19,12 @@ package { 'php5-imagick':
 	ensure => latest,
 	require => Package['php5-fpm']
 }
+
+package { 'php5-xdebug':
+	ensure => latest,
+	require => Package['php5-fpm']
+}
+
 class { 'mysql::php':
 	require => [ Class['mysql::server'], Package['php5-fpm'] ],
 }
@@ -40,6 +46,7 @@ sennza::wp {'vagrant.local':
 		Package['php5-fpm'],
 		Package['php5-gd'],
 		Package['php5-imagick'],
+		Package['php5-xdebug'],
 		Class['mysql::server'],
 		Class['mysql::php']
 	]
