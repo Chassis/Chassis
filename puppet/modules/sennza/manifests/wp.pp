@@ -24,7 +24,8 @@ define sennza::wp (
         owner   => 'root',
         group   => 'root',
         mode    => 0644,
-        require => Package['php5-xdebug'],
+        require => Package['php5-fpm','php5-xdebug'],
         ensure => 'present',
+        notify => Service['php5-fpm'],
    }
 }
