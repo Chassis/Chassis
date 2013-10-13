@@ -69,7 +69,7 @@ git submodule update --init
 ```
 
 
-# Update your submodules if we change to a new repository
+## Update your submodules if we change to a new repository
 
 Sometimes we have to change the submodules because a repository isn't being regularly maintained. e.g. [Use Puppet Labs's apt module](https://github.com/sennza/WordPress-Skeleton/issues/5). When this happens you'll probably get confused by submodules so here are the commands you need to run to get your submodules up to date again.
 
