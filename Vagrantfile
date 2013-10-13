@@ -51,6 +51,11 @@ Vagrant.configure("2") do |config|
 	# Before any other provisioning, ensure that we're up-to-date
 	config.vm.provision :shell, :inline => "apt-get update"
 
+	# Add more RAM
+	 config.vm.provider :virtualbox do |virtualbox|
+    virtualbox.customize ["modifyvm", :id, "--memory", "1024"]
+  end
+
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
 		puppet.manifests_path = "puppet/manifests"
