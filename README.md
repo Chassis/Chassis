@@ -64,7 +64,7 @@ vagrant up
 # Pull and rebase (in case you have project-specific commits)
 git pull --rebase
 
-# Update submodules (Puppet modules and WP)
+## Update submodules (Puppet modules and WP)
 git submodule update --init
 ```
 
