@@ -9,4 +9,4 @@
 	url = https://github.com/puppetlabs/puppetlabs-stdlib.git
 [submodule "puppet/modules/apt"]
 	path = puppet/modules/apt
-	url = https://github.com/evolvingweb/puppet-apt.git
+	url = https://github.com/puppetlabs/puppetlabs-apt.git
