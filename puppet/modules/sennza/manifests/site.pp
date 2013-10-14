@@ -27,4 +27,10 @@ define sennza::site (
 		host     => $database_host,
 		grant    => ['all'],
 	}
+
+	wp::site {"${location}/wp":
+		url => "http://${name}/",
+		name => 'Vagrant Site',
+		require => Mysql::Db[$database]
+	}
 }
