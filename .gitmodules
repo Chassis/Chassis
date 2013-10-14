@@ -10,3 +10,6 @@
 [submodule "puppet/modules/apt"]
 	path = puppet/modules/apt
 	url = https://github.com/puppetlabs/puppetlabs-apt.git
+[submodule "puppet/modules/wp"]
+	path = puppet/modules/wp
+	url = https://github.com/rmccue/puppet-wp.git

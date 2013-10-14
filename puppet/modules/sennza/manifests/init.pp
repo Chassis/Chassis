@@ -9,6 +9,12 @@ class sennza {
 			ensure => latest
 		}
 	}
+
+	if ! defined(Package['curl']) {
+		package {'curl':
+			ensure => latest
+		}
+	}
 	service { 'nginx':
 		ensure     => running,
 		enable     => true,
