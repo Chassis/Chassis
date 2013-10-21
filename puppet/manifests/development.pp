@@ -25,6 +25,10 @@ package { 'php5-xdebug':
 	require => Package['php5-fpm']
 }
 
+package { 'git-core':
+  ensure => installed
+}
+
 class { 'apt':
   update_timeout       => undef
 }
@@ -51,6 +55,7 @@ sennza::wp {'vagrant.local':
 		Package['php5-gd'],
 		Package['php5-imagick'],
 		Package['php5-xdebug'],
+		Package['git-core'],
 		Class['mysql::server'],
 		Class['mysql::php']
 	]
