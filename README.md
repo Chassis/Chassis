@@ -112,7 +112,7 @@ commands you need to run to get your submodules up to date again.
 
 ```
 git submodule sync
-cd puppet/module/apt
+cd puppet/modules/apt
 git checkout master
 git pull
 
