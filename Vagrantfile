@@ -59,7 +59,7 @@ Vagrant.configure("2") do |config|
 		puppet.facter = {
 			"extra_hosts" => config.hostsupdater.aliases
 		}
-		# puppet.options = "--verbose --debug"
+		puppet.options = "--verbose --debug"
 	end
 
 	# Ensure that WordPress can install/update plugins, themes and core

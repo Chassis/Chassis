@@ -11,10 +11,16 @@ class sennza {
 		}
 	}
 
+	if ! defined(Package['curl']) {
+		package {'curl':
+			ensure => latest
+		}
+	}
+
 	if ! defined(Package['sendmail']) {
 		package {'sendmail':}
 	}
-	
+
 	service { 'nginx':
 		ensure     => running,
 		enable     => true,
