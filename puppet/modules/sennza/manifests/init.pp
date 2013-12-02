@@ -4,6 +4,7 @@ class sennza {
 			ensure => latest
 		}
 	}
+
 	if ! defined(Package['php5-fpm']) {
 		package {'php5-fpm':
 			ensure => latest
@@ -15,6 +16,11 @@ class sennza {
 			ensure => latest
 		}
 	}
+
+	if ! defined(Package['sendmail']) {
+		package {'sendmail':}
+	}
+
 	service { 'nginx':
 		ensure     => running,
 		enable     => true,

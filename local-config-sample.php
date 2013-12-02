@@ -15,3 +15,6 @@ define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
 
 // Loopback connections can suck, disable if you don't need cron
 # define( 'DISABLE_WP_CRON', true );
+
+// You'll probably want Automatic Updates disabled during development
+define( 'AUTOMATIC_UPDATER_DISABLED', true );

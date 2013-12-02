@@ -3,9 +3,9 @@
 # This file is the default configuration for all projects. The fallback order of
 # configuration files is:
 #
-# - project/content/config.yaml.local   (project-specific overrides)
+# - project/content/config.local.yaml   (project-specific overrides)
 # - project/content/config.yaml         (project-specific defaults)
-# - project/config.yaml.local           (global overrides)
+# - project/config.local.yaml          (global overrides)
 # - project/config.yaml                 (global defaults)
 
 # Domain names to use for Vagrant
