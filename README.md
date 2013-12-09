@@ -1,10 +1,10 @@
-# Sennza Skeleton
+# Sennza Chassis
 
 This is the new fangled base repository for Sennza work.
 
 ## Prerequisites
 
-Before using Skeleton, this is how your system should be set up:
+Before using Chassis, this is how your system should be set up:
 
 * Install [Vagrant](http://vagrantup.com/)
 * Install vagrant-hostsupdater to access via `vagrant.local`:
@@ -22,7 +22,7 @@ Before using Skeleton, this is how your system should be set up:
 
 ```bash
 # Clone this repo
-git clone --recursive git@github.com:sennza/WordPress-Skeleton.git myproject
+git clone --recursive git@github.com:sennza/Chassis.git myproject
 # If you forget --recursive:
 # git submodule update --init
 
@@ -49,7 +49,7 @@ custom .yaml file.
 
 ```bash
 # Clone this repo
-git clone --recursive git@github.com:sennza/WordPress-Skeleton.git myproject
+git clone --recursive git@github.com:sennza/Chassis.git myproject
 ```
 
 Copy `config.yaml` and paste it as `config.local.yaml`, then add your real
@@ -108,7 +108,7 @@ regularly maintained. e.g. [Use Puppet Labs's apt module][issue-5].
 When this happens you'll probably get confused by submodules so here are the
 commands you need to run to get your submodules up to date again.
 
-[issue-5]: https://github.com/sennza/WordPress-Skeleton/issues/5
+[issue-5]: https://github.com/sennza/Chassis/issues/5
 
 ```
 git submodule sync
