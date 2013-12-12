@@ -4,15 +4,28 @@ define sennza::wp (
 	$database = 'wordpress',
 	$database_user = 'root',
 	$database_password = 'password',
-	$database_host = 'localhost'
+	$database_host = 'localhost',
+	$network = false,
 ) {
-	sennza::site { $name:
-		location => $location,
-		hosts => $hosts,
-		database => $database,
-		database_user => $database_user,
-		database_password => $database_password,
-		database_host => $database_host,
+	if ( $network == true ) {
+		sennza::network { $name:
+			location => $location,
+			hosts => $hosts,
+			database => $database,
+			database_user => $database_user,
+			database_password => $database_password,
+			database_host => $database_host
+		}
+	}
+	else {
+		sennza::site { $name:
+			location => $location,
+			hosts => $hosts,
+			database => $database,
+			database_user => $database_user,
+			database_password => $database_password,
+			database_host => $database_host,
+		}
 	}
 
 	file { '/vagrant/local-config-db.php':
