@@ -26,11 +26,11 @@ package { 'php5-xdebug':
 }
 
 package { 'git-core':
-  ensure => installed
+	ensure => installed
 }
 
 class { 'apt':
-  update_timeout       => undef
+ 	update_timeout       => undef
 }
 
 class { 'mysql::php':
