@@ -27,5 +27,15 @@ define sennza::wp (
         require => Package['php5-fpm','php5-xdebug'],
         ensure => 'present',
         notify => Service['php5-fpm'],
-   }
+    }
+
+	file { '/etc/php5/fpm/php.ini':
+        content => template('sennza/php.ini.erb'),
+        owner   => 'root',
+        group   => 'root',
+        mode    => 0644,
+        require => Package['php5-fpm'],
+        ensure => 'present',
+        notify => Service['php5-fpm'],
+    }
 }
