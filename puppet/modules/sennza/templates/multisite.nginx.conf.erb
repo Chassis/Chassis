@@ -11,16 +11,16 @@ server {
 	}
 
 	if (!-e $request_filename) {
-		rewrite ^/(wp-.*) /wp/$1 last;
-		rewrite ^/(wp-admin/.*)$ /wp/$1 last;
+		rewrite ^/(wp-.*) /<%= wpdir %>/$1 last;
+		rewrite ^/(wp-admin/.*)$ /<%= wpdir %>/$1 last;
 
-		rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) /wp$1 last;
-		rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*)$ /wp$1 last;
-		rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ /wp$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) /<%= wpdir %>$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*)$ /<%= wpdir %>$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ /<%= wpdir %>$1 last;
 	}
 
 	location ~* ^/(wp-.*|xmlrpc.php) {
-		alias <%= location %>/wp/$1;
+		alias <%= location %>/<%= wpdir %>/$1;
 	}
 
 	location / {

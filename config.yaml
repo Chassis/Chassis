@@ -32,3 +32,8 @@ database:
     name: wordpress
     user: wordpress
     password: vagrantpassword
+
+# WordPress directory
+# (This is usually `wp`, unless you're transplanting Chassis into
+# an existing project)
+wpdir: wp

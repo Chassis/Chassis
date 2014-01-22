@@ -1,5 +1,6 @@
 define sennza::site (
 	$location,
+	$wpdir = 'wp',
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
@@ -28,7 +29,7 @@ define sennza::site (
 		grant    => ['all'],
 	}
 
-	wp::site {"${location}/wp":
+	wp::site {"${location}/${wpdir}":
 		url => "http://${name}/",
 		name => 'Vagrant Site',
 		require => Mysql::Db[$database]
