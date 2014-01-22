@@ -1,0 +1,39 @@
+server {
+	listen 80;
+	server_name <%= server_name %>;
+	root <%= location %>;
+
+	# Handle X-Accel-Redirect file serving
+	location ^~ /blogs.dir {
+		internal;
+		alias <%= location %>/content/blogs.dir ;
+		access_log off;	log_not_found off;	expires max;
+	}
+
+	if (!-e $request_filename) {
+		rewrite ^/(wp-.*) /wp/$1 last;
+		rewrite ^/(wp-admin/.*)$ /wp/$1 last;
+
+		rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) /wp$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*)$ /wp$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ /wp$1 last;
+	}
+
+	location ~* ^/(wp-.*|xmlrpc.php) {
+		alias <%= location %>/wp/$1;
+	}
+
+	location / {
+		index index.php index.html index.htm;
+		try_files $uri $uri/ /index.php$is_args$args;
+	}
+
+	location ~ \.php {
+		try_files $uri =404;
+		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
+		fastcgi_pass unix:/var/run/php5-fpm.sock;
+		fastcgi_index index.php;
+		include /etc/nginx/fastcgi_params;
+	}
+}
