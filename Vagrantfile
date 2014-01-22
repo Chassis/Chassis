@@ -11,18 +11,20 @@ _config = YAML.load(
 	).read
 )
 
+puts _config.to_yaml
+
 # Load other configuration files
 config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
 config_files.each do |filename|
 	begin
-		_config.merge!(
-			YAML.load(
-				File.open(
-					File.join(File.dirname(__FILE__), filename),
-					File::RDONLY
-				).read
-			)
+		confvars = YAML.load(
+			File.open(
+				File.join(File.dirname(__FILE__), filename),
+				File::RDONLY
+			).read
 		)
+
+		_config.merge!(confvars) if confvars.is_a?(Hash)
 	rescue Errno::ENOENT
 		# No overriden YAML found -- that's OK; just use the defaults.
 	end
