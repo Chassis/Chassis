@@ -1,5 +1,6 @@
 define sennza::wp (
 	$location,
+	$wpdir = 'wp',
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
@@ -10,6 +11,7 @@ define sennza::wp (
 	if ( $network == true ) {
 		sennza::network { $name:
 			location => $location,
+			wpdir => $wpdir,
 			hosts => $hosts,
 			database => $database,
 			database_user => $database_user,
@@ -20,6 +22,7 @@ define sennza::wp (
 	else {
 		sennza::site { $name:
 			location => $location,
+			wpdir => $wpdir,
 			hosts => $hosts,
 			database => $database,
 			database_user => $database_user,

@@ -48,6 +48,7 @@ $config = sz_load_config('/vagrant')
 sennza::wp {'vagrant.local':
 	location          => '/vagrant',
 
+	wpdir             => $config[wpdir],
 	hosts             => $config[hosts],
 	database          => $config[database][name],
 	database_user     => $config[database][user],
