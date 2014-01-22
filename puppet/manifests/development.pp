@@ -46,11 +46,13 @@ class {'sennza': }
 $config = sz_load_config('/vagrant')
 
 sennza::wp {'vagrant.local':
-	hosts => $config[hosts],
-	location => '/vagrant',
-	database => 'wordpress',
-	database_user => 'wordpress',
-	database_password => 'vagrantpassword',
+	location          => '/vagrant',
+
+	hosts             => $config[hosts],
+	database          => $config[database][name],
+	database_user     => $config[database][user],
+	database_password => $config[database][password],
+	network           => $config[multisite],
 
 	require  => [
 		Package['php5-fpm'],

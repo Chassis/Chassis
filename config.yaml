@@ -20,3 +20,15 @@ hosts:
 # IP address to use on the private network
 # (Only change this if you have a conflict)
 ip: 192.168.33.10
+
+# Should we use multisite?
+# (Only subdirectories are supported currently)
+# Values: Yes, No
+multisite: No
+
+# Database configuration
+# (When overriding, include all values)
+database:
+    name: wordpress
+    user: wordpress
+    password: vagrantpassword
