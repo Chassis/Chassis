@@ -11,8 +11,6 @@ _config = YAML.load(
 	).read
 )
 
-puts _config.to_yaml
-
 # Load other configuration files
 config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
 config_files.each do |filename|
@@ -58,9 +56,6 @@ Vagrant.configure("2") do |config|
 		puppet.manifests_path = "puppet/manifests"
 		puppet.module_path    = "puppet/modules"
 		puppet.manifest_file  = "development.pp"
-		puppet.facter = {
-			"extra_hosts" => config.hostsupdater.aliases
-		}
 		#puppet.options = "--verbose --debug"
 	end
 

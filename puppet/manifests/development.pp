@@ -43,8 +43,10 @@ class { 'mysql::server':
 
 class {'sennza': }
 
+$config = sz_load_config('/vagrant')
+
 sennza::wp {'vagrant.local':
-  hosts => parsejson($extra_hosts),
+	hosts => $config[hosts],
 	location => '/vagrant',
 	database => 'wordpress',
 	database_user => 'wordpress',
