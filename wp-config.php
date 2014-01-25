@@ -10,8 +10,8 @@ if ( file_exists( dirname( __FILE__ ) . '/local-config-db.php' ) ) {
 if ( file_exists( dirname( __FILE__ ) . '/local-config.php' ) ) {
 	defined('WP_LOCAL_DEV') or define( 'WP_LOCAL_DEV', true );
 	include( dirname( __FILE__ ) . '/local-config.php' );
-} else {
-	defined('WP_LOCAL_DEV') or define( 'WP_LOCAL_DEV', false );
+} elseif ( ! defined('WP_LOCAL_DEV') ) {
+	define( 'WP_LOCAL_DEV', false );
 	define( 'DB_NAME', '%%DB_NAME%%' );
 	define( 'DB_USER', '%%DB_USER%%' );
 	define( 'DB_PASSWORD', '%%DB_PASSWORD%%' );
