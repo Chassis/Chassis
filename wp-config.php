@@ -29,6 +29,18 @@ if ( ! defined( 'DB_HOST' ) || strpos( DB_HOST, '%%' ) !== false ) {
 	die();
 }
 
+// ======================================
+// Fake HTTP Host (for CLI compatibility)
+// ======================================
+if ( empty( $_SERVER['HTTP_HOST'] ) ) {
+	if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
+		$_SERVER['HTTP_HOST'] = DOMAIN_CURRENT_SITE;
+	}
+	else {
+		$_SERVER['HTTP_HOST'] = 'vagrant.local';
+	}
+}
+
 // ========================
 // Custom Content Directory
 // ========================
