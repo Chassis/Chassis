@@ -1,28 +1,10 @@
-# We want PHP 5.4
-apt::ppa { "ppa:ondrej/php5-oldstable": }
+$config = sz_load_config('/vagrant')
 
-package {'php5-fpm':
-	ensure => latest,
-	require => Apt::Ppa['ppa:ondrej/php5-oldstable']
-}
-package { 'php5-curl':
-	ensure => latest,
-	require => Package['php5-fpm']
-}
+$extensions = [ 'curl', 'gd', 'imagick', 'xdebug' ]
 
-package { 'php5-gd':
-	ensure => latest,
-	require => Package['php5-fpm']
-}
-
-package { 'php5-imagick':
-	ensure => latest,
-	require => Package['php5-fpm']
-}
-
-package { 'php5-xdebug':
-	ensure => latest,
-	require => Package['php5-fpm']
+class { 'sennza::php':
+	extensions => $extensions,
+	version => $config[php]
 }
 
 package { 'git-core':
@@ -34,16 +16,16 @@ class { 'apt':
 }
 
 class { 'mysql::php':
-	require => [ Class['mysql::server'], Package['php5-fpm'] ],
+	require => [ Class['mysql::server'], Class['sennza::php'] ],
 }
 
 class { 'mysql::server':
 	config_hash => { 'root_password' => 'password' }
 }
 
-class {'sennza': }
-
-$config = sz_load_config('/vagrant')
+class { 'sennza':
+	require => Class['sennza::php'],
+}
 
 sennza::wp {'vagrant.local':
 	location          => '/vagrant',
@@ -56,10 +38,7 @@ sennza::wp {'vagrant.local':
 	network           => $config[multisite],
 
 	require  => [
-		Package['php5-fpm'],
-		Package['php5-gd'],
-		Package['php5-imagick'],
-		Package['php5-xdebug'],
+		Class['sennza::php'],
 		Package['git-core'],
 		Class['mysql::server'],
 		Class['mysql::php']
