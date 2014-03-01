@@ -1,6 +1,3 @@
-[submodule "wp"]
-	path = wp
-	url = git://github.com/WordPress/WordPress.git
 [submodule "puppet/modules/mysql"]
 	path = puppet/modules/mysql
 	url = https://github.com/puppetlabs/puppetlabs-mysql.git
