@@ -1,6 +1,6 @@
-# Sennza Chassis
+# Chassis
 
-This is the new fangled base repository for Sennza work.
+This is the new fangled development environtment base using Vagrant + WordPress 
 
 ## Prerequisites
 
@@ -31,7 +31,7 @@ cd myproject
 # Clone the content/ directory!
 # git clone git@github.com:sennza/myproject.git content
 
-# Use https://github.com/sennza/wp-content as a base, and follow the
+# Use https://github.com/Chassis/Supercharger as a base, and follow the
 # instructions there.
 
 # Boot up a VM
