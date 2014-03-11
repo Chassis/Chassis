@@ -55,6 +55,9 @@ vagrant provision
 # Reprovisioning without a full apt-get update
 vagrant provision --provision-with puppet
 
+# Updating your hosts file (If there is no IP for vagrant.local)
+vagrant up
+
 # Suspending (sleeping) the VM
 # Note that this doesn't remove the hosts entry
 vagrant suspend
