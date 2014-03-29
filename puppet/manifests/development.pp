@@ -1,11 +1,14 @@
 # Load extensions
 import "/vagrant/extensions/*/chassis.pp"
 
-$extensions = [ 'curl', 'gd', 'mysql' ]
+$config = sz_load_config('/vagrant')
+$extensions = sz_extensions('/vagrant/extensions')
+$php_extensions = [ 'curl', 'gd', 'mysql' ]
+
 Class['mysql'] -> Package['php5-mysql']
 
 class { 'sennza::php':
-	extensions => $extensions,
+	extensions => $php_extensions,
 	version => $config[php]
 }
 
@@ -24,9 +27,6 @@ class { 'mysql::server':
 class { 'sennza':
 	require => Class['sennza::php'],
 }
-
-$config = sz_load_config('/vagrant')
-$extensions = sz_extensions('/vagrant/extensions')
 
 sennza::wp {'vagrant.local':
 	location          => '/vagrant',
