@@ -2,6 +2,7 @@
 /.vagrant
 /local-config.php
 /local-config-db.php
+/local-config-extensions.php
 /sql-dump-*.sql
 /db-sync
 /content

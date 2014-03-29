@@ -1,6 +1,6 @@
-# Sennza Chassis
+# Chassis
 
-This is the new fangled base repository for Sennza work.
+This is the new fangled development environtment base using Vagrant + WordPress 
 
 ## Prerequisites
 
@@ -22,16 +22,16 @@ Before using Chassis, this is how your system should be set up:
 
 ```bash
 # Clone this repo
-git clone --recursive git@github.com:sennza/Chassis.git myproject
+git clone --recursive git@github.com:Chassis/Chassis.git myproject
 # If you forget --recursive:
 # git submodule update --init
 
 cd myproject
 
 # Clone the content/ directory!
-# git clone git@github.com:sennza/myproject.git content
+# git clone git@github.com:yourcompany/yourproject.git content
 
-# Use https://github.com/sennza/wp-content as a base, and follow the
+# Use https://github.com/Chassis/Supercharger as a base, and follow the
 # instructions there.
 
 # Boot up a VM
@@ -54,6 +54,9 @@ vagrant provision
 
 # Reprovisioning without a full apt-get update
 vagrant provision --provision-with puppet
+
+# Updating your hosts file (If there is no IP for vagrant.local)
+vagrant up
 
 # Suspending (sleeping) the VM
 # Note that this doesn't remove the hosts entry
@@ -87,7 +90,7 @@ you need to do to enable it:
 
 That's it!
 
-[#32]: https://github.com/sennza/Chassis/issues/32
+[#32]: https://github.com/Chassis/Chassis/issues/32
 
 ### Adding "Real" Domains
 
@@ -102,7 +105,7 @@ we can fake it 'til we make it by overriding the default configuration.
    ```yaml
    hosts:
        - vagrant.local
-       - example.sennza.com.au
+       - example.chassis.com.au
    ```
 
    (The first host in the list will be used as the machine's name. We recommend
@@ -136,7 +139,7 @@ regularly maintained. e.g. [Use Puppet Labs's apt module][issue-5].
 When this happens you'll probably get confused by submodules so here are the
 commands you need to run to get your submodules up to date again.
 
-[issue-5]: https://github.com/sennza/Chassis/issues/5
+[issue-5]: https://github.com/Chassis/Chassis/issues/5
 
 ```
 git submodule sync

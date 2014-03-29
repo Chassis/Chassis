@@ -7,6 +7,8 @@ define sennza::wp (
 	$database_password = 'password',
 	$database_host = 'localhost',
 	$network = false,
+
+	$extensions = [],
 ) {
 	if ( $network == true ) {
 		sennza::network { $name:
@@ -33,5 +35,9 @@ define sennza::wp (
 
 	file { '/vagrant/local-config-db.php':
 		content => template('sennza/local-config-db.php.erb')
+	}
+
+	file { '/vagrant/local-config-extensions.php':
+		content => template('sennza/local-config-extensions.php.erb')
 	}
 }
