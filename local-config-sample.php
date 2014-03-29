@@ -18,3 +18,6 @@ define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
 
 // You'll probably want Automatic Updates disabled during development
 define( 'AUTOMATIC_UPDATER_DISABLED', true );
+
+// You'll probably want debug logging during development
+define( 'WP_DEBUG_LOG', true );
