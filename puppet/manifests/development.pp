@@ -1,3 +1,6 @@
+# Load extensions
+import "/vagrant/extensions/*/chassis.pp"
+
 # We want PHP 5.4
 apt::ppa { "ppa:ondrej/php5-oldstable": }
 
@@ -44,6 +47,7 @@ class { 'mysql::server':
 class {'sennza': }
 
 $config = sz_load_config('/vagrant')
+$extensions = sz_extensions('/vagrant/extensions')
 
 sennza::wp {'vagrant.local':
 	location          => '/vagrant',
@@ -54,6 +58,8 @@ sennza::wp {'vagrant.local':
 	database_user     => $config[database][user],
 	database_password => $config[database][password],
 	network           => $config[multisite],
+
+	extensions        => $extensions,
 
 	require  => [
 		Package['php5-fpm'],

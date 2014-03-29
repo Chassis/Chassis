@@ -1,0 +1,10 @@
+<?php
+
+// This is generated automatically by Puppet. Edit at your own risk.
+
+<%- @extensions.each do |extension| -%>
+<%- path = "__DIR__ . '/extensions/" + extension + "/local-config.php'" -%>
+if ( file_exists( <%= path %> ) )
+	require_once <%= path %>;
+
+<%- end -%>

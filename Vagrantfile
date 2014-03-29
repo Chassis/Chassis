@@ -30,6 +30,10 @@ end
 
 CONF = _config
 
+# Add extra extension modules
+module_paths = [ "puppet/modules" ]
+module_paths.concat Dir.glob( "extensions/*/modules" )
+
 Vagrant.configure("2") do |config|
 	# Store the current version of Vagrant for use in conditionals when dealing
 	# with possible backward compatible issues.
@@ -54,8 +58,14 @@ Vagrant.configure("2") do |config|
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
 		puppet.manifests_path = "puppet/manifests"
-		puppet.module_path    = "puppet/modules"
 		puppet.manifest_file  = "development.pp"
+
+		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
+		## puppet.module_path    = module_paths
+		# Workaround:
+		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
+		puppet.options = "--modulepath " +  module_paths.join( ':' ).inspect
+
 		#puppet.options = "--verbose --debug"
 	end
 
