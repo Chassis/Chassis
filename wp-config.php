@@ -29,6 +29,13 @@ if ( ! defined( 'DB_HOST' ) || strpos( DB_HOST, '%%' ) !== false ) {
 	die();
 }
 
+// =======================
+// Load Chassis extensions
+// =======================
+if ( file_exists( dirname( __FILE__ ) . '/local-config-extensions.php' ) ) {
+	include( dirname( __FILE__ ) . '/local-config-extensions.php' );
+}
+
 // ======================================
 // Fake HTTP Host (for CLI compatibility)
 // ======================================
