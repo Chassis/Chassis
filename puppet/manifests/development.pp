@@ -28,7 +28,7 @@ class { 'sennza':
 	require => Class['sennza::php'],
 }
 
-sennza::wp {'vagrant.local':
+sennza::wp { $config['hosts'][0]:
 	location          => '/vagrant',
 
 	wpdir             => $config[wpdir],
