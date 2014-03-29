@@ -39,5 +39,5 @@ database:
 wpdir: wp
 
 # PHP version
-# Values: 5.3, 5.4, 5.5, hhvm
+# Values: 5.3, 5.4, 5.5 (or e.g. 5.3.3)
 php: 5.4

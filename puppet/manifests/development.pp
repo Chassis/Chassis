@@ -1,6 +1,7 @@
 $config = sz_load_config('/vagrant')
 
-$extensions = [ 'curl', 'gd', 'imagick', 'xdebug' ]
+$extensions = [ 'curl', 'gd', 'mysql' ]
+Class['mysql'] -> Package['php5-mysql']
 
 class { 'sennza::php':
 	extensions => $extensions,
@@ -13,10 +14,6 @@ package { 'git-core':
 
 class { 'apt':
  	update_timeout       => undef
-}
-
-class { 'mysql::php':
-	require => [ Class['mysql::server'], Class['sennza::php'] ],
 }
 
 class { 'mysql::server':
@@ -41,6 +38,5 @@ sennza::wp {'vagrant.local':
 		Class['sennza::php'],
 		Package['git-core'],
 		Class['mysql::server'],
-		Class['mysql::php']
 	]
 }

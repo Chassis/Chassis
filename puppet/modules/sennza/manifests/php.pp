@@ -5,9 +5,26 @@ class sennza::php (
 	apt::ppa { "ppa:ondrej/php5-oldstable": }
 	apt::ppa { "ppa:ondrej/php5": }
 
-	package { ['php5-common', 'php5-fpm']:
-		ensure => '5.3.*',
+	if $version =~ /^(\d+)\.(\d+)$/ {
+		$package_version = "${version}.*"
 	}
+	else {
+		$package_version = $version
+	}
+
+	if versioncmp( "${version}", '5.5') < 0 {
+		file { "/etc/init/php5-fpm.conf":
+			ensure => absent
+		}
+	}
+
+	package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
+		ensure => $package_version,
+	}
+
+	# Ensure we always do common before fpm/cli
+	Package['php5-common'] -> Package['php5-fpm']
+	Package['php5-common'] -> Package['php5-cli']
 
 	service { 'php5-fpm':
 		ensure => running,
@@ -16,7 +33,7 @@ class sennza::php (
 
 	$prefixed_extensions = prefix($extensions, 'php5-')
 	package { $prefixed_extensions:
-		ensure => latest,
+		ensure => $package_version,
 		require => Package[ 'php5-fpm' ]
 	}
 
