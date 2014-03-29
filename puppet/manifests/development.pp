@@ -1,31 +1,15 @@
 # Load extensions
 import "/vagrant/extensions/*/chassis.pp"
 
-# We want PHP 5.4
-apt::ppa { "ppa:ondrej/php5-oldstable": }
+$config = sz_load_config('/vagrant')
+$extensions = sz_extensions('/vagrant/extensions')
+$php_extensions = [ 'curl', 'gd', 'mysql' ]
 
-package {'php5-fpm':
-	ensure => latest,
-	require => Apt::Ppa['ppa:ondrej/php5-oldstable']
-}
-package { 'php5-curl':
-	ensure => latest,
-	require => Package['php5-fpm']
-}
+Class['mysql'] -> Package['php5-mysql']
 
-package { 'php5-gd':
-	ensure => latest,
-	require => Package['php5-fpm']
-}
-
-package { 'php5-imagick':
-	ensure => latest,
-	require => Package['php5-fpm']
-}
-
-package { 'php5-xdebug':
-	ensure => latest,
-	require => Package['php5-fpm']
+class { 'sennza::php':
+	extensions => $php_extensions,
+	version => $config[php]
 }
 
 package { 'git-core':
@@ -36,18 +20,13 @@ class { 'apt':
  	update_timeout       => undef
 }
 
-class { 'mysql::php':
-	require => [ Class['mysql::server'], Package['php5-fpm'] ],
-}
-
 class { 'mysql::server':
 	config_hash => { 'root_password' => 'password' }
 }
 
-class {'sennza': }
-
-$config = sz_load_config('/vagrant')
-$extensions = sz_extensions('/vagrant/extensions')
+class { 'sennza':
+	require => Class['sennza::php'],
+}
 
 sennza::wp {'vagrant.local':
 	location          => '/vagrant',
@@ -62,12 +41,8 @@ sennza::wp {'vagrant.local':
 	extensions        => $extensions,
 
 	require  => [
-		Package['php5-fpm'],
-		Package['php5-gd'],
-		Package['php5-imagick'],
-		Package['php5-xdebug'],
+		Class['sennza::php'],
 		Package['git-core'],
 		Class['mysql::server'],
-		Class['mysql::php']
 	]
 }
