@@ -20,7 +20,8 @@ class sennza::php (
 
 	package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
 		ensure => $package_version,
-		notify => Service['php5-fpm']
+		notify => Service['php5-fpm'],
+		require => [ Apt::Ppa[ "ppa:ondrej/php5-oldstable" ], Apt::Ppa[ "ppa:ondrej/php5" ] ],
 	}
 
 	# Ensure we always do common before fpm/cli
