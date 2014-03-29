@@ -49,7 +49,7 @@ class {'sennza': }
 $config = sz_load_config('/vagrant')
 $extensions = sz_extensions('/vagrant/extensions')
 
-sennza::wp {'vagrant.local':
+sennza::wp { $config['hosts'][0]:
 	location          => '/vagrant',
 
 	wpdir             => $config[wpdir],
