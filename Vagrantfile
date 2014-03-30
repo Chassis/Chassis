@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
 	config.hostsupdater.aliases = CONF['hosts'][1..-1]
 
 	# Before any other provisioning, ensure that we're up-to-date
-	config.vm.provision :shell, :inline => "apt-get update"
+	config.vm.provision :shell, :path => "puppet/preprovision.sh"
 
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
