@@ -87,7 +87,7 @@ if ( ! defined( WP_CLI ) || ! WP_CLI ) {
 		echo "<p>You've defined a default theme in <code>content/config.php</code> and the <code>content/themes/" . WP_DEFAULT_THEME . "</code> directory exists but it's empty!";
 		echo "You'd better copy your theme in <code>content/themes/" . WP_DEFAULT_THEME . "</code>";
 		die(1);
-	} elseif ( ! is_dir( WP_CONTENT_DIR . '/themes/twentyfourteen' ) ) {
+	} elseif ( ! defined( 'WP_DEFAULT_THEME' ) && ! is_dir( WP_CONTENT_DIR . '/themes/twentyfourteen' ) ) {
 		header( 'X-WP-Error: twentyfourteendirectorymissing', true, 500 );
 		echo "<h1>You're missing Twenty Fourteen! :(</h1>";
 		echo "<p>You haven't defined a default theme in <code>content/config.php</code> so instead we're trying to load Twenty Fourteen and it doesn't exist in <code>content/twentyfourteen</code>.</p>";
