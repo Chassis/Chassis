@@ -31,8 +31,15 @@ end
 CONF = _config
 
 # Add extra extension modules
-module_paths = [ "puppet/modules" ]
-module_paths.concat Dir.glob( "extensions/*/modules" )
+base_path = Pathname.new( File.dirname( __FILE__ ) )
+module_paths = [ base_path.to_s + "/puppet/modules" ]
+module_paths.concat Dir.glob( base_path.to_s + "/extensions/*/modules" )
+
+# Convert to relative from Vagrantfile
+module_paths.map! do |path|
+	pathname = Pathname.new(path)
+	pathname.relative_path_from(base_path).to_s
+end
 
 Vagrant.configure("2") do |config|
 	# Store the current version of Vagrant for use in conditionals when dealing
