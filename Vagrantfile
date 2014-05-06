@@ -73,7 +73,7 @@ Vagrant.configure("2") do |config|
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
 		puppet.options = "--modulepath " +  module_paths.join( ':' ).inspect
 
-		#puppet.options = "--verbose --debug"
+		#puppet.options = puppet.options + " --verbose --debug"
 	end
 
 	# Ensure that WordPress can install/update plugins, themes and core
