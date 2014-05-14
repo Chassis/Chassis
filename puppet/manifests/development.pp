@@ -37,6 +37,9 @@ sennza::wp { $config['hosts'][0]:
 	database_user     => $config[database][user],
 	database_password => $config[database][password],
 	network           => $config[multisite],
+	admin_user        => $config[admin][user],
+	admin_email       => $config[admin][email],
+	admin_password    => $config[admin][password],
 
 	extensions        => $extensions,
 

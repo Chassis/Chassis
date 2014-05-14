@@ -6,6 +6,9 @@ define sennza::wp (
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost',
+	$admin_user     = 'admin',
+	$admin_email    = 'admin@example.com',
+	$admin_password = 'password',
 	$network = false,
 
 	$extensions = [],
