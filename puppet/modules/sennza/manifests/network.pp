@@ -33,9 +33,12 @@ define sennza::network (
 	}
 
 	wp::site {"${location}/${wpdir}":
-		url => "http://${name}/",
-		name => 'Vagrant Site',
-		require => Mysql::Db[$database],
-		network => true,
+		url            => "http://${name}/",
+		name           => 'Vagrant Site',
+		require        => Mysql::Db[$database],
+		network        => true,
+		admin_user     => $admin_user,
+		admin_email    => $admin_email,
+		admin_password => $admin_password,
 	}
 }
