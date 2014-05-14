@@ -36,9 +36,9 @@ database:
 # Admin configuration
 # (When overriding, include all values)
 admin:
-    user: admin
-    email: admin@example.com
-    password: password
+    user: bronson
+    email: bronson@sennza.com.au
+    password: sexy
 
 # WordPress directory
 # (This is usually `wp`, unless you're transplanting Chassis into

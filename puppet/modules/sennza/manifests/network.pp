@@ -5,7 +5,10 @@ define sennza::network (
 	$database = 'wordpress',
 	$database_user = 'root',
 	$database_password = 'password',
-	$database_host = 'localhost'
+	$database_host = 'localhost',
+	$admin_user     = 'admin',
+	$admin_email    = 'admin@example.com',
+	$admin_password = 'password',
 ) {
 	$extra_hosts = join($hosts, ' ')
 	$server_name = rstrip("${name} ${extra_hosts}")
