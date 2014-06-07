@@ -1,12 +1,13 @@
 # Chassis
 
-This is the new fangled development environtment base using Vagrant + WordPress 
+This is the new fangled development environment base using Vagrant + WordPress 
 
 ## Prerequisites
 
 Before using Chassis, this is how your system should be set up:
 
-* Install [Vagrant](http://vagrantup.com/)
+* Install [VirtualBox 4.3.10](https://www.virtualbox.org/wiki/Downloads)
+* Install [Vagrant](http://www.vagrantup.com/downloads.html)
 * Zeroconf networking should be set up:
 
   * **OS X**
@@ -33,35 +34,53 @@ Before using Chassis, this is how your system should be set up:
   Alternatively, add `vagrant.local` to your hosts file with `192.168.33.10` as
   the IP address.
 
-[itunes]: http://www.apple.com/itunes/download/
+[iTunes]: http://www.apple.com/itunes/download/
 [bonjour]: http://help.touch-able.com/kb/network-setup-windows/make-sure-that-bonjour-is-installed-on-your-windows-pc
 
-## Using
+## Installing Chassis
 
-```bash
-# Clone this repo
-git clone --recursive git@github.com:Chassis/Chassis.git myproject
-# If you forget --recursive:
-# git submodule update --init
+1. Clone the Chassis repo:
 
+`git clone --recursive git@github.com:Chassis/Chassis.git myproject`
+
+If you forget `--recursive` then run
+`git submodule update --init`
+
+2. Install your WordPress project:
+
+* If you have an existing project then:
+
+Clone the content/ directory!
+   ```bash
 cd myproject
+git clone git@github.com:yourcompany/yourproject.git content
+   ```
 
-# Clone the content/ directory!
-# git clone git@github.com:yourcompany/yourproject.git content
+* If you are starting a new project then you will need to create a content folder:
 
-# Use https://github.com/Chassis/Supercharger as a base, and follow the
-# instructions there.
+   ```bash
+   cd myproject
+   mkdir -p content/plugins content/themes
+   cp -r wp/wp-content/themes/* content/themes
+   ```
 
-# Boot up a VM
-vagrant up
-```
+Alternatively you can use our Chassis Supercharger as a base
 
-Make sure you copy `local-config-sample.php` to `local-config.php`
+`git clone --recursive git@github.com:Chassis/Supercharger.git content`
 
-## Working with the VM
+3. Boot up a Virtual Machine
+
+`vagrant up`
+
+4. Make a copy of `local-config-sample.php` and rename to `local-config.php`
+
+5. Browse to http://vagrant.local and you should see your site!
+
+
+## Working with the Virtual Machine
 
 ```bash
-# Start the VM
+# Start the VM	
 vagrant up
 
 # SSH in to the VM
@@ -168,3 +187,33 @@ git pull
 # Ensure your VM is up-to-date
 vagrant provision
 ```
+## Login Credentials
+
+### WordPress Admin
+* URL: http://vagrant.local/wp/wp-admin/
+* user: admin
+* pass: password
+
+### MySQL Database
+* name: wordpress
+* user: wordpress
+* pass: vagrantpassword
+    
+## What do you get in Chassis?
+
+By default we want to keep Chassis lean, below is a list of what we include:
+
+1. [WordPress Stable](http://wordpress.org/)
+2. [PHP 5.4](http://www.php.net/)
+3. [nginx](http://nginx.org/)
+4. [MySQL](http://www.mysql.com/)
+5. [PHP-FPM](http://php-fpm.org/)
+6. [Git 1.7.9.5](http://git-scm.com/)
+7. [cURL](http://www.php.net//manual/en/book.curl.php)
+8. [phpMyAdmin](http://www.phpmyadmin.net/home_page/index.php) - Coming Soon
+
+## FAQ
+
+-  **How is [Chassis](https://github.com/Chassis/Chassis) different from [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV)?**
+
+- Each Chassis install is self-contained. We do this to try and mirror the server that you will be deploying to. 
