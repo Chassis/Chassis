@@ -110,6 +110,16 @@ That's it!
 
 [#32]: https://github.com/Chassis/Chassis/issues/32
 
+#### Subdomains
+Chassis now has full support for subdomain installs. Here's how to set it up in
+3 easy steps:
+
+1. Add `multisite: subdomains` to your `config.local.yaml`
+2. Make a copy `chassis-hosts.php` at `content/mu-plugins/chassis-hosts.php`
+3. Provision your VM!
+
+It's really that simple. Subdomains will work automatically in your browser.
+
 ### Adding "Real" Domains
 
 We've realized internally that using vagrant.local doesn't always cut it for
