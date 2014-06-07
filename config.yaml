@@ -35,10 +35,10 @@ database:
 
 # Admin configuration
 # (When overriding, include all values)
-#admin:
-#    user: chassis
-#    email: you@youremail.com
-#    password: yourpassword
+admin:
+    user: admin
+    email: admin@example.com
+    password: password
 
 # WordPress directory
 # (This is usually `wp`, unless you're transplanting Chassis into
