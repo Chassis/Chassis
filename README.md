@@ -186,3 +186,33 @@ git pull
 # Ensure your VM is up-to-date
 vagrant provision
 ```
+## Login Credentials
+
+### WordPress Admin
+* URL: http://vagrant.local/wp/wp-admin/
+* user: admin
+* pass: password
+
+### MySQL Database
+* name: wordpress
+* user: wordpress
+* pass: vagrantpassword
+    
+## What do you get in Chassis?
+
+By default we want to keep Chassis lean, below is a list of what we include:
+
+1. [WordPress Stable](http://wordpress.org/)
+2. [PHP 5.4](http://www.php.net/)
+3. [nginx](http://nginx.org/)
+4. [MySQL](http://www.mysql.com/)
+5. [PHP-FPM](http://php-fpm.org/)
+6. [Git 1.7.9.5](http://git-scm.com/)
+7. [cURL](http://www.php.net//manual/en/book.curl.php)
+8. [phpMyAdmin](http://www.phpmyadmin.net/home_page/index.php) - Coming Soon
+
+## FAQ
+
+-  **How is [Chassis](https://github.com/Chassis/Chassis) different from [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV)?**
+
+- Each Chassis install is self-contained. We do this to try and mirror the server that you will be deploying to. 
