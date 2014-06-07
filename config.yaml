@@ -37,8 +37,8 @@ database:
 # (When overriding, include all values)
 admin:
     user: chassis
-    email: chassis@yoursite.com
-    password: 0&/5d(~{9b(#7(I
+    email: you@youremail.com
+    password: yourpassword
 
 # WordPress directory
 # (This is usually `wp`, unless you're transplanting Chassis into
