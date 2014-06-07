@@ -6,44 +6,80 @@ This is the new fangled development environtment base using Vagrant + WordPress
 
 Before using Chassis, this is how your system should be set up:
 
-* Install [Vagrant](http://vagrantup.com/)
-* Install vagrant-hostsupdater to access via `vagrant.local`:
+* Install [VirtualBox 4.3.10](https://www.virtualbox.org/wiki/Downloads)
+* Install [Vagrant](http://www.vagrantup.com/downloads.html)
+* Zeroconf networking should be set up:
 
-		vagrant plugin install vagrant-hostsupdater
+  * **OS X**
 
-  **Note for Windows users:** You'll need to set
-  `C:\Windows\system32\drivers\etc\hosts` to be writable by your user. Simply
-  head to the properties and add your user with full control under security.
+    You already have this.
+
+  * **Windows**
+
+    If you have iTunes, Safari, Bonjour Print Services, or Creative Suite 3
+    installed, you already have this.
+
+    Otherwise, you need to install Bonjour on your system. The easiest way to
+    do this is to [install iTunes][itunes]. If you'd prefer not to do this, you
+    can follow [these instructions][bonjour] to install just Bonjour.
+
+  * **Linux**
+
+    You need to have Avahi installed on your system.
+
+    For Ubuntu:
+
+        sudo apt-get install avahi-dnsconfd
 
   Alternatively, add `vagrant.local` to your hosts file with `192.168.33.10` as
   the IP address.
 
-## Using
+[itunes]: http://www.apple.com/itunes/download/
+[bonjour]: http://help.touch-able.com/kb/network-setup-windows/make-sure-that-bonjour-is-installed-on-your-windows-pc
+## Installing Chassis
 
-```bash
-# Clone this repo
-git clone --recursive git@github.com:Chassis/Chassis.git myproject
-# If you forget --recursive:
-# git submodule update --init
+1. Clone the Chassis repo:
 
+`git clone --recursive git@github.com:Chassis/Chassis.git myproject`
+
+If you forget `--recursive` then run
+`git submodule update --init`
+
+2. Install your WordPress project:
+
+* If you have an existing project then:
+
+Clone the content/ directory!
+   ```bash
 cd myproject
+git clone git@github.com:yourcompany/yourproject.git content
+   ```
 
-# Clone the content/ directory!
-# git clone git@github.com:yourcompany/yourproject.git content
+* If you are starting a new project then you will need to create a content folder:
 
-# Use https://github.com/Chassis/Supercharger as a base, and follow the
-# instructions there.
+   ```bash
+   cd myproject
+   mkdir -p content/plugins content/themes
+   cp -r wp/wp-content/themes/* content/themes
+   ```
 
-# Boot up a VM
-vagrant up
-```
+Alternatively you can use our Chassis Supercharger as a base
 
-Make sure you copy `local-config-sample.php` to `local-config.php`
+`git clone --recursive git@github.com:Chassis/Supercharger.git content`
 
-## Working with the VM
+3. Boot up a Virtual Machine
+
+`vagrant up`
+
+4. Make a copy of `local-config-sample.php` and rename to `local-config.php`
+
+5. Browse to http://vagrant.local and you should see your site!
+
+
+## Working with the Virtual Machine
 
 ```bash
-# Start the VM
+# Start the VM	
 vagrant up
 
 # SSH in to the VM
