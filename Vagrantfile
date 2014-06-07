@@ -56,9 +56,6 @@ Vagrant.configure("2") do |config|
 	config.vm.network :private_network, ip: CONF['ip']
 	config.vm.hostname = CONF['hosts'][0]
 
-	# You can configure an alias to handle other domains for testing.
-	config.hostsupdater.aliases = CONF['hosts'][1..-1]
-
 	# Before any other provisioning, ensure that we're up-to-date
 	config.vm.provision :shell, :path => "puppet/preprovision.sh"
 

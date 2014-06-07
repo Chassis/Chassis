@@ -7,16 +7,34 @@ This is the new fangled development environtment base using Vagrant + WordPress
 Before using Chassis, this is how your system should be set up:
 
 * Install [Vagrant](http://vagrantup.com/)
-* Install vagrant-hostsupdater to access via `vagrant.local`:
+* Zeroconf networking should be set up:
 
-		vagrant plugin install vagrant-hostsupdater
+  * **OS X**
 
-  **Note for Windows users:** You'll need to set
-  `C:\Windows\system32\drivers\etc\hosts` to be writable by your user. Simply
-  head to the properties and add your user with full control under security.
+    You already have this.
+
+  * **Windows**
+
+    If you have iTunes, Safari, Bonjour Print Services, or Creative Suite 3
+    installed, you already have this.
+
+    Otherwise, you need to install Bonjour on your system. The easiest way to
+    do this is to [install iTunes][itunes]. If you'd prefer not to do this, you
+    can follow [these instructions][bonjour] to install just Bonjour.
+
+  * **Linux**
+
+    You need to have Avahi installed on your system.
+
+    For Ubuntu:
+
+        sudo apt-get install avahi-dnsconfd
 
   Alternatively, add `vagrant.local` to your hosts file with `192.168.33.10` as
   the IP address.
+
+[itunes]: http://www.apple.com/itunes/download/
+[bonjour]: http://help.touch-able.com/kb/network-setup-windows/make-sure-that-bonjour-is-installed-on-your-windows-pc
 
 ## Using
 
