@@ -10,9 +10,11 @@ define sennza::wp (
 
 	$extensions = [],
 ) {
-	if ( $network == true ) {
+	$subdomains = ( $network == "subdomain" )
+	if ( $network ) {
 		sennza::network { $name:
 			location => $location,
+			subdomains => $subdomains,
 			wpdir => $wpdir,
 			hosts => $hosts,
 			database => $database,

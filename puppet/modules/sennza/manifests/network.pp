@@ -1,5 +1,6 @@
 define sennza::network (
 	$location,
+	$subdomains = false,
 	$wpdir = 'wp',
 	$hosts = [],
 	$database = 'wordpress',
@@ -8,7 +9,12 @@ define sennza::network (
 	$database_host = 'localhost'
 ) {
 	$extra_hosts = join($hosts, ' ')
-	$server_name = rstrip("${name} ${extra_hosts}")
+	if ( $subdomains ) {
+		$server_name = rstrip(".${name} ${extra_hosts}")
+	}
+	else {
+		$server_name = rstrip("${name} ${extra_hosts}")
+	}
 	file { $location:
 		ensure => directory
 	}
@@ -34,5 +40,6 @@ define sennza::network (
 		name => 'Vagrant Site',
 		require => Mysql::Db[$database],
 		network => true,
+		subdomains => $subdomains,
 	}
 }

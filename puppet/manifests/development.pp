@@ -28,7 +28,9 @@ class { 'sennza':
 	require => Class['sennza::php'],
 }
 
-class { 'sennza::hosts': }
+class { 'sennza::hosts':
+	aliases => $config[hosts]
+}
 
 sennza::wp { $config['hosts'][0]:
 	location          => '/vagrant',
