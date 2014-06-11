@@ -60,6 +60,10 @@ defined('WP_CONTENT_URL') or define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTT
 if ( empty( $GLOBALS['wp_theme_directories'] ) ) {
 	$GLOBALS['wp_theme_directories'] = array();
 }
+if ( file_exists( WP_CONTENT_DIR . '/themes' ) ) {
+	$GLOBALS['wp_theme_directories'][] = WP_CONTENT_DIR . '/themes';
+}
+$GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
 $GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
 
 // =============================
