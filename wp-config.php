@@ -62,17 +62,6 @@ if ( empty( $GLOBALS['wp_theme_directories'] ) ) {
 }
 $GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
 
-// =======================================
-// Check that we actually have a theme to avoid the White Screen Of Death
-// =======================================
-if ( ! defined( WP_CLI ) || ! WP_CLI ) {
-	if ( ! is_dir( WP_CONTENT_DIR ) ) {
-		header( 'X-WP-Error: contentmissing', true, 500 );
-		echo '<h1>Your configuration is incomplete.</h1>';
-		echo "<p>Your <code>content</code> directory doesn't exist. Please either create a content directory or clone <a href='https://github.com/Chassis/Supercharger' title='Supercharger'>Supercharger</a>.</p>";
-		die(1);
-	}
-}
 // =============================
 // Configuration for the Content
 // =============================
@@ -139,7 +128,6 @@ if ( !defined( 'ABSPATH' ) )
 if ( ! file_exists( ABSPATH . 'wp-settings.php' ) ) {
 	header('X-WP-Error: wpmissing', true, 500);
 	echo '<h1>WordPress is missing.</h1>';
-	echo "<p>Did you forget to clone recursively? Try <code>git submodule update --init</code>.</p>";
 	die(1);
 }
 require_once( ABSPATH . 'wp-settings.php' );
