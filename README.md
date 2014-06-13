@@ -60,8 +60,7 @@ git clone git@github.com:yourcompany/yourproject.git content
 
    ```bash
    cd myproject
-   mkdir -p content/plugins content/themes
-   cp -r wp/wp-content/themes/* content/themes
+   mkdir content
    ```
 
 Alternatively you can use our Chassis Supercharger as a base
