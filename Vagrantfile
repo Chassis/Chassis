@@ -53,7 +53,11 @@ Vagrant.configure("2") do |config|
 	config.vm.box_url = "http://files.vagrantup.com/precise32.box"
 
 	# Having access would be nice.
-	config.vm.network :private_network, ip: CONF['ip']
+	if CONF['ip'] == "dhcp"
+		config.vm.network :private_network, type: "dhcp"
+	else
+		config.vm.network :private_network, ip: CONF['ip']
+	end
 	config.vm.hostname = CONF['hosts'][0]
 
 	# Before any other provisioning, ensure that we're up-to-date
