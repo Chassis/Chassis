@@ -18,8 +18,12 @@ hosts:
     - vagrant.local
 
 # IP address to use on the private network
-# (Only change this if you have a conflict)
-ip: 192.168.33.10
+#
+# DHCP is used by default to assign IP addresses dynamically, override only if
+# you need a static IP for your box.
+#
+# Values: "dhcp", or any valid IP
+ip: dhcp
 
 # Should we use multisite?
 # (Only subdirectories are supported currently)
