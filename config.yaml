@@ -33,6 +33,13 @@ database:
     user: wordpress
     password: vagrantpassword
 
+# Admin configuration
+# (When overriding, include all values)
+admin:
+    user: admin
+    email: admin@example.com
+    password: password
+
 # WordPress directory
 # (This is usually `wp`, unless you're transplanting Chassis into
 # an existing project)

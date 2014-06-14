@@ -6,30 +6,39 @@ define sennza::wp (
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost',
+	$admin_user     = 'admin',
+	$admin_email    = 'admin@example.com',
+	$admin_password = 'password',
 	$network = false,
 
 	$extensions = [],
 ) {
 	if ( $network == true ) {
 		sennza::network { $name:
-			location => $location,
-			wpdir => $wpdir,
-			hosts => $hosts,
-			database => $database,
-			database_user => $database_user,
+			location          => $location,
+			wpdir             => $wpdir,
+			hosts             => $hosts,
+			database          => $database,
+			database_user     => $database_user,
 			database_password => $database_password,
-			database_host => $database_host
+			database_host     => $database_host,
+			admin_user        => $admin_user,
+			admin_email       => $admin_email,
+			admin_password    => $admin_password,
 		}
 	}
 	else {
 		sennza::site { $name:
-			location => $location,
-			wpdir => $wpdir,
-			hosts => $hosts,
-			database => $database,
-			database_user => $database_user,
+			location          => $location,
+			wpdir             => $wpdir,
+			hosts             => $hosts,
+			database          => $database,
+			database_user     => $database_user,
 			database_password => $database_password,
-			database_host => $database_host,
+			database_host     => $database_host,
+			admin_user        => $admin_user,
+			admin_email       => $admin_email,
+			admin_password    => $admin_password,
 		}
 	}
 

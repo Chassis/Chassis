@@ -5,7 +5,10 @@ define sennza::site (
 	$database = 'wordpress',
 	$database_user = 'root',
 	$database_password = 'password',
-	$database_host = 'localhost'
+	$database_host = 'localhost',
+	$admin_user     = 'admin',
+	$admin_email    = 'admin@example.com',
+	$admin_password = 'password',
 ) {
 	$extra_hosts = join($hosts, ' ')
 	$server_name = rstrip("${name} ${extra_hosts}")
@@ -32,6 +35,9 @@ define sennza::site (
 	wp::site {"${location}/${wpdir}":
 		url => "http://${name}/",
 		name => 'Vagrant Site',
-		require => Mysql::Db[$database]
+		require => Mysql::Db[$database],
+		admin_user     => $admin_user,
+		admin_email    => $admin_email,
+		admin_password => $admin_password,
 	}
 }
