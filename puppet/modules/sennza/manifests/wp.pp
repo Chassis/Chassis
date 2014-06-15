@@ -6,8 +6,10 @@ define sennza::wp (
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost',
+  $admin_user = 'admin',
+  $admin_password = 'password',
+  $admin_email = 'admin@example.com',
 	$network = false,
-
 	$extensions = [],
 ) {
 	$subdomains = ( $network == "subdomain" )
