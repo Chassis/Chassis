@@ -1,67 +1,94 @@
 # Chassis
 
-This is the new fangled development environtment base using Vagrant + WordPress 
+Chassis is a virtual server for your WordPress site, built using [Vagrant][].
+
+Chassis is basically a way to run WordPress (and related parts, such as PHP and
+nginx) without needing to worry about setting up anything. You can imagine it as
+MAMP/WAMP on steroids.
+
+[Vagrant]: http://vagrantup.com/
 
 ## Prerequisites
 
 Before using Chassis, this is how your system should be set up:
 
-* Install [Vagrant](http://vagrantup.com/)
-* Zeroconf networking should be set up:
+* Install [VirtualBox 4.3.10](https://www.virtualbox.org/wiki/Downloads)
+* Install [Vagrant](http://www.vagrantup.com/downloads.html)
+* Zeroconf networking (Bonjour) should be set up:
 
-  * **OS X**
+  * **OS X**: You already have Bonjour available.
 
-    You already have this.
-
-  * **Windows**
-
-    If you have iTunes, Safari, Bonjour Print Services, or Creative Suite 3
-    installed, you already have this.
+  * **Windows**: If you have iTunes, Safari, Bonjour Print Services, or Creative
+    Suite 3 installed, you already have Bonjour.
 
     Otherwise, you need to install Bonjour on your system. The easiest way to
     do this is to [install iTunes][itunes]. If you'd prefer not to do this, you
     can follow [these instructions][bonjour] to install just Bonjour.
 
-  * **Linux**
-
-    You need to have Avahi installed on your system.
+  * **Linux**: You need to have Avahi installed on your system.
 
     For Ubuntu:
 
         sudo apt-get install avahi-dnsconfd
 
-  Alternatively, add `vagrant.local` to your hosts file with `192.168.33.10` as
-  the IP address.
-
-[itunes]: http://www.apple.com/itunes/download/
+[iTunes]: http://www.apple.com/itunes/download/
 [bonjour]: http://help.touch-able.com/kb/network-setup-windows/make-sure-that-bonjour-is-installed-on-your-windows-pc
 
-## Using
+## Installing Chassis
+
+1. Clone the Chassis repo:
+
+   ```bash
+   git clone --recursive git@github.com:Chassis/Chassis.git myproject
+   ```
+
+   If you forget `--recursive` then run:
+   
+   ```bash
+   git submodule update --init
+   ```
+
+2. Install your WordPress project:
+
+   * **If you have an existing project**:
+
+     Clone the content/ directory!
+
+     ```bash
+     cd myproject
+     git clone git@github.com:yourcompany/yourproject.git content
+     ```
+
+   * **If you are starting a new project**:
+
+     You will need to create a content folder
+
+     ```bash
+     cd myproject
+     mkdir content
+     ```
+
+     Alternatively you can use our Chassis Supercharger as a base:
+
+     ```bash
+     git clone --recursive git@github.com:Chassis/Supercharger.git content
+     ```
+
+3. Boot up a Virtual Machine
+
+   ```bash
+   vagrant up
+   ```
+
+4. Make a copy of `local-config-sample.php` and rename to `local-config.php`
+
+5. Browse to http://vagrant.local and you should see your site!
+
+
+## Working with the Virtual Machine
 
 ```bash
-# Clone this repo
-git clone --recursive git@github.com:Chassis/Chassis.git myproject
-# If you forget --recursive:
-# git submodule update --init
-
-cd myproject
-
-# Clone the content/ directory!
-# git clone git@github.com:yourcompany/yourproject.git content
-
-# Use https://github.com/Chassis/Supercharger as a base, and follow the
-# instructions there.
-
-# Boot up a VM
-vagrant up
-```
-
-Make sure you copy `local-config-sample.php` to `local-config.php`
-
-## Working with the VM
-
-```bash
-# Start the VM
+# Start the VM  
 vagrant up
 
 # SSH in to the VM
@@ -159,22 +186,51 @@ git pull --rebase
 git submodule update --init
 ```
 
+## Login Credentials
 
-## Update Your Submodules
+### WordPress Admin
+* URL: http://vagrant.local/wp/wp-admin/
+* user: admin
+* pass: password
 
-Sometimes we have to change the submodules because a repository isn't being
-regularly maintained. e.g. [Use Puppet Labs's apt module][issue-5].
-When this happens you'll probably get confused by submodules so here are the
-commands you need to run to get your submodules up to date again.
+### MySQL Database
+* name: wordpress
+* user: wordpress
+* pass: vagrantpassword
+    
+## What do you get in Chassis?
 
-[issue-5]: https://github.com/Chassis/Chassis/issues/5
+By default we want to keep Chassis lean, below is a list of what we include:
 
-```
-git submodule sync
-cd puppet/modules/apt
-git checkout master
-git pull
+* [WordPress 3.9.1](http://wordpress.org/)
+* [PHP 5.4](http://www.php.net/) (includes the
+  [cURL](http://www.php.net/manual/en/book.curl.php) and
+  [GD](http://www.php.net/manual/en/book.image.php) extensions)
+* [nginx](http://nginx.org/)
+* [MySQL](http://www.mysql.com/)
 
-# Ensure your VM is up-to-date
-vagrant provision
-```
+(Some tools including [Git](http://git-scm.com/) and
+[cURL](http://curl.haxx.se/) are installed during setup. Many more are available
+as default Ubuntu utilities.)
+
+## What don't you get in Chassis?
+* phpMyAdmin - Available as an [extension](https://github.com/Chassis/phpMyAdmin)
+* memcache - Available as an [extension](https://github.com/Chassis/memcache)
+* XDebug - Extension [coming soon](https://github.com/Chassis/Chassis/issues/53)
+
+## FAQ
+
+### How is Chassis different from [VVV](https://github.com/Varying-Vagrant-Vagrants/VVV)?
+
+Each Chassis install is self-contained. We do this to try and mirror the server
+that you will be deploying to.
+
+Note that while you can't have multiple independent installs on the same Chassis
+box, we support both subdomain and subdirectory multisite out of the box.
+
+### Can you add X?
+
+While we certainly can add any feature, consider first if it's better off as a
+Chassis extension. We try and keep Chassis as lightweight as possible, and
+extensions are a good way of adding features without weighing down
+Chassis itself.

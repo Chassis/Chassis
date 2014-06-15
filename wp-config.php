@@ -54,62 +54,23 @@ if ( empty( $_SERVER['HTTP_HOST'] ) ) {
 defined('WP_CONTENT_DIR') or define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/content' );
 defined('WP_CONTENT_URL') or define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
 
-// =======================================
-// Check that we actually have a theme to avoid the White Screen Of Death
-// =======================================
-if ( ! defined( WP_CLI ) || ! WP_CLI ) {
-	if ( ! is_dir( WP_CONTENT_DIR ) ) {
-		header( 'X-WP-Error: contentmissing', true, 500 );
-		echo '<h1>Your configuration is incomplete.</h1>';
-		echo "<p>Your <code>content</code> directory doesn't exist. Please either create a content directory or clone <a href='https://github.com/Chassis/Supercharger' title='Supercharger'>Supercharger</a>.</p>";
-		die(1);
-	}
+// =======================
+// Use built-in themes too
+// =======================
+if ( empty( $GLOBALS['wp_theme_directories'] ) ) {
+	$GLOBALS['wp_theme_directories'] = array();
 }
+if ( file_exists( WP_CONTENT_DIR . '/themes' ) ) {
+	$GLOBALS['wp_theme_directories'][] = WP_CONTENT_DIR . '/themes';
+}
+$GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
+$GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
+
 // =============================
 // Configuration for the Content
 // =============================
 if ( file_exists( dirname( __FILE__ ) . '/content/config.php' ) ) {
 	include( dirname( __FILE__ ) . '/content/config.php' );
-}
-
-// =======================================
-// Check that we actually have a theme to avoid the White Screen Of Death
-// =======================================
-if ( ! defined( WP_CLI ) || ! WP_CLI ) {
-	if ( defined( 'WP_DEFAULT_THEME' ) ) {
-		if ( ! is_dir( WP_CONTENT_DIR . '/themes/' . WP_DEFAULT_THEME ) ) {
-			header( 'X-WP-Error: thememissing', true, 500 );
-			echo '<h1>Your theme configuration is incomplete.</h1>';
-			echo "<p>You've defined a default theme in <code>content/config.php</code> but <code>content/themes/" . WP_DEFAULT_THEME . "</code> doesn't exist.</p>";
-			die(1);
-		}
-
-		if ( count( glob( WP_CONTENT_DIR . '/themes/' . WP_DEFAULT_THEME . '/*' ) ) === 0 ) {
-			header( 'X-WP-Error: nofilesindefaulttheme', true, 500 );
-			echo '<h1>Your theme configuration is almost complete.</h1>';
-			echo "<p>You've defined a default theme in <code>content/config.php</code> and the <code>content/themes/" . WP_DEFAULT_THEME . "</code> directory exists but it's empty!";
-			echo "You'd better copy your theme in <code>content/themes/" . WP_DEFAULT_THEME . "</code>";
-			die(1);
-		}
-	}
-	else {
-		if ( ! is_dir( WP_CONTENT_DIR . '/themes/twentyfourteen' ) ) {
-			header( 'X-WP-Error: twentyfourteendirectorymissing', true, 500 );
-			echo "<h1>You're missing Twenty Fourteen! :(</h1>";
-			echo "<p>You haven't defined a default theme in <code>content/config.php</code> so instead we're trying to load Twenty Fourteen and it doesn't exist in <code>content/twentyfourteen</code>.</p>";
-			echo "<p>Please copy Twenty Fourteen from <code>wp/wp-content/themes/twentyfourteen</code> into <code>content/themes/twentyfourteen</code> then refresh this page and :) </p>";
-			die(1);
-		}
-
-		if ( is_dir( WP_CONTENT_DIR . '/themes/twentyfourteen' ) && count( glob( WP_CONTENT_DIR . '/themes/twentyfourteen/*' ) ) === 0 ) {
-			header( 'X-WP-Error: twentyfourteenmissing', true, 500 );
-			echo "<h1>Your Twenty Fourteen directory exists but it's empty! :(</h1>";
-			echo "<p>Now we've tried everything! :(</p>";
-			echo "<p>You haven't defined a default theme in <code>content/config.php</code> so now we're trying to load Twenty Fourteen and although the <code>content/twentyfourteen</code> directory exists, it's empty!";
-			echo "<p>Please copy the theme files for Twenty Fourteen from <code>wp/wp-content/themes/twentyfourteen</code> into <code>content/themes/twentyfourteen</code> then refresh this page and :) </p>";
-			die(1);
-		}
-	}
 }
 
 // =====================
@@ -171,7 +132,6 @@ if ( !defined( 'ABSPATH' ) )
 if ( ! file_exists( ABSPATH . 'wp-settings.php' ) ) {
 	header('X-WP-Error: wpmissing', true, 500);
 	echo '<h1>WordPress is missing.</h1>';
-	echo "<p>Did you forget to clone recursively? Try <code>git submodule update --init</code>.</p>";
 	die(1);
 }
 require_once( ABSPATH . 'wp-settings.php' );

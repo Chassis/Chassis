@@ -1,12 +1,14 @@
 define sennza::network (
 	$location,
-	$subdomains = false,
 	$wpdir = 'wp',
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
 	$database_password = 'password',
-	$database_host = 'localhost'
+	$database_host = 'localhost',
+	$admin_user     = 'admin',
+	$admin_email    = 'admin@example.com',
+	$admin_password = 'password',
 ) {
 	$extra_hosts = join($hosts, ' ')
 	if ( $subdomains ) {
@@ -41,5 +43,8 @@ define sennza::network (
 		require => Mysql::Db[$database],
 		network => true,
 		subdomains => $subdomains,
+		admin_user     => $admin_user,
+		admin_email    => $admin_email,
+		admin_password => $admin_password,
 	}
 }

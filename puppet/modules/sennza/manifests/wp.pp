@@ -20,7 +20,10 @@ define sennza::wp (
 			database => $database,
 			database_user => $database_user,
 			database_password => $database_password,
-			database_host => $database_host
+			database_host     => $database_host,
+			admin_user        => $admin_user,
+			admin_email       => $admin_email,
+			admin_password    => $admin_password,
 		}
 	}
 	else {
@@ -31,7 +34,10 @@ define sennza::wp (
 			database => $database,
 			database_user => $database_user,
 			database_password => $database_password,
-			database_host => $database_host,
+			database_host     => $database_host,
+			admin_user        => $admin_user,
+			admin_email       => $admin_email,
+			admin_password    => $admin_password,
 		}
 	}
 
