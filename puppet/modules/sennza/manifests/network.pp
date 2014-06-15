@@ -1,5 +1,6 @@
 define sennza::network (
 	$location,
+  $subdomains = false,
 	$wpdir = 'wp',
 	$hosts = [],
 	$database = 'wordpress',
