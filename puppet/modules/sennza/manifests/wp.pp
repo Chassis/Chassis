@@ -6,21 +6,21 @@ define sennza::wp (
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost',
-  $admin_user = 'admin',
-  $admin_password = 'password',
-  $admin_email = 'admin@example.com',
+	$admin_user = 'admin',
+	$admin_password = 'password',
+	$admin_email = 'admin@example.com',
 	$network = false,
 	$extensions = [],
 ) {
 	$subdomains = ( $network == "subdomain" )
 	if ( $network ) {
 		sennza::network { $name:
-			location => $location,
-			subdomains => $subdomains,
-			wpdir => $wpdir,
-			hosts => $hosts,
-			database => $database,
-			database_user => $database_user,
+			location          => $location,
+			subdomains        => $subdomains,
+			wpdir             => $wpdir,
+			hosts             => $hosts,
+			database          => $database,
+			database_user     => $database_user,
 			database_password => $database_password,
 			database_host     => $database_host,
 			admin_user        => $admin_user,
@@ -30,11 +30,11 @@ define sennza::wp (
 	}
 	else {
 		sennza::site { $name:
-			location => $location,
-			wpdir => $wpdir,
-			hosts => $hosts,
-			database => $database,
-			database_user => $database_user,
+			location          => $location,
+			wpdir             => $wpdir,
+			hosts             => $hosts,
+			database          => $database,
+			database_user     => $database_user,
 			database_password => $database_password,
 			database_host     => $database_host,
 			admin_user        => $admin_user,
