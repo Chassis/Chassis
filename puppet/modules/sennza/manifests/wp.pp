@@ -12,7 +12,7 @@ define sennza::wp (
 	$network = false,
 	$extensions = [],
 ) {
-	$subdomains = ( $network == "subdomain" )
+	$subdomains = ( $network == "subdomains" )
 	if ( $network ) {
 		sennza::network { $name:
 			location          => $location,
