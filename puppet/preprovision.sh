@@ -1,3 +1,14 @@
+if [[ $1 == "false" ]]; then
+	# Ignore mirrors completely
+	exit
+elif [[ $1 == "true" ]]; then
+	# Use Ubuntu's mirror detection
+	MIRROR="mirror://mirrors.ubuntu.com/mirrors.txt"
+else
+	# Explicit mirror, use it
+	MIRROR=$1
+fi
+
 if [[ ! -f /etc/chassis-updated ]]; then
 	MIRROR="mirror://mirrors.ubuntu.com/mirrors.txt"
 	REPOS="main restricted universe multiverse"

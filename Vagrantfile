@@ -61,7 +61,10 @@ Vagrant.configure("2") do |config|
 	config.vm.hostname = CONF['hosts'][0]
 
 	# Before any other provisioning, ensure that we're up-to-date
-	config.vm.provision :shell, :path => "puppet/preprovision.sh"
+	preprovision_args = [
+		CONF['apt_mirror'].to_s
+	]
+	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
 
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
