@@ -24,7 +24,7 @@ if [[ ! -f /etc/chassis-updated ]]; then
 
 	# Move into place
 	cp /etc/apt/sources.list /etc/apt/sources.list.bak
-	# mv /tmp/apt-sources.list /etc/apt/sources.list
+	mv /tmp/apt-sources.list /etc/apt/sources.list
 
 	# Remove temp files
 	rm /tmp/mirrors-sources.list /tmp/apt-sources.list
