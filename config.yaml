@@ -25,6 +25,18 @@ hosts:
 # Values: "dhcp", or any valid IP
 ip: dhcp
 
+# Ubuntu mirror to use during provisioning
+#
+# Packages are loaded from the built-in Ubuntu repositories, which can be slow
+# depending on your location. Override this option to use a local mirror
+# instead, which is typically faster.
+#
+# Can be set to Yes to automatically detect the closest mirror, No to use the
+# built-in repositories, or a mirror domain as a string.
+#
+# Values: Yes, No, or any mirror domain name e.g. http://mirror.optus.net/ubuntu/
+apt_mirror: Yes
+
 # Should we use multisite?
 # (Only subdirectories are supported currently)
 # Values: Yes, No
