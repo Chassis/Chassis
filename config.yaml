@@ -34,7 +34,7 @@ ip: dhcp
 # Can be set to Yes to automatically detect the closest mirror, No to use the
 # built-in repositories, or a mirror domain as a string.
 #
-# Values: Yes, No, or any mirror domain name
+# Values: Yes, No, or any mirror domain name e.g. http://mirror.optus.net/ubuntu/
 apt_mirror: Yes
 
 # Should we use multisite?

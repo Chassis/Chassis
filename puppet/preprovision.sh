@@ -11,7 +11,6 @@ fi
 
 if [[ ! -f /etc/chassis-updated ]]; then
 	if [[ ! -z $MIRROR ]]; then
-		MIRROR="mirror://mirrors.ubuntu.com/mirrors.txt"
 		REPOS="main restricted universe multiverse"
 
 		touch /tmp/mirrors-sources.list
