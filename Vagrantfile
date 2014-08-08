@@ -47,10 +47,7 @@ Vagrant.configure("2") do |config|
 	vagrant_version = Vagrant::VERSION.sub(/^v/, '')
 
 	# We <3 Ubuntu LTS
-	config.vm.box = "precise32"
-
-	# Get it. Got it? Good.
-	config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+	config.vm.box = "hashicorp/precise64"
 
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
