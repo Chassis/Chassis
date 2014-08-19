@@ -39,7 +39,7 @@ Before using Chassis, this is how your system should be set up:
 1. Clone the Chassis repo:
 
    ```bash
-   git clone --recursive git@github.com:Chassis/Chassis.git myproject
+   git clone --recursive https://github.com/Chassis/Chassis myproject
    ```
 
    If you forget `--recursive` then run:
