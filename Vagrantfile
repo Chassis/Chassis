@@ -47,17 +47,21 @@ Vagrant.configure("2") do |config|
 	vagrant_version = Vagrant::VERSION.sub(/^v/, '')
 
 	# We <3 Ubuntu LTS
-	config.vm.box = "precise32"
-
-	# Get it. Got it? Good.
-	config.vm.box_url = "http://files.vagrantup.com/precise32.box"
+	config.vm.box = "hashicorp/precise64"
 
 	# Having access would be nice.
-	config.vm.network :private_network, ip: CONF['ip']
+	if CONF['ip'] == "dhcp"
+		config.vm.network :private_network, type: "dhcp"
+	else
+		config.vm.network :private_network, ip: CONF['ip']
+	end
 	config.vm.hostname = CONF['hosts'][0]
 
 	# Before any other provisioning, ensure that we're up-to-date
-	config.vm.provision :shell, :path => "puppet/preprovision.sh"
+	preprovision_args = [
+		CONF['apt_mirror'].to_s
+	]
+	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
 
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
