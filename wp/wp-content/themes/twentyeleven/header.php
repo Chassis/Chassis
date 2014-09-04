@@ -18,7 +18,7 @@
 <!--[if IE 8]>
 <html id="ie8" <?php language_attributes(); ?>>
 <![endif]-->
-<!--[if !(IE 6) | !(IE 7) | !(IE 8)  ]><!-->
+<!--[if !(IE 6) & !(IE 7) & !(IE 8)]><!-->
 <html <?php language_attributes(); ?>>
 <!--<![endif]-->
 <head>
@@ -39,7 +39,7 @@
 		echo " | $site_description";
 
 	// Add a page number if necessary:
-	if ( $paged >= 2 || $page >= 2 )
+	if ( ( $paged >= 2 || $page >= 2 ) && ! is_404() )
 		echo ' | ' . sprintf( __( 'Page %s', 'twentyeleven' ), max( $paged, $page ) );
 
 	?></title>
