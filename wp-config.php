@@ -54,6 +54,12 @@ if ( empty( $_SERVER['HTTP_HOST'] ) ) {
 defined('WP_CONTENT_DIR') or define( 'WP_CONTENT_DIR', dirname( __FILE__ ) . '/content' );
 defined('WP_CONTENT_URL') or define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
 
+// ========================
+// Custom Plugins Directory
+// ========================
+defined('WP_PLUGIN_DIR') or define( 'WP_PLUGIN_DIR', WP_CONTENT_DIR . '/plugins' );
+defined('WP_PLUGIN_URL') or define( 'WP_PLUGIN_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content/plugins' );
+
 // =======================
 // Use built-in themes too
 // =======================
