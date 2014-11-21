@@ -257,10 +257,12 @@ function get_post_permalink( $id = 0, $leavename = false, $sample = false ) {
 
 	$post_type = get_post_type_object($post->post_type);
 
+	if ( $post_type->hierarchical ) {
+		$slug = get_page_uri( $id );
+	}
+
 	if ( !empty($post_link) && ( !$draft_or_pending || $sample ) ) {
 		if ( ! $leavename ) {
-			if ( $post_type->hierarchical )
-				$slug = get_page_uri($id);
 			$post_link = str_replace("%$post->post_type%", $slug, $post_link);
 		}
 		$post_link = home_url( user_trailingslashit($post_link) );
@@ -1511,7 +1513,7 @@ function get_adjacent_post( $in_same_term = false, $excluded_terms = '', $previo
 		}
 
 		if ( ! empty( $excluded_terms ) ) {
-			$where .= " AND p.ID NOT IN ( SELECT object_id FROM $wpdb->term_relationships WHERE term_taxonomy_id IN (" . implode( $excluded_terms, ',' ) . ') )';
+			$where .= " AND p.ID NOT IN ( SELECT tr.object_id FROM $wpdb->term_relationships tr LEFT JOIN $wpdb->term_taxonomy tt ON (tr.term_taxonomy_id = tt.term_taxonomy_id) WHERE tt.term_id IN (" . implode( $excluded_terms, ',' ) . ') )';
 		}
 	}
 
