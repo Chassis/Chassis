@@ -669,7 +669,10 @@ function wp_validate_auth_cookie($cookie = '', $scheme = '') {
 	$pass_frag = substr($user->user_pass, 8, 4);
 
 	$key = wp_hash( $username . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
-	$hash = hash_hmac( 'sha256', $username . '|' . $expiration . '|' . $token, $key );
+
+	// If ext/hash is not present, compat.php's hash_hmac() does not support sha256.
+	$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
+	$hash = hash_hmac( $algo, $username . '|' . $expiration . '|' . $token, $key );
 
 	if ( ! hash_equals( $hash, $hmac ) ) {
 		/**
@@ -734,7 +737,10 @@ function wp_generate_auth_cookie( $user_id, $expiration, $scheme = 'auth', $toke
 	$pass_frag = substr($user->user_pass, 8, 4);
 
 	$key = wp_hash( $user->user_login . '|' . $pass_frag . '|' . $expiration . '|' . $token, $scheme );
-	$hash = hash_hmac( 'sha256', $user->user_login . '|' . $expiration . '|' . $token, $key );
+
+	// If ext/hash is not present, compat.php's hash_hmac() does not support sha256.
+	$algo = function_exists( 'hash' ) ? 'sha256' : 'sha1';
+	$hash = hash_hmac( $algo, $user->user_login . '|' . $expiration . '|' . $token, $key );
 
 	$cookie = $user->user_login . '|' . $expiration . '|' . $token . '|' . $hash;
 
@@ -1933,7 +1939,7 @@ function wp_check_password($password, $hash, $user_id = '') {
 
 	// If the hash is still md5...
 	if ( strlen($hash) <= 32 ) {
-		$check = ( $hash == md5($password) );
+		$check = hash_equals( $hash, md5( $password ) );
 		if ( $check && $user_id ) {
 			// Rehash using new hash.
 			wp_set_password($password, $user_id);
