@@ -66,6 +66,8 @@ Before using Chassis, this is how your system should be set up:
      ```bash
      cd myproject
      mkdir content
+     mkdir content/plugins
+     mkdir content/themes
      ```
 
      Alternatively you can use our Chassis Supercharger as a base:
