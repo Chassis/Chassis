@@ -79,6 +79,7 @@ Before using Chassis, this is how your system should be set up:
    ```bash
    vagrant up
    ```
+   If you run into some issue chech [this]: https://github.com/Chassis/Chassis/wiki/dhcp-private_network-failing-on-VirtualBox
 
 4. Make a copy of `local-config-sample.php` and rename to `local-config.php`
 
