@@ -1,7 +1,7 @@
 server {
 	listen 80;
-	server_name <%= server_name %>;
-	root <%= location %>;
+	server_name <%= @server_name %>;
+	root <%= @location %>;
 	client_max_body_size 50M;
 
 	location / {
