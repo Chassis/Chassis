@@ -66,6 +66,9 @@ Before using Chassis, this is how your system should be set up:
      ```bash
      cd myproject
      mkdir content
+     cd content
+     mkdir plugins
+     mkdir themes
      ```
 
      Alternatively you can use our Chassis Supercharger as a base:
@@ -79,6 +82,9 @@ Before using Chassis, this is how your system should be set up:
    ```bash
    vagrant up
    ```
+   If you're a new Vagrant and VirtualBox user you might see this error:
+   `$ Stderr: VBoxManage: error: DHCP server already exists`
+   If that's the case please refer to the [wiki](https://github.com/Chassis/Chassis/wiki/dhcp-private_network-failing-on-VirtualBox)
 
 4. Make a copy of `local-config-sample.php` and rename to `local-config.php`
 
