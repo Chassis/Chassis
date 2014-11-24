@@ -16,6 +16,33 @@ class sennza::php (
 		file { "/etc/init/php5-fpm.conf":
 			ensure => absent
 		}
+
+		####
+		# ANNOUNCING:
+		# The hackiest hack you've ever seen!
+		#
+		# Changing from PHP 5.5+ down to a lower version breaks the way that
+		# init scripts work with upstart. Instead, we hold apt-get/PHP's hand
+		# and guide it through the process.
+		####
+		exec { "rm init.d/php5-fpm":
+			command => "/bin/rm /etc/init.d/php5-fpm",
+			onlyif => "/bin/grep -q 'converted to Upstart' /etc/init.d/php5-fpm",
+			before => [
+				Package[ 'php5-fpm' ],
+				Service[ 'php5-fpm' ],
+			]
+		}
+		file { "/etc/init.d/php5-fpm":
+			# Set up the 5.3 init script, but only if one doesn't exist already
+			replace => "no",
+			source => "puppet:///modules/sennza/php-5.3.init",
+			require => Exec[ "rm init.d/php5-fpm" ],
+			before => [
+				Package[ 'php5-fpm' ],
+				Service[ 'php5-fpm' ],
+			]
+		}
 	}
 
 	$packages = [ 'php5-fpm', 'php5-cli', 'php5-common' ]
