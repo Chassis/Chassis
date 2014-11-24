@@ -18,10 +18,29 @@ class sennza::php (
 		}
 	}
 
-	package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
-		ensure => $package_version,
+	$packages = [ 'php5-fpm', 'php5-cli', 'php5-common' ]
+	$prefixed_extensions = prefix($extensions, 'php5-')
+
+	# Hold the packages at the necessary version
+	apt::hold { $packages:
+		version => $package_version
+	}
+	apt::hold { $prefixed_extensions:
+		version => $package_version
+	}
+
+	# Grab the packages at the given versions
+	package { $packages:
+		# Hold at the given version
+		ensure => 'latest',
+		install_options => "--force-yes",
+
 		notify => Service['php5-fpm'],
-		require => [ Apt::Ppa[ "ppa:ondrej/php5-oldstable" ], Apt::Ppa[ "ppa:ondrej/php5" ] ],
+		require => [
+			Apt::Hold[ $packages ],
+			Apt::Ppa[ "ppa:ondrej/php5-oldstable" ],
+			Apt::Ppa[ "ppa:ondrej/php5" ]
+		],
 	}
 
 	# Ensure we always do common before fpm/cli
@@ -33,12 +52,19 @@ class sennza::php (
 		require => Package[ 'php5-fpm' ]
 	}
 
-	$prefixed_extensions = prefix($extensions, 'php5-')
+	# Install the extensions we need
 	package { $prefixed_extensions:
-		ensure => $package_version,
-		require => Package[ 'php5-fpm' ]
+		# Hold at the given version
+		ensure => 'latest',
+		install_options => "--force-yes",
+
+		require => [
+			Package[ $packages ],
+			Apt::Hold[ $prefixed_extensions ],
+		]
 	}
 
+	# Set up the configuration files
 	if 'xdebug' in $extensions {
 		file { '/etc/php5/fpm/conf.d/xdebug.ini':
 			content => template('sennza/xdebug.ini.erb'),
