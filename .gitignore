@@ -9,3 +9,6 @@
 .DS_Store
 .idea
 config.local.yaml
+
+# Ignore symlinked Puppet manifests
+/puppet/manifests/*.pp
