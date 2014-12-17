@@ -10,6 +10,18 @@ if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
 	puts
 end
 
+# Check that submodules have been loaded
+if not File.exist?(File.join(File.dirname(__FILE__), "puppet", "modules", "apt", ".git"))
+	puts "NOTICE: Submodules not found, updating for you"
+
+	if not system("git submodule update --init", :chdir => File.dirname(__FILE__))
+		puts "WARNING: Submodules may be missing, and could not automatically\ndownload them for you."
+	end
+
+	# Extra new line, please!
+	puts
+end
+
 # Load git-managed configuration
 _config = YAML.load(
 	File.open(
