@@ -102,6 +102,21 @@ Vagrant.configure("2") do |config|
 		#puppet.options = puppet.options + " --verbose --debug"
 	end
 
+	# Help the user out the first time they provision
+	config.vm.provision :shell do |shell|
+		shell.path = "puppet/postprovision.sh"
+		shell.args = [
+			# 0 = hostname
+			CONF['hosts'][0],
+
+			# 1 = username
+			CONF['admin']['user'],
+
+			# 2 = password
+			CONF['admin']['password']
+		]
+	end
+
 	# Ensure that WordPress can install/update plugins, themes and core
 	if vagrant_version >= "1.3.0"
 		config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ]
