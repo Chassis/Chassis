@@ -43,3 +43,13 @@ if [[ ! -f /etc/chassis-updated ]]; then
 
 	touch /etc/chassis-updated
 fi
+
+# Don't set the value to "/vagrant/extensions/*/chassis.pp" if there's no
+# extensions (that's a literal asterisk, by the way)
+shopt -s nullglob
+
+# Symlink extension Puppet files into place
+for file in /vagrant/extensions/*/chassis.pp; do
+	extension=$(basename $(dirname $file))
+	ln -f -s "$file" "/vagrant/puppet/manifests/$extension.pp"
+done

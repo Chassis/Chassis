@@ -1,6 +1,3 @@
-# Load extensions
-import "/vagrant/extensions/*/chassis.pp"
-
 $config = sz_load_config('/vagrant')
 $extensions = sz_extensions('/vagrant/extensions')
 $php_extensions = [ 'curl', 'gd', 'mysql' ]

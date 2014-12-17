@@ -83,23 +83,29 @@ Vagrant.configure("2") do |config|
 	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
 
 	# Provision our setup with Puppet
-	config.vm.provision :puppet do |puppet|
-		puppet.manifests_path = "puppet/manifests"
-		puppet.manifest_file  = "development.pp"
+	config.vm.provision :shell do |shell|
+		shell.inline = "puppet apply $@"
+		shell.keep_color = true
 
-		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
-		## puppet.module_path    = module_paths
-		# Workaround:
+		shell.args = []
+
+		# Set up the module path
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
-		puppet.options = "--modulepath " +  module_paths.join( ':' ).inspect
+		shell.args.push("--basemodulepath " +  module_paths.join( ':' ).inspect)
 
-		# Disable Hiera configuration file
-		puppet.options += " --hiera_config /dev/null"
+		# Set up the full environment
+		shell.args.push("--confdir /vagrant/puppet")
+		shell.args.push("--environment development")
+		shell.args.push("--hiera_config /dev/null")
 
-		# Disable Puppet warnings
-		puppet.options += " --disable_warnings=deprecations"
+		# Set the actual manifest to provision with
+		shell.args.push("/vagrant/puppet/manifests")
 
-		#puppet.options = puppet.options + " --verbose --debug"
+		# Uncomment this line to turn debugging on:
+		# shell.args.push("--verbose --debug")
+
+		# Ensure Puppet doesn't escape our arguments
+		shell.args = shell.args.join(" ")
 	end
 
 	# Ensure that WordPress can install/update plugins, themes and core
