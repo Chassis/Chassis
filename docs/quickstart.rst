@@ -135,3 +135,15 @@ defaults, along with the ability to change this as needed. This helps keep
 Chassis fast by designing for the common use-case first. This flexibility comes
 from two core parts: :doc:`configuration </config>`, and
 :doc:`extensions </extend>`.
+
+
+Updating
+--------
+
+If you ever want to update Chassis, here's a quick two-step procedure::
+
+   # Pull and rebase (in case you have project-specific commits)
+   git pull --rebase
+
+    ## Update submodules (Puppet modules and WP)
+   git submodule update --init
