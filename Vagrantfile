@@ -3,6 +3,13 @@
 
 require "yaml"
 
+# Warn the user if we're on an old version of Vagrant
+if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
+	puts "WARNING: Outdated version of Vagrant"
+	puts "   Chassis requires Vagrant 1.5.0+  "
+	puts
+end
+
 # Load git-managed configuration
 _config = YAML.load(
 	File.open(
