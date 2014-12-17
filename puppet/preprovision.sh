@@ -30,7 +30,16 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		rm /tmp/mirrors-sources.list /tmp/apt-sources.list
 	fi
 
+	# Allow Puppet to be upgraded
+	# (Note that preicse's package is 2.7, so we need the custom deb)
+	wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+	dpkg -i puppetlabs-release-precise.deb
+
+	# Update apt
 	apt-get update
+
+	# Install/Upgrade Puppet
+	apt-get -q -y install puppet
 
 	touch /etc/chassis-updated
 fi

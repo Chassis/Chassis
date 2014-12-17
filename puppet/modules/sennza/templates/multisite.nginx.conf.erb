@@ -1,27 +1,27 @@
 server {
 	listen 80;
-	server_name <%= server_name %>;
-	root <%= location %>;
+	server_name <%= @server_name %>;
+	root <%= @location %>;
 	client_max_body_size 50M;
 
 	# Handle X-Accel-Redirect file serving
 	location ^~ /blogs.dir {
 		internal;
-		alias <%= location %>/content/blogs.dir ;
+		alias <%= @location %>/content/blogs.dir ;
 		access_log off;	log_not_found off;	expires max;
 	}
 
 	if (!-e $request_filename) {
-		rewrite ^/(wp-.*) /<%= wpdir %>/$1 last;
-		rewrite ^/(wp-admin/.*)$ /<%= wpdir %>/$1 last;
+		rewrite ^/(wp-.*) /<%= @wpdir %>/$1 last;
+		rewrite ^/(wp-admin/.*)$ /<%= @wpdir %>/$1 last;
 
-		rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) /<%= wpdir %>$1 last;
-		rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*)$ /<%= wpdir %>$1 last;
-		rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ /<%= wpdir %>$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) /<%= @wpdir %>$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*)$ /<%= @wpdir %>$1 last;
+		rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ /<%= @wpdir %>$1 last;
 	}
 
 	location ~* ^/(wp-.*|xmlrpc.php) {
-		alias <%= location %>/<%= wpdir %>/$1;
+		alias <%= @location %>/<%= @wpdir %>/$1;
 	}
 
 	location / {
