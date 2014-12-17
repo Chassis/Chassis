@@ -10,7 +10,7 @@ class sennza::php (
 		$package_version = "${version}.*"
 	}
 	else {
-		$package_version = $version
+		$package_version = "${version}*"
 	}
 
 	if versioncmp( "${version}", '5.5') < 0 {
