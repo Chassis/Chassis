@@ -14,7 +14,7 @@ require_once( dirname( __FILE__ ) . '/admin.php' );
 header('Content-Type: ' . get_option('html_type') . '; charset=' . get_option('blog_charset'));
 
 if ( ! current_user_can( 'edit_posts' ) || ! current_user_can( get_post_type_object( 'post' )->cap->create_posts ) )
-	wp_die( __( 'Cheatin&#8217; uh?' ) );
+	wp_die( __( 'Cheatin&#8217; uh?' ), 403 );
 
 /**
  * Press It form handler.
@@ -149,9 +149,9 @@ if ( !empty($_REQUEST['ajax']) ) {
 			</div>
 
 			<p class="centered">
-				<input type="hidden" name="this_photo" value="<?php echo esc_attr($image); ?>" id="tb_this_photo" class="tb_this_photo" />
+				<input type="hidden" name="this_photo" value="<?php echo esc_attr( $image ); ?>" id="tb_this_photo" class="tb_this_photo" />
 				<a href="#" class="select">
-					<img src="<?php echo esc_url($image); ?>" alt="<?php echo esc_attr(__('Click to insert.')); ?>" title="<?php echo esc_attr(__('Click to insert.')); ?>" />
+					<img src="<?php echo esc_url( $image ); ?>" alt="<?php esc_attr_e( 'Click to insert.' ); ?>" title="<?php esc_attr_e( 'Click to insert.' ); ?>" />
 				</a>
 			</p>
 

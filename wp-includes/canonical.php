@@ -69,8 +69,8 @@ function redirect_canonical( $requested_url = null, $do_redirect = true ) {
 		return;
 
 	// Some PHP setups turn requests for / into /index.php in REQUEST_URI
-	// See: http://trac.wordpress.org/ticket/5017
-	// See: http://trac.wordpress.org/ticket/7173
+	// See: https://core.trac.wordpress.org/ticket/5017
+	// See: https://core.trac.wordpress.org/ticket/7173
 	// Disabled, for now:
 	// $original['path'] = preg_replace('|/index\.php$|', '/', $original['path']);
 
@@ -194,7 +194,7 @@ function redirect_canonical( $requested_url = null, $do_redirect = true ) {
 		} elseif ( is_category() || is_tag() || is_tax() ) { // Terms (Tags/categories)
 
 			$term_count = 0;
-			foreach ( $wp_query->tax_query->queries as $tax_query )
+			foreach ( $wp_query->tax_query->queried_terms as $tax_query )
 				$term_count += count( $tax_query['terms'] );
 
 			$obj = $wp_query->get_queried_object();
@@ -492,6 +492,9 @@ function redirect_canonical( $requested_url = null, $do_redirect = true ) {
  * @since 3.4.0
  * @access private
  *
+ * @param string $query_string
+ * @param array $args_to_check
+ * @param string $url
  * @return string The altered query string
  */
 function _remove_qs_args_if_not_in_url( $query_string, Array $args_to_check, $url ) {
@@ -512,7 +515,8 @@ function _remove_qs_args_if_not_in_url( $query_string, Array $args_to_check, $ur
  * Attempts to guess the correct URL based on query vars
  *
  * @since 2.3.0
- * @uses $wpdb
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @return bool|string The correct URL if one is found. False on failure.
  */
