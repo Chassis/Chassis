@@ -51,7 +51,7 @@ function wp_get_db_schema( $scope = 'all', $blog_id = null ) {
  slug varchar(200) NOT NULL default '',
  term_group bigint(10) NOT NULL default 0,
  PRIMARY KEY  (term_id),
- UNIQUE KEY slug (slug),
+ KEY slug (slug),
  KEY name (name)
 ) $charset_collate;
 CREATE TABLE $wpdb->term_taxonomy (
@@ -324,7 +324,8 @@ $wp_queries = wp_get_db_schema( 'all' );
  * Create WordPress options and set the default values.
  *
  * @since 1.5.0
- * @uses $wpdb
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  * @uses $wp_db_version
  */
 function populate_options() {
@@ -915,6 +916,7 @@ Your new SITE_NAME site has been successfully set up at:
 BLOG_URL
 
 You can log in to the administrator account with the following information:
+
 Username: USERNAME
 Password: PASSWORD
 Log in here: BLOG_URLwp-login.php
