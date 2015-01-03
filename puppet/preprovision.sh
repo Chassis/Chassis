@@ -36,10 +36,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 	dpkg -i puppetlabs-release-precise.deb
 
 	# Update apt
-	apt-get update
+	sudo apt-get update
 
 	# Install/Upgrade Puppet
-	apt-get -q -y install puppet
+	sudo apt-get -q -y install puppet
 
 	touch /etc/chassis-updated
 fi
