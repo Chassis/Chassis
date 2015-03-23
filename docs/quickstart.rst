@@ -51,11 +51,14 @@ Installing
 
 1. Clone the Chassis repo::
 
-       $ git clone --recursive https://github.com/Chassis/Chassis myproject
+       $ git clone --recursive https://github.com/Chassis/Chassis <myproject>
 
    If you forget ``--recursive`` then run::
 
        $ git submodule update --init
+
+   .. note::
+      Replace ``<myproject>`` with your preferred directory name.
 
 2. Install your WordPress project:
 
@@ -65,14 +68,14 @@ Installing
 
      ::
 
-         $ cd myproject
+         $ cd <myproject>
          $ git clone git@github.com:yourcompany/yourproject.git content
 
    * **If you are starting a new project**:
 
      You will need to create a content folder::
 
-         $ cd myproject
+         $ cd <myproject>
          $ mkdir content
          $ cd content
          $ mkdir plugins
