@@ -19,6 +19,7 @@
 .media-frame {
 	font-family: "Open Sans", sans-serif;
 	font-size: 12px;
+	-webkit-overflow-scrolling: touch;
 }
 
 .media-frame input,
@@ -42,11 +43,11 @@
 }
 
 .media-frame a.button {
-	color: #333;
+	color: #32373c;
 }
 
 .media-frame a.button:hover {
-	color: #222;
+	color: #23282d;
 }
 
 .media-frame a.button-primary,
@@ -105,17 +106,17 @@
 }
 
 /*!
- * jQuery UI Draggable/Sortable 1.11.2
+ * jQuery UI Draggable/Sortable 1.11.4
  * http://jqueryui.com
  *
- * Copyright 2014 jQuery Foundation and other contributors
+ * Copyright jQuery Foundation and other contributors
  * Released under the MIT license.
  * http://jquery.org/license
  */
 .ui-draggable-handle,
 .ui-sortable-handle {
 	-ms-touch-action: none;
-	touch-action:     none;
+	touch-action: none;
 }
 
 /**
@@ -187,7 +188,7 @@
 }
 
 .media-modal-close:hover .media-modal-icon:before {
-	color: #2ea2cc;
+	color: #00a0d2;
 }
 
 .media-modal-close:active {
@@ -231,13 +232,11 @@
 .media-toolbar-primary {
 	float: right;
 	height: 100%;
-	max-width: 33%;
 }
 
 .media-toolbar-secondary {
 	float: left;
 	height: 100%;
-	max-width: 66%;
 }
 
 .media-toolbar-primary > .media-button,
@@ -449,7 +448,8 @@
 
 .compat-item .field {
 	float: right;
-	width: 66%;
+	width: 65%;
+	margin: 1px;
 }
 
 .compat-item .field input[type="text"],
@@ -458,9 +458,13 @@
 .compat-item .field input[type="number"],
 .compat-item .field input[type="search"],
 .compat-item .field input[type="tel"],
-.compat-item .field input[type="url"] {
+.compat-item .field input[type="url"],
+.compat-item .field textarea {
 	width: 100%;
 	margin: 0;
+	-webkit-box-sizing: border-box;
+	-moz-box-sizing: border-box;
+	box-sizing: border-box;
 }
 
 .sidebar-for-errors .attachment-details,
@@ -498,7 +502,7 @@
 	margin: 0;
 	line-height: 18px;
 	font-size: 14px;
-	color: #0074a2;
+	color: #0073aa;
 	text-decoration: none;
 }
 
@@ -513,7 +517,7 @@
 
 .media-menu .active,
 .media-menu .active:hover {
-	color: #222;
+	color: #23282d;
 	font-weight: bold;
 }
 
@@ -564,7 +568,7 @@
 
 .media-router .active,
 .media-router .active:hover {
-	color: #333;
+	color: #32373c;
 }
 
 .media-router .active,
@@ -734,7 +738,13 @@
 .media-frame select.attachment-filters {
 	margin-top: 11px;
 	margin-right: 2%;
-	max-width: 47%;
+	max-width: 42%;
+	max-width: -webkit-calc(48% - 12px);
+	max-width: calc(48% - 12px);
+}
+
+.media-frame select.attachment-filters:last-of-type {
+	margin-right: 0;
 }
 
 /**
@@ -756,7 +766,7 @@
 /**
  * Attachments
  */
-.attachments {
+.wp-core-ui .attachments {
 	margin: 0;
 	-webkit-overflow-scrolling: touch;
 }
@@ -764,7 +774,7 @@
 /**
  * Attachment
  */
-.attachment {
+.wp-core-ui .attachment {
 	position: relative;
 	float: left;
 	padding: 8px;
@@ -783,9 +793,9 @@
 	box-sizing: border-box;
 }
 
-.attachment:focus,
-.selected.attachment:focus,
-.attachment.details:focus {
+.wp-core-ui .attachment:focus,
+.wp-core-ui .selected.attachment:focus,
+.wp-core-ui .attachment.details:focus {
 	-webkit-box-shadow:
 		inset 0 0 2px 3px #fff,
 		inset 0 0 0 7px #5b9dd9;
@@ -795,7 +805,7 @@
 	outline: none;
 }
 
-.selected.attachment {
+.wp-core-ui .selected.attachment {
 	-webkit-box-shadow:
 		inset 0 0 0 5px #fff,
 		inset 0 0 0 7px #ccc;
@@ -804,7 +814,7 @@
 		inset 0 0 0 7px #ccc;
 }
 
-.attachment.details {
+.wp-core-ui .attachment.details {
 	-webkit-box-shadow:
 		inset 0 0 0 3px #fff,
 		inset 0 0 0 7px #1e8cbe;
@@ -813,7 +823,7 @@
 		inset 0 0 0 7px #1e8cbe;
 }
 
-.attachment-preview {
+.wp-core-ui .attachment-preview {
 	position: relative;
 	-webkit-box-shadow:
 		inset 0 0 15px rgba( 0, 0, 0, 0.1 ),
@@ -825,18 +835,18 @@
 	cursor: pointer;
 }
 
-.attachment-preview:before {
+.wp-core-ui .attachment-preview:before {
 	content: '';
 	display: block;
 	padding-top: 100%;
 }
 
-.attachment .icon {
+.wp-core-ui .attachment .icon {
 	margin: 0 auto;
 	overflow: hidden;
 }
 
-.attachment .thumbnail {
+.wp-core-ui .attachment .thumbnail {
 	overflow: hidden;
 	position: absolute;
 	top: 0;
@@ -848,15 +858,15 @@
 	transition: opacity .1s;
 }
 
-.attachment .portrait img {
+.wp-core-ui .attachment .portrait img {
 	max-width: 100%;
 }
 
-.attachment .landscape img {
+.wp-core-ui .attachment .landscape img {
 	max-height: 100%;
 }
 
-.attachment .thumbnail:after {
+.wp-core-ui .attachment .thumbnail:after {
 	content: '';
 	display: block;
 	position: absolute;
@@ -869,14 +879,12 @@
 	overflow: hidden;
 }
 
-/* @noflip */
-.attachment .thumbnail img {
+.wp-core-ui .attachment .thumbnail img {
 	top: 0;
 	left: 0;
 }
 
-/* @noflip */
-.attachment .thumbnail .centered {
+.wp-core-ui .attachment .thumbnail .centered {
 	position: absolute;
 	top: 0;
 	left: 0;
@@ -887,24 +895,24 @@
 	transform: translate( 50%, 50% );
 }
 
-.attachment .thumbnail .centered img {
+.wp-core-ui .attachment .thumbnail .centered img {
 	-webkit-transform: translate( -50%, -50% );
 	-ms-transform: translate(-50%,-50%);
 	transform: translate( -50%, -50% );
 }
 
-.attachment .thumbnail .centered img.icon {
+.wp-core-ui .attachments-browser .attachment .thumbnail .centered img.icon {
 	-webkit-transform: translate( -50%, -70% );
 	-ms-transform: translate(-50%,-70%);
 	transform: translate( -50%, -70% );
 }
 
-.ie8 .attachment img.icon {
+.ie8 .wp-core-ui .attachment img.icon {
 	top: 20%;
 	position: relative;
 }
 
-.attachment .filename {
+.wp-core-ui .attachment .filename {
 	position: absolute;
 	left: 0;
 	right: 0;
@@ -919,15 +927,15 @@
 	box-shadow: inset 0 0 0 1px rgba( 0, 0, 0, 0.15 );
 }
 
-.attachment .filename div {
+.wp-core-ui .attachment .filename div {
 	padding: 5px 10px;
 }
 
-.attachment .thumbnail img {
+.wp-core-ui .attachment .thumbnail img {
 	position: absolute;
 }
 
-.attachment .close {
+.wp-core-ui .attachment .close {
 	display: block;
 	position: absolute;
 	top: 5px;
@@ -953,15 +961,15 @@
 	transition-property: none;
 }
 
-.attachment a.close:hover,
-.attachment a.close:focus {
+.wp-core-ui .attachment a.close:hover,
+.wp-core-ui .attachment a.close:focus {
 	-webkit-box-shadow: 0 0 0 1px rgba( 0, 0, 0, 0.6 );
 	box-shadow: 0 0 0 1px rgba( 0, 0, 0, 0.6 );
 	background-position: -36px 4px;
 
 }
 
-.attachment .check {
+.wp-core-ui .attachment .check {
 	display: none;
 	height: 24px;
 	width: 24px;
@@ -975,24 +983,24 @@
 	box-shadow: 0 0 0 1px #fff, 0 0 0 2px rgba( 0, 0, 0, 0.15 );
 }
 
-.attachment .check div {
+.wp-core-ui .attachment .check div {
 	background-position: -1px 0;
 	height: 15px;
 	width: 15px;
 	margin: 5px;
 }
 
-.attachment .check:hover div {
+.wp-core-ui .attachment .check:hover div {
 	background-position: -40px 0;
 }
 
-.attachment.selected .check {
+.wp-core-ui .attachment.selected .check {
 	display: block;
 }
 
-.attachment.details .check,
-.attachment.selected .check:focus,
-.media-frame.mode-grid .attachment.selected .check {
+.wp-core-ui .attachment.details .check,
+.wp-core-ui .attachment.selected .check:focus,
+.wp-core-ui .media-frame.mode-grid .attachment.selected .check {
 	background-color: #1e8cbe;
 	-webkit-box-shadow:
 		0 0 0 1px #fff,
@@ -1002,18 +1010,18 @@
 		0 0 0 2px #1e8cbe;
 }
 
-.attachment.details .check div,
-.media-frame.mode-grid .attachment.selected .check div {
+.wp-core-ui .attachment.details .check div,
+.wp-core-ui .media-frame.mode-grid .attachment.selected .check div {
 	background-position: -21px 0;
 }
 
-.attachment.details .check:hover div,
-.attachment.selected .check:focus div,
-.media-frame.mode-grid .attachment.selected .check:hover div {
+.wp-core-ui .attachment.details .check:hover div,
+.wp-core-ui .attachment.selected .check:focus div,
+.wp-core-ui .media-frame.mode-grid .attachment.selected .check:hover div {
 	background-position: -60px 0;
 }
 
-.media-frame .attachment .describe {
+.wp-core-ui .media-frame .attachment .describe {
 	position: relative;
 	display: block;
 	width: 100%;
@@ -1067,6 +1075,14 @@
 
 .attachments-browser .uploader-inline.hidden {
 	display: none;
+}
+
+.attachments-browser .media-toolbar-primary {
+	max-width: 33%;
+}
+
+.attachments-browser .media-toolbar-secondary {
+	max-width: 66%;
 }
 
 .uploader-inline .close {
@@ -1437,8 +1453,6 @@
 	width: 40px;
 	padding: 0;
 	margin: 4px;
-	-webkit-box-shadow: none;
-	box-shadow: none;
 }
 
 .media-selection .attachment .thumbnail {
@@ -1458,7 +1472,23 @@
 	background: none;
 }
 
-.media-selection .attachment.selection.details .thumbnail {
+.wp-core-ui .media-selection .attachment:focus,
+.wp-core-ui .media-selection .selected.attachment:focus,
+.wp-core-ui .media-selection .attachment.details:focus {
+	-webkit-box-shadow:
+		0 0 0 1px #fff,
+		0 0 2px 3px #5b9dd9;
+	box-shadow:
+		0 0 0 1px #fff,
+		0 0 2px 3px #5b9dd9;
+}
+
+.wp-core-ui .media-selection .selected.attachment {
+	-webkit-box-shadow: none;
+	box-shadow: none;
+}
+
+.wp-core-ui .media-selection .attachment.details {
 	-webkit-box-shadow:
 		0 0 0 1px #fff,
 		0 0 0 3px #1e8cbe;
@@ -1491,12 +1521,19 @@
 	background: url(../images/spinner.gif) no-repeat;
 	-webkit-background-size: 20px 20px;
 	background-size: 20px 20px;
-	display: none;
+	float: right;
+	display: inline-block;
+	visibility: hidden;
 	opacity: 0.7;
 	filter: alpha(opacity=70);
 	width: 20px;
 	height: 20px;
 	margin: 0;
+	vertical-align: middle;
+}
+
+.media-frame .spinner.is-active {
+	visibility: visible;
 }
 
 .media-toolbar .spinner {
@@ -1518,7 +1555,7 @@
 }
 
 .attachment-details .settings-save-status .spinner {
-	margin: 0 5px 0;
+	margin-left: 5px;
 }
 
 .attachment-details .settings-save-status .saved {
@@ -1526,7 +1563,10 @@
 	display: none;
 }
 
-.attachment-details.save-waiting .settings-save-status .spinner,
+.attachment-details.save-waiting .settings-save-status .spinner {
+	visibility: visible;
+}
+
 .attachment-details.save-complete .settings-save-status .saved {
 	display: block;
 }
@@ -1769,7 +1809,7 @@
 }
 
 .media-frame .embed-loading .embed-url .spinner {
-	display: block;
+	visibility: visible;
 }
 
 .embed-link-settings,
@@ -1783,11 +1823,18 @@
 	overflow: auto;
 }
 
-.embed-preview img, .embed-preview iframe, .embed-preview embed {
+.embed-preview img,
+.embed-preview iframe,
+.embed-preview embed {
 	max-width: 100%;
 }
 
+.embed-preview a {
+	display: inline-block;
+}
+
 .embed-preview img {
+	display: block;
 	height: auto;
 }
 
@@ -2354,7 +2401,7 @@
 	}
 
 	.media-modal .attachments-browser .media-toolbar .spinner {
-		margin: 14px 8px 0;
+		margin: 14px 2px 0;
 	}
 
 	/* Text inputs need to be 16px, or they force zooming on iOS */
@@ -2491,7 +2538,6 @@
  * HiDPI Displays
  */
 @media print,
-  (-o-min-device-pixel-ratio: 5/4),
   (-webkit-min-device-pixel-ratio: 1.25),
   (min-resolution: 120dpi) {
 

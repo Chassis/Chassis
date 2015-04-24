@@ -54,7 +54,7 @@ function get_postdata($postid) {
  *
  * @since 1.0.1
  * @deprecated 1.5.0
- * @deprecated Use The Loop - {@link http://codex.wordpress.org/The_Loop Use new WordPress Loop}
+ * @deprecated Use The Loop - {@link https://codex.wordpress.org/The_Loop Use new WordPress Loop}
  */
 function start_wp() {
 	global $wp_query;
@@ -1310,7 +1310,7 @@ function get_category_children( $id, $before = '/', $after = '', $visited = arra
  * @since 2.0.0
  * @deprecated 4.0.0 Use get_terms() instead.
  * @see get_terms()
- * @link http://codex.wordpress.org/Function_Reference/get_all_category_ids
+ * @link https://codex.wordpress.org/Function_Reference/get_all_category_ids
  *
  * @return object List of all of the category IDs.
  */
@@ -1756,7 +1756,7 @@ function make_url_footnote( $content ) {
 	_deprecated_function( __FUNCTION__, '2.9', '' );
 	preg_match_all( '/<a(.+?)href=\"(.+?)\"(.*?)>(.+?)<\/a>/', $content, $matches );
 	$links_summary = "\n";
-	for ( $i=0; $i<count($matches[0]); $i++ ) {
+	for ( $i = 0, $c = count( $matches[0] ); $i < $c; $i++ ) {
 		$link_match = $matches[0][$i];
 		$link_number = '['.($i+1).']';
 		$link_url = $matches[2][$i];
@@ -2161,7 +2161,7 @@ function attribute_escape( $text ) {
  * @param string|int $name Widget ID.
  * @param callback $output_callback Run when widget is called.
  * @param string $classname Classname widget option.
- * @param mixed $params,... Widget parameters.
+ * @param mixed $params ,... Widget parameters.
  */
 function register_sidebar_widget($name, $output_callback, $classname = '') {
 	_deprecated_function( __FUNCTION__, '2.8', 'wp_register_sidebar_widget()' );
@@ -2396,7 +2396,7 @@ function update_usermeta( $user_id, $meta_key, $meta_value ) {
 
 	if ( !$cur )
 		$wpdb->insert($wpdb->usermeta, compact('user_id', 'meta_key', 'meta_value') );
-	else if ( $cur->meta_value != $meta_value )
+	elseif ( $cur->meta_value != $meta_value )
 		$wpdb->update($wpdb->usermeta, compact('meta_value'), compact('user_id', 'meta_key') );
 	else
 		return false;
@@ -2632,7 +2632,6 @@ function the_editor($content, $id = 'content', $prev_id = 'title', $media_button
 	_deprecated_function( __FUNCTION__, '3.3', 'wp_editor()' );
 
 	wp_editor( $content, $id, array( 'media_buttons' => $media_buttons ) );
-	return;
 }
 
 /**
@@ -2684,7 +2683,7 @@ function sanitize_user_object($user, $context = 'display') {
 	if ( is_object($user) ) {
 		if ( !isset($user->ID) )
 			$user->ID = 0;
-		if ( !is_a( $user, 'WP_User' ) ) {
+		if ( ! ( $user instanceof WP_User ) ) {
 			$vars = get_object_vars($user);
 			foreach ( array_keys($vars) as $field ) {
 				if ( is_string($user->$field) || is_numeric($user->$field) )

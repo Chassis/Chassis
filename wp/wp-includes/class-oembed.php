@@ -3,7 +3,7 @@
  * API for fetching the HTML to embed remote content based on a provided URL.
  * Used internally by the {@link WP_Embed} class, but is designed to be generic.
  *
- * @link http://codex.wordpress.org/oEmbed oEmbed Codex Article
+ * @link https://codex.wordpress.org/oEmbed oEmbed Codex Article
  * @link http://oembed.com/ oEmbed Homepage
  *
  * @package WordPress
@@ -20,6 +20,8 @@
 class WP_oEmbed {
 	public $providers = array();
 	public static $early_providers = array();
+
+	private $compat_methods = array( '_fetch_with_format', '_parse_json', '_parse_xml', '_parse_body' );
 
 	/**
 	 * Constructor
@@ -42,11 +44,10 @@ class WP_oEmbed {
 			'#https?://flic\.kr/.*#i'                             => array( 'https://www.flickr.com/services/oembed/',            true  ),
 			'#https?://(.+\.)?smugmug\.com/.*#i'                  => array( 'http://api.smugmug.com/services/oembed/',            true  ),
 			'#https?://(www\.)?hulu\.com/watch/.*#i'              => array( 'http://www.hulu.com/api/oembed.{format}',            true  ),
-			'http://revision3.com/*'                              => array( 'http://revision3.com/api/oembed/',                   false ),
 			'http://i*.photobucket.com/albums/*'                  => array( 'http://photobucket.com/oembed',                      false ),
 			'http://gi*.photobucket.com/groups/*'                 => array( 'http://photobucket.com/oembed',                      false ),
 			'#https?://(www\.)?scribd\.com/doc/.*#i'              => array( 'http://www.scribd.com/services/oembed',              true  ),
-			'#https?://wordpress.tv/.*#i'                         => array( 'http://wordpress.tv/oembed/',                        true ),
+			'#https?://wordpress.tv/.*#i'                         => array( 'http://wordpress.tv/oembed/',                        true  ),
 			'#https?://(.+\.)?polldaddy\.com/.*#i'                => array( 'https://polldaddy.com/oembed/',                      true  ),
 			'#https?://poll\.fm/.*#i'                             => array( 'https://polldaddy.com/oembed/',                      true  ),
 			'#https?://(www\.)?funnyordie\.com/videos/.*#i'       => array( 'http://www.funnyordie.com/oembed',                   true  ),
@@ -54,7 +55,7 @@ class WP_oEmbed {
 			'#https?://vine.co/v/.*#i'                            => array( 'https://vine.co/oembed.{format}',                    true  ),
  			'#https?://(www\.)?soundcloud\.com/.*#i'              => array( 'http://soundcloud.com/oembed',                       true  ),
 			'#https?://(.+?\.)?slideshare\.net/.*#i'              => array( 'https://www.slideshare.net/api/oembed/2',            true  ),
-			'#http://instagr(\.am|am\.com)/p/.*#i'                => array( 'http://api.instagram.com/oembed',                    true  ),
+			'#https?://instagr(\.am|am\.com)/p/.*#i'              => array( 'https://api.instagram.com/oembed',                   true  ),
 			'#https?://(www\.)?rdio\.com/.*#i'                    => array( 'http://www.rdio.com/api/oembed/',                    true  ),
 			'#https?://rd\.io/x/.*#i'                             => array( 'http://www.rdio.com/api/oembed/',                    true  ),
 			'#https?://(open|play)\.spotify\.com/.*#i'            => array( 'https://embed.spotify.com/oembed/',                  true  ),
@@ -65,6 +66,9 @@ class WP_oEmbed {
 			'#https?://(www\.)?mixcloud\.com/.*#i'                => array( 'http://www.mixcloud.com/oembed',                     true  ),
 			'#https?://(www\.|embed\.)?ted\.com/talks/.*#i'       => array( 'http://www.ted.com/talks/oembed.{format}',           true  ),
 			'#https?://(www\.)?(animoto|video214)\.com/play/.*#i' => array( 'http://animoto.com/oembeds/create',                  true  ),
+			'#https?://(.+)\.tumblr\.com/post/.*#i'               => array( 'https://www.tumblr.com/oembed/1.0',                  true  ),
+			'#https?://(www\.)?kickstarter\.com/projects/.*#i'    => array( 'https://www.kickstarter.com/services/oembed',        true  ),
+			'#https?://kck\.st/.*#i'                              => array( 'https://www.kickstarter.com/services/oembed',        true  ),
 		);
 
 		if ( ! empty( self::$early_providers['add'] ) ) {
@@ -92,12 +96,11 @@ class WP_oEmbed {
 		 * | ------------ | -------------------- | ----- | --------- |
 		 * |   Provider   |        Flavor        |  SSL  |   Since   |
 		 * | ------------ | -------------------- | ----- | --------- |
-		 * | Blip         | blip.tv              |       | 2.9.0     |
+		 * | Blip         | blip.tv              |   !   | 2.9.0     |
 		 * | Dailymotion  | dailymotion.com      |  Yes  | 2.9.0     |
 		 * | Flickr       | flickr.com           |  Yes  | 2.9.0     |
 		 * | Hulu         | hulu.com             |  Yes  | 2.9.0     |
-		 * | Photobucket  | photobucket.com      |       | 2.9.0     |
-		 * | Revision3    | revision3.com        |       | 2.9.0     |
+		 * | Photobucket  | photobucket.com      |   !   | 2.9.0     |
 		 * | Scribd       | scribd.com           |  Yes  | 2.9.0     |
 		 * | Vimeo        | vimeo.com            |  Yes  | 2.9.0     |
 		 * | WordPress.tv | wordpress.tv         |  Yes  | 2.9.0     |
@@ -110,12 +113,12 @@ class WP_oEmbed {
 		 * | ------------ | -------------------- | ----- | --------- |
 		 * | Twitter      | twitter.com          |  Yes  | 3.4.0     |
 		 * | ------------ | -------------------- | ----- | --------- |
-		 * | Instagram    | instagram.com        |       | 3.5.0     |
-		 * | Instagram    | instagr.am           |       | 3.5.0     |
+		 * | Instagram    | instagram.com        |  Yes  | 3.5.0     |
+		 * | Instagram    | instagr.am           |  Yes  | 3.5.0     |
 		 * | Slideshare   | slideshare.net       |  Yes  | 3.5.0     |
 		 * | SoundCloud   | soundcloud.com       |  Yes  | 3.5.0     |
 		 * | ------------ | -------------------- | ----- | --------- |
-		 * | Dailymotion  | dai.ly               |       | 3.6.0     |
+		 * | Dailymotion  | dai.ly               |   !   | 3.6.0     |
 		 * | Flickr       | flic.kr              |  Yes  | 3.6.0     |
 		 * | Rdio         | rdio.com             |  Yes  | 3.6.0     |
 		 * | Rdio         | rd.io                |  Yes  | 3.6.0     |
@@ -136,6 +139,10 @@ class WP_oEmbed {
 		 * | ------------ | -------------------- | ----- | --------- |
 		 * | Vine         | vine.co              |  Yes  | 4.1.0     |
 		 * | ------------ | -------------------- | ----- | --------- |
+		 * | Tumblr       | tumblr.com           |  Yes  | 4.2.0     |
+		 * | Kickstarter  | kickstarter.com      |  Yes  | 4.2.0     |
+		 * | Kickstarter  | kck.st               |  Yes  | 4.2.0     |
+		 * | ------------ | -------------------- | ----- | --------- |
 		 *
 		 * No longer supported providers:
 		 *
@@ -145,6 +152,8 @@ class WP_oEmbed {
 		 * | Qik          | qik.com              |  Yes  | 2.9.0     | 3.9.0     |
 		 * | ------------ | -------------------- | ----- | --------- | --------- |
 		 * | Viddler      | viddler.com          |  Yes  | 2.9.0     | 4.0.0     |
+		 * | ------------ | -------------------- | ----- | --------- | --------- |
+		 * | Revision3    | revision3.com        |   !   | 2.9.0     | 4.2.0     |
 		 * | ------------ | -------------------- | ----- | --------- | --------- |
 		 *
 		 * @see wp_oembed_add_provider()
@@ -170,7 +179,10 @@ class WP_oEmbed {
 	 * @return mixed|bool Return value of the callback, false otherwise.
 	 */
 	public function __call( $name, $arguments ) {
-		return call_user_func_array( array( $this, $name ), $arguments );
+		if ( in_array( $name, $this->compat_methods ) ) {
+			return call_user_func_array( array( $this, $name ), $arguments );
+		}
+		return false;
 	}
 
 	/**
@@ -272,7 +284,7 @@ class WP_oEmbed {
 	 * @param array $args Optional arguments. Usually passed from a shortcode.
 	 * @return false|string False on failure, otherwise the UNSANITIZED (and potentially unsafe) HTML that should be used to embed.
 	 */
-	function get_html( $url, $args = '' ) {
+	public function get_html( $url, $args = '' ) {
 		$provider = $this->get_provider( $url, $args );
 
 		if ( !$provider || false === $data = $this->fetch( $provider, $url, $args ) )
@@ -342,12 +354,12 @@ class WP_oEmbed {
 				}
 			}
 
-			if ( $tagfound && preg_match_all( '/<link([^<>]+)>/i', $html, $links ) ) {
+			if ( $tagfound && preg_match_all( '#<link([^<>]+)/?>#iU', $html, $links ) ) {
 				foreach ( $links[1] as $link ) {
 					$atts = shortcode_parse_atts( $link );
 
 					if ( !empty($atts['type']) && !empty($linktypes[$atts['type']]) && !empty($atts['href']) ) {
-						$providers[$linktypes[$atts['type']]] = $atts['href'];
+						$providers[$linktypes[$atts['type']]] = htmlspecialchars_decode( $atts['href'] );
 
 						// Stop here if it's JSON (that's all we need)
 						if ( 'json' == $linktypes[$atts['type']] )
@@ -554,10 +566,32 @@ class WP_oEmbed {
 	 * @return string Possibly modified $html
 	 */
 	public function _strip_newlines( $html, $data, $url ) {
-		if ( false !== strpos( $html, "\n" ) )
-			$html = str_replace( array( "\r\n", "\n" ), '', $html );
+		if ( false === strpos( $html, "\n" ) ) {
+			return $html;
+		}
 
-		return $html;
+		$count = 1;
+		$found = array();
+		$token = '__PRE__';
+		$search = array( "\t", "\n", "\r", ' ' );
+		$replace = array( '__TAB__', '__NL__', '__CR__', '__SPACE__' );
+		$tokenized = str_replace( $search, $replace, $html );
+
+		preg_match_all( '#(<pre[^>]*>.+?</pre>)#i', $tokenized, $matches, PREG_SET_ORDER );
+		foreach ( $matches as $i => $match ) {
+			$tag_html = str_replace( $replace, $search, $match[0] );
+			$tag_token = $token . $i;
+
+			$found[ $tag_token ] = $tag_html;
+			$html = str_replace( $tag_html, $tag_token, $html, $count );
+		}
+
+		$replaced = str_replace( $replace, $search, $html );
+		$stripped = str_replace( array( "\r\n", "\n" ), '', $replaced );
+		$pre = array_values( $found );
+		$tokens = array_keys( $found );
+
+		return str_replace( $tokens, $pre, $stripped );
 	}
 }
 

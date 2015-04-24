@@ -135,7 +135,7 @@ function get_author_template() {
 
 	$templates = array();
 
-	if ( is_a( $author, 'WP_User' ) ) {
+	if ( $author instanceof WP_User ) {
 		$templates[] = "author-{$author->user_nicename}.php";
 		$templates[] = "author-{$author->ID}.php";
 	}
@@ -467,7 +467,7 @@ function locate_template($template_names, $load = false, $require_once = true ) 
 		if ( file_exists(STYLESHEETPATH . '/' . $template_name)) {
 			$located = STYLESHEETPATH . '/' . $template_name;
 			break;
-		} else if ( file_exists(TEMPLATEPATH . '/' . $template_name) ) {
+		} elseif ( file_exists(TEMPLATEPATH . '/' . $template_name) ) {
 			$located = TEMPLATEPATH . '/' . $template_name;
 			break;
 		}
