@@ -276,7 +276,7 @@ function retrieve_password() {
 
 	if ( empty( $_POST['user_login'] ) ) {
 		$errors->add('empty_username', __('<strong>ERROR</strong>: Enter a username or e-mail address.'));
-	} else if ( strpos( $_POST['user_login'], '@' ) ) {
+	} elseif ( strpos( $_POST['user_login'], '@' ) ) {
 		$user_data = get_user_by( 'email', trim( $_POST['user_login'] ) );
 		if ( empty( $user_data ) )
 			$errors->add('invalid_email', __('<strong>ERROR</strong>: There is no user registered with that email address.'));
@@ -333,10 +333,11 @@ function retrieve_password() {
 	 */
 	$allow = apply_filters( 'allow_password_reset', true, $user_data->ID );
 
-	if ( ! $allow )
-		return new WP_Error('no_password_reset', __('Password reset is not allowed for this user'));
-	else if ( is_wp_error($allow) )
+	if ( ! $allow ) {
+		return new WP_Error( 'no_password_reset', __('Password reset is not allowed for this user') );
+	} elseif ( is_wp_error( $allow ) ) {
 		return $allow;
+	}
 
 	// Generate something random for a password reset key.
 	$key = wp_generate_password( 20, false );
@@ -483,9 +484,28 @@ case 'postpass' :
 
 case 'logout' :
 	check_admin_referer('log-out');
+
+	$user = wp_get_current_user();
+
 	wp_logout();
 
-	$redirect_to = !empty( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : 'wp-login.php?loggedout=true';
+	if ( ! empty( $_REQUEST['redirect_to'] ) ) {
+		$redirect_to = $requested_redirect_to = $_REQUEST['redirect_to'];
+	} else {
+		$redirect_to = 'wp-login.php?loggedout=true';
+		$requested_redirect_to = '';
+	}
+
+	/**
+	 * Filter the log out redirect URL.
+	 *
+	 * @since 4.2.0
+	 *
+	 * @param string  $redirect_to           The redirect destination URL.
+	 * @param string  $requested_redirect_to The requested redirect destination URL passed as a parameter.
+	 * @param WP_User $user                  The WP_User object for the user that's logging out.
+	 */
+	$redirect_to = apply_filters( 'logout_redirect', $redirect_to, $requested_redirect_to, $user );
 	wp_safe_redirect( $redirect_to );
 	exit();
 
@@ -777,11 +797,11 @@ default:
 	if ( empty( $_COOKIE[ LOGGED_IN_COOKIE ] ) ) {
 		if ( headers_sent() ) {
 			$user = new WP_Error( 'test_cookie', sprintf( __( '<strong>ERROR</strong>: Cookies are blocked due to unexpected output. For help, please see <a href="%1$s">this documentation</a> or try the <a href="%2$s">support forums</a>.' ),
-				__( 'http://codex.wordpress.org/Cookies' ), __( 'https://wordpress.org/support/' ) ) );
+				__( 'https://codex.wordpress.org/Cookies' ), __( 'https://wordpress.org/support/' ) ) );
 		} elseif ( isset( $_POST['testcookie'] ) && empty( $_COOKIE[ TEST_COOKIE ] ) ) {
 			// If cookies are disabled we can't log in even with a valid user+pass
 			$user = new WP_Error( 'test_cookie', sprintf( __( '<strong>ERROR</strong>: Cookies are blocked or not supported by your browser. You must <a href="%s">enable cookies</a> to use WordPress.' ),
-				__( 'http://codex.wordpress.org/Cookies' ) ) );
+				__( 'https://codex.wordpress.org/Cookies' ) ) );
 		}
 	}
 
@@ -869,16 +889,22 @@ default:
 	if ( isset($_POST['log']) )
 		$user_login = ( 'incorrect_password' == $errors->get_error_code() || 'empty_password' == $errors->get_error_code() ) ? esc_attr(wp_unslash($_POST['log'])) : '';
 	$rememberme = ! empty( $_POST['rememberme'] );
+
+	if ( ! empty( $errors->errors ) ) {
+		$aria_describedby_error = ' aria-describedby="login_error"';
+	} else {
+		$aria_describedby_error = '';
+	}
 ?>
 
 <form name="loginform" id="loginform" action="<?php echo esc_url( site_url( 'wp-login.php', 'login_post' ) ); ?>" method="post">
 	<p>
 		<label for="user_login"><?php _e('Username') ?><br />
-		<input type="text" name="log" id="user_login" class="input" value="<?php echo esc_attr($user_login); ?>" size="20" /></label>
+		<input type="text" name="log" id="user_login"<?php echo $aria_describedby_error; ?> class="input" value="<?php echo esc_attr( $user_login ); ?>" size="20" /></label>
 	</p>
 	<p>
 		<label for="user_pass"><?php _e('Password') ?><br />
-		<input type="password" name="pwd" id="user_pass" class="input" value="" size="20" /></label>
+		<input type="password" name="pwd" id="user_pass"<?php echo $aria_describedby_error; ?> class="input" value="" size="20" /></label>
 	</p>
 	<?php
 	/**

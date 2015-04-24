@@ -125,7 +125,6 @@ abstract class WP_Image_Editor {
 	 * @access public
 	 * @abstract
 	 *
-	 * @param string|int $src The source file or Attachment ID.
 	 * @param int $src_x The start x position to crop from.
 	 * @param int $src_y The start y position to crop from.
 	 * @param int $src_w The width to crop.
@@ -194,6 +193,7 @@ abstract class WP_Image_Editor {
 	 *
 	 * @param int $width
 	 * @param int $height
+	 * @return true
 	 */
 	protected function update_size( $width = null, $height = null ) {
 		$this->size = array(
@@ -388,7 +388,7 @@ abstract class WP_Image_Editor {
 	 * @since 3.5.0
 	 * @access public
 	 *
-	 * @return string suffix
+	 * @return false|string suffix
 	 */
 	public function get_suffix() {
 		if ( ! $this->get_size() )

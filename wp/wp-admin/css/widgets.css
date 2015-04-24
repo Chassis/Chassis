@@ -49,7 +49,7 @@
 
 .deleting .widget-title,
 .deleting .widget-top a.widget-action:after {
-	color: #aaa;
+	color: #a0a5aa;
 }
 
 /* Widget Dragging Helpers */
@@ -62,7 +62,7 @@
 }
 
 .widget-placeholder {
-	border: 1px dashed #bbb;
+	border: 1px dashed #b4b9be;
 	margin: 0 auto 10px;
 	height: 45px;
 	width: 100%;
@@ -271,8 +271,10 @@ div#widgets-right .closed .widgets-sortables {
 }
 
 .sidebar-name .spinner {
-	margin: -5px 5px;
 	float: none;
+	position: relative;
+	top: -2px;
+	margin: -5px 5px;
 }
 
 /* Dragging a widget over a closed sidebar */
@@ -369,7 +371,7 @@ div#widgets-right .closed .widgets-sortables {
 }
 
 .js #removing-widget {
-	color: #2ea2cc;
+	color: #00a0d2;
 }
 
 .widget-control-noform,
@@ -475,7 +477,7 @@ div#widgets-right .widget-top:hover,
 }
 
 .widgets-chooser li.widgets-chooser-selected {
-	background: #2ea2cc;
+	background: #00a0d2;
 	color: #fff;
 }
 

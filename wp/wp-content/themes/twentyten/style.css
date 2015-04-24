@@ -1,18 +1,18 @@
 /*
 Theme Name: Twenty Ten
-Theme URI: http://wordpress.org/themes/twentyten
+Theme URI: https://wordpress.org/themes/twentyten/
 Description: The 2010 theme for WordPress is stylish, customizable, simple, and readable -- make it yours with a custom menu, header image, and background. Twenty Ten supports six widgetized areas (two in the sidebar, four in the footer) and featured images (thumbnails for gallery posts and custom header images for posts and pages). It includes stylesheets for print and the admin Visual Editor, special styles for posts in the "Asides" and "Gallery" categories, and has an optional one-column page template that removes the sidebar.
 Author: the WordPress team
-Author URI: http://wordpress.org/
-Version: 1.8
+Author URI: https://wordpress.org/
+Version: 1.9
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: black, blue, white, two-columns, fixed-layout, custom-header, custom-background, threaded-comments, sticky-post, translation-ready, microformats, rtl-language-support, editor-style, custom-menu, flexible-header
+Tags: black, blue, white, two-columns, fixed-layout, custom-header, custom-background, threaded-comments, sticky-post, translation-ready, microformats, rtl-language-support, editor-style, custom-menu, flexible-header, featured-images, featured-image-header
 Text Domain: twentyten
 */
 
 
-/* =Reset default browser CSS. Based on work by Eric Meyer: http://meyerweb.com/eric/tools/css/reset/index.html
+/* =Reset default browser CSS. Based on work by Eric Meyer.
 -------------------------------------------------------------- */
 
 html, body, div, span, applet, object, iframe,
@@ -337,8 +337,11 @@ a:hover {
 
 /* Text meant only for screen readers */
 .screen-reader-text {
-	position: absolute;
-	left: -9000px;
+	clip: rect(1px, 1px, 1px, 1px);
+	overflow: hidden;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
 }
 
 

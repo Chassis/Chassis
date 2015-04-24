@@ -186,11 +186,11 @@ class Walker_Nav_Menu_Edit extends Walker_Nav_Menu {
 				<p class="field-move hide-if-no-js description description-wide">
 					<label>
 						<span><?php _e( 'Move' ); ?></span>
-						<a href="#" class="menus-move-up"><?php _e( 'Up one' ); ?></a>
-						<a href="#" class="menus-move-down"><?php _e( 'Down one' ); ?></a>
-						<a href="#" class="menus-move-left"></a>
-						<a href="#" class="menus-move-right"></a>
-						<a href="#" class="menus-move-top"><?php _e( 'To the top' ); ?></a>
+						<a href="#" class="menus-move menus-move-up" data-dir="up"><?php _e( 'Up one' ); ?></a>
+						<a href="#" class="menus-move menus-move-down" data-dir="down"><?php _e( 'Down one' ); ?></a>
+						<a href="#" class="menus-move menus-move-left" data-dir="left"></a>
+						<a href="#" class="menus-move menus-move-right" data-dir="right"></a>
+						<a href="#" class="menus-move menus-move-top" data-dir="top"><?php _e( 'To the top' ); ?></a>
 					</label>
 				</p>
 
@@ -444,7 +444,7 @@ function _wp_ajax_menu_quick_search( $request = array() ) {
 function wp_nav_menu_setup() {
 	// Register meta boxes
 	wp_nav_menu_post_type_meta_boxes();
-	add_meta_box( 'add-custom-links', __( 'Links' ), 'wp_nav_menu_item_link_meta_box', 'nav-menus', 'side', 'default' );
+	add_meta_box( 'add-custom-links', __( 'Custom Links' ), 'wp_nav_menu_item_link_meta_box', 'nav-menus', 'side', 'default' );
 	wp_nav_menu_taxonomy_meta_boxes();
 
 	// Register advanced menu items (columns)
@@ -1252,7 +1252,7 @@ add_action('admin_head-nav-menus.php', '_wp_delete_orphaned_draft_menu_items');
  */
 function wp_nav_menu_update_menu_items ( $nav_menu_selected_id, $nav_menu_selected_title ) {
 	$unsorted_menu_items = wp_get_nav_menu_items( $nav_menu_selected_id, array( 'orderby' => 'ID', 'output' => ARRAY_A, 'output_key' => 'ID', 'post_status' => 'draft,publish' ) );
-
+	$messages = array();
 	$menu_items = array();
 	// Index menu items by db ID
 	foreach ( $unsorted_menu_items as $_item )
@@ -1317,7 +1317,7 @@ function wp_nav_menu_update_menu_items ( $nav_menu_selected_id, $nav_menu_select
 	/** This action is documented in wp-includes/nav-menu.php */
 	do_action( 'wp_update_nav_menu', $nav_menu_selected_id );
 
-	$messages[] = '<div id="message" class="updated"><p>' . sprintf( __( '<strong>%1$s</strong> has been updated.' ), $nav_menu_selected_title ) . '</p></div>';
+	$messages[] = '<div id="message" class="updated notice is-dismissible"><p>' . sprintf( __( '<strong>%1$s</strong> has been updated.' ), $nav_menu_selected_title ) . '</p></div>';
 	unset( $menu_items, $unsorted_menu_items );
 
 	return $messages;

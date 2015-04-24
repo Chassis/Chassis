@@ -211,7 +211,14 @@ ul#adminmenu > li.current > a.current:after {
 	background: $menu-current-background;
 }
 
-#adminmenu li.wp-has-current-submenu div.wp-menu-image:before {
+#adminmenu li.wp-has-current-submenu div.wp-menu-image:before,
+#adminmenu a.current:hover div.wp-menu-image:before,
+#adminmenu li.wp-has-current-submenu a:focus div.wp-menu-image:before,
+#adminmenu li.wp-has-current-submenu.opensub div.wp-menu-image:before,
+#adminmenu li:hover div.wp-menu-image:before,
+#adminmenu li a:focus div.wp-menu-image:before,
+#adminmenu li.opensub div.wp-menu-image:before,
+.ie8 #adminmenu li.opensub div.wp-menu-image:before {
 	color: $menu-current-icon;
 }
 
@@ -357,10 +364,10 @@ ul#adminmenu > li.current > a.current:after {
 	background: $adminbar-input-background;
 }
 
-#wpadminbar #adminbarsearch .adminbar-input::-webkit-input-placeholder { color: $menu-text; opacity: .7; }
-#wpadminbar #adminbarsearch .adminbar-input:-moz-placeholder { color: $menu-text; opacity: .7; }
-#wpadminbar #adminbarsearch .adminbar-input::-moz-placeholder { color: $menu-text; opacity: .7; }
-#wpadminbar #adminbarsearch .adminbar-input:-ms-input-placeholder { color: $menu-text; opacity: .7; }
+#wpadminbar #adminbarsearch .adminbar-input::-webkit-input-placeholder { color: $menu-text; opacity: 0.7; }
+#wpadminbar #adminbarsearch .adminbar-input:-moz-placeholder { color: $menu-text; opacity: 0.7; }
+#wpadminbar #adminbarsearch .adminbar-input::-moz-placeholder { color: $menu-text; opacity: 0.7; }
+#wpadminbar #adminbarsearch .adminbar-input:-ms-input-placeholder { color: $menu-text; opacity: 0.7; }
 
 
 /* Admin Bar: my account */
@@ -433,11 +440,13 @@ ul#adminmenu > li.current > a.current:after {
 /* Themes */
 
 .theme-browser .theme.active .theme-name,
-.theme-browser .theme.add-new-theme:hover:after {
+.theme-browser .theme.add-new-theme a:hover:after,
+.theme-browser .theme.add-new-theme a:focus:after {
 	background: $highlight-color;
 }
 
-.theme-browser .theme.add-new-theme:hover span:after {
+.theme-browser .theme.add-new-theme a:hover span:after,
+.theme-browser .theme.add-new-theme a:focus span:after {
 	color: $highlight-color;
 }
 
@@ -495,17 +504,6 @@ body.more-filters-opened .more-filters:focus:before {
 	box-shadow: inset 0 1px 0 lighten( $button-color, 15% ), 0 1px 0 rgba(0,0,0,.15);
 }
 
-/* Thickbox: Plugin information */
-
-#sidemenu a.current {
-	background: $body-background;
-	border-bottom-color: $body-background;
-}
-
-#plugin-information .action-button {
-	background: $button-color;
-}
-
 /* Responsive Component */
 
 div#wp-responsive-toggle a:before {
@@ -516,10 +514,6 @@ div#wp-responsive-toggle a:before {
 	// ToDo: make inset border
 	border-color: transparent;
 	background: $menu-highlight-background;
-}
-
-.star-rating .star {
-	color: $highlight-color;
 }
 
 .wp-responsive-open #wpadminbar #wp-admin-bar-menu-toggle a {

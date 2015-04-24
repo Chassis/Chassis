@@ -24,11 +24,10 @@ class WP_Filesystem_Base {
 	/**
 	 * Cached list of local filepaths to mapped remote filepaths.
 	 *
-	 * @access private
 	 * @since 2.7.0
 	 * @var array
 	 */
-	private $cache = array();
+	public $cache = array();
 
 	/**
 	 * The Access method of the current connection, Set automatically.
@@ -39,57 +38,9 @@ class WP_Filesystem_Base {
 	 */
 	public $method = '';
 
-	/**
-	 * Make private properties readable for backwards compatibility.
-	 *
-	 * @since 4.0.0
-	 * @access public
-	 *
-	 * @param string $name Property to get.
-	 * @return mixed Property.
-	 */
-	public function __get( $name ) {
-		return $this->$name;
-	}
+	public $errors = null;
 
-	/**
-	 * Make private properties settable for backwards compatibility.
-	 *
-	 * @since 4.0.0
-	 * @access public
-	 *
-	 * @param string $name  Property to set.
-	 * @param mixed  $value Property value.
-	 * @return mixed Newly-set property.
-	 */
-	public function __set( $name, $value ) {
-		return $this->$name = $value;
-	}
-
-	/**
-	 * Make private properties checkable for backwards compatibility.
-	 *
-	 * @since 4.0.0
-	 * @access public
-	 *
-	 * @param string $name Property to check if set.
-	 * @return bool Whether the property is set.
-	 */
-	public function __isset( $name ) {
-		return isset( $this->$name );
-	}
-
-	/**
-	 * Make private properties un-settable for backwards compatibility.
-	 *
-	 * @since 4.0.0
-	 * @access public
-	 *
-	 * @param string $name Property to unset.
-	 */
-	public function __unset( $name ) {
-		unset( $this->$name );
-	}
+	public $options = array();
 
 	/**
 	 * Return the path on the remote filesystem of ABSPATH.
@@ -217,7 +168,7 @@ class WP_Filesystem_Base {
 	 * @since 2.7.0
 	 *
 	 * @param string $folder the folder to locate.
-	 * @return string The location of the remote path.
+	 * @return string|false The location of the remote path, false on failure.
 	 */
 	public function find_folder( $folder ) {
 
@@ -280,13 +231,12 @@ class WP_Filesystem_Base {
 	 *
 	 * Expects Windows sanitized path.
 	 *
-	 * @access private
 	 * @since 2.7.0
 	 *
 	 * @param string $folder The folder to locate.
 	 * @param string $base   The folder to start searching from.
 	 * @param bool   $loop   If the function has recursed, Internal use only.
-	 * @return string The location of the remote path.
+	 * @return string|false The location of the remote path, false to cease looping.
 	 */
 	public function search_for_folder( $folder, $base = '.', $loop = false ) {
 		if ( empty( $base ) || '.' == $base )
@@ -421,9 +371,11 @@ class WP_Filesystem_Base {
 		$legal =  array('', 'w', 'r', 'x', '-');
 		$attarray = preg_split('//', $mode);
 
-		for ($i=0; $i < count($attarray); $i++)
-		   if ($key = array_search($attarray[$i], $legal))
+		for ( $i = 0, $c = count( $attarray ); $i < $c; $i++ ) {
+		   if ($key = array_search($attarray[$i], $legal)) {
 			   $realmode .= $legal[$key];
+		   }
+		}
 
 		$mode = str_pad($realmode, 10, '-', STR_PAD_LEFT);
 		$trans = array('-'=>'0', 'r'=>'4', 'w'=>'2', 'x'=>'1');
@@ -439,7 +391,6 @@ class WP_Filesystem_Base {
 	/**
 	 * Determine if the string provided contains binary characters.
 	 *
-	 * @access private
 	 * @since 2.7.0
 	 *
 	 * @param string $text String to test against.

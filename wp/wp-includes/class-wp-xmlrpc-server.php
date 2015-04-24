@@ -41,8 +41,6 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * or replace XMLRPC methods.
 	 *
 	 * @since 1.5.0
-	 *
-	 * @return wp_xmlrpc_server
 	 */
 	public function __construct() {
 		$this->methods = array(
@@ -163,7 +161,10 @@ class wp_xmlrpc_server extends IXR_Server {
 	 * @return mixed|bool Return value of the callback, false otherwise.
 	 */
 	public function __call( $name, $arguments ) {
-		return call_user_func_array( array( $this, $name ), $arguments );
+		if ( '_multisite_getUsersBlogs' === $name ) {
+			return call_user_func_array( array( $this, $name ), $arguments );
+		}
+		return false;
 	}
 
 	public function serve_request() {
@@ -1116,13 +1117,13 @@ class wp_xmlrpc_server extends IXR_Server {
 			return $this->error;
 
 		// convert the date field back to IXR form
-		if ( isset( $content_struct['post_date'] ) && ! is_a( $content_struct['post_date'], 'IXR_Date' ) ) {
+		if ( isset( $content_struct['post_date'] ) && ! ( $content_struct['post_date'] instanceof IXR_Date ) ) {
 			$content_struct['post_date'] = $this->_convert_date( $content_struct['post_date'] );
 		}
 
 		// ignore the existing GMT date if it is empty or a non-GMT date was supplied in $content_struct,
 		// since _insert_post will ignore the non-GMT date if the GMT date is set
-		if ( isset( $content_struct['post_date_gmt'] ) && ! is_a( $content_struct['post_date_gmt'], 'IXR_Date' ) ) {
+		if ( isset( $content_struct['post_date_gmt'] ) && ! ( $content_struct['post_date_gmt'] instanceof IXR_Date ) ) {
 			if ( $content_struct['post_date_gmt'] == '0000-00-00 00:00:00' || isset( $content_struct['post_date'] ) ) {
 				unset( $content_struct['post_date_gmt'] );
 			} else {
@@ -1519,7 +1520,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @uses get_post()
 	 * @param array $args Method parameters. Contains:
-	 *  - int     $blog_id (unset)
+	 *  - int     $blog_id (unused)
 	 *  - string  $username
 	 *  - string  $password
 	 *  - int     $post_id
@@ -2545,8 +2546,6 @@ class wp_xmlrpc_server extends IXR_Server {
 		// Items not escaped here will be escaped in newPost.
 		$username	= $this->escape($args[1]);
 		$password	= $this->escape($args[2]);
-		$page		= $args[3];
-		$publish	= $args[4];
 
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
@@ -2917,7 +2916,7 @@ class wp_xmlrpc_server extends IXR_Server {
 			return $this->error;
 
 		if ( !current_user_can( 'edit_posts' ) )
-			return new IXR_Error( 401, __( 'Sorry, you must be able to edit posts to this site in order to view categories.' ) );
+			return new IXR_Error( 401, __( 'Sorry, you must be able to edit posts on this site in order to view categories.' ) );
 
 		/** This action is documented in wp-includes/class-wp-xmlrpc-server.php */
 		do_action( 'xmlrpc_call', 'wp.suggestCategories' );
@@ -3098,7 +3097,7 @@ class wp_xmlrpc_server extends IXR_Server {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param array $args. Contains:
+	 * @param array $args Contains:
 	 *  - blog_id (unused)
 	 *  - username
 	 *  - password
@@ -3211,10 +3210,11 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		if ( !$user ) {
 			$logged_in = false;
-			if ( $allow_anon && get_option('comment_registration') )
+			if ( $allow_anon && get_option('comment_registration') ) {
 				return new IXR_Error( 403, __( 'You must be registered to comment' ) );
-			else if ( !$allow_anon )
+			} elseif ( ! $allow_anon ) {
 				return $this->error;
+			}
 		} else {
 			$logged_in = true;
 		}
@@ -3634,7 +3634,7 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$formats = get_post_format_strings();
 
-		# find out if they want a list of currently supports formats
+		// find out if they want a list of currently supports formats
 		if ( isset( $args[3] ) && is_array( $args[3] ) ) {
 			if ( $args[3]['show-supported'] ) {
 				if ( current_theme_supports( 'post-formats' ) ) {
@@ -4212,7 +4212,6 @@ class wp_xmlrpc_server extends IXR_Server {
 		$username  = $args[2];
 		$password   = $args[3];
 		$content     = $args[4];
-		$publish     = $args[5];
 
 		if ( ! $user = $this->login( $username, $password ) ) {
 			return $this->error;
@@ -4278,7 +4277,6 @@ class wp_xmlrpc_server extends IXR_Server {
 		$post_ID     = (int) $args[1];
 		$username  = $args[2];
 		$password   = $args[3];
-		$publish     = $args[4];
 
 		if ( !$user = $this->login($username, $password) )
 			return $this->error;
@@ -4448,7 +4446,6 @@ class wp_xmlrpc_server extends IXR_Server {
 					break;
 				default:
 					return new IXR_Error( 401, __( 'Invalid post type' ) );
-					break;
 			}
 			$author = get_userdata( $content_struct['wp_author_id'] );
 			if ( ! $author )
@@ -4736,7 +4733,6 @@ class wp_xmlrpc_server extends IXR_Server {
 		$menu_order = $postdata['menu_order'];
 
 		// Let WordPress manage slug if none was provided.
-		$post_name = "";
 		$post_name = $postdata['post_name'];
 		if ( isset($content_struct['wp_slug']) )
 			$post_name = $content_struct['wp_slug'];
@@ -4760,21 +4756,26 @@ class wp_xmlrpc_server extends IXR_Server {
 		$post_author = $postdata['post_author'];
 
 		// Only set the post_author if one is set.
-		if ( isset($content_struct['wp_author_id']) && ($user->ID != $content_struct['wp_author_id']) ) {
-			switch ( $post_type ) {
-				case 'post':
-					if ( !current_user_can('edit_others_posts') )
-						return new IXR_Error( 401, __( 'You are not allowed to change the post author as this user.' ) );
-					break;
-				case 'page':
-					if ( !current_user_can('edit_others_pages') )
-						return new IXR_Error( 401, __( 'You are not allowed to change the page author as this user.' ) );
-					break;
-				default:
-					return new IXR_Error( 401, __( 'Invalid post type' ) );
-					break;
+		if ( isset( $content_struct['wp_author_id'] ) ) {
+			// Check permissions if attempting to switch author to or from another user.
+			if ( $user->ID != $content_struct['wp_author_id'] || $user->ID != $post_author ) {
+				switch ( $post_type ) {
+					case 'post':
+						if ( ! current_user_can( 'edit_others_posts' ) ) {
+							return new IXR_Error( 401, __( 'You are not allowed to change the post author as this user.' ) );
+						}
+						break;
+					case 'page':
+						if ( ! current_user_can( 'edit_others_pages' ) ) {
+							return new IXR_Error( 401, __( 'You are not allowed to change the page author as this user.' ) );
+						}
+						break;
+					default:
+						return new IXR_Error( 401, __( 'Invalid post type' ) );
+						break;
+				}
+				$post_author = $content_struct['wp_author_id'];
 			}
-			$post_author = $content_struct['wp_author_id'];
 		}
 
 		if ( isset($content_struct['mt_allow_comments']) ) {
@@ -4873,10 +4874,11 @@ class wp_xmlrpc_server extends IXR_Server {
 		$tags_input = isset( $content_struct['mt_keywords'] ) ? $content_struct['mt_keywords'] : null;
 
 		if ( ('publish' == $post_status) ) {
-			if ( ( 'page' == $post_type ) && !current_user_can('publish_pages') )
-				return new IXR_Error(401, __('Sorry, you do not have the right to publish this page.'));
-			else if ( !current_user_can('publish_posts') )
-				return new IXR_Error(401, __('Sorry, you do not have the right to publish this post.'));
+			if ( ( 'page' == $post_type ) && ! current_user_can( 'publish_pages' ) ) {
+				return new IXR_Error( 401, __( 'Sorry, you do not have the right to publish this page.' ) );
+			} elseif ( ! current_user_can( 'publish_posts' ) ) {
+				return new IXR_Error( 401, __( 'Sorry, you do not have the right to publish this post.' ) );
+			}
 		}
 
 		if ( $post_more )
@@ -5682,8 +5684,6 @@ class wp_xmlrpc_server extends IXR_Server {
 
 		$pagelinkedfrom = $args[0];
 		$pagelinkedto   = $args[1];
-
-		$title = '';
 
 		$pagelinkedfrom = str_replace('&amp;', '&', $pagelinkedfrom);
 		$pagelinkedto = str_replace('&amp;', '&', $pagelinkedto);

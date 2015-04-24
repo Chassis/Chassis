@@ -80,7 +80,7 @@ case 'edit' :
 
 	get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="http://codex.wordpress.org/Media_Add_New_Screen#Edit_Media" target="_blank">Documentation on Edit Media</a>') . '</p>' .
+	'<p>' . __('<a href="https://codex.wordpress.org/Media_Add_New_Screen#Edit_Media" target="_blank">Documentation on Edit Media</a>') . '</p>' .
 	'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
 	);
 
@@ -111,7 +111,7 @@ if ( current_user_can( 'upload_files' ) ) { ?>
 <?php } ?>
 </h2>
 
-<form method="post" action="" class="media-upload-form" id="media-single-form">
+<form method="post" class="media-upload-form" id="media-single-form">
 <p class="submit" style="padding-bottom: 0;">
 <?php submit_button( __( 'Update Media' ), 'primary', 'save', false ); ?>
 </p>

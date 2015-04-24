@@ -71,7 +71,7 @@ $body_class = 'wp-core-ui wp-customizer js';
 if ( wp_is_mobile() ) :
 	$body_class .= ' mobile';
 
-	?><meta name="viewport" id="viewport-meta" content="width=device-width, initial-scale=0.8, minimum-scale=0.5, maximum-scale=1.2" /><?php
+	?><meta name="viewport" id="viewport-meta" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=1.2" /><?php
 endif;
 
 $is_ios = wp_is_mobile() && preg_match( '/iPad|iPod|iPhone/', $_SERVER['HTTP_USER_AGENT'] );
@@ -118,54 +118,40 @@ do_action( 'customize_controls_print_scripts' );
 <body class="<?php echo esc_attr( $body_class ); ?>">
 <div class="wp-full-overlay expanded">
 	<form id="customize-controls" class="wrap wp-full-overlay-sidebar">
-		<div id="screen-reader-messages" aria-live="polite" aria-relevant="all" aria-role="status" aria-atomic="true" class="screen-reader-text"></div>
-
 		<div id="customize-header-actions" class="wp-full-overlay-header">
-			<?php
-				$save_text = $wp_customize->is_theme_active() ? __( 'Save &amp; Publish' ) : __( 'Save &amp; Activate' );
-				submit_button( $save_text, 'primary save', 'save', false );
-			?>
-			<span class="spinner"></span>
-			<a class="customize-controls-close" href="<?php echo esc_url( $return ); ?>">
-				<span class="screen-reader-text"><?php _e( 'Cancel' ); ?></span>
-			</a>
-			<span class="control-panel-back" tabindex="-1"><span class="screen-reader-text"><?php _e( 'Back' ); ?></span></span>
+			<div class="primary-actions">
+				<?php
+					$save_text = $wp_customize->is_theme_active() ? __( 'Save &amp; Publish' ) : __( 'Save &amp; Activate' );
+					submit_button( $save_text, 'primary save', 'save', false );
+				?>
+				<span class="spinner"></span>
+				<a class="customize-controls-preview-toggle" href="#">
+					<span class="controls"><?php _e( 'Customize' ); ?></span>
+					<span class="preview"><?php _e( 'Preview' ); ?></span>
+				</a>
+				<a class="customize-controls-close" href="<?php echo esc_url( $return ); ?>">
+					<span class="screen-reader-text"><?php _e( 'Cancel' ); ?></span>
+				</a>
+				<span class="control-panel-back" tabindex="-1"><span class="screen-reader-text"><?php _e( 'Back' ); ?></span></span>
+			</div>
+			<div class="secondary-actions">
+				<button type="button" class="customize-overlay-close">
+					<span class="screen-reader-text"><?php _e( 'Close overlay' ); ?></span>
+				</button>
+			</div>
 		</div>
-
-		<?php
-			$screenshot = $wp_customize->theme()->get_screenshot();
-			$cannot_expand = ! ( $wp_customize->is_theme_active() || $screenshot || $wp_customize->theme()->get('Description') );
-		?>
 
 		<div id="widgets-right"><!-- For Widget Customizer, many widgets try to look for instances under div#widgets-right, so we have to add that ID to a container div in the Customizer for compat -->
 		<div class="wp-full-overlay-sidebar-content" tabindex="-1">
-			<div id="customize-info" class="accordion-section <?php if ( $cannot_expand ) echo ' cannot-expand'; ?>">
+			<div id="customize-info" class="accordion-section">
 				<div class="accordion-section-title" aria-label="<?php esc_attr_e( 'Customizer Options' ); ?>" tabindex="0">
 					<span class="preview-notice"><?php
-						if ( ! $wp_customize->is_theme_active() ) {
-							/* translators: %s is the theme name in the Customize/Live Preview pane */
-							echo sprintf( __( 'You are previewing %s' ), '<strong class="theme-name">' . $wp_customize->theme()->display('Name') . '</strong>' );
-						} else {
-							/* translators: %s is the site/panel title in the Customize pane */
-							echo sprintf( __( 'You are customizing %s' ), '<strong class="theme-name site-title">' . get_bloginfo( 'name' ) . '</strong>' );
-						}
+						echo sprintf( __( 'You are customizing %s' ), '<strong class="theme-name site-title">' . get_bloginfo( 'name' ) . '</strong>' );
 					?></span>
 				</div>
-				<?php if ( ! $cannot_expand ) : ?>
-				<div class="accordion-section-content">
-					<?php if ( ! $wp_customize->is_theme_active() ) :
-						if ( $screenshot ) : ?>
-							<img class="theme-screenshot" src="<?php echo esc_url( $screenshot ); ?>" />
-						<?php endif; ?>
-
-						<?php if ( $wp_customize->theme()->get('Description') ): ?>
-							<div class="theme-description"><?php echo $wp_customize->theme()->display('Description'); ?></div>
-						<?php endif;
-					else:
-						echo __( 'The Customizer allows you to preview changes to your site before publishing them. You can also navigate to different pages on your site to preview them.' );
-					endif; ?>
-				</div>
-				<?php endif; ?>
+				<div class="accordion-section-content"><?php
+					echo __( 'The Customizer allows you to preview changes to your site before publishing them. You can also navigate to different pages on your site to preview them.' );
+				?></div>
 			</div>
 
 			<div id="customize-theme-controls">
@@ -242,7 +228,7 @@ do_action( 'customize_controls_print_scripts' );
 		'url'      => array(
 			'preview'       => esc_url_raw( $url ? $url : home_url( '/' ) ),
 			'parent'        => esc_url_raw( admin_url() ),
-			'activated'     => esc_url_raw( admin_url( 'themes.php?activated=true&previewed' ) ),
+			'activated'     => esc_url_raw( home_url( '/' ) ),
 			'ajax'          => esc_url_raw( admin_url( 'admin-ajax.php', 'relative' ) ),
 			'allowed'       => array_map( 'esc_url_raw', $allowed_urls ),
 			'isCrossDomain' => $cross_domain,
@@ -271,6 +257,7 @@ do_action( 'customize_controls_print_scripts' );
 		$settings['settings'][ $id ] = array(
 			'value'     => $setting->js_value(),
 			'transport' => $setting->transport,
+			'dirty'     => $setting->dirty,
 		);
 	}
 
