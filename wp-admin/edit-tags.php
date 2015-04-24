@@ -20,6 +20,9 @@ if ( ! $tax )
 if ( ! current_user_can( $tax->cap->manage_terms ) )
 	wp_die( __( 'Cheatin&#8217; uh?' ), 403 );
 
+// $post_type is set when the WP_Terms_List_Table instance is created
+global $post_type;
+
 $wp_list_table = _get_list_table('WP_Terms_List_Table');
 $pagenum = $wp_list_table->get_pagenum();
 
@@ -28,7 +31,7 @@ $title = $tax->labels->name;
 if ( 'post' != $post_type ) {
 	$parent_file = ( 'attachment' == $post_type ) ? 'upload.php' : "edit.php?post_type=$post_type";
 	$submenu_file = "edit-tags.php?taxonomy=$taxonomy&amp;post_type=$post_type";
-} else if ( 'link_category' == $tax->name ) {
+} elseif ( 'link_category' == $tax->name ) {
 	$parent_file = 'link-manager.php';
 	$submenu_file = 'edit-tags.php?taxonomy=link_category';
 } else {
@@ -36,7 +39,7 @@ if ( 'post' != $post_type ) {
 	$submenu_file = "edit-tags.php?taxonomy=$taxonomy";
 }
 
-add_screen_option( 'per_page', array( 'label' => $title, 'default' => 20, 'option' => 'edit_' . $tax->name . '_per_page' ) );
+add_screen_option( 'per_page', array( 'default' => 20, 'option' => 'edit_' . $tax->name . '_per_page' ) );
 
 $location = false;
 
@@ -62,7 +65,7 @@ case 'add-tag':
 	if ( $ret && !is_wp_error( $ret ) )
 		$location = add_query_arg( 'message', 1, $location );
 	else
-		$location = add_query_arg( 'message', 4, $location );
+		$location = add_query_arg( array( 'error' => true, 'message' => 4 ), $location );
 
 	break;
 
@@ -153,7 +156,7 @@ case 'editedtag':
 	if ( $ret && !is_wp_error( $ret ) )
 		$location = add_query_arg( 'message', 3, $location );
 	else
-		$location = add_query_arg( 'message', 5, $location );
+		$location = add_query_arg( array( 'error' => true, 'message' => 5 ), $location );
 	break;
 }
 
@@ -230,11 +233,11 @@ if ( 'category' == $taxonomy || 'link_category' == $taxonomy || 'post_tag' == $t
 	$help = '<p><strong>' . __( 'For more information:' ) . '</strong></p>';
 
 	if ( 'category' == $taxonomy )
-		$help .= '<p>' . __( '<a href="http://codex.wordpress.org/Posts_Categories_Screen" target="_blank">Documentation on Categories</a>' ) . '</p>';
+		$help .= '<p>' . __( '<a href="https://codex.wordpress.org/Posts_Categories_Screen" target="_blank">Documentation on Categories</a>' ) . '</p>';
 	elseif ( 'link_category' == $taxonomy )
-		$help .= '<p>' . __( '<a href="http://codex.wordpress.org/Links_Link_Categories_Screen" target="_blank">Documentation on Link Categories</a>' ) . '</p>';
+		$help .= '<p>' . __( '<a href="https://codex.wordpress.org/Links_Link_Categories_Screen" target="_blank">Documentation on Link Categories</a>' ) . '</p>';
 	else
-		$help .= '<p>' . __( '<a href="http://codex.wordpress.org/Posts_Tags_Screen" target="_blank">Documentation on Tags</a>' ) . '</p>';
+		$help .= '<p>' . __( '<a href="https://codex.wordpress.org/Posts_Tags_Screen" target="_blank">Documentation on Tags</a>' ) . '</p>';
 
 	$help .= '<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>';
 
@@ -294,6 +297,7 @@ if ( isset( $_REQUEST['message'] ) && ( $msg = (int) $_REQUEST['message'] ) ) {
 		$message = $messages['_item'][ $msg ];
 }
 
+$class = ( isset( $_REQUEST['error'] ) ) ? 'error' : 'updated';
 ?>
 
 <div class="wrap nosubsub">
@@ -303,12 +307,12 @@ if ( !empty($_REQUEST['s']) )
 </h2>
 
 <?php if ( $message ) : ?>
-<div id="message" class="updated"><p><?php echo $message; ?></p></div>
-<?php $_SERVER['REQUEST_URI'] = remove_query_arg(array('message'), $_SERVER['REQUEST_URI']);
+<div id="message" class="<?php echo $class; ?> notice is-dismissible"><p><?php echo $message; ?></p></div>
+<?php $_SERVER['REQUEST_URI'] = remove_query_arg( array( 'message', 'error' ), $_SERVER['REQUEST_URI'] );
 endif; ?>
 <div id="ajax-response"></div>
 
-<form class="search-form" action="" method="get">
+<form class="search-form" method="get">
 <input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy); ?>" />
 <input type="hidden" name="post_type" value="<?php echo esc_attr($post_type); ?>" />
 
@@ -321,7 +325,7 @@ endif; ?>
 
 <div id="col-right">
 <div class="col-wrap">
-<form id="posts-filter" action="" method="post">
+<form id="posts-filter" method="post">
 <input type="hidden" name="taxonomy" value="<?php echo esc_attr($taxonomy); ?>" />
 <input type="hidden" name="post_type" value="<?php echo esc_attr($post_type); ?>" />
 
@@ -478,6 +482,7 @@ do_action( "{$taxonomy}_term_new_form_tag" );
 	 * Filter the taxonomy parent drop-down on the Edit Term page.
 	 *
 	 * @since 3.7.0
+	 * @since 4.2.0 Added `$context` parameter.
 	 *
 	 * @param array  $dropdown_args {
 	 *     An array of taxonomy parent drop-down arguments.
@@ -492,8 +497,10 @@ do_action( "{$taxonomy}_term_new_form_tag" );
 	 *     @type string   $show_option_none Label to display if there are no terms. Default 'None'.
 	 * }
 	 * @param string $taxonomy The taxonomy slug.
+	 * @param string $context  Filter context. Accepts 'new' or 'edit'.
 	 */
-	$dropdown_args = apply_filters( 'taxonomy_parent_dropdown_args', $dropdown_args, $taxonomy );
+	$dropdown_args = apply_filters( 'taxonomy_parent_dropdown_args', $dropdown_args, $taxonomy, 'new' );
+
 	wp_dropdown_categories( $dropdown_args );
 	?>
 	<?php if ( 'category' == $taxonomy ) : // @todo: Generic text for hierarchical taxonomies ?>
@@ -520,7 +527,7 @@ if ( ! is_taxonomy_hierarchical( $taxonomy ) ) {
 }
 
 /**
- * Fires after the Add Term form fields for hierarchical taxonomies.
+ * Fires after the Add Term form fields.
  *
  * The dynamic portion of the hook name, `$taxonomy`, refers to the taxonomy slug.
  *

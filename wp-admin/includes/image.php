@@ -127,10 +127,10 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
 		if ( $image_meta )
 			$metadata['image_meta'] = $image_meta;
 
-	} elseif ( preg_match( '#^video/#', get_post_mime_type( $attachment ) ) ) {
+	} elseif ( wp_attachment_is( 'video', $attachment ) ) {
 		$metadata = wp_read_video_metadata( $file );
 		$support = current_theme_supports( 'post-thumbnails', 'attachment:video' ) || post_type_supports( 'attachment:video', 'thumbnail' );
-	} elseif ( preg_match( '#^audio/#', get_post_mime_type( $attachment ) ) ) {
+	} elseif ( wp_attachment_is( 'audio', $attachment ) ) {
 		$metadata = wp_read_audio_metadata( $file );
 		$support = current_theme_supports( 'post-thumbnails', 'attachment:audio' ) || post_type_supports( 'attachment:audio', 'thumbnail' );
 	}
@@ -299,20 +299,17 @@ function wp_read_image_metadata( $file ) {
 
 			if ( ! empty( $iptc['2#120'][0] ) ) { // description / legacy caption
 				$caption = trim( $iptc['2#120'][0] );
-				if ( empty( $meta['title'] ) ) {
-					mbstring_binary_safe_encoding();
-					$caption_length = strlen( $caption );
-					reset_mbstring_encoding();
 
+				mbstring_binary_safe_encoding();
+				$caption_length = strlen( $caption );
+				reset_mbstring_encoding();
+
+				if ( empty( $meta['title'] ) && $caption_length < 80 ) {
 					// Assume the title is stored in 2:120 if it's short.
-					if ( $caption_length < 80 ) {
-						$meta['title'] = $caption;
-					} else {
-						$meta['caption'] = $caption;
-					}
-				} elseif ( $caption != $meta['title'] ) {
-					$meta['caption'] = $caption;
+					$meta['title'] = $caption;
 				}
+
+				$meta['caption'] = $caption;
 			}
 
 			if ( ! empty( $iptc['2#110'][0] ) ) // credit
@@ -320,7 +317,7 @@ function wp_read_image_metadata( $file ) {
 			elseif ( ! empty( $iptc['2#080'][0] ) ) // creator / legacy byline
 				$meta['credit'] = trim( $iptc['2#080'][0] );
 
-			if ( ! empty( $iptc['2#055'][0] ) and ! empty( $iptc['2#060'][0] ) ) // created date and time
+			if ( ! empty( $iptc['2#055'][0] ) && ! empty( $iptc['2#060'][0] ) ) // created date and time
 				$meta['created_timestamp'] = strtotime( $iptc['2#055'][0] . ' ' . $iptc['2#060'][0] );
 
 			if ( ! empty( $iptc['2#116'][0] ) ) // copyright
@@ -338,10 +335,6 @@ function wp_read_image_metadata( $file ) {
 	if ( is_callable( 'exif_read_data' ) && in_array( $sourceImageType, apply_filters( 'wp_read_image_metadata_types', array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) ) ) ) {
 		$exif = @exif_read_data( $file );
 
-		if ( empty( $meta['title'] ) && ! empty( $exif['Title'] ) ) {
-			$meta['title'] = trim( $exif['Title'] );
-		}
-
 		if ( ! empty( $exif['ImageDescription'] ) ) {
 			mbstring_binary_safe_encoding();
 			$description_length = strlen( $exif['ImageDescription'] );
@@ -350,13 +343,16 @@ function wp_read_image_metadata( $file ) {
 			if ( empty( $meta['title'] ) && $description_length < 80 ) {
 				// Assume the title is stored in ImageDescription
 				$meta['title'] = trim( $exif['ImageDescription'] );
-				if ( empty( $meta['caption'] ) && ! empty( $exif['COMPUTED']['UserComment'] ) && trim( $exif['COMPUTED']['UserComment'] ) != $meta['title'] ) {
-					$meta['caption'] = trim( $exif['COMPUTED']['UserComment'] );
-				}
-			} elseif ( empty( $meta['caption'] ) && trim( $exif['ImageDescription'] ) != $meta['title'] ) {
+			}
+
+			if ( empty( $meta['caption'] ) && ! empty( $exif['COMPUTED']['UserComment'] ) ) {
+				$meta['caption'] = trim( $exif['COMPUTED']['UserComment'] );
+			}
+
+			if ( empty( $meta['caption'] ) ) {
 				$meta['caption'] = trim( $exif['ImageDescription'] );
 			}
-		} elseif ( empty( $meta['caption'] ) && ! empty( $exif['Comments'] ) && trim( $exif['Comments'] ) != $meta['title'] ) {
+		} elseif ( empty( $meta['caption'] ) && ! empty( $exif['Comments'] ) ) {
 			$meta['caption'] = trim( $exif['Comments'] );
 		}
 

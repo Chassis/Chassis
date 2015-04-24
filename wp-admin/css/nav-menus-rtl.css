@@ -101,10 +101,6 @@ ul.add-menu-item-tabs li {
 	margin-top: 1px;
 }
 
-.menu-edit p {
-	margin: .3em 0 .6em;
-}
-
 .menu-edit #post-body-content h3 {
 	margin: 1em 0 10px;
 }
@@ -216,8 +212,16 @@ ul.add-menu-item-tabs li {
 	margin-top: -2px;
 }
 
-.widefat td.menu-location-menus {
-	padding-bottom: 5px;
+.widefat .menu-locations tr + tr td {
+	padding-top: 0;
+}
+
+.widefat .menu-locations td {
+	vertical-align: middle;
+}
+
+.menu-location-title label {
+	font-weight: bold;
 }
 
 .menu-location-menus select {
@@ -259,7 +263,7 @@ ul.add-menu-item-tabs li {
 }
 
 .js .input-with-default-title {
-	color: #aaa;
+	color: #a0a5aa;
 	font-style: italic;
 }
 
@@ -345,11 +349,6 @@ ul.add-menu-item-tabs li {
 	float: left;
 }
 
-.postbox .spinner {
-	display: none;
-	vertical-align: middle;
-}
-
 .button-controls {
 	clear:both;
 	margin: 10px 0;
@@ -402,6 +401,11 @@ ul.add-menu-item-tabs li {
 /* Menu item types */
 .quick-search {
 	width: 190px;
+}
+
+.quick-search-wrap .spinner {
+	float: none;
+	margin: 0 5px;
 }
 
 .nav-menus-php .list-wrap {
@@ -671,7 +675,6 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 
 .description-thin {
 	width: 190px;
-	height: 40px;
 }
 
 .description-wide {
@@ -709,14 +712,14 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 }
 
 .nav-menus-php .submitbox .submitcancel {
-	border-bottom: 1px solid #0074a2;
+	border-bottom: 1px solid #0073aa;
 	padding: 1px 2px;
-	color: #0074a2;
+	color: #0073aa;
 	text-decoration: none;
 }
 
 .nav-menus-php .submitbox .submitcancel:hover {
-	background: #0074a2;
+	background: #0073aa;
 	color: #fff;
 }
 
@@ -825,11 +828,15 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 	.menu-item-settings .description-thin,
 	.menu-item-settings .description-wide {
 		width: 100%;
-		height: auto;
 	}
 
 	.menu-item-settings input {
 		width: 100%;
+	}
+
+	.menu-item-settings input[type="checkbox"],
+	.menu-item-settings input[type="radio"] {
+		width: 25px;
 	}
 
 	.menu-settings dl {

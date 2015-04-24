@@ -82,7 +82,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 
 <h1><?php printf( __( 'Welcome to WordPress %s' ), $display_version ); ?></h1>
 
-<div class="about-text"><?php printf( __( 'Thank you for updating! WordPress %s helps you focus on your writing, and the new default theme lets you show it off in style.' ), $display_version ); ?></div>
+<div class="about-text"><?php printf( __( 'Thank you for updating! WordPress %s helps you communicate and share, globally.' ), $display_version ); ?></div>
 
 <div class="wp-badge"><?php printf( __( 'Version %s' ), $display_version ); ?></div>
 
@@ -104,7 +104,7 @@ if ( ! $credits ) {
 	echo '<p class="about-description">' . sprintf( __( 'WordPress is created by a <a href="%1$s">worldwide team</a> of passionate individuals. <a href="%2$s">Get involved in WordPress</a>.' ),
 		'https://wordpress.org/about/',
 		/* translators: Url to the codex documentation on contributing to WordPress used on the credits page */
-		__( 'http://codex.wordpress.org/Contributing_to_WordPress' ) ) . '</p>';
+		__( 'https://codex.wordpress.org/Contributing_to_WordPress' ) ) . '</p>';
 	include( ABSPATH . 'wp-admin/admin-footer.php' );
 	exit;
 }
@@ -147,7 +147,7 @@ foreach ( $credits['groups'] as $group_slug => $group_data ) {
 				echo '<li class="wp-person" id="wp-person-' . $person_data[2] . '">' . "\n\t";
 				echo '<a href="' . sprintf( $credits['data']['profiles'], $person_data[2] ) . '">';
 				$size = 'compact' == $group_data['type'] ? '30' : '60';
-				echo '<img src="' . $gravatar . $person_data[1] . '?s=' . $size . '" class="gravatar" alt="' . esc_attr( $person_data[0] ) . '" /></a>' . "\n\t";
+				echo '<img src="' . $gravatar . $person_data[1] . '?s=' . $size . '" srcset="' . $gravatar . $person_data[1] . '?s=' . $size * 2 . ' 2x" class="gravatar" alt="' . esc_attr( $person_data[0] ) . '" /></a>' . "\n\t";
 				echo '<a class="web" href="' . sprintf( $credits['data']['profiles'], $person_data[2] ) . '">' . $person_data[0] . "</a>\n\t";
 				if ( ! $compact )
 					echo '<span class="title">' . translate( $person_data[3] ) . "</span>\n";

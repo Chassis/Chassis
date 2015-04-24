@@ -231,8 +231,9 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 			}
 
 			$image = $this->_resize( $size_data['width'], $size_data['height'], $size_data['crop'] );
+			$duplicate = ( ( $orig_size['width'] == $size_data['width'] ) && ( $orig_size['height'] == $size_data['height'] ) );
 
-			if( ! is_wp_error( $image ) ) {
+			if ( ! is_wp_error( $image ) && ! $duplicate ) {
 				$resized = $this->_save( $image );
 
 				imagedestroy( $image );
@@ -306,9 +307,12 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 */
 	public function rotate( $angle ) {
 		if ( function_exists('imagerotate') ) {
-			$rotated = imagerotate( $this->image, $angle, 0 );
+			$transparency = imagecolorallocatealpha( $this->image, 255, 255, 255, 127 );
+			$rotated = imagerotate( $this->image, $angle, $transparency );
 
 			if ( is_resource( $rotated ) ) {
+				imagealphablending( $rotated, true );
+				imagesavealpha( $rotated, true );
 				imagedestroy( $this->image );
 				$this->image = $rotated;
 				$this->update_size();

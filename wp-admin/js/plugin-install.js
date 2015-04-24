@@ -1,4 +1,4 @@
-/* global plugininstallL10n, tb_click, confirm */
+/* global plugininstallL10n, tb_click */
 
 /* Plugin Browser Thickbox related JS*/
 var tb_position;
@@ -41,7 +41,7 @@ jQuery( document ).ready( function( $ ) {
 	$( '.plugin-card, .plugins .column-description' ).on( 'click', 'a.thickbox', function() {
 		tb_click.call(this);
 
-		$('#TB_title').css({'background-color':'#222','color':'#cfcfcf'});
+		$('#TB_title').css({'background-color':'#23282d','color':'#cfcfcf'});
 		$('#TB_ajaxWindowTitle').html( '<strong>' + plugininstallL10n.plugin_information + '</strong>&nbsp;' + $(this).data( 'title' ) );
 		$('#TB_iframeContent').attr( 'title', plugininstallL10n.plugin_information + ' ' + $(this).data( 'title' ) );
 		$('#TB_closeWindowButton').focus();
@@ -68,9 +68,5 @@ jQuery( document ).ready( function( $ ) {
 		// Flip the content.
 		$( '#section-holder div.section' ).hide(); // Hide 'em all.
 		$( '#section-' + tab ).show();
-	});
-
-	$( 'a.install-now' ).click( function() {
-		return confirm( plugininstallL10n.ays );
 	});
 });

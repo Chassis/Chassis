@@ -4,7 +4,7 @@
  *
  * Used on index and archive pages.
  *
- * @link http://codex.wordpress.org/Post_Formats
+ * @link https://codex.wordpress.org/Post_Formats
  *
  * @package WordPress
  * @subpackage Twenty_Eleven
@@ -36,7 +36,7 @@
 				$images = twentyeleven_get_gallery_images();
 				if ( $images ) :
 					$total_images = count( $images );
-					$image = array_shift( $images );
+					$image = reset( $images );
 			?>
 				<figure class="gallery-thumb">
 					<a href="<?php the_permalink(); ?>"><?php echo wp_get_attachment_image( $image, 'thumbnail' ); ?></a>
