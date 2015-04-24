@@ -66,7 +66,7 @@ Vagrant.configure("2") do |config|
 	vagrant_version = Vagrant::VERSION.sub(/^v/, '')
 
 	# We <3 Ubuntu LTS
-	config.vm.box = "hashicorp/precise64"
+	config.vm.box = "ubuntu/trusty64"
 
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
