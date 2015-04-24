@@ -26,14 +26,15 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="http://codex.wordpress.org/Network_Admin_Users_Screen" target="_blank">Documentation on Network Users</a>') . '</p>' .
+	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Users_Screen" target="_blank">Documentation on Network Users</a>') . '</p>' .
 	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/" target="_blank">Support Forums</a>') . '</p>'
 );
 
 if ( isset($_REQUEST['action']) && 'add-user' == $_REQUEST['action'] ) {
 	check_admin_referer( 'add-user', '_wpnonce_add-user' );
+
 	if ( ! current_user_can( 'manage_network_users' ) )
-		wp_die( __( 'You do not have permission to access this page.' ) );
+		wp_die( __( 'You do not have permission to access this page.' ), 403 );
 
 	if ( ! is_array( $_POST['user'] ) )
 		wp_die( __( 'Cannot create an empty user.' ) );
@@ -73,7 +74,7 @@ require( ABSPATH . 'wp-admin/admin-header.php' ); ?>
 <?php
 if ( ! empty( $messages ) ) {
 	foreach ( $messages as $msg )
-		echo '<div id="message" class="updated"><p>' . $msg . '</p></div>';
+		echo '<div id="message" class="updated notice is-dismissible"><p>' . $msg . '</p></div>';
 }
 
 if ( isset( $add_user_errors ) && is_wp_error( $add_user_errors ) ) { ?>
@@ -87,12 +88,12 @@ if ( isset( $add_user_errors ) && is_wp_error( $add_user_errors ) ) { ?>
 	<form action="<?php echo network_admin_url('user-new.php?action=add-user'); ?>" id="adduser" method="post">
 	<table class="form-table">
 		<tr class="form-field form-required">
-			<th scope="row"><?php _e( 'Username' ) ?></th>
-			<td><input type="text" class="regular-text" name="user[username]" /></td>
+			<th scope="row"><label for="username"><?php _e( 'Username' ) ?></label></th>
+			<td><input type="text" class="regular-text" name="user[username]" id="username" /></td>
 		</tr>
 		<tr class="form-field form-required">
-			<th scope="row"><?php _e( 'Email' ) ?></th>
-			<td><input type="text" class="regular-text" name="user[email]" /></td>
+			<th scope="row"><label for="email"><?php _e( 'Email' ) ?></label></th>
+			<td><input type="text" class="regular-text" name="user[email]" id="email"/></td>
 		</tr>
 		<tr class="form-field">
 			<td colspan="2"><?php _e( 'Username and password will be mailed to the above email address.' ) ?></td>

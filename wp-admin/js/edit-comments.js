@@ -351,8 +351,8 @@ commentReply = {
 		$('#com-reply').append( replyrow );
 		$('#replycontent').css('height', '').val('');
 		$('#edithead input').val('');
-		$('.error', replyrow).html('').hide();
-		$('.spinner', replyrow).hide();
+		$('.error', replyrow).empty().hide();
+		$( '.spinner', replyrow ).removeClass( 'is-active' );
 
 		this.cid = '';
 	},
@@ -442,7 +442,7 @@ commentReply = {
 		var post = {};
 
 		$('#replysubmit .error').hide();
-		$('#replysubmit .spinner').show();
+		$( '#replysubmit .spinner' ).addClass( 'is-active' );
 
 		$('#replyrow input').not(':button').each(function() {
 			var t = $(this);
@@ -525,7 +525,7 @@ commentReply = {
 	error : function(r) {
 		var er = r.statusText;
 
-		$('#replysubmit .spinner').hide();
+		$( '#replysubmit .spinner' ).removeClass( 'is-active' );
 
 		if ( r.responseText )
 			er = r.responseText.replace( /<.[^<>]*?>/g, '' );
@@ -603,7 +603,9 @@ $(document).ready(function(){
 					disableInInput: true,
 					type: 'keypress',
 					noDisable: '.check-column input[type="checkbox"]'
-				}
+				},
+				cycle_expr: '#the-comment-list tr',
+				start_row_index: 0
 			}
 		);
 	}

@@ -285,10 +285,10 @@ class WP_Widget_Archives extends WP_Widget {
 		}
 
 		if ( $d ) {
+			$dropdown_id = "{$this->id_base}-dropdown-{$this->number}";
 ?>
-		<select name="archive-dropdown" onchange='document.location.href=this.options[this.selectedIndex].value;'>
-			<option value=""><?php esc_attr_e( 'Select Month' ); ?></option>
-
+		<label class="screen-reader-text" for="<?php echo esc_attr( $dropdown_id ); ?>"><?php echo $title; ?></label>
+		<select id="<?php echo esc_attr( $dropdown_id ); ?>" name="archive-dropdown" onchange='document.location.href=this.options[this.selectedIndex].value;'>
 			<?php
 			/**
 			 * Filter the arguments for the Archives widget drop-down.
@@ -299,12 +299,34 @@ class WP_Widget_Archives extends WP_Widget {
 			 *
 			 * @param array $args An array of Archives widget drop-down arguments.
 			 */
-			wp_get_archives( apply_filters( 'widget_archives_dropdown_args', array(
+			$dropdown_args = apply_filters( 'widget_archives_dropdown_args', array(
 				'type'            => 'monthly',
 				'format'          => 'option',
 				'show_post_count' => $c
-			) ) );
-?>
+			) );
+
+			switch ( $dropdown_args['type'] ) {
+				case 'yearly':
+					$label = __( 'Select Year' );
+					break;
+				case 'monthly':
+					$label = __( 'Select Month' );
+					break;
+				case 'daily':
+					$label = __( 'Select Day' );
+					break;
+				case 'weekly':
+					$label = __( 'Select Week' );
+					break;
+				default:
+					$label = __( 'Select Post' );
+					break;
+			}
+			?>
+
+			<option value=""><?php echo esc_attr( $label ); ?></option>
+			<?php wp_get_archives( $dropdown_args ); ?>
+
 		</select>
 <?php
 		} else {
@@ -511,7 +533,7 @@ class WP_Widget_Text extends WP_Widget {
 			$instance['text'] =  $new_instance['text'];
 		else
 			$instance['text'] = stripslashes( wp_filter_post_kses( addslashes($new_instance['text']) ) ); // wp_filter_post_kses() expects slashed
-		$instance['filter'] = isset($new_instance['filter']);
+		$instance['filter'] = ! empty( $new_instance['filter'] );
 		return $instance;
 	}
 
@@ -556,10 +578,22 @@ class WP_Widget_Categories extends WP_Widget {
 			echo $args['before_title'] . $title . $args['after_title'];
 		}
 
-		$cat_args = array('orderby' => 'name', 'show_count' => $c, 'hierarchical' => $h);
+		$cat_args = array(
+			'orderby'      => 'name',
+			'show_count'   => $c,
+			'hierarchical' => $h
+		);
 
 		if ( $d ) {
-			$cat_args['show_option_none'] = __('Select Category');
+			static $first_dropdown = true;
+
+			$dropdown_id = ( $first_dropdown ) ? 'cat' : "{$this->id_base}-dropdown-{$this->number}";
+			$first_dropdown = false;
+
+			echo '<label class="screen-reader-text" for="' . esc_attr( $dropdown_id ) . '">' . $title . '</label>';
+
+			$cat_args['show_option_none'] = __( 'Select Category' );
+			$cat_args['id'] = $dropdown_id;
 
 			/**
 			 * Filter the arguments for the Categories widget drop-down.
@@ -575,13 +609,15 @@ class WP_Widget_Categories extends WP_Widget {
 
 <script type='text/javascript'>
 /* <![CDATA[ */
-	var dropdown = document.getElementById("cat");
+(function() {
+	var dropdown = document.getElementById( "<?php echo esc_js( $dropdown_id ); ?>" );
 	function onCatChange() {
-		if ( dropdown.options[dropdown.selectedIndex].value > 0 ) {
-			location.href = "<?php echo home_url(); ?>/?cat="+dropdown.options[dropdown.selectedIndex].value;
+		if ( dropdown.options[ dropdown.selectedIndex ].value > 0 ) {
+			location.href = "<?php echo home_url(); ?>/?cat=" + dropdown.options[ dropdown.selectedIndex ].value;
 		}
 	}
 	dropdown.onchange = onCatChange;
+})();
 /* ]]> */
 </script>
 
@@ -1266,6 +1302,7 @@ class WP_Widget_Tag_Cloud extends WP_Widget {
 	}
 
 	public function update( $new_instance, $old_instance ) {
+		$instance = array();
 		$instance['title'] = strip_tags(stripslashes($new_instance['title']));
 		$instance['taxonomy'] = stripslashes($new_instance['taxonomy']);
 		return $instance;
@@ -1323,7 +1360,26 @@ class WP_Widget_Tag_Cloud extends WP_Widget {
 		if ( !empty($instance['title']) )
 			echo $args['before_title'] . $instance['title'] . $args['after_title'];
 
-		wp_nav_menu( array( 'fallback_cb' => '', 'menu' => $nav_menu ) );
+		$nav_menu_args = array(
+			'fallback_cb' => '',
+			'menu'        => $nav_menu
+		);
+
+		/**
+		 * Filter the arguments for the Custom Menu widget.
+		 *
+		 * @since 4.2.0
+		 *
+		 * @param array    $nav_menu_args {
+		 *     An array of arguments passed to wp_nav_menu() to retrieve a custom menu.
+		 *
+		 *     @type callback|bool $fallback_cb Callback to fire if the menu doesn't exist. Default empty.
+		 *     @type mixed         $menu        Menu ID, slug, or name.
+		 * }
+		 * @param stdClass $nav_menu      Nav menu object for the current menu.
+		 * @param array    $args          Display arguments for the current widget.
+		 */
+		wp_nav_menu( apply_filters( 'widget_nav_menu_args', $nav_menu_args, $nav_menu, $args ) );
 
 		echo $args['after_widget'];
 	}

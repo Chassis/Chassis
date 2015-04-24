@@ -263,8 +263,8 @@ class WP_Upgrader {
 				$wp_filesystem->delete($upgrade_folder . $file['name'], true);
 		}
 
-		//We need a working directory
-		$working_dir = $upgrade_folder . basename($package, '.zip');
+		// We need a working directory - Strip off any .tmp or .zip suffixes
+		$working_dir = $upgrade_folder . basename( basename( $package, '.tmp' ), '.zip' );
 
 		// Clean up working directory
 		if ( $wp_filesystem->is_dir($working_dir) )
@@ -431,7 +431,7 @@ class WP_Upgrader {
 
 			if ( is_wp_error($removed) ) {
 				return $removed;
-			} else if ( ! $removed ) {
+			} elseif ( ! $removed ) {
 				return new WP_Error('remove_old_failed', $this->strings['remove_old_failed']);
 			}
 		} elseif ( $args['abort_if_destination_exists'] && $wp_filesystem->exists($remote_destination) ) {
@@ -469,7 +469,7 @@ class WP_Upgrader {
 			$destination_name = '';
 		}
 
-		$this->result = compact('local_source', 'source', 'source_name', 'source_files', 'destination', 'destination_name', 'local_destination', 'remote_destination', 'clear_destination', 'delete_source_dir');
+		$this->result = compact( 'source', 'source_files', 'destination', 'destination_name', 'local_destination', 'remote_destination', 'clear_destination' );
 
 		/**
 		 * Filter the install response after the installation has finished.
@@ -637,7 +637,7 @@ class WP_Upgrader {
 			$maintenance_string = '<?php $upgrading = ' . time() . '; ?>';
 			$wp_filesystem->delete($file);
 			$wp_filesystem->put_contents($file, $maintenance_string, FS_CHMOD_FILE);
-		} else if ( !$enable && $wp_filesystem->exists($file) ) {
+		} elseif ( ! $enable && $wp_filesystem->exists( $file ) ) {
 			$this->skin->feedback('maintenance_end');
 			$wp_filesystem->delete($file);
 		}
@@ -685,6 +685,7 @@ class Plugin_Upgrader extends WP_Upgrader {
 		$this->strings['remove_old_failed'] = __('Could not remove the old plugin.');
 		$this->strings['process_failed'] = __('Plugin update failed.');
 		$this->strings['process_success'] = __('Plugin updated successfully.');
+		$this->strings['process_bulk_success'] = __('Plugins updated successfully.');
 	}
 
 	/**
@@ -824,8 +825,8 @@ class Plugin_Upgrader extends WP_Upgrader {
 	 * @since 2.8.0
 	 * @since 3.7.0 The `$args` parameter was added, making clearing the plugin update cache optional.
 	 *
-	 * @param string $plugins Array of the basename paths of the plugins' main files.
-	 * @param array  $args {
+	 * @param array $plugins Array of the basename paths of the plugins' main files.
+	 * @param array $args {
 	 *     Optional. Other arguments for upgrading several plugins at once. Default empty array.
 	 *
 	 *     @type bool $clear_update_cache Whether to clear the plugin updates cache if successful.
@@ -1351,8 +1352,8 @@ class Theme_Upgrader extends WP_Upgrader {
 	 * @since 3.0.0
 	 * @since 3.7.0 The `$args` parameter was added, making clearing the update cache optional.
 	 *
-	 * @param string $themes The theme slugs.
-	 * @param array  $args {
+	 * @param array $themes The theme slugs.
+	 * @param array $args {
 	 *     Optional. Other arguments for upgrading several themes at once. Default empty array.
 	 *
 	 *     @type bool $clear_update_cache Whether to clear the update cache if successful.
@@ -1896,7 +1897,7 @@ class Language_Pack_Upgrader extends WP_Upgrader {
 		switch ( $update->type ) {
 			case 'core':
 				return 'WordPress'; // Not translated
-				break;
+
 			case 'theme':
 				$theme = wp_get_theme( $update->slug );
 				if ( $theme->exists() )
@@ -1904,7 +1905,7 @@ class Language_Pack_Upgrader extends WP_Upgrader {
 				break;
 			case 'plugin':
 				$plugin_data = get_plugins( '/' . $update->slug );
-				$plugin_data = array_shift( $plugin_data );
+				$plugin_data = reset( $plugin_data );
 				if ( $plugin_data )
 					return $plugin_data['Name'];
 				break;
@@ -3165,8 +3166,8 @@ class WP_Automatic_Updater {
 
 		$site_title = wp_specialchars_decode( get_bloginfo( 'name' ), ENT_QUOTES );
 		if ( $failures ) {
-			$body[] = trim( __( "
-BETA TESTING?
+			$body[] = trim( __(
+"BETA TESTING?
 =============
 
 This debugging email is sent when you are using a development version of WordPress.
@@ -3183,8 +3184,8 @@ Thanks! -- The WordPress Team" ) );
 			$subject = sprintf( __( '[%s] Background updates have finished' ), $site_title );
 		}
 
-		$body[] = trim( __( '
-UPDATE LOG
+		$body[] = trim( __(
+'UPDATE LOG
 ==========' ) );
 		$body[] = '';
 

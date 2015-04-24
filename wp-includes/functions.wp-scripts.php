@@ -9,6 +9,44 @@
  */
 
 /**
+ * Initialize $wp_scripts if it has not been set.
+ *
+ * @global WP_Scripts $wp_scripts
+ *
+ * @since 4.2.0
+ *
+ * @return WP_Scripts WP_Scripts instance.
+ */
+function wp_scripts() {
+	global $wp_scripts;
+	if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+		$wp_scripts = new WP_Scripts();
+	}
+	return $wp_scripts;
+}
+
+/**
+ * Helper function to output a _doing_it_wrong message when applicable.
+ *
+ * @ignore
+ * @since 4.2.0
+ *
+ * @param string $function Function name.
+ */
+function _wp_scripts_maybe_doing_it_wrong( $function ) {
+	if ( did_action( 'init' ) ) {
+		return;
+	}
+
+	_doing_it_wrong( $function, sprintf(
+		__( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
+		'<code>wp_enqueue_scripts</code>',
+		'<code>admin_enqueue_scripts</code>',
+		'<code>login_enqueue_scripts</code>'
+	), '3.3' );
+}
+
+/**
  * Print scripts in document head that are in the $handles queue.
  *
  * Called by admin-header.php and wp_head hook. Since it is called by wp_head on every page load,
@@ -31,22 +69,20 @@ function wp_print_scripts( $handles = false ) {
 	 * @since 2.1.0
 	 */
 	do_action( 'wp_print_scripts' );
-	if ( '' === $handles ) // for wp_head
+	if ( '' === $handles ) { // for wp_head
 		$handles = false;
-
-	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-
-		if ( !$handles )
-			return array(); // No need to instantiate if nothing is there.
-		else
-			$wp_scripts = new WP_Scripts();
 	}
 
-	return $wp_scripts->do_items( $handles );
+	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
+
+	global $wp_scripts;
+	if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+		if ( ! $handles ) {
+			return array(); // No need to instantiate if nothing is there.
+		}
+	}
+
+	return wp_scripts()->do_items( $handles );
 }
 
 /**
@@ -71,17 +107,13 @@ function wp_print_scripts( $handles = false ) {
  *                               Default 'false'. Accepts 'false' or 'true'.
  */
 function wp_register_script( $handle, $src, $deps = array(), $ver = false, $in_footer = false ) {
-	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-		$wp_scripts = new WP_Scripts();
-	}
+	$wp_scripts = wp_scripts();
+	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
 	$wp_scripts->add( $handle, $src, $deps, $ver );
-	if ( $in_footer )
+	if ( $in_footer ) {
 		$wp_scripts->add_data( $handle, 'group', 1 );
+	}
 }
 
 /**
@@ -114,15 +146,12 @@ function wp_register_script( $handle, $src, $deps = array(), $ver = false, $in_f
  */
 function wp_localize_script( $handle, $object_name, $l10n ) {
 	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-
+	if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
+		_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 		return false;
 	}
 
-	return $wp_scripts->localize( $handle, $object_name, $l10n );
+	return wp_scripts()->localize( $handle, $object_name, $l10n );
 }
 
 /**
@@ -139,13 +168,7 @@ function wp_localize_script( $handle, $object_name, $l10n ) {
  * @param string $handle Name of the script to be removed.
  */
 function wp_deregister_script( $handle ) {
-	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-		$wp_scripts = new WP_Scripts();
-	}
+	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
 	/**
 	 * Do not allow accidental or negligent de-registering of critical scripts in the admin.
@@ -172,7 +195,7 @@ function wp_deregister_script( $handle ) {
 		}
 	}
 
-	$wp_scripts->remove( $handle );
+	wp_scripts()->remove( $handle );
 }
 
 /**
@@ -184,7 +207,7 @@ function wp_deregister_script( $handle ) {
  * @global WP_Scripts $wp_scripts The WP_Scripts object for printing scripts.
  *
  * @since 2.6.0
-
+ *
  * @param string      $handle    Name of the script.
  * @param string|bool $src       Path to the script from the root directory of WordPress. Example: '/js/myscript.js'.
  * @param array       $deps      An array of registered handles this script depends on. Default empty array.
@@ -195,20 +218,23 @@ function wp_deregister_script( $handle ) {
  *                               Default 'false'. Accepts 'false' or 'true'.
  */
 function wp_enqueue_script( $handle, $src = false, $deps = array(), $ver = false, $in_footer = false ) {
-	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-		$wp_scripts = new WP_Scripts();
+	$wp_scripts = wp_scripts();
+
+	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
+
+
+	if ( $src || $in_footer ) {
+		$_handle = explode( '?', $handle );
+
+		if ( $src ) {
+			$wp_scripts->add( $_handle[0], $src, $deps, $ver );
+		}
+
+		if ( $in_footer ) {
+			$wp_scripts->add_data( $_handle[0], 'group', 1 );
+		}
 	}
 
-	if ( $src ) {
-		$_handle = explode('?', $handle);
-		$wp_scripts->add( $_handle[0], $src, $deps, $ver );
-		if ( $in_footer )
-			$wp_scripts->add_data( $_handle[0], 'group', 1 );
-	}
 	$wp_scripts->enqueue( $handle );
 }
 
@@ -223,15 +249,9 @@ function wp_enqueue_script( $handle, $src = false, $deps = array(), $ver = false
  * @param string $handle Name of the script to be removed.
  */
 function wp_dequeue_script( $handle ) {
-	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-		$wp_scripts = new WP_Scripts();
-	}
+	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
-	$wp_scripts->dequeue( $handle );
+	wp_scripts()->dequeue( $handle );
 }
 
 /**
@@ -248,13 +268,29 @@ function wp_dequeue_script( $handle ) {
  * @return bool Whether the script script is queued.
  */
 function wp_script_is( $handle, $list = 'enqueued' ) {
-	global $wp_scripts;
-	if ( ! is_a( $wp_scripts, 'WP_Scripts' ) ) {
-		if ( ! did_action( 'init' ) )
-			_doing_it_wrong( __FUNCTION__, sprintf( __( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-				'<code>wp_enqueue_scripts</code>', '<code>admin_enqueue_scripts</code>', '<code>login_enqueue_scripts</code>' ), '3.3' );
-		$wp_scripts = new WP_Scripts();
-	}
+	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
-	return (bool) $wp_scripts->query( $handle, $list );
+	return (bool) wp_scripts()->query( $handle, $list );
+}
+
+/**
+ * Add metadata to a script.
+ *
+ * Works only if the script has already been added.
+ *
+ * Possible values for $key and $value:
+ * 'conditional' string Comments for IE 6, lte IE 7, etc.
+ *
+ * @since 4.2.0
+ *
+ * @see WP_Dependency::add_data()
+ *
+ * @param string $handle Name of the script.
+ * @param string $key    Name of data point for which we're storing a value.
+ * @param mixed  $value  String containing the data to be added.
+ * @return bool True on success, false on failure.
+ */
+function wp_script_add_data( $handle, $key, $value ){
+	global $wp_scripts;
+	return $wp_scripts->add_data( $handle, $key, $value );
 }

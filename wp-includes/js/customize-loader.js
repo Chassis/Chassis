@@ -114,7 +114,7 @@ window.wp = window.wp || {};
 			// Dirty state of Customizer in iframe
 			this.saved = new api.Value( true );
 
-			this.iframe = $( '<iframe />', { src: src }).appendTo( this.element );
+			this.iframe = $( '<iframe />', { 'src': src, 'title': Loader.settings.l10n.mainIframeTitle } ).appendTo( this.element );
 			this.iframe.one( 'load', this.loaded );
 
 			// Create a postMessage connection with the iframe.
@@ -154,6 +154,10 @@ window.wp = window.wp || {};
 			this.messenger.bind( 'change', function () {
 				Loader.saved( false );
 			} );
+
+			this.messenger.bind( 'title', function( newTitle ){
+				window.document.title = newTitle;
+			});
 
 			this.pushState( src );
 
