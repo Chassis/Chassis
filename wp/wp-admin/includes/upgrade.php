@@ -524,11 +524,14 @@ function upgrade_all() {
 	if ( $wp_current_db_version < 29630 )
 		upgrade_400();
 
+	// Don't harsh my mellow. upgrade_422() must be called before
+	// upgrade_420() to catch bad comments prior to any auto-expansion of
+	// MySQL column widths.
+	if ( $wp_current_db_version < 31534 )
+		upgrade_422();
+
 	if ( $wp_current_db_version < 31351 )
 		upgrade_420();
-
-	if ( $wp_current_db_version < 31533 )
-		upgrade_421();
 
 	maybe_disable_link_manager();
 
@@ -1444,19 +1447,48 @@ function upgrade_420() {
  * @since 4.2.1
  */
 function upgrade_421() {
+}
+
+/**
+ * Execute changes made in WordPress 4.2.2.
+ *
+ * @since 4.2.2
+ */
+function upgrade_422() {
 	global $wp_current_db_version, $wpdb;
 
-	if ( $wp_current_db_version < 31533 ) {
+	if ( $wp_current_db_version < 31534 ) {
 		$content_length = $wpdb->get_col_length( $wpdb->comments, 'comment_content' );
-		if ( ! $content_length ) {
-			$content_length = 65535;
+
+		if ( is_wp_error( $content_length ) ) {
+			return;
 		}
 
+		if ( false === $content_length ) {
+			$content_length = array(
+				'type'   => 'byte',
+				'length' => 65535,
+			);
+		} elseif ( ! is_array( $content_length ) ) {
+			$length = (int) $content_length > 0 ? (int) $content_length : 65535;
+			$content_length = array(
+				'type'	 => 'byte',
+				'length' => $length
+			);
+		}
+
+		if ( 'byte' !== $content_length['type'] || 0 === $content_length['length'] ) {
+			// Sites with malformed DB schemas are on their own.
+			return;
+		}
+
+		$allowed_length = intval( $content_length['length'] ) - 10;
+
 		$comments = $wpdb->get_results(
-			"SELECT comment_ID FROM $wpdb->comments
-			WHERE comment_date_gmt > '2015-04-26'
-			AND CHAR_LENGTH( comment_content ) >= $content_length
-			AND ( comment_content LIKE '%<%' OR comment_content LIKE '%>%' )"
+			"SELECT `comment_ID` FROM `{$wpdb->comments}`
+				WHERE `comment_date_gmt` > '2015-04-26'
+				AND LENGTH( `comment_content` ) >= {$allowed_length}
+				AND ( `comment_content` LIKE '%<%' OR `comment_content` LIKE '%>%' )"
 		);
 
 		foreach ( $comments as $comment ) {
@@ -1568,12 +1600,30 @@ function upgrade_network() {
 			$wpdb->query( "ALTER TABLE $wpdb->usermeta DROP INDEX meta_key, ADD INDEX meta_key(meta_key(191))" );
 			$wpdb->query( "ALTER TABLE $wpdb->site DROP INDEX domain, ADD INDEX domain(domain(140),path(51))" );
 			$wpdb->query( "ALTER TABLE $wpdb->sitemeta DROP INDEX meta_key, ADD INDEX meta_key(meta_key(191))" );
-			$wpdb->query( "ALTER TABLE $wpdb->signups DROP INDEX domain, ADD INDEX domain(domain(140),path(51))" );
+			$wpdb->query( "ALTER TABLE $wpdb->signups DROP INDEX domain_path, ADD INDEX domain_path(domain(140),path(51))" );
 
 			$tables = $wpdb->tables( 'global' );
 
 			foreach ( $tables as $table ) {
 				maybe_convert_table_to_utf8mb4( $table );
+			}
+		}
+	}
+
+	// 4.2.2
+	if ( $wp_current_db_version < 31535 && 'utf8mb4' === $wpdb->charset ) {
+		if ( ! ( defined( 'DO_NOT_UPGRADE_GLOBAL_TABLES' ) && DO_NOT_UPGRADE_GLOBAL_TABLES ) ) {
+			$upgrade = false;
+			$indexes = $wpdb->get_results( "SHOW INDEXES FROM $wpdb->signups" );
+			foreach( $indexes as $index ) {
+				if ( 'domain_path' == $index->Key_name && 'domain' == $index->Column_name && 140 != $index->Sub_part ) {
+					$upgrade = true;
+					break;
+				}
+			}
+
+			if ( $upgrade ) {
+				$wpdb->query( "ALTER TABLE $wpdb->signups DROP INDEX domain_path, ADD INDEX domain_path(domain(140),path(51))" );
 			}
 		}
 	}
