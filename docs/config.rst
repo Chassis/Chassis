@@ -47,7 +47,7 @@ To switch to 5.3 for example:
 
 You can use either a two-part version (``5.3``) or a three-part version
 (``5.3.1``) if you want to pick specifc versions. We support any version between
-5.3.0 and 5.5.x.
+5.3.0 and 5.6.x.
 
 
 WordPress Directory
