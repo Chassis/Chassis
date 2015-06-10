@@ -83,7 +83,7 @@ Installing
 
      Alternatively you can use our Chassis Supercharger as a base::
 
-         $ git clone --recursive git@github.com:Chassis/Supercharger.git content
+         $ git clone --recursive https://github.com/Chassis/Supercharger.git content
 
 3. Boot up a Virtual Machine::
 
