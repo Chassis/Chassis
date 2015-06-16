@@ -205,3 +205,20 @@ instead, such as:
 .. code-block:: yaml
 
    apt_mirror: http://mirror.optus.net/ubuntu/
+
+
+Synced Folders
+--------------
+
+**Key**: ``synced_folders``
+
+You may want to keep your themes and projects along-side Chassis, instead of
+inside it. You'll need to tell Chassis about these external directories, as it
+won't know how to map them. You can tell Chassis to map some external directories
+into the generated VM like so:
+
+.. code-block:: yaml
+
+   synced_folders:
+     a/host/directory: a/vm/directory
+     "this:ones:got:colons": another/vm/directory
