@@ -18,4 +18,8 @@ server {
 		fastcgi_read_timeout 900;
 		include /etc/nginx/fastcgi_params;
 	}
+
+	location ~* \.(js|css|png|jpe?g|gif|ico)$ {
+		log_not_found off;
+	}
 }
