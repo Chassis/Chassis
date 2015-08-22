@@ -1,8 +1,6 @@
 # -*- mode: ruby -*-
 # vi: set ft=ruby :
 
-require "yaml"
-
 # Warn the user if we're on an old version of Vagrant
 if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
 	puts "WARNING: Outdated version of Vagrant"
@@ -22,32 +20,8 @@ if not File.exist?(File.join(File.dirname(__FILE__), "puppet", "modules", "apt",
 	puts
 end
 
-# Load git-managed configuration
-_config = YAML.load(
-	File.open(
-		File.join(File.dirname(__FILE__), "config.yaml"),
-		File::RDONLY
-	).read
-)
-
-# Load other configuration files
-config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
-config_files.each do |filename|
-	begin
-		confvars = YAML.load(
-			File.open(
-				File.join(File.dirname(__FILE__), filename),
-				File::RDONLY
-			).read
-		)
-
-		_config.merge!(confvars) if confvars.is_a?(Hash)
-	rescue Errno::ENOENT
-		# No overriden YAML found -- that's OK; just use the defaults.
-	end
-end
-
-CONF = _config
+require_relative "puppet/chassis.rb"
+CONF = Chassis.config
 
 # Add extra extension modules
 base_path = Pathname.new( File.dirname( __FILE__ ) )
