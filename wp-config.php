@@ -69,8 +69,8 @@ $GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/theme
 // =============================
 // Configuration for the Content
 // =============================
-if ( file_exists( dirname( __FILE__ ) . '/content/config.php' ) ) {
-	include( dirname( __FILE__ ) . '/content/config.php' );
+if ( file_exists( WP_CONTENT_DIR . '/config.php' ) ) {
+	include( WP_CONTENT_DIR . '/config.php' );
 }
 
 // =====================

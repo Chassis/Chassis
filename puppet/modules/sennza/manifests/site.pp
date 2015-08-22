@@ -1,6 +1,7 @@
 define sennza::site (
 	$location,
-	$wpdir = 'wp',
+	$wpdir,
+	$contentdir,
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
@@ -12,7 +13,7 @@ define sennza::site (
 ) {
 	$extra_hosts = join($hosts, ' ')
 	$server_name = rstrip("${name} ${extra_hosts}")
-	file { $location:
+	file { $wpdir:
 		ensure => directory
 	}
 	file { "/etc/nginx/sites-available/$name":
@@ -32,7 +33,7 @@ define sennza::site (
 		grant    => ['all'],
 	}
 
-	wp::site {"${location}/${wpdir}":
+	wp::site {"${wpdir}":
 		url => "http://${name}/",
 		name => 'Vagrant Site',
 		require => Mysql::Db[$database],
