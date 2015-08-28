@@ -148,5 +148,8 @@ If you ever want to update Chassis, here's a quick two-step procedure::
    # Pull and rebase (in case you have project-specific commits)
    git pull --rebase
 
-    ## Update submodules (Puppet modules and WP)
+   # Update submodules (Puppet modules)
    git submodule update --init
+   
+   # Update WP
+   git pull
