@@ -11,6 +11,10 @@ server {
 		access_log off;	log_not_found off;	expires max;
 	}
 
+	location /content/ {
+		alias <%= contentdir %>/;
+	}
+
 	if (!-e $request_filename) {
 		rewrite ^/(wp-.*) /<%= @wpdir %>/$1 last;
 		rewrite ^/(wp-admin/.*)$ /<%= @wpdir %>/$1 last;

@@ -9,6 +9,15 @@ server {
 		try_files $uri $uri/ /index.php$is_args$args;
 	}
 
+	location /content/ {
+		alias <%= contentdir %>/;
+
+		# Duplicated here, to ensure it matches correctly
+		location ~* \.(js|css|png|jpe?g|gif|ico)$ {
+			log_not_found off;
+		}
+	}
+
 	location ~ \.php {
 		try_files $uri =404;
 		fastcgi_split_path_info ^(.+\.php)(/.+)$;
