@@ -1,4 +1,4 @@
-define sennza::wp (
+define chassis::wp (
 	$location,
 	$wpdir = 'wp',
 	$hosts = [],
@@ -14,7 +14,7 @@ define sennza::wp (
 	$extensions = [],
 ) {
 	if ( $network == true ) {
-		sennza::network { $name:
+		chassis::network { $name:
 			location          => $location,
 			wpdir             => $wpdir,
 			hosts             => $hosts,
@@ -28,7 +28,7 @@ define sennza::wp (
 		}
 	}
 	else {
-		sennza::site { $name:
+		chassis::site { $name:
 			location          => $location,
 			wpdir             => $wpdir,
 			hosts             => $hosts,
@@ -43,10 +43,10 @@ define sennza::wp (
 	}
 
 	file { '/vagrant/local-config-db.php':
-		content => template('sennza/local-config-db.php.erb')
+		content => template('chassis/local-config-db.php.erb')
 	}
 
 	file { '/vagrant/local-config-extensions.php':
-		content => template('sennza/local-config-extensions.php.erb')
+		content => template('chassis/local-config-extensions.php.erb')
 	}
 }
