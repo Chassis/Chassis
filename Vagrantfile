@@ -42,6 +42,9 @@ Vagrant.configure("2") do |config|
 	# We <3 Ubuntu LTS
 	config.vm.box = "hashicorp/precise64"
 
+	# Enable SSH forwarding
+	config.ssh.forward_agent = true
+
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
 		config.vm.network :private_network, type: "dhcp"

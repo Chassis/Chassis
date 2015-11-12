@@ -60,8 +60,8 @@ we also allow swapping this out completely for users who want the flexibility.
 Our built-in version follows the pattern laid out by `WordPress Skeleton`_,
 however you can change this easily if you want.
 
-For example, to swap out the current version (4.0.1) for the latest development
-version:
+For example, to swap out the `current version of WordPress`_ for the latest
+development version:
 
 1. Clone ``https://github.com/WordPress/WordPress.git`` to ``wp-trunk/``
 2. Add ``wpdir: wp-trunk`` to your ``config.local.yaml``
@@ -71,6 +71,7 @@ We want to make this as flexible as possible, without forcing you to run through
 any of these steps if you don't need to.
 
 .. _WordPress Skeleton: https://github.com/markjaquith/WordPress-Skeleton
+.. _current version of WordPress: https://wordpress.org/download/
 
 
 Multisite

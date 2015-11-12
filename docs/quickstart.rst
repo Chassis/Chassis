@@ -111,7 +111,7 @@ What's in the box?
 
 By default we want to keep Chassis lean, below is a list of what we include:
 
-* `WordPress`_ (version 4.0.1)
+* `WordPress`_ (latest stable version)
 * `PHP`_ (version 5.4) (includes the `cURL <cURL extension_>`_ and `GD`_ extensions)
 * `nginx`_
 * `MySQL`_
@@ -124,7 +124,7 @@ Note that some tools like phpMyAdmin and Memcache are available instead as
 :doc:`extensions </extend>`, which are installed separately to keep
 Chassis fast.
 
-.. _WordPress: http://wordpress.org/
+.. _WordPress: https://wordpress.org/
 .. _PHP: http://www.php.net/
 .. _cURL extension: http://www.php.net/manual/en/book.curl.php
 .. _GD: http://www.php.net/manual/en/book.image.php
@@ -148,5 +148,8 @@ If you ever want to update Chassis, here's a quick two-step procedure::
    # Pull and rebase (in case you have project-specific commits)
    git pull --rebase
 
-    ## Update submodules (Puppet modules and WP)
+   # Update submodules (Puppet modules)
    git submodule update --init
+   
+   # Update WP
+   git pull

@@ -2,6 +2,7 @@
 tinymce.PluginManager.add( 'wpeditimage', function( editor ) {
 	var toolbar, serializer,
 		each = tinymce.each,
+		trim = tinymce.trim,
 		iOS = tinymce.Env.iOS;
 
 	function isPlaceholder( node ) {
@@ -60,14 +61,16 @@ tinymce.PluginManager.add( 'wpeditimage', function( editor ) {
 	} );
 
 	editor.once( 'preinit', function() {
-		toolbar = editor.wp._createToolbar( [
-			'wp_img_alignleft',
-			'wp_img_aligncenter',
-			'wp_img_alignright',
-			'wp_img_alignnone',
-			'wp_img_edit',
-			'wp_img_remove'
-		] );
+		if ( editor.wp && editor.wp._createToolbar ) {
+			toolbar = editor.wp._createToolbar( [
+				'wp_img_alignleft',
+				'wp_img_aligncenter',
+				'wp_img_alignright',
+				'wp_img_alignnone',
+				'wp_img_edit',
+				'wp_img_remove'
+			] );
+		}
 	} );
 
 	editor.on( 'wptoolbar', function( event ) {
@@ -87,7 +90,7 @@ tinymce.PluginManager.add( 'wpeditimage', function( editor ) {
 					editor.selection.select( node );
 					editor.nodeChanged();
 				}, 200 );
-			} else {
+			} else if ( toolbar ) {
 				toolbar.hide();
 			}
 		} );
@@ -95,8 +98,7 @@ tinymce.PluginManager.add( 'wpeditimage', function( editor ) {
 
 	function parseShortcode( content ) {
 		return content.replace( /(?:<p>)?\[(?:wp_)?caption([^\]]+)\]([\s\S]+?)\[\/(?:wp_)?caption\](?:<\/p>)?/g, function( a, b, c ) {
-			var id, align, classes, caption, img, width,
-				trim = tinymce.trim;
+			var id, align, classes, caption, img, width;
 
 			id = b.match( /id=['"]([^'"]*)['"] ?/ );
 			if ( id ) {
@@ -525,12 +527,10 @@ tinymce.PluginManager.add( 'wpeditimage', function( editor ) {
 	}
 
 	function removeImage( node ) {
-		var wrap;
+		var wrap = editor.dom.getParent( node, 'div.mceTemp' );
 
-		if ( node.nodeName === 'DIV' && editor.dom.hasClass( node, 'mceTemp' ) ) {
-			wrap = node;
-		} else if ( node.nodeName === 'IMG' || node.nodeName === 'DT' || node.nodeName === 'A' ) {
-			wrap = editor.dom.getParent( node, 'div.mceTemp' );
+		if ( ! wrap && node.nodeName === 'IMG' ) {
+			wrap = editor.dom.getParent( node, 'a' );
 		}
 
 		if ( wrap ) {
@@ -865,7 +865,7 @@ tinymce.PluginManager.add( 'wpeditimage', function( editor ) {
 				replacement = ' ' + align;
 			}
 
-			node.className = node.className.replace( / ?align(left|center|right|none)/g, '' ) + replacement;
+			node.className = trim( node.className.replace( / ?align(left|center|right|none)/g, '' ) + replacement );
 
 			editor.nodeChanged();
 			event.preventDefault();

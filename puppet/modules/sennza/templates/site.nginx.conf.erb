@@ -4,6 +4,8 @@ server {
 	root <%= @location %>;
 	client_max_body_size 50M;
 
+	include /etc/nginx/sites-available/<%= @fqdn %>.d/*;
+
 	location / {
 		index index.php index.html index.htm;
 		try_files $uri $uri/ /index.php$is_args$args;
