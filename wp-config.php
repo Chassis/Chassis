@@ -36,6 +36,13 @@ if ( file_exists( dirname( __FILE__ ) . '/local-config-extensions.php' ) ) {
 	include( dirname( __FILE__ ) . '/local-config-extensions.php' );
 }
 
+// ==================
+// Set up WP location
+// ==================
+if ( ! defined( 'ABSPATH' ) ) {
+	define( 'ABSPATH', dirname( __FILE__ ) . '/wp/' );
+}
+
 // ======================================
 // Fake HTTP Host (for CLI compatibility)
 // ======================================
@@ -63,8 +70,8 @@ if ( empty( $GLOBALS['wp_theme_directories'] ) ) {
 if ( file_exists( WP_CONTENT_DIR . '/themes' ) ) {
 	$GLOBALS['wp_theme_directories'][] = WP_CONTENT_DIR . '/themes';
 }
-$GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
-$GLOBALS['wp_theme_directories'][] = dirname( __FILE__ ) . '/wp/wp-content/themes';
+$GLOBALS['wp_theme_directories'][] = ABSPATH . 'wp-content/themes';
+$GLOBALS['wp_theme_directories'][] = ABSPATH . 'wp-content/themes';
 
 // =============================
 // Configuration for the Content
@@ -126,9 +133,6 @@ elseif ( ! defined( 'WP_DEBUG_DISPLAY' ) ) {
 // ===================
 // Bootstrap WordPress
 // ===================
-if ( !defined( 'ABSPATH' ) )
-	define( 'ABSPATH', dirname( __FILE__ ) . '/wp/' );
-
 if ( ! file_exists( ABSPATH . 'wp-settings.php' ) ) {
 	header('X-WP-Error: wpmissing', true, 500);
 	echo '<h1>WordPress is missing.</h1>';
