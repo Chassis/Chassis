@@ -45,6 +45,10 @@ define sennza::wp (
 		}
 	}
 
+	file { '/vagrant/index.php':
+		content => template('sennza/index.php.erb')
+	}
+
 	file { '/vagrant/local-config-db.php':
 		content => template('sennza/local-config-db.php.erb')
 	}
