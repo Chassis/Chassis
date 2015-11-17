@@ -35,6 +35,9 @@ server {
 			fastcgi_param SCRIPT_FILENAME $document_root$1;
 			fastcgi_pass unix:/var/run/php5-fpm.sock;
 		}
+		location ~ /wp/(.*\.js|css|png|jpe?g|gif|ico)$ {
+			log_not_found off;
+		}
 	}
 	<% end -%>
 
