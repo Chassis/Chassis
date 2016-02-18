@@ -268,7 +268,19 @@ class IXR_Message
         xml_set_object($this->_parser, $this);
         xml_set_element_handler($this->_parser, 'tag_open', 'tag_close');
         xml_set_character_data_handler($this->_parser, 'cdata');
-        $chunk_size = 262144; // 256Kb, parse in chunks to avoid the RAM usage on very large messages
+
+        // 256Kb, parse in chunks to avoid the RAM usage on very large messages
+        $chunk_size = 262144;
+
+        /**
+         * Filter the chunk size that can be used to parse an XML-RPC reponse message.
+         *
+         * @since 4.4.0
+         *
+         * @param int $chunk_size Chunk size to parse in bytes.
+         */
+        $chunk_size = apply_filters( 'xmlrpc_chunk_parsing_size', $chunk_size );
+
         $final = false;
         do {
             if (strlen($this->message) <= $chunk_size) {
@@ -540,7 +552,6 @@ EOD;
             $xml = '<?xml version="1.0"?>'."\n".$xml;
         $length = strlen($xml);
         header('Connection: close');
-        header('Content-Length: '.$length);
         if ($charset)
             header('Content-Type: text/xml; charset='.$charset);
         else

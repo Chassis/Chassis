@@ -1182,9 +1182,9 @@ Library = wp.media.controller.State.extend({
 		var defaultProps = wp.media.view.settings.defaultProps;
 		this._displays = [];
 		this._defaultDisplaySettings = {
-			align: defaultProps.align || getUserSetting( 'align', 'none' ),
-			size:  defaultProps.size  || getUserSetting( 'imgsize', 'medium' ),
-			link:  defaultProps.link  || getUserSetting( 'urlbutton', 'file' )
+			align: getUserSetting( 'align', defaultProps.align ) || 'none',
+			size:  getUserSetting( 'imgsize', defaultProps.size ) || 'medium',
+			link:  getUserSetting( 'urlbutton', defaultProps.link ) || 'none'
 		};
 	},
 
@@ -1214,11 +1214,32 @@ Library = wp.media.controller.State.extend({
 	 * @returns {Object}
 	 */
 	defaultDisplaySettings: function( attachment ) {
-		var settings = this._defaultDisplaySettings;
+		var settings = _.clone( this._defaultDisplaySettings );
+
 		if ( settings.canEmbed = this.canEmbed( attachment ) ) {
 			settings.link = 'embed';
+		} else if ( ! this.isImageAttachment( attachment ) && settings.link === 'none' ) {
+			settings.link = 'file';
 		}
+
 		return settings;
+	},
+
+	/**
+	 * Whether an attachment is image.
+	 *
+	 * @since 4.4.1
+	 *
+	 * @param {wp.media.model.Attachment} attachment
+	 * @returns {Boolean}
+	 */
+	isImageAttachment: function( attachment ) {
+		// If uploading, we know the filename but not the mime type.
+		if ( attachment.get('uploading') ) {
+			return /\.(jpe?g|png|gif)$/i.test( attachment.get('filename') );
+		}
+
+		return attachment.get('type') === 'image';
 	},
 
 	/**
@@ -7855,6 +7876,10 @@ EditorUploader = View.extend({
 
 		this.$document.on( 'dragstart dragend drop', _.bind( function( event ) {
 			this.localDrag = event.type === 'dragstart';
+
+			if ( event.type === 'drop' ) {
+				this.containerDragleave();
+			}
 		}, this ) );
 
 		this.initialized = true;
