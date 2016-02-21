@@ -1,4 +1,4 @@
-class sennza::php::hhvm (
+class chassis::php::hhvm (
 	$extensions = [],
 ) {
 	apt::source { 'hhvm':
@@ -23,7 +23,7 @@ class sennza::php::hhvm (
 	# }
 
 	file { '/etc/hhvm.hdf':
-		content => template('sennza/hhvm.hdf.erb'),
+		content => template('chassis/hhvm.hdf.erb'),
 		owner   => 'root',
 		group   => 'root',
 		mode    => 0644,

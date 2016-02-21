@@ -1,4 +1,4 @@
-class sennza::php (
+class chassis::php (
 	$extensions = [],
 	$version = "5.4",
 ) {
@@ -37,7 +37,7 @@ class sennza::php (
 		file { "/etc/init.d/php5-fpm":
 			# Set up the 5.3 init script, but only if one doesn't exist already
 			replace => "no",
-			source => "puppet:///modules/sennza/php-5.3.init",
+			source => "puppet:///modules/chassis/php-5.3.init",
 			require => Exec[ "rm init.d/php5-fpm" ],
 			before => [
 				Package[ 'php5-fpm' ],
@@ -96,7 +96,7 @@ class sennza::php (
 	# Set up the configuration files
 	if 'xdebug' in $extensions {
 		file { '/etc/php5/fpm/conf.d/xdebug.ini':
-			content => template('sennza/xdebug.ini.erb'),
+			content => template('chassis/xdebug.ini.erb'),
 			owner   => 'root',
 			group   => 'root',
 			mode    => 0644,
@@ -116,7 +116,7 @@ class sennza::php (
 	}
 
 	file { '/etc/php5/fpm/php.ini':
-		content => template('sennza/php.ini.erb'),
+		content => template('chassis/php.ini.erb'),
 		owner   => 'root',
 		group   => 'root',
 		mode    => 0644,
@@ -126,7 +126,7 @@ class sennza::php (
 	}
 
 	file { '/etc/php5/fpm/pool.d/www.conf':
-		content => template('sennza/php-pool.conf.erb'),
+		content => template('chassis/php-pool.conf.erb'),
 		owner   => 'root',
 		group   => 'root',
 		mode    => 0644,
