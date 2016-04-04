@@ -7,7 +7,7 @@ $php_extensions = [ 'curl', 'gd', 'mysql' ]
 
 Class['mysql'] -> Package['php5-mysql']
 
-class { 'sennza::php':
+class { 'chassis::php':
 	extensions => $php_extensions,
 	version => $config[php]
 }
@@ -24,13 +24,13 @@ class { 'mysql::server':
 	config_hash => { 'root_password' => 'password' }
 }
 
-class { 'sennza':
-	require => Class['sennza::php'],
+class { 'chassis':
+	require => Class['chassis::php'],
 }
 
-class { 'sennza::hosts': }
+class { 'chassis::hosts': }
 
-sennza::wp { $config['hosts'][0]:
+chassis::wp { $config['hosts'][0]:
 	location          => $config[mapped_paths][base],
 	wpdir             => $config[mapped_paths][wp],
 	contentdir        => $config[mapped_paths][content],
@@ -47,7 +47,7 @@ sennza::wp { $config['hosts'][0]:
 	extensions        => $extensions,
 
 	require  => [
-		Class['sennza::php'],
+		Class['chassis::php'],
 		Package['git-core'],
 		Class['mysql::server'],
 	]
