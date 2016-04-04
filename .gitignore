@@ -1,5 +1,6 @@
 /shared
 /.vagrant
+/index.php
 /local-config.php
 /local-config-db.php
 /local-config-extensions.php

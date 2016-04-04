@@ -1,7 +1,7 @@
 # Load extensions
 import "/vagrant/extensions/*/chassis.pp"
 
-$config = sz_load_config('/vagrant')
+$config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
 
@@ -31,9 +31,10 @@ class { 'sennza':
 class { 'sennza::hosts': }
 
 sennza::wp { $config['hosts'][0]:
-	location          => '/vagrant',
+	location          => $config[mapped_paths][base],
+	wpdir             => $config[mapped_paths][wp],
+	contentdir        => $config[mapped_paths][content],
 
-	wpdir             => $config[wpdir],
 	hosts             => $config[hosts],
 	database          => $config[database][name],
 	database_user     => $config[database][user],

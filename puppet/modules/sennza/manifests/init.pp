@@ -25,6 +25,7 @@ class sennza {
 
 	file {'/etc/nginx/nginx.conf':
 		content => template('sennza/nginx.conf.erb'),
-		require => Package['nginx']
+		require => Package['nginx'],
+		notify => Service['nginx']
 	}
 }

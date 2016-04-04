@@ -4,6 +4,10 @@ server {
 	root <%= @location %>;
 	client_max_body_size 50M;
 
+	fastcgi_split_path_info ^(.+\.php)(/.+)$;
+	fastcgi_index index.php;
+	fastcgi_read_timeout 900;
+
 	include /etc/nginx/sites-available/<%= @fqdn %>.d/*;
 
 	location / {
@@ -11,14 +15,37 @@ server {
 		try_files $uri $uri/ /index.php$is_args$args;
 	}
 
+	location /content/ {
+		alias <%= contentdir %>/;
+
+		# Duplicated here, to ensure it matches correctly
+		location ~* \.(js|css|png|jpe?g|gif|ico)$ {
+			log_not_found off;
+		}
+	}
+
+	<% if @wpdir != "#{location}/wp" %>
+	# WP isn't under the root, so this makes our FastCGI a little complex...
+	location /wp/ {
+		alias <%= @wpdir %>/;
+		index index.php;
+		try_files $uri $uri/ =404;
+		location ~ /wp/(.*\.php) {
+			include /etc/nginx/fastcgi_params;
+			fastcgi_param SCRIPT_FILENAME $document_root$1;
+			fastcgi_pass unix:/var/run/php5-fpm.sock;
+		}
+		location ~* /wp/(.*(\.js|css|png|jpe?g|gif|ico))$ {
+			log_not_found off;
+		}
+	}
+	<% end -%>
+
 	location ~ \.php {
 		try_files $uri =404;
-		fastcgi_split_path_info ^(.+\.php)(/.+)$;
+		include /etc/nginx/fastcgi_params;
 		fastcgi_param SCRIPT_FILENAME $document_root$fastcgi_script_name;
 		fastcgi_pass unix:/var/run/php5-fpm.sock;
-		fastcgi_index index.php;
-		fastcgi_read_timeout 900;
-		include /etc/nginx/fastcgi_params;
 	}
 
 	location ~* \.(js|css|png|jpe?g|gif|ico)$ {
