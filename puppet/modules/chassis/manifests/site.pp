@@ -1,4 +1,4 @@
-define sennza::site (
+define chassis::site (
 	$location,
 	$wpdir,
 	$contentdir,
@@ -17,7 +17,7 @@ define sennza::site (
 		ensure => directory
 	}
 	file { "/etc/nginx/sites-available/$name":
-		content => template('sennza/site.nginx.conf.erb'),
+		content => template('chassis/site.nginx.conf.erb'),
 		notify => Service['nginx']
 	}
 	file { "/etc/nginx/sites-enabled/$name":

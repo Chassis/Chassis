@@ -1,4 +1,4 @@
-define sennza::network (
+define chassis::network (
 	$location,
 	$wpdir = 'wp',
 	$contentdir,
@@ -17,7 +17,7 @@ define sennza::network (
 		ensure => directory
 	}
 	file { "/etc/nginx/sites-available/$name":
-		content => template('sennza/multisite.nginx.conf.erb'),
+		content => template('chassis/multisite.nginx.conf.erb'),
 		notify => Service['nginx']
 	}
 	file { "/etc/nginx/sites-enabled/$name":

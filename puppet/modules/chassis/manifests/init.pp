@@ -1,4 +1,4 @@
-class sennza {
+class chassis {
 	if ! defined(Package['nginx']) {
 		package {'nginx':
 			ensure => latest
@@ -24,7 +24,7 @@ class sennza {
 	}
 
 	file {'/etc/nginx/nginx.conf':
-		content => template('sennza/nginx.conf.erb'),
+		content => template('chassis/nginx.conf.erb'),
 		require => Package['nginx'],
 		notify => Service['nginx']
 	}
