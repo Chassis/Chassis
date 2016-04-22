@@ -73,6 +73,14 @@ any of these steps if you don't need to.
 .. _WordPress Skeleton: https://github.com/markjaquith/WordPress-Skeleton
 .. _current version of WordPress: https://wordpress.org/download/
 
+.. note::
+   If you're forking Chassis and want to maintain it yourself, you'll need to
+   keep your copy of WP up-to-date as well. We recommend merging Chassis changes
+   back to your forked version, but you can also do it yourself::
+
+     # To update to WP 4.2.1, e.g:
+     bash puppet/update-wp.sh 4.2.1
+
 
 Multisite
 ---------
