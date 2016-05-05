@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Chassis'
-copyright = u'2014, Ryan McCue & Bronson Quick'
+copyright = u'2016, Ryan McCue & Bronson Quick. Logo Design by Sonja Leix'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -115,11 +115,14 @@ html_theme_options = {
 	'github_user': 'Chassis',
 	'github_repo': 'Chassis',
 	'description': u'Chassis is a virtual server for WordPress, designed for simplicity and speed.',
+	'logo': 'chassis-logo_vertical.jpg',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = [alabaster.get_path()]
 
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
