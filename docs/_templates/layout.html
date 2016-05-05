@@ -1,0 +1,10 @@
+{# layout.html #}
+{# Import the theme's layout. #}
+{% extends "!layout.html" %}
+
+{% block footer %}
+<div class="footer">
+	©2016, <a href="https://rmccue.io/">Ryan McCue</a> & <a href="https://www.bronsonquick.com.au/">Bronson Quick</a>. Logo Design by <a href="http://sonjaleix.com/">Sonja Leix.</a>
+</div>
+{% endblock %}
+{% set css_files = css_files + ['_static/style.css'] %}
