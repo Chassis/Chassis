@@ -29,6 +29,7 @@ div.body p {
 
 div.sphinxsidebarwrapper p.blurb {
 	margin: 1em 0;
+	text-align: center;
 }
 
 div.sphinxsidebar h3,
