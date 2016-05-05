@@ -1,6 +1,7 @@
 @import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic|Montserrat);
 
-body {
+body,
+div.sphinxsidebar input {
 	font-family: 'Open Sans', sans-serif;
 }
 
@@ -36,8 +37,12 @@ div.sphinxsidebar h3 a,
 div.sphinxsidebar h4 a {
 	color: #999;
 	line-height: 1.1;
+	margin: 1em 0 0 0;
 }
-
+div.sphinxsidebar input[type=submit] {
+	color: #fff;
+	background-color: #29ABE2;
+}
 a,
 div.sphinxsidebar a {
 	color: #29ABE2;
