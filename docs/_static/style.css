@@ -11,7 +11,8 @@ div.body h4,
 div.body h5,
 div.body h6,
 div.sphinxsidebar h3,
-div.sphinxsidebar h4 {
+div.sphinxsidebar h4,
+div.admonition p.admonition-title {
 	font-family: 'Montserrat', sans-serif;
 	text-transform: uppercase;
 }
@@ -41,4 +42,8 @@ a,
 div.sphinxsidebar a {
 	color: #29ABE2;
 	border-bottom: 1px dotted #29ABE2;
+}
+
+div.footer a {
+	border: none;
 }
