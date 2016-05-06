@@ -22,11 +22,26 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 * `Theme Review`_: Set Chassis up for theme reviewing.
 
+* `MailHog`_: A Chassis extension to install and configure MailHog on your server.
+
+* `Cavalcade`_: Cavalcade is a replacement for WordPress' built-in cron that runs as a daemon on your system. It horizontally scales in production to ensure your scheduled tasks keep up with the scale of your site.
+
+* `XDebug`_: A Chassis extension to install and configure Xdebug on your server.
+
+* `Query Monitor`_: A Chassis extension to install and configure your Chassis WP install to use Query Monitor to help with debugging.
+
+* `Debugging`_: A Chassis extension to install and activate common WordPress plugins used for debugging during development.
+
 .. _Mailcatcher: https://github.com/Chassis/mailcatcher
 .. _Memcache: https://github.com/Chassis/memcache
 .. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
 .. _Tester: https://github.com/Chassis/Tester
 .. _Theme Review: https://github.com/Chassis/themereview
+.. _MailHog: https://github.com/Chassis/MailHog
+.. _Cavalcade: https://github.com/Chassis/Cavalcade
+.. _Xdebug: https://github.com/Chassis/Xdebug
+.. _Query Monitor: https://github.com/Chassis/Query-Monitor
+.. _Debugging: https://github.com/Chassis/Debugging
 
 
 Creating your own

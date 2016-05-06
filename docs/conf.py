@@ -47,7 +47,7 @@ master_doc = 'index'
 
 # General information about the project.
 project = u'Chassis'
-copyright = u'2014, Ryan McCue & Bronson Quick'
+copyright = u'2016, Ryan McCue & Bronson Quick. Logo Design by Sonja Leix'
 
 # The version info for the project you're documenting, acts as replacement for
 # |version| and |release|, also used in various other places throughout the
@@ -115,11 +115,15 @@ html_theme_options = {
 	'github_user': 'Chassis',
 	'github_repo': 'Chassis',
 	'description': u'Chassis is a virtual server for WordPress, designed for simplicity and speed.',
+	'logo': 'chassis-logo_vertical.jpg',
+	'touch_icon': 'chassis-logo_icon.jpg',
 }
 
 # Add any paths that contain custom themes here, relative to this directory.
 html_theme_path = [alabaster.get_path()]
 
+# Add any paths that contain templates here, relative to this directory.
+templates_path = ['_templates']
 
 # The name for this set of Sphinx documents.  If None, it defaults to
 # "<project> v<release> documentation".
@@ -135,7 +139,7 @@ html_theme_path = [alabaster.get_path()]
 # The name of an image file (within the static path) to use as favicon of the
 # docs.  This file should be a Windows icon file (.ico) being 16x16 or 32x32
 # pixels large.
-#html_favicon = None
+html_favicon = 'favicon.ico'
 
 # Add any paths that contain custom static files (such as style sheets) here,
 # relative to this directory. They are copied after the builtin static files,
@@ -158,7 +162,7 @@ html_static_path = ['_static']
 # Custom sidebar templates, maps document names to template names.
 html_sidebars = {
 	'**': [
-		'about.html', 'localtoc.html', 'relations.html', 'searchbox.html'
+		'about.html', 'navigation.html', 'relations.html', 'searchbox.html'
 	]
 }
 

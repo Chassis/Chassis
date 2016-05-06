@@ -1,0 +1,55 @@
+@import url(https://fonts.googleapis.com/css?family=Open+Sans:400,700,400italic,700italic|Montserrat);
+
+body,
+div.sphinxsidebar input {
+	font-family: 'Open Sans', sans-serif;
+}
+
+div.body h1,
+div.body h2,
+div.body h3,
+div.body h4,
+div.body h5,
+div.body h6,
+div.sphinxsidebar h3,
+div.sphinxsidebar h4,
+div.admonition p.admonition-title {
+	font-family: 'Montserrat', sans-serif;
+	text-transform: uppercase;
+}
+
+div.body h1 {
+	color: #29ABE2;
+}
+
+div.body p {
+	font-size: 16px;
+	line-height: 1.5;
+}
+
+div.sphinxsidebarwrapper p.blurb {
+	margin: 1em 0;
+	text-align: center;
+}
+
+div.sphinxsidebar h3,
+div.sphinxsidebar h4,
+div.sphinxsidebar h3 a,
+div.sphinxsidebar h4 a {
+	color: #999;
+	line-height: 1.1;
+	margin: 1em 0 0 0;
+}
+div.sphinxsidebar input[type=submit] {
+	color: #fff;
+	background-color: #29ABE2;
+}
+a,
+div.sphinxsidebar a {
+	color: #29ABE2;
+	border-bottom: 1px dotted #29ABE2;
+}
+
+div.footer a {
+	border: none;
+}
