@@ -112,7 +112,7 @@ What's in the box?
 By default we want to keep Chassis lean, below is a list of what we include:
 
 * `WordPress`_ (latest stable version)
-* `PHP`_ (version 5.4) (includes the `cURL <cURL extension_>`_ and `GD`_ extensions)
+* `PHP`_ (version 5.6) (includes the `cURL <cURL extension_>`_ and `GD`_ extensions)
 * `nginx`_
 * `MySQL`_
 

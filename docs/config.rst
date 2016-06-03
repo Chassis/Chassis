@@ -35,7 +35,7 @@ PHP Version
 
 **Key**: ``php``
 
-PHP 5.4 is included with Chassis by default, plus we register the additional
+PHP 5.6 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
@@ -48,6 +48,9 @@ To switch to 5.3 for example:
 You can use either a two-part version (``5.3``) or a three-part version
 (``5.3.1``) if you want to pick specifc versions. We support any version between
 5.3.0 and 5.6.x.
+
+.. note::
+   There are a few known issues on Windows with PHP 5.4.
 
 
 WordPress Directory
