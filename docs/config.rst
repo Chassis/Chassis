@@ -29,6 +29,17 @@ Changing your Chassis box is a quick two-step process:
 ``vagrant provision`` tells Vagrant to update the box with your new settings,
 and should take care of updating everything internally.
 
+wp-config.php
+-------------
+
+WordPress developers will often require customisation of optional constants that are defined in ``wp-config.php``.
+
+We discourage editing ``wp-config.php`` in Chassis as we have an optional php file ``local-config.php`` which can
+contain custom constants and overrides for WordPress.
+
+If ``local-config.php`` exists it will be loaded before ``wp-config.php`` so any constants that you define in
+``local-config.php`` will be the defaults.
+
 
 PHP Version
 -----------
