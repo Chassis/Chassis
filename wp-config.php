@@ -1,5 +1,9 @@
 <?php
 // ===================================================
+// Editing of this file is discouraged. Create a local-config.php to define custom constants.
+// ===================================================
+
+// ===================================================
 // Load database info and local development parameters
 // ===================================================
 if ( file_exists( dirname( __FILE__ ) . '/local-config-db.php' ) ) {
