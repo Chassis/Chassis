@@ -6,7 +6,7 @@
 Welcome to Chassis
 ==================
 
-Chassis is a virtual server for your WordPress site, built using `Vagrant`_.
+Chassis is an open source virtual server for your WordPress site, built using `Vagrant`_.
 (:doc:`quickstart`)
 
 Many people are still using their main computer for local development. However,
@@ -26,8 +26,10 @@ Getting started is as easy as downloading Chassis and running a single command.
 (We're working on making it possible to run Chassis without ever touching the
 command line, but we're not quite there.)
 
-.. _Vagrant: http://vagrantup.com/
+You can contribute to `Chassis on Github`_.
 
+.. _Vagrant: http://vagrantup.com/
+.. _Chassis on Github: https://github.com/Chassis/Chassis
 
 User Guide
 ----------
