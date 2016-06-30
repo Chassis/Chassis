@@ -98,3 +98,11 @@ For an example of how it's done, take a look at one of the existing extensions
 linked above. The memcache extension includes an example of how to install a PHP
 extension and automatically configure WordPress to use it, and is a very simple
 introduction to the system.
+
+Example: Installing The Memcached Extension
+-------------------------------------------
+
+To install the memcached extension you would do the following:
+1. Open your terminal and navigate to your root Chassis folder.
+2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
+3. `vagrant provision`.
