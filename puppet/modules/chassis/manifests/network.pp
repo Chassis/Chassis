@@ -10,6 +10,7 @@ define chassis::network (
 	$admin_user     = 'admin',
 	$admin_email    = 'admin@example.com',
 	$admin_password = 'password',
+	$https          = false,
 ) {
 	$extra_hosts = join($hosts, ' ')
 	$server_name = rstrip("${name} ${extra_hosts}")
@@ -26,6 +27,12 @@ define chassis::network (
 		notify => Service['nginx']
 	}
 
+	if ( $https == true ) {
+		$url = "https://${name}/"
+	} else {
+		$url = "http://${name}/"
+	}
+
 	mysql::db {$database:
 		user     => $database_user,
 		password => $database_password,
@@ -34,7 +41,7 @@ define chassis::network (
 	}
 
 	wp::site {"${wpdir}":
-		url            => "http://${name}/",
+		url            => $url,
 		name           => 'Vagrant Site',
 		require        => Mysql::Db[$database],
 		network        => true,

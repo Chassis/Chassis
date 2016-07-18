@@ -42,6 +42,10 @@ apt_mirror: Yes
 # Values: Yes, No
 multisite: No
 
+# Should we use HTTPS URLs?
+# Values: Yes, No
+https: No
+
 # Database configuration
 # (When overriding, include all values)
 database:

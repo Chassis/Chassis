@@ -13,3 +13,6 @@
 [submodule "wp/wp-content/themes/twentysixteen"]
 	path = wp/wp-content/themes/twentysixteen
 	url = https://github.com/WordPress/twentysixteen
+[submodule "puppet/modules/openssl"]
+	path = puppet/modules/openssl
+	url = https://github.com/camptocamp/puppet-openssl

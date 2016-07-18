@@ -111,6 +111,7 @@ By default we want to keep Chassis lean, below is a list of what we include:
 * `PHP`_ (version 5.6) (includes the `cURL <cURL extension_>`_ and `GD`_ extensions)
 * `nginx`_
 * `MySQL`_
+* `OpenSSL`_
 
 Some tools including `Git`_ and `cURL`_ are installed during setup, but you
 shouldn't rely on these being available. Many more are available as default
@@ -128,6 +129,7 @@ Chassis fast.
 .. _MySQL: http://www.mysql.com/
 .. _Git: http://git-scm.com/
 .. _cURL: http://curl.haxx.se/
+.. _OpenSSL: https://openssl.org/
 
 Rather than providing everything under the sun, we provide a set of sensible
 defaults, along with the ability to change this as needed. This helps keep

@@ -11,6 +11,7 @@ define chassis::wp (
 	$admin_email    = 'admin@example.com',
 	$admin_password = 'password',
 	$network = false,
+	$https = false,
 
 	$extensions = [],
 ) {
@@ -27,6 +28,7 @@ define chassis::wp (
 			admin_user        => $admin_user,
 			admin_email       => $admin_email,
 			admin_password    => $admin_password,
+			https             => $https,
 		}
 	}
 	else {
@@ -42,6 +44,7 @@ define chassis::wp (
 			admin_user        => $admin_user,
 			admin_email       => $admin_email,
 			admin_password    => $admin_password,
+			https             => $https,
 		}
 	}
 
