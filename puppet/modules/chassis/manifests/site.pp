@@ -41,4 +41,8 @@ define chassis::site (
 		admin_email    => $admin_email,
 		admin_password => $admin_password,
 	}
+
+	chassis::openssl { $name:
+	}
+
 }
