@@ -58,6 +58,6 @@ define chassis::wp (
 	}
 
 	file { '/home/vagrant/.wp-cli/config.yml':
-		content => template('chassis/wp-cli.yml')
+		content => template('chassis/wp-cli.yml.erb')
 	}
 }
