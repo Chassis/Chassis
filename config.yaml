@@ -79,6 +79,7 @@ paths:
 # Themes
 #
 # Install a list of themes, and activate the last one of them
+# NOTE: This will activate all themes going down the list, so might activate some activation actions within each
 #themes:
 #    - twentysixteen
 
