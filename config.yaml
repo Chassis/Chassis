@@ -70,6 +70,17 @@ paths:
     # Content directory. Relative to the base directory.
     content: content
 
+# Plugins
+#
+# Install and activate a list of plugins from wp.org
+#plugins:
+#    - query-monitor
+
+# Theme
+#
+# Activate a default theme, must be included in content directory already
+#theme: 'twentysixteen'
+
 # PHP version
 # Values: 5.3, 5.4, 5.5, 5.6 (or e.g. 5.3.3)
 php: 5.6
