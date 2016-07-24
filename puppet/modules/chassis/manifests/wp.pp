@@ -11,6 +11,8 @@ define chassis::wp (
 	$admin_email    = 'admin@example.com',
 	$admin_password = 'password',
 	$network = false,
+	$plugins = [],
+	$themes = [],
 
 	$extensions = [],
 ) {
@@ -59,5 +61,15 @@ define chassis::wp (
 
 	file { '/home/vagrant/.wp-cli/config.yml':
 		content => template('chassis/wp-cli.yml.erb')
+	}
+
+	wp::plugin { $plugins:
+		location => $location,
+		ensure   => 'enabled',
+	}
+
+	wp::theme { $themes:
+		location => $location,
+		ensure   => 'enabled',
 	}
 }
