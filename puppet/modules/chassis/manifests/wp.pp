@@ -65,11 +65,11 @@ define chassis::wp (
 
 	wp::plugin { $plugins:
 		location => $location,
-		ensure => 'enabled',
+		ensure   => 'enabled',
 	}
 
 	wp::theme { $themes:
 		location => $location,
-		ensure => 'enabled',
+		ensure   => 'enabled',
 	}
 }
