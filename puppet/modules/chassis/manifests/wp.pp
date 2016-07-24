@@ -12,7 +12,7 @@ define chassis::wp (
 	$admin_password = 'password',
 	$network = false,
 	$plugins = [],
-	$theme = '',
+	$themes = [],
 
 	$extensions = [],
 ) {
@@ -68,10 +68,8 @@ define chassis::wp (
 		ensure => 'enabled',
 	}
 
-	if ( $theme ) {
-		wp::theme { $theme:
-			location => $location,
-			ensure => 'enabled',
-		}
+	wp::theme { $themes:
+		location => $location,
+		ensure => 'enabled',
 	}
 }
