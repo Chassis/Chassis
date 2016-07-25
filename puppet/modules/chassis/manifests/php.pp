@@ -104,15 +104,6 @@ class chassis::php (
 			ensure  => 'present',
 			notify  => Service['php5-fpm'],
 		}
-
-#		package { 'php5-fpm':
-#			ensure     => running,
-#			enable     => true,
-#			hasrestart => true,
-#			hasstatus  => true,
-#			require    => Package['php5-fpm'],
-#			subscribe  => File['/etc/php5/fpm/conf.d/xdebug.ini'],
-#		}
 	}
 
 	file { '/etc/php5/fpm/php.ini':
