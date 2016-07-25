@@ -45,8 +45,16 @@ class chassis::php (
 		}
 	}
 
-	$packages = [ 'php5-fpm', 'php5-cli', 'php5-common' ]
-	$prefixed_extensions = prefix($extensions, 'php5-')
+	if versioncmp( "${version}", '7.0') >= 0 {
+		$php_package = "php${version}"
+		$php_dir = "php/${version}"
+	} else {
+		$php_package = 'php5'
+		$php_dir = 'php5'
+	}
+
+	$packages = prefix([ 'fpm', 'cli', 'common' ], "${php_package}-")
+	$prefixed_extensions = prefix($extensions, "${php_package}-")
 
 	# Hold the packages at the necessary version
 	apt::hold { $packages:
@@ -62,7 +70,7 @@ class chassis::php (
 		ensure => 'latest',
 		install_options => "--force-yes",
 
-		notify => Service['php5-fpm'],
+		notify => Service["${php_package}-fpm"],
 		require => [
 			Apt::Hold[ $packages ],
 			Apt::Ppa[ "ppa:ondrej/php5-oldstable" ],
@@ -71,12 +79,12 @@ class chassis::php (
 	}
 
 	# Ensure we always do common before fpm/cli
-	Package['php5-common'] -> Package['php5-fpm']
-	Package['php5-common'] -> Package['php5-cli']
+	Package["${php_package}-common"] -> Package["${php_package}-fpm"]
+	Package["${php_package}-common"] -> Package["${php_package}-cli"]
 
-	service { 'php5-fpm':
+	service { "${php_package}-fpm":
 		ensure => running,
-		require => Package[ 'php5-fpm' ]
+		require => Package[ "${php_package}-fpm" ]
 	}
 
 	# Install the extensions we need
@@ -93,34 +101,34 @@ class chassis::php (
 
 	# Set up the configuration files
 	if 'xdebug' in $extensions {
-		file { '/etc/php5/fpm/conf.d/xdebug.ini':
+		file { "/etc/${php_dir}/fpm/conf.d/xdebug.ini":
 			content => template('chassis/xdebug.ini.erb'),
 			owner   => 'root',
 			group   => 'root',
 			mode    => 0644,
-			require => Package['php5-fpm','php5-xdebug'],
+			require => Package["${php_package}-fpm","${php_package}-xdebug"],
 			ensure  => 'present',
-			notify  => Service['php5-fpm'],
+			notify  => Service["${php_package}-fpm"],
 		}
 	}
 
-	file { '/etc/php5/fpm/php.ini':
+	file { "/etc/${php_dir}/fpm/php.ini":
 		content => template('chassis/php.ini.erb'),
 		owner   => 'root',
 		group   => 'root',
 		mode    => 0644,
-		require => Package['php5-fpm'],
+		require => Package["${php_package}-fpm"],
 		ensure  => 'present',
-		notify  => Service['php5-fpm'],
+		notify  => Service["${php_package}-fpm"],
 	}
 
-	file { '/etc/php5/fpm/pool.d/www.conf':
+	file { "/etc/${php_dir}/fpm/pool.d/www.conf":
 		content => template('chassis/php-pool.conf.erb'),
 		owner   => 'root',
 		group   => 'root',
 		mode    => 0644,
-		require => Package['php5-fpm'],
+		require => Package["${php_package}-fpm"],
 		ensure  => 'present',
-		notify  => Service['php5-fpm'],
+		notify  => Service["${php_package}-fpm"],
 	}
 }
