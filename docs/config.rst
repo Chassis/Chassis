@@ -245,3 +245,18 @@ into the generated VM like so:
    synced_folders:
      a/host/directory: a/vm/directory
      "this:ones:got:colons": another/vm/directory
+
+Paths
+-----
+
+**Key**: ``paths``
+
+If you're transplanting Chassis into an existing project, you can manually set some paths manually.
+These can be set to absolute paths, or relative paths.
+
+.. code-block:: yaml
+
+   paths:
+      base: .
+      wp: wordpress
+      content: wordpress/wp-content
