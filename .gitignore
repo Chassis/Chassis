@@ -10,3 +10,4 @@
 .DS_Store
 .idea
 config.local.yaml
+/.wp-cli
