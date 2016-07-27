@@ -245,3 +245,50 @@ into the generated VM like so:
    synced_folders:
      a/host/directory: a/vm/directory
      "this:ones:got:colons": another/vm/directory
+
+Paths
+-----
+
+**Key**: ``paths``
+
+If you're transplanting Chassis into an existing project, you can manually set some paths manually.
+These can be set to absolute paths, or relative paths.
+
+.. code-block:: yaml
+
+   paths:
+      base: .
+      wp: wordpress
+      content: wordpress/wp-content
+
+Plugins
+-------
+
+**Key**: ``plugins``
+
+If you're using plugins from the WordPress.org repository you can add them in a list using the plugins slug.
+These will be downloaded, installed and activated for you.
+
+To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Query Monitor is https://wordpress.org/plugins/query-monitor/ which makes the slug ``query-monitor``.
+
+.. code-block:: yaml
+
+   plugins:
+      - query-monitor
+      - user-switching
+
+Themes
+------
+
+**Key**: ``themes``
+
+If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
+These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
+
+To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slud ``twentysixteen``.
+
+.. code-block:: yaml
+
+   themes:
+      - twentyfifteen
+      - twentysixteen
