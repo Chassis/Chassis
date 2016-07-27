@@ -59,11 +59,11 @@ define chassis::wp (
 		content => template('chassis/local-config-extensions.php.erb')
 	}
 
-	file { '/vagrant/.wp-cli':
+	file { '/home/vagrant/.wp-cli':
 		ensure => directory
 	}
 
-	file { '/vagrant/.wp-cli/config.yml':
+	file { '/home/vagrant/.wp-cli/config.yml':
 		content => template('chassis/wp-cli.yml.erb')
 	}
 
