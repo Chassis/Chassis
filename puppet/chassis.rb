@@ -92,10 +92,10 @@ module Chassis
             config["extensions"].each do |ext|
                 begin
                     repo = /^(git@|https:)/.match(ext) ? ext : 'https://github.com/' + ext
-                    folder = ext.split('/').last.gsub(/.git$/, '')
+                    folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
 
-                    if ! File.exist?( @@dir + "/extensions/" + folder )
-                        system("git clone %s %s/extensions/%s --recursive" % [repo, @@dir, folder] )
+                    if ! File.exist?( folder )
+                        system("git clone %s %s --recursive" % [repo, folder] )
                     end
                 end
             end
