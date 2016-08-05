@@ -103,6 +103,7 @@ Example: Installing The Memcached Extension
 -------------------------------------------
 
 To install the memcached extension you would do the following:
+
 1. Open your terminal and navigate to your root Chassis folder.
 2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
 3. `vagrant provision`.
