@@ -83,6 +83,13 @@ paths:
 #themes:
 #    - twentysixteen
 
+# Extensions
+#
+# Install a list of extensions automatically
+#extensions:
+#  - Chassis/Tester
+#  - git@github.com:Chassis/memcache.git
+
 # PHP version
 # Values: 5.3, 5.4, 5.5, 5.6 (or e.g. 5.3.3)
 php: 5.6
