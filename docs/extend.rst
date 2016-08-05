@@ -15,6 +15,8 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 * `Memcache`_: Install a memcached server, and configure WordPress to use it
   automatically.
 
+* `Redis`_: Install Redis server.
+
 * `phpMyAdmin`_: Set up phpMyAdmin on your Chassis box
 
 * `Tester`_: Install and configure PHPUnit, along with the WordPress additions
@@ -36,6 +38,7 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 .. _Mailcatcher: https://github.com/Chassis/mailcatcher
 .. _Memcache: https://github.com/Chassis/memcache
+.. _Redis: https://github.com/shadyvb/chassis-redis
 .. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
 .. _Tester: https://github.com/Chassis/Tester
 .. _Theme Review: https://github.com/Chassis/themereview
