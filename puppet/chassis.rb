@@ -87,18 +87,18 @@ module Chassis
 	end
 
 	def self.install_extensions(config)
-	    # Install extensions listed in config
-        if config["extensions"]
-            config["extensions"].each do |ext|
-                begin
-                    repo = /^(git@|https:)/.match(ext) ? ext : 'https://github.com/' + ext
-                    folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
+		# Install extensions listed in config
+		if config["extensions"]
+			config["extensions"].each do |ext|
+				begin
+					repo = /^(git@|https:)/.match(ext) ? ext : 'https://github.com/' + ext
+					folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
 
-                    if ! File.exist?( folder )
-                        system("git clone %s %s --recursive" % [repo, folder] )
-                    end
-                end
-            end
-        end
-    end
+					if ! File.exist?( folder )
+						system("git clone %s %s --recursive" % [repo, folder] )
+					end
+				end
+			end
+		end
+	end
 end
