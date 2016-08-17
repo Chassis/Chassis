@@ -60,7 +60,7 @@ $wp_http_referer = remove_query_arg( array( 'update', 'delete_count', 'user_id' 
 $user_can_edit = current_user_can( 'edit_posts' ) || current_user_can( 'edit_pages' );
 
 /**
- * Filter whether to allow administrators on Multisite to edit every user.
+ * Filters whether to allow administrators on Multisite to edit every user.
  *
  * Enabling the user editing form via this filter also hinges on the user holding
  * the 'manage_network_users' cap, and the logged-in user not matching the user
@@ -77,7 +77,7 @@ if ( is_multisite()
 	&& $user_id != $current_user->ID
 	&& ! apply_filters( 'enable_edit_any_user_configuration', true )
 ) {
-	wp_die( __( 'You do not have permission to edit this user.' ) );
+	wp_die( __( 'Sorry, you are not allowed to edit this user.' ) );
 }
 
 // Execute confirmed email change. See send_confirmation_on_profile_email().
@@ -110,7 +110,7 @@ case 'update':
 check_admin_referer('update-user_' . $user_id);
 
 if ( !current_user_can('edit_user', $user_id) )
-	wp_die(__('You do not have permission to edit this user.'));
+	wp_die(__('Sorry, you are not allowed to edit this user.'));
 
 if ( IS_PROFILE_PAGE ) {
 	/**
@@ -163,7 +163,7 @@ default:
 $profileuser = get_user_to_edit($user_id);
 
 if ( !current_user_can('edit_user', $user_id) )
-	wp_die(__('You do not have permission to edit this user.'));
+	wp_die(__('Sorry, you are not allowed to edit this user.'));
 
 $sessions = WP_Session_Tokens::get_instance( $profileuser->ID );
 
@@ -426,7 +426,7 @@ if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_c
 	<th><label for="<?php echo $name; ?>">
 		<?php
 		/**
-		 * Filter a user contactmethod label.
+		 * Filters a user contactmethod label.
 		 *
 		 * The dynamic portion of the filter hook, `$name`, refers to
 		 * each of the keys in the contactmethods array.
@@ -470,7 +470,7 @@ if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_c
 			}
 
 			/**
-			 * Filter the user profile picture description displayed under the Gravatar.
+			 * Filters the user profile picture description displayed under the Gravatar.
 			 *
 			 * @since 4.4.0
 			 *
@@ -484,7 +484,7 @@ if ( is_multisite() && is_network_admin() && ! IS_PROFILE_PAGE && current_user_c
 
 <?php
 /**
- * Filter the display of the password fields.
+ * Filters the display of the password fields.
  *
  * @since 1.5.1
  * @since 2.8.0 Added the `$profileuser` parameter.
@@ -531,7 +531,7 @@ if ( $show_password_fields = apply_filters( 'show_password_fields', true, $profi
 	<td>
 		<label>
 			<input type="checkbox" name="pw_weak" class="pw-checkbox" />
-			<?php _e( 'Confirm use of weak password' ); ?>
+			<span id="pw-weak-text-label"><?php _e( 'Confirm use of potentially weak password' ); ?></span>
 		</label>
 	</td>
 </tr>
@@ -601,7 +601,7 @@ if ( IS_PROFILE_PAGE && count( $sessions->get_all() ) === 1 ) : ?>
 
 <?php
 /**
- * Filter whether to display additional capabilities for the user.
+ * Filters whether to display additional capabilities for the user.
  *
  * The 'Additional Capabilities' section will only be enabled if
  * the number of the user's capabilities exceeds their number of

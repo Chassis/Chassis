@@ -14,7 +14,7 @@ if ( ! is_multisite() )
 	wp_die( __( 'Multisite support is not enabled.' ) );
 
 if ( !current_user_can('manage_network_themes') )
-	wp_die( __( 'You do not have sufficient permissions to manage network themes.' ) );
+	wp_die( __( 'Sorry, you are not allowed to manage network themes.' ) );
 
 $wp_list_table = _get_list_table('WP_MS_Themes_List_Table');
 $pagenum = $wp_list_table->get_pagenum();
@@ -29,12 +29,10 @@ $_SERVER['REQUEST_URI'] = remove_query_arg( $temp_args, $_SERVER['REQUEST_URI'] 
 $referer = remove_query_arg( $temp_args, wp_get_referer() );
 
 if ( $action ) {
-	$allowed_themes = get_site_option( 'allowedthemes' );
 	switch ( $action ) {
 		case 'enable':
 			check_admin_referer('enable-theme_' . $_GET['theme']);
-			$allowed_themes[ $_GET['theme'] ] = true;
-			update_site_option( 'allowedthemes', $allowed_themes );
+			WP_Theme::network_enable_theme( $_GET['theme'] );
 			if ( false === strpos( $referer, '/network/themes.php' ) )
 				wp_redirect( network_admin_url( 'themes.php?enabled=1' ) );
 			else
@@ -42,8 +40,7 @@ if ( $action ) {
 			exit;
 		case 'disable':
 			check_admin_referer('disable-theme_' . $_GET['theme']);
-			unset( $allowed_themes[ $_GET['theme'] ] );
-			update_site_option( 'allowedthemes', $allowed_themes );
+			WP_Theme::network_disable_theme( $_GET['theme'] );
 			wp_safe_redirect( add_query_arg( 'disabled', '1', $referer ) );
 			exit;
 		case 'enable-selected':
@@ -53,9 +50,7 @@ if ( $action ) {
 				wp_safe_redirect( add_query_arg( 'error', 'none', $referer ) );
 				exit;
 			}
-			foreach ( (array) $themes as $theme )
-				$allowed_themes[ $theme ] = true;
-			update_site_option( 'allowedthemes', $allowed_themes );
+			WP_Theme::network_enable_theme( (array) $themes );
 			wp_safe_redirect( add_query_arg( 'enabled', count( $themes ), $referer ) );
 			exit;
 		case 'disable-selected':
@@ -65,9 +60,7 @@ if ( $action ) {
 				wp_safe_redirect( add_query_arg( 'error', 'none', $referer ) );
 				exit;
 			}
-			foreach ( (array) $themes as $theme )
-				unset( $allowed_themes[ $theme ] );
-			update_site_option( 'allowedthemes', $allowed_themes );
+			WP_Theme::network_disable_theme( (array) $themes );
 			wp_safe_redirect( add_query_arg( 'disabled', count( $themes ), $referer ) );
 			exit;
 		case 'update-selected' :
@@ -97,7 +90,7 @@ if ( $action ) {
 			exit;
 		case 'delete-selected':
 			if ( ! current_user_can( 'delete_themes' ) ) {
-				wp_die( __('You do not have sufficient permissions to delete themes for this site.') );
+				wp_die( __('Sorry, you are not allowed to delete themes for this site.') );
 			}
 
 			check_admin_referer( 'bulk-themes' );
@@ -235,6 +228,7 @@ get_current_screen()->set_screen_reader_content( array(
 $title = __('Themes');
 $parent_file = 'themes.php';
 
+wp_enqueue_script( 'updates' );
 wp_enqueue_script( 'theme-preview' );
 
 require_once(ABSPATH . 'wp-admin/admin-header.php');
@@ -294,7 +288,7 @@ if ( 'broken' == $status )
 	echo '<p class="clear">' . __( 'The following themes are installed but incomplete.' ) . '</p>';
 ?>
 
-<form method="post">
+<form id="bulk-action-form" method="post">
 <input type="hidden" name="theme_status" value="<?php echo esc_attr($status) ?>" />
 <input type="hidden" name="paged" value="<?php echo esc_attr($page) ?>" />
 
@@ -304,4 +298,8 @@ if ( 'broken' == $status )
 </div>
 
 <?php
+wp_print_request_filesystem_credentials_modal();
+wp_print_admin_notice_templates();
+wp_print_update_row_templates();
+
 include(ABSPATH . 'wp-admin/admin-footer.php');

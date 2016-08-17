@@ -20,8 +20,7 @@
  * does not distinguish between arguments of the same name for different request methods.
  * For instance, in a request with `GET id=1` and `POST id=2`, `$request['id']` will equal
  * 2 (`POST`) not 1 (`GET`). For more precision between request methods, use
- * {@see WP_REST_Request::get_body_params()}, {@see WP_REST_Request::get_url_params()},
- * etc.
+ * WP_REST_Request::get_body_params(), WP_REST_Request::get_url_params(), etc.
  *
  * @since 4.4.0
  *
@@ -184,7 +183,7 @@ class WP_REST_Request implements ArrayAccess {
 	 *
 	 * @link http://stackoverflow.com/q/18185366
 	 * @link http://wiki.nginx.org/Pitfalls#Missing_.28disappearing.29_HTTP_headers
-	 * @link http://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers
+	 * @link https://nginx.org/en/docs/http/ngx_http_core_module.html#underscores_in_headers
 	 *
 	 * @since 4.4.0
 	 * @access public
@@ -374,7 +373,7 @@ class WP_REST_Request implements ArrayAccess {
 		$order[] = 'defaults';
 
 		/**
-		 * Filter the parameter order.
+		 * Filters the parameter order.
 		 *
 		 * The order affects which parameters are checked when using get_param() and family.
 		 * This acts similarly to PHP's `request_order` setting.
@@ -971,7 +970,7 @@ class WP_REST_Request implements ArrayAccess {
 		}
 
 		/**
-		 * Filter the request generated from a URL.
+		 * Filters the request generated from a URL.
 		 *
 		 * @since 4.5.0
 		 *

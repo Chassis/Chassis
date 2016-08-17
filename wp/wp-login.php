@@ -45,7 +45,7 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 	// Shake it!
 	$shake_error_codes = array( 'empty_password', 'empty_email', 'invalid_email', 'invalidcombo', 'empty_username', 'invalid_username', 'incorrect_password' );
 	/**
-	 * Filter the error codes array for shaking the login form.
+	 * Filters the error codes array for shaking the login form.
 	 *
 	 * @since 3.0.0
 	 *
@@ -106,15 +106,16 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 	}
 
 	/**
-	 * Filter link URL of the header logo above login form.
+	 * Filters link URL of the header logo above login form.
 	 *
 	 * @since 2.1.0
 	 *
 	 * @param string $login_header_url Login header logo URL.
 	 */
 	$login_header_url = apply_filters( 'login_headerurl', $login_header_url );
+
 	/**
-	 * Filter the title attribute of the header logo above login form.
+	 * Filters the title attribute of the header logo above login form.
 	 *
 	 * @since 2.1.0
 	 *
@@ -139,7 +140,7 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 	$classes[] =' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 
 	/**
-	 * Filter the login page body classes.
+	 * Filters the login page body classes.
 	 *
 	 * @since 3.5.0
 	 *
@@ -151,6 +152,14 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 	?>
 	</head>
 	<body class="login <?php echo esc_attr( implode( ' ', $classes ) ); ?>">
+	<?php
+	/**
+	 * Fires in the login page header after the body tag is opened.
+	 *
+	 * @since 4.6.0
+	 */
+	do_action( 'login_header' );
+	?>
 	<div id="login">
 		<h1><a href="<?php echo esc_url( $login_header_url ); ?>" title="<?php echo esc_attr( $login_header_title ); ?>" tabindex="-1"><?php bloginfo( 'name' ); ?></a></h1>
 	<?php
@@ -158,7 +167,7 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 	unset( $login_header_url, $login_header_title );
 
 	/**
-	 * Filter the message to display above the login form.
+	 * Filters the message to display above the login form.
 	 *
 	 * @since 2.1.0
 	 *
@@ -188,7 +197,7 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 		}
 		if ( ! empty( $errors ) ) {
 			/**
-			 * Filter the error messages displayed above the login form.
+			 * Filters the error messages displayed above the login form.
 			 *
 			 * @since 2.1.0
 			 *
@@ -198,7 +207,7 @@ function login_header( $title = 'Log In', $message = '', $wp_error = '' ) {
 		}
 		if ( ! empty( $messages ) ) {
 			/**
-			 * Filter instructional messages displayed above the login form.
+			 * Filters instructional messages displayed above the login form.
 			 *
 			 * @since 2.5.0
 			 *
@@ -219,7 +228,10 @@ function login_footer($input_id = '') {
 
 	// Don't allow interim logins to navigate away from the page.
 	if ( ! $interim_login ): ?>
-	<p id="backtoblog"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php printf( __( '&larr; Back to %s' ), get_bloginfo( 'title', 'display' ) ); ?></a></p>
+	<p id="backtoblog"><a href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php
+		/* translators: %s: site title */
+		printf( _x( '&larr; Back to %s', 'site' ), get_bloginfo( 'title', 'display' ) );
+	?></a></p>
 	<?php endif; ?>
 
 	</div>
@@ -286,7 +298,7 @@ function retrieve_password() {
 	if ( empty( $_POST['user_login'] ) ) {
 		$errors->add('empty_username', __('<strong>ERROR</strong>: Enter a username or email address.'));
 	} elseif ( strpos( $_POST['user_login'], '@' ) ) {
-		$user_data = get_user_by( 'email', trim( $_POST['user_login'] ) );
+		$user_data = get_user_by( 'email', trim( wp_unslash( $_POST['user_login'] ) ) );
 		if ( empty( $user_data ) )
 			$errors->add('invalid_email', __('<strong>ERROR</strong>: There is no user registered with that email address.'));
 	} else {
@@ -341,7 +353,7 @@ function retrieve_password() {
 	$title = sprintf( __('[%s] Password Reset'), $blogname );
 
 	/**
-	 * Filter the subject of the password reset email.
+	 * Filters the subject of the password reset email.
 	 *
 	 * @since 2.8.0
 	 * @since 4.4.0 Added the `$user_login` and `$user_data` parameters.
@@ -353,7 +365,7 @@ function retrieve_password() {
 	$title = apply_filters( 'retrieve_password_title', $title, $user_login, $user_data );
 
 	/**
-	 * Filter the message body of the password reset mail.
+	 * Filters the message body of the password reset mail.
 	 *
 	 * @since 2.8.0
 	 * @since 4.1.0 Added `$user_login` and `$user_data` parameters.
@@ -436,7 +448,7 @@ case 'postpass' :
 	$hasher = new PasswordHash( 8, true );
 
 	/**
-	 * Filter the life span of the post password cookie.
+	 * Filters the life span of the post password cookie.
 	 *
 	 * By default, the cookie expires 10 days from creation. To turn this
 	 * into a session cookie, return 0.
@@ -472,7 +484,7 @@ case 'logout' :
 	}
 
 	/**
-	 * Filter the log out redirect URL.
+	 * Filters the log out redirect URL.
 	 *
 	 * @since 4.2.0
 	 *
@@ -506,7 +518,7 @@ case 'retrievepassword' :
 
 	$lostpassword_redirect = ! empty( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
 	/**
-	 * Filter the URL redirected to after submitting the lostpassword/retrievepassword form.
+	 * Filters the URL redirected to after submitting the lostpassword/retrievepassword form.
 	 *
 	 * @since 3.0.0
 	 *
@@ -675,7 +687,7 @@ break;
 case 'register' :
 	if ( is_multisite() ) {
 		/**
-		 * Filter the Multisite sign up URL.
+		 * Filters the Multisite sign up URL.
 		 *
 		 * @since 3.0.0
 		 *
@@ -705,7 +717,7 @@ case 'register' :
 
 	$registration_redirect = ! empty( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
 	/**
-	 * Filter the registration redirect URL.
+	 * Filters the registration redirect URL.
 	 *
 	 * @since 3.0.0
 	 *
@@ -781,7 +793,7 @@ default:
 
 	$reauth = empty($_REQUEST['reauth']) ? false : true;
 
-	$user = wp_signon( '', $secure_cookie );
+	$user = wp_signon( array(), $secure_cookie );
 
 	if ( empty( $_COOKIE[ LOGGED_IN_COOKIE ] ) ) {
 		if ( headers_sent() ) {
@@ -796,7 +808,7 @@ default:
 
 	$requested_redirect_to = isset( $_REQUEST['redirect_to'] ) ? $_REQUEST['redirect_to'] : '';
 	/**
-	 * Filter the login redirect URL.
+	 * Filters the login redirect URL.
 	 *
 	 * @since 3.0.0
 	 *
@@ -863,7 +875,7 @@ default:
 	}
 
 	/**
-	 * Filter the login page errors.
+	 * Filters the login page errors.
 	 *
 	 * @since 3.6.0
 	 *

@@ -84,7 +84,12 @@ function wp_add_inline_style( $handle, $data ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
 	if ( false !== stripos( $data, '</style>' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Do not pass style tags to wp_add_inline_style().' ), '3.7' );
+		_doing_it_wrong( __FUNCTION__, sprintf(
+			/* translators: 1: <style>, 2: wp_add_inline_style() */
+			__( 'Do not pass %1$s tags to %2$s.' ),
+			'<code>&lt;style&gt;</code>',
+			'<code>wp_add_inline_style()</code>'
+		), '3.7.0' );
 		$data = trim( preg_replace( '#<style[^>]*>(.*)</style>#is', '$1', $data ) );
 	}
 
@@ -95,7 +100,7 @@ function wp_add_inline_style( $handle, $data ) {
  * Register a CSS stylesheet.
  *
  * @see WP_Dependencies::add()
- * @link http://www.w3.org/TR/CSS2/media.html#media-types List of CSS media types.
+ * @link https://www.w3.org/TR/CSS2/media.html#media-types List of CSS media types.
  *
  * @since 2.6.0
  * @since 4.3.0 A return value was added.
@@ -140,7 +145,7 @@ function wp_deregister_style( $handle ) {
  *
  * @see WP_Dependencies::add()
  * @see WP_Dependencies::enqueue()
- * @link http://www.w3.org/TR/CSS2/media.html#media-types List of CSS media types.
+ * @link https://www.w3.org/TR/CSS2/media.html#media-types List of CSS media types.
  *
  * @since 2.6.0
  *

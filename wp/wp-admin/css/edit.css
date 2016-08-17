@@ -114,12 +114,12 @@ input#link_url {
 }
 
 #editable-post-name {
-	font-weight: bold;
+	font-weight: 600;
 }
 
 #editable-post-name input {
 	font-size: 13px;
-	font-weight: normal;
+	font-weight: 400;
 	height: 22px;
 	margin: 0;
 	width: 16em;
@@ -281,7 +281,7 @@ ul.add-menu-item-tabs li.tabs,
 ul.category-tabs li,
 ul.add-menu-item-tabs li,
 ul.wp-tab-bar li {
-	padding: 3px 5px 5px;
+	padding: 3px 5px 6px;
 }
 
 #set-post-thumbnail {
@@ -375,16 +375,6 @@ form#tags-filter {
 
 #wp-content-editor-container {
 	position: relative;
-}
-
-#content-textarea-clone {
-	z-index: -1;
-	position: absolute;
-	top: 0;
-	visibility: hidden;
-	overflow: hidden;
-	max-width: 100%;
-	border: 1px solid transparent;
 }
 
 .wp-editor-expand #wp-content-editor-tools {
@@ -642,19 +632,6 @@ span.wp-media-buttons-icon:before {
 #poststuff .inside #parent_id,
 #poststuff .inside #page_template {
 	max-width: 100%;
-}
-
-#poststuff .inside label.spam,
-#poststuff .inside label.deleted {
-	color: red;
-}
-
-#poststuff .inside label.waiting {
-	color: orange;
-}
-
-#poststuff .inside label.approved {
-	color: green;
 }
 
 .ie8 #poststuff .inside #parent_id,
@@ -981,15 +958,9 @@ ul.categorychecklist li {
 	border-style: solid;
 }
 
-.form-wrap p,
-.form-wrap label {
-	font-size: 11px;
-}
-
 .form-wrap label {
 	display: block;
-	padding: 2px;
-	font-size: 12px;
+	padding: 2px 0;
 }
 
 .form-field input[type="text"],
@@ -1020,8 +991,8 @@ span.description,
 }
 
 .form-wrap .form-field {
-	margin: 0 0 10px;
-	padding: 8px 0;
+	margin: 1em 0;
+	padding: 0;
 }
 
 .form-wrap .form-field #parent {
@@ -1037,6 +1008,9 @@ span.description,
 	margin-top: -10px;
 }
 
+.edit-term-notes {
+	margin-top: 2em;
+}
 
 /*------------------------------------------------------------------------------
   13.0 - Tags
@@ -1131,12 +1105,18 @@ p.popular-tags a {
 	padding: 10px 15px;
 }
 
+.comment-ays .comment-content ul {
+	list-style: initial;
+	margin-left: 2em;
+}
+
 .comment-ays .comment-content a[href]:after {
 	content: '(' attr( href ) ')';
 	display: inline-block;
 	padding: 0 4px;
 	color: #72777C;
 	font-size: 13px;
+	word-break: break-all;
 }
 
 .comment-ays .comment-content p.edit-comment {
@@ -1190,7 +1170,7 @@ table.links-table {
 }
 
 .links-table th {
-	font-weight: normal;
+	font-weight: 400;
 	text-align: left;
 	vertical-align: top;
 	min-width: 80px;
@@ -1531,17 +1511,14 @@ table.links-table {
 	}
 
 	#wp-content-media-buttons a {
-		font-size: 16px;
-		line-height: 37px;
-		height: 39px;
-		padding: 0 20px 0 15px;
+		font-size: 14px;
+		padding: 6px 10px;
 	}
 
 	.wp-media-buttons span.wp-media-buttons-icon,
 	.wp-media-buttons span.jetpack-contact-form-icon {
 		width: 22px !important;
-		margin-top: -3px !important;
-		margin-left: -5px !important;
+		margin-left: -2px !important;
 	}
 
 	.wp-media-buttons .add_media span.wp-media-buttons-icon:before,
@@ -1590,13 +1567,5 @@ table.links-table {
 	.links-table th,
 	.links-table td {
 		padding: 10px 0;
-	}
-}
-
-@media only screen and (max-width: 500px) {
-	/* Align Add Media + Visual + Text tabs */
-	#wp-content-media-buttons a {
-		font-size: 14px;
-		padding: 0 10px 0 10px;
 	}
 }

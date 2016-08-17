@@ -45,7 +45,7 @@ if ( 'category' == $taxonomy ) {
 }
 
 /**
- * Use with caution, see http://codex.wordpress.org/Function_Reference/wp_reset_vars
+ * Use with caution, see https://codex.wordpress.org/Function_Reference/wp_reset_vars
  */
 wp_reset_vars( array( 'wp_http_referer' ) );
 
@@ -74,9 +74,15 @@ do_action( "{$taxonomy}_pre_edit_form", $tag, $taxonomy ); ?>
 <div id="message" class="updated">
 	<p><strong><?php echo $message; ?></strong></p>
 	<?php if ( $wp_http_referer ) { ?>
-	<p><a href="<?php echo esc_url( $wp_http_referer ); ?>"><?php printf( __( '&larr; Back to %s' ), $tax->labels->name ); ?></a></p>
+	<p><a href="<?php echo esc_url( $wp_http_referer ); ?>"><?php
+		/* translators: %s: taxonomy name */
+		printf( _x( '&larr; Back to %s', 'admin screen' ), $tax->labels->name );
+	?></a></p>
 	<?php } else { ?>
-	<p><a href="<?php echo esc_url( wp_get_referer() ); ?>"><?php printf( __( '&larr; Back to %s' ), $tax->labels->name ); ?></a></p>
+	<p><a href="<?php echo esc_url( wp_get_referer() ); ?>"><?php
+		/* translators: %s: taxonomy name */
+		printf( _x( '&larr; Back to %s', 'admin screen' ), $tax->labels->name );
+	?></a></p>
 	<?php } ?>
 </div>
 <?php endif; ?>
@@ -127,7 +133,7 @@ do_action( "{$taxonomy}_term_edit_form_top", $tag, $taxonomy );
 			<th scope="row"><label for="slug"><?php _e( 'Slug' ); ?></label></th>
 			<?php
 			/**
-			 * Filter the editable slug.
+			 * Filters the editable slug.
 			 *
 			 * Note: This is a multi-use hook in that it is leveraged both for editable
 			 * post URIs and term slugs.

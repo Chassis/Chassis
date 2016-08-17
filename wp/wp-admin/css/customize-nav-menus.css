@@ -16,6 +16,24 @@
 	color: #555;
 }
 
+/* The `edit-menu` button uses also the `button-link` class. */
+.customize-control-nav_menu_location .edit-menu {
+	margin-left: 6px;
+	vertical-align: middle;
+	line-height: 28px;
+	color: #0073aa;
+	text-decoration: underline;
+}
+
+.customize-control-nav_menu_location .edit-menu:hover,
+.customize-control-nav_menu_location .edit-menu:active {
+	color: #00a0d2;
+}
+
+.customize-control-nav_menu_location .edit-menu:focus {
+	color: #124964;
+}
+
 .wp-customizer .menu-item-bar .menu-item-handle,
 .wp-customizer .menu-item-settings,
 .wp-customizer .menu-item-settings .description-thin {
@@ -511,7 +529,7 @@
 #available-menu-items .cannot-expand .accordion-section-title .no-items {
 	float: right;
 	color: #555d66;
-	font-weight: normal;
+	font-weight: 400;
 	margin-left: 5px;
 }
 
@@ -607,13 +625,17 @@
 
 #available-menu-items-search .clear-results {
 	position: absolute;
-	top: 20px;
+	top: 18px; /* 12 container padding +1 input margin +1 input border +4 ( 4 is ( 28 input height - 20 button height ) / 2 ) */
 	right: 20px;
 	width: 20px;
 	height: 20px;
+	padding: 0;
+	border: 0;
 	cursor: pointer;
+	background: none;
 	color: #a00;
 	text-decoration: none;
+	outline: 0;
 }
 
 #available-menu-items-search .clear-results,
@@ -625,9 +647,14 @@
 	display: block;
 }
 
+.ie8 #available-menu-items-search.loading .clear-results:before {
+	content: ""; /* help IE8 redraw the pseudo element */
+}
+
 #available-menu-items-search .clear-results:before {
 	content: "\f335";
 	font: normal 20px/1 dashicons;
+	vertical-align: middle;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -639,9 +666,9 @@
 
 #available-menu-items-search .spinner {
 	position: absolute;
-	top: 20px;
-	margin: 0 !important;
+	top: 18px; /* 12 container padding +1 input margin +1 input border +4 ( ( 28 input height - 20 button height ) / 2 ) */
 	right: 20px;
+	margin: 0 !important;
 }
 
 /* search results list */
@@ -840,10 +867,19 @@ li.assigned-to-menu-location .add-new-menu-item {
 	#available-menu-items #available-menu-items-search .accordion-section-content {
 		top: 63px;
 	}
+
+	#available-menu-items-search .spinner,
+	#available-menu-items-search .clear-results {
+		top: 20px; /* 12 container padding +1 input margin +1 input border +5.5 ( 5.5 rounded to 6 is ( 31 input height - 20 button height ) / 2 ) */
+	}
 }
 
 @media screen and ( max-width: 640px ) {
 	#available-menu-items #available-menu-items-search .accordion-section-content {
 		top: 133px;
+	}
+
+	#available-menu-items-search .clear-results {
+		top: 90px; /* 70 section title height + 12 container padding +1 input margin +1 input border +5.5 ( 5.5 rounded to 6 is ( 31 input height - 20 button height ) / 2 ) */
 	}
 }

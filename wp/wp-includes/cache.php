@@ -2,7 +2,7 @@
 /**
  * Object Cache API
  *
- * @link https://codex.wordpress.org/Function_Reference/WP_Cache
+ * @link https://codex.wordpress.org/Class_Reference/WP_Object_Cache
  *
  * @package WordPress
  * @subpackage Cache
@@ -200,7 +200,7 @@ function wp_cache_set( $key, $data, $group = '', $expire = 0 ) {
 }
 
 /**
- * Switches the interal blog ID.
+ * Switches the internal blog ID.
  *
  * This changes the blog id used to create keys in blog specific groups.
  *
@@ -264,7 +264,7 @@ function wp_cache_add_non_persistent_groups( $groups ) {
  * @global WP_Object_Cache $wp_object_cache Object cache global instance.
  */
 function wp_cache_reset() {
-	_deprecated_function( __FUNCTION__, '3.5' );
+	_deprecated_function( __FUNCTION__, '3.5.0' );
 
 	global $wp_object_cache;
 
@@ -344,7 +344,7 @@ class WP_Object_Cache {
 	private $multisite;
 
 	/**
-	 * Makes private properties readable for backwards compatibility.
+	 * Makes private properties readable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -357,7 +357,7 @@ class WP_Object_Cache {
 	}
 
 	/**
-	 * Makes private properties settable for backwards compatibility.
+	 * Makes private properties settable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -371,7 +371,7 @@ class WP_Object_Cache {
 	}
 
 	/**
-	 * Makes private properties checkable for backwards compatibility.
+	 * Makes private properties checkable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -384,7 +384,7 @@ class WP_Object_Cache {
 	}
 
 	/**
-	 * Makes private properties un-settable for backwards compatibility.
+	 * Makes private properties un-settable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -631,7 +631,7 @@ class WP_Object_Cache {
 	 * @see switch_to_blog()
 	 */
 	public function reset() {
-		_deprecated_function( __FUNCTION__, '3.5', 'switch_to_blog()' );
+		_deprecated_function( __FUNCTION__, '3.5.0', 'switch_to_blog()' );
 
 		// Clear out non-global caches since the blog ID has changed.
 		foreach ( array_keys( $this->cache ) as $group ) {
@@ -697,7 +697,7 @@ class WP_Object_Cache {
 	}
 
 	/**
-	 * Switches the interal blog ID.
+	 * Switches the internal blog ID.
 	 *
 	 * This changes the blog ID used to create keys in blog specific groups.
 	 *

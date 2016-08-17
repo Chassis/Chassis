@@ -7,6 +7,7 @@
  *
  * @package WordPress
  * @subpackage Feed
+ * @since 2.1.0
  */
 
 /**
@@ -25,7 +26,7 @@
 function get_bloginfo_rss($show = '') {
 	$info = strip_tags(get_bloginfo($show));
 	/**
-	 * Filter the bloginfo for use in RSS feeds.
+	 * Filters the bloginfo for use in RSS feeds.
 	 *
 	 * @since 2.2.0
 	 *
@@ -52,7 +53,7 @@ function get_bloginfo_rss($show = '') {
  */
 function bloginfo_rss($show = '') {
 	/**
-	 * Filter the bloginfo for display in RSS feeds.
+	 * Filters the bloginfo for display in RSS feeds.
 	 *
 	 * @since 2.1.0
 	 *
@@ -68,7 +69,7 @@ function bloginfo_rss($show = '') {
  * Retrieve the default feed.
  *
  * The default feed is 'rss2', unless a plugin changes it through the
- * 'default_feed' filter.
+ * {@see 'default_feed'} filter.
  *
  * @since 2.5.0
  *
@@ -76,7 +77,7 @@ function bloginfo_rss($show = '') {
  */
 function get_default_feed() {
 	/**
-	 * Filter the default feed type.
+	 * Filters the default feed type.
 	 *
 	 * @since 2.5.0
 	 *
@@ -103,7 +104,7 @@ function get_wp_title_rss( $deprecated = '&#8211;' ) {
 	}
 
 	/**
-	 * Filter the blog title for use as the feed title.
+	 * Filters the blog title for use as the feed title.
 	 *
 	 * @since 2.2.0
 	 * @since 4.4.0 The `$sep` parameter was deprecated and renamed to `$deprecated`.
@@ -129,7 +130,7 @@ function wp_title_rss( $deprecated = '&#8211;' ) {
 	}
 
 	/**
-	 * Filter the blog title for display of the feed title.
+	 * Filters the blog title for display of the feed title.
 	 *
 	 * @since 2.2.0
 	 * @since 4.4.0 The `$sep` parameter was deprecated and renamed to `$deprecated`.
@@ -153,7 +154,7 @@ function get_the_title_rss() {
 	$title = get_the_title();
 
 	/**
-	 * Filter the post title for use in a feed.
+	 * Filters the post title for use in a feed.
 	 *
 	 * @since 1.2.0
 	 *
@@ -189,7 +190,7 @@ function get_the_content_feed($feed_type = null) {
 	$content = apply_filters( 'the_content', get_the_content() );
 	$content = str_replace(']]>', ']]&gt;', $content);
 	/**
-	 * Filter the post content for use in feeds.
+	 * Filters the post content for use in feeds.
 	 *
 	 * @since 2.9.0
 	 *
@@ -219,7 +220,7 @@ function the_content_feed($feed_type = null) {
 function the_excerpt_rss() {
 	$output = get_the_excerpt();
 	/**
-	 * Filter the post excerpt for a feed.
+	 * Filters the post excerpt for a feed.
 	 *
 	 * @since 1.2.0
 	 *
@@ -235,7 +236,7 @@ function the_excerpt_rss() {
  */
 function the_permalink_rss() {
 	/**
-	 * Filter the permalink to the post for use in feeds.
+	 * Filters the permalink to the post for use in feeds.
 	 *
 	 * @since 2.3.0
 	 *
@@ -252,7 +253,7 @@ function the_permalink_rss() {
  */
 function comments_link_feed() {
 	/**
-	 * Filter the comments permalink for the current post.
+	 * Filters the comments permalink for the current post.
 	 *
 	 * @since 3.6.0
 	 *
@@ -300,7 +301,7 @@ function get_comment_guid($comment_id = null) {
  */
 function comment_link( $comment = null ) {
 	/**
-	 * Filter the current comment's permalink.
+	 * Filters the current comment's permalink.
 	 *
 	 * @since 3.6.0
 	 *
@@ -320,7 +321,7 @@ function comment_link( $comment = null ) {
  */
 function get_comment_author_rss() {
 	/**
-	 * Filter the current comment author for use in a feed.
+	 * Filters the current comment author for use in a feed.
 	 *
 	 * @since 1.5.0
 	 *
@@ -348,7 +349,7 @@ function comment_author_rss() {
 function comment_text_rss() {
 	$comment_text = get_comment_text();
 	/**
-	 * Filter the current comment content for use in a feed.
+	 * Filters the current comment content for use in a feed.
 	 *
 	 * @since 1.5.0
 	 *
@@ -402,7 +403,7 @@ function get_the_category_rss($type = null) {
 	}
 
 	/**
-	 * Filter all of the post categories for display in a feed.
+	 * Filters all of the post categories for display in a feed.
 	 *
 	 * @since 1.2.0
 	 *
@@ -469,7 +470,7 @@ function rss_enclosure() {
 				$type = $t[0];
 
 				/**
-				 * Filter the RSS enclosure HTML link tag for the current post.
+				 * Filters the RSS enclosure HTML link tag for the current post.
 				 *
 				 * @since 2.2.0
 				 *
@@ -503,7 +504,7 @@ function atom_enclosure() {
 			foreach ( (array) $val as $enc ) {
 				$enclosure = explode("\n", $enc);
 				/**
-				 * Filter the atom enclosure HTML link tag for the current post.
+				 * Filters the atom enclosure HTML link tag for the current post.
 				 *
 				 * @since 2.2.0
 				 *
@@ -606,7 +607,7 @@ function rss2_site_icon() {
 function self_link() {
 	$host = @parse_url(home_url());
 	/**
-	 * Filter the current feed URL.
+	 * Filters the current feed URL.
 	 *
 	 * @since 3.6.0
 	 *
@@ -640,7 +641,7 @@ function feed_content_type( $type = '' ) {
 	$content_type = ( !empty($types[$type]) ) ? $types[$type] : 'application/octet-stream';
 
 	/**
-	 * Filter the content type for a specific feed type.
+	 * Filters the content type for a specific feed type.
 	 *
 	 * @since 2.8.0
 	 *

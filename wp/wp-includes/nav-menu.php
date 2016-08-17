@@ -39,7 +39,7 @@ function wp_get_nav_menu_object( $menu ) {
 	}
 
 	/**
-	 * Filter the nav_menu term retrieved for wp_get_nav_menu_object().
+	 * Filters the nav_menu term retrieved for wp_get_nav_menu_object().
 	 *
 	 * @since 4.3.0
 	 *
@@ -126,13 +126,13 @@ function register_nav_menu( $location, $description ) {
 	register_nav_menus( array( $location => $description ) );
 }
 /**
- * Returns all registered navigation menu locations in a theme.
+ * Retrieves all registered navigation menu locations in a theme.
  *
  * @since 3.0.0
  *
  * @global array $_wp_registered_nav_menus
  *
- * @return array
+ * @return array Registered navigation menu locations. If none are registered, an empty array.
  */
 function get_registered_nav_menus() {
 	global $_wp_registered_nav_menus;
@@ -142,10 +142,12 @@ function get_registered_nav_menus() {
 }
 
 /**
- * Returns an array with the registered navigation menu locations and the menu assigned to it
+ * Retrieves all registered navigation menu locations and the menus assigned to them.
  *
  * @since 3.0.0
- * @return array
+ *
+ * @return array Registered navigation menu locations and the menus assigned them.
+ *               If none are registered, an empty array.
  */
 
 function get_nav_menu_locations() {
@@ -171,7 +173,7 @@ function has_nav_menu( $location ) {
 	}
 
 	/**
-	 * Filter whether a nav menu is assigned to the specified location.
+	 * Filters whether a nav menu is assigned to the specified location.
 	 *
 	 * @since 4.3.0
 	 *
@@ -534,7 +536,7 @@ function wp_update_nav_menu_item( $menu_id = 0, $menu_item_db_id = 0, $menu_item
  * @since 4.1.0 Default value of the 'orderby' argument was changed from 'none'
  *              to 'name'.
  *
- * @param array $args Optional. Array of arguments passed on to {@see get_terms()}.
+ * @param array $args Optional. Array of arguments passed on to get_terms().
  *                    Default empty array.
  * @return array Menu objects.
  */
@@ -543,7 +545,7 @@ function wp_get_nav_menus( $args = array() ) {
 	$args = wp_parse_args( $args, $defaults );
 
 	/**
-	 * Filter the navigation menu objects being returned.
+	 * Filters the navigation menu objects being returned.
 	 *
 	 * @since 3.0.0
 	 *
@@ -611,7 +613,7 @@ function _is_valid_nav_menu_item( $item ) {
  * @staticvar array $fetched
  *
  * @param string $menu Menu name, ID, or slug.
- * @param array  $args Optional. Arguments to pass to {@see get_posts()}.
+ * @param array  $args Optional. Arguments to pass to get_posts().
  * @return false|array $items Array of menu items, otherwise false.
  */
 function wp_get_nav_menu_items( $menu, $args = array() ) {
@@ -689,7 +691,7 @@ function wp_get_nav_menu_items( $menu, $args = array() ) {
 	}
 
 	/**
-	 * Filter the navigation menu items being returned.
+	 * Filters the navigation menu items being returned.
 	 *
 	 * @since 3.0.0
 	 *
@@ -798,7 +800,7 @@ function wp_setup_nav_menu_item( $menu_item ) {
 			$menu_item->target = ! isset( $menu_item->target ) ? get_post_meta( $menu_item->ID, '_menu_item_target', true ) : $menu_item->target;
 
 			/**
-			 * Filter a navigation menu item's title attribute.
+			 * Filters a navigation menu item's title attribute.
 			 *
 			 * @since 3.0.0
 			 *
@@ -808,7 +810,7 @@ function wp_setup_nav_menu_item( $menu_item ) {
 
 			if ( ! isset( $menu_item->description ) ) {
 				/**
-				 * Filter a navigation menu item's description.
+				 * Filters a navigation menu item's description.
 				 *
 				 * @since 3.0.0
 				 *
@@ -869,7 +871,7 @@ function wp_setup_nav_menu_item( $menu_item ) {
 	}
 
 	/**
-	 * Filter a navigation menu item object.
+	 * Filters a navigation menu item object.
 	 *
 	 * @since 3.0.0
 	 *

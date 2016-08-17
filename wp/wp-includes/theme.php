@@ -151,7 +151,7 @@ function is_child_theme() {
  */
 function get_stylesheet() {
 	/**
-	 * Filter the name of current stylesheet.
+	 * Filters the name of current stylesheet.
 	 *
 	 * @since 1.5.0
 	 *
@@ -173,7 +173,7 @@ function get_stylesheet_directory() {
 	$stylesheet_dir = "$theme_root/$stylesheet";
 
 	/**
-	 * Filter the stylesheet directory path for current theme.
+	 * Filters the stylesheet directory path for current theme.
 	 *
 	 * @since 1.5.0
 	 *
@@ -197,7 +197,7 @@ function get_stylesheet_directory_uri() {
 	$stylesheet_dir_uri = "$theme_root_uri/$stylesheet";
 
 	/**
-	 * Filter the stylesheet directory URI.
+	 * Filters the stylesheet directory URI.
 	 *
 	 * @since 1.5.0
 	 *
@@ -209,10 +209,10 @@ function get_stylesheet_directory_uri() {
 }
 
 /**
- * Retrieve URI of current theme stylesheet.
+ * Retrieves the URI of current theme stylesheet.
  *
- * The stylesheet file name is 'style.css' which is appended to {@link
- * get_stylesheet_directory_uri() stylesheet directory URI} path.
+ * The stylesheet file name is 'style.css' which is appended to the stylesheet directory URI path.
+ * See get_stylesheet_directory_uri().
  *
  * @since 1.5.0
  *
@@ -222,7 +222,7 @@ function get_stylesheet_uri() {
 	$stylesheet_dir_uri = get_stylesheet_directory_uri();
 	$stylesheet_uri = $stylesheet_dir_uri . '/style.css';
 	/**
-	 * Filter the URI of the current theme stylesheet.
+	 * Filters the URI of the current theme stylesheet.
 	 *
 	 * @since 1.5.0
 	 *
@@ -233,7 +233,7 @@ function get_stylesheet_uri() {
 }
 
 /**
- * Retrieve localized stylesheet URI.
+ * Retrieves the localized stylesheet URI.
  *
  * The stylesheet directory for the localized stylesheet files are located, by
  * default, in the base theme directory. The name of the locale file will be the
@@ -241,7 +241,8 @@ function get_stylesheet_uri() {
  * stylesheet will be checked for existence, for example 'ltr.css'.
  *
  * The theme may change the location of the stylesheet directory by either using
- * the 'stylesheet_directory_uri' filter or the 'locale_stylesheet_uri' filter.
+ * the {@see 'stylesheet_directory_uri'} or {@see 'locale_stylesheet_uri'} filters.
+ *
  * If you want to change the location of the stylesheet files for the entire
  * WordPress workflow, then change the former. If you just have the locale in a
  * separate folder, then change the latter.
@@ -264,7 +265,7 @@ function get_locale_stylesheet_uri() {
 	else
 		$stylesheet_uri = '';
 	/**
-	 * Filter the localized stylesheet URI.
+	 * Filters the localized stylesheet URI.
 	 *
 	 * @since 2.1.0
 	 *
@@ -283,7 +284,7 @@ function get_locale_stylesheet_uri() {
  */
 function get_template() {
 	/**
-	 * Filter the name of the current theme.
+	 * Filters the name of the current theme.
 	 *
 	 * @since 1.5.0
 	 *
@@ -305,7 +306,7 @@ function get_template_directory() {
 	$template_dir = "$theme_root/$template";
 
 	/**
-	 * Filter the current theme directory path.
+	 * Filters the current theme directory path.
 	 *
 	 * @since 1.5.0
 	 *
@@ -329,7 +330,7 @@ function get_template_directory_uri() {
 	$template_dir_uri = "$theme_root_uri/$template";
 
 	/**
-	 * Filter the current theme directory URI.
+	 * Filters the current theme directory URI.
 	 *
 	 * @since 1.5.0
 	 *
@@ -434,7 +435,7 @@ function search_theme_directories( $force = false ) {
 	}
 
 	/**
-	 * Filter whether to get the cache of the registered theme directories.
+	 * Filters whether to get the cache of the registered theme directories.
 	 *
 	 * @since 3.4.0
 	 *
@@ -551,7 +552,7 @@ function get_theme_root( $stylesheet_or_template = false ) {
 	}
 
 	/**
-	 * Filter the absolute path to the themes directory.
+	 * Filters the absolute path to the themes directory.
 	 *
 	 * @since 1.5.0
 	 *
@@ -600,7 +601,7 @@ function get_theme_root_uri( $stylesheet_or_template = false, $theme_root = fals
 	}
 
 	/**
-	 * Filter the URI for themes directory.
+	 * Filters the URI for themes directory.
 	 *
 	 * @since 1.5.0
 	 *
@@ -664,7 +665,7 @@ function locale_stylesheet() {
  * Switches the theme.
  *
  * Accepts one argument: $stylesheet of the theme. It also accepts an additional function signature
- * of two arguments: $template then $stylesheet. This is for backwards compatibility.
+ * of two arguments: $template then $stylesheet. This is for backward compatibility.
  *
  * @since 2.5.0
  *
@@ -760,7 +761,7 @@ function switch_theme( $stylesheet ) {
  * But if it doesn't exist, it'll fall back to the latest core default theme that does exist.
  * Will switch theme to the fallback theme if current theme does not validate.
  *
- * You can use the 'validate_current_theme' filter to return false to
+ * You can use the {@see 'validate_current_theme'} filter to return false to
  * disable this functionality.
  *
  * @since 1.5.0
@@ -770,7 +771,7 @@ function switch_theme( $stylesheet ) {
  */
 function validate_current_theme() {
 	/**
-	 * Filter whether to validate the current theme.
+	 * Filters whether to validate the current theme.
 	 *
 	 * @since 2.7.0
 	 *
@@ -841,7 +842,7 @@ function get_theme_mods() {
  * Retrieve theme modification value for the current theme.
  *
  * If the modification name does not exist, then the $default will be passed
- * through {@link http://php.net/sprintf sprintf()} PHP function with the first
+ * through {@link https://secure.php.net/sprintf sprintf()} PHP function with the first
  * string the template directory URI and the second string the stylesheet
  * directory URI.
  *
@@ -856,7 +857,7 @@ function get_theme_mod( $name, $default = false ) {
 
 	if ( isset( $mods[$name] ) ) {
 		/**
-		 * Filter the theme modification, or 'theme_mod', value.
+		 * Filters the theme modification, or 'theme_mod', value.
 		 *
 		 * The dynamic portion of the hook name, `$name`, refers to
 		 * the key name of the modification array. For example,
@@ -890,7 +891,7 @@ function set_theme_mod( $name, $value ) {
 	$old_value = isset( $mods[ $name ] ) ? $mods[ $name ] : false;
 
 	/**
-	 * Filter the theme mod value on save.
+	 * Filters the theme mod value on save.
 	 *
 	 * The dynamic portion of the hook name, `$name`, refers to the key name of
 	 * the modification array. For example, 'header_textcolor', 'header_image',
@@ -1070,7 +1071,7 @@ function get_header_image_tag( $attr = array() ) {
 	$html .= ' />';
 
 	/**
-	 * Filter the markup of header images.
+	 * Filters the markup of header images.
 	 *
 	 * @since 4.4.0
 	 *
@@ -1503,7 +1504,7 @@ function get_editor_stylesheets() {
 	}
 
 	/**
-	 * Filter the array of stylesheets applied to the editor.
+	 * Filters the array of stylesheets applied to the editor.
 	 *
 	 * @since 4.3.0
 	 *
@@ -1513,17 +1514,24 @@ function get_editor_stylesheets() {
 }
 
 /**
- * Allows a theme to register its support of a certain feature
+ * Registers theme support for a given feature.
  *
  * Must be called in the theme's functions.php file to work.
- * If attached to a hook, it must be after_setup_theme.
- * The init hook may be too late for some features.
+ * If attached to a hook, it must be {@see 'after_setup_theme'}.
+ * The {@see 'init'} hook may be too late for some features.
  *
  * @since 2.9.0
+ * @since 3.6.0 The `html5` feature was added
+ * @since 3.9.0 The `html5` feature now also accepts 'gallery' and 'caption'
+ * @since 4.1.0 The `title-tag` feature was added
+ * @since 4.5.0 The `customize-selective-refresh-widgets` feature was added
  *
  * @global array $_wp_theme_features
  *
- * @param string $feature The feature being added.
+ * @param string $feature  The feature being added. Likely core values include 'post-formats',
+ *                         'post-thumbnails', 'html5', 'custom-logo', 'custom-header-uploads',
+ *                         'custom-header', 'custom-background', 'title-tag', etc.
+ * @param mixed  $args,... Optional extra arguments to pass along with certain features.
  * @return void|bool False on failure, void otherwise.
  */
 function add_theme_support( $feature ) {
@@ -1535,6 +1543,22 @@ function add_theme_support( $feature ) {
 		$args = array_slice( func_get_args(), 1 );
 
 	switch ( $feature ) {
+		case 'post-thumbnails':
+			// All post types are already supported.
+			if ( true === get_theme_support( 'post-thumbnails' ) ) {
+				return;
+			}
+
+			/*
+			 * Merge post types with any that already declared their support
+			 * for post thumbnails.
+			 */
+			if ( is_array( $args[0] ) && isset( $_wp_theme_features['post-thumbnails'] ) ) {
+				$args[0] = array_unique( array_merge( $_wp_theme_features['post-thumbnails'][0], $args[0] ) );
+			}
+
+			break;
+
 		case 'post-formats' :
 			if ( is_array( $args[0] ) ) {
 				$post_formats = get_post_format_slugs();
@@ -1618,7 +1642,7 @@ function add_theme_support( $feature ) {
 			// the constant is always accurate (and is not defined later,  overriding our value).
 			// As stated above, the first value wins.
 			// Once we get to wp_loaded (just-in-time), define any constants we haven't already.
-			// Constants are lame. Don't reference them. This is just for backwards compatibility.
+			// Constants are lame. Don't reference them. This is just for backward compatibility.
 
 			if ( defined( 'NO_HEADER_TEXT' ) )
 				$args[0]['header-text'] = ! NO_HEADER_TEXT;
@@ -1702,7 +1726,7 @@ function add_theme_support( $feature ) {
 			if ( did_action( 'wp_loaded' ) ) {
 				/* translators: 1: Theme support 2: hook name */
 				_doing_it_wrong( "add_theme_support( 'title-tag' )", sprintf( __( 'Theme support for %1$s should be registered before the %2$s hook.' ),
-					'<code>title-tag</code>', '<code>wp_loaded</code>' ), '4.1' );
+					'<code>title-tag</code>', '<code>wp_loaded</code>' ), '4.1.0' );
 
 				return false;
 			}
@@ -1930,7 +1954,7 @@ function current_theme_supports( $feature ) {
 	}
 
 	/**
-	 * Filter whether the current theme supports a specific feature.
+	 * Filters whether the current theme supports a specific feature.
 	 *
 	 * The dynamic portion of the hook name, `$feature`, refers to the specific theme
 	 * feature. Possible values include 'post-formats', 'post-thumbnails', 'custom-background',
@@ -1997,7 +2021,9 @@ function _delete_attachment_theme_mod( $id ) {
 }
 
 /**
- * Checks if a theme has been changed and runs 'after_switch_theme' hook on the next WP load
+ * Checks if a theme has been changed and runs 'after_switch_theme' hook on the next WP load.
+ *
+ * See {@see 'after_switch_theme'}.
  *
  * @since 3.3.0
  */

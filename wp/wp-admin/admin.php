@@ -48,7 +48,7 @@ if ( get_option('db_upgraded') ) {
 		exit;
 
 	/**
-	 * Filter whether to attempt to perform the multisite DB upgrade routine.
+	 * Filters whether to attempt to perform the multisite DB upgrade routine.
 	 *
 	 * In single site, the user would be redirected to wp-admin/upgrade.php.
 	 * In multisite, the DB upgrade routine is automatically fired, but only
@@ -138,21 +138,7 @@ else
 	require(ABSPATH . 'wp-admin/menu.php');
 
 if ( current_user_can( 'manage_options' ) ) {
-	/**
-	 * Filter the maximum memory limit available for administration screens.
-	 *
-	 * This only applies to administrators, who may require more memory for tasks like updates.
-	 * Memory limits when processing images (uploaded or edited by users of any role) are
-	 * handled separately.
-	 *
-	 * The WP_MAX_MEMORY_LIMIT constant specifically defines the maximum memory limit available
-	 * when in the administration back end. The default is 256M, or 256 megabytes of memory.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param string 'WP_MAX_MEMORY_LIMIT' The maximum WordPress memory limit. Default 256M.
-	 */
-	@ini_set( 'memory_limit', apply_filters( 'admin_memory_limit', WP_MAX_MEMORY_LIMIT ) );
+	wp_raise_memory_limit( 'admin' );
 }
 
 /**
@@ -161,7 +147,7 @@ if ( current_user_can( 'manage_options' ) ) {
  * Note, this does not just run on user-facing admin screens.
  * It runs on admin-ajax.php and admin-post.php as well.
  *
- * This is roughly analogous to the more general 'init' hook, which fires earlier.
+ * This is roughly analogous to the more general {@see 'init'} hook, which fires earlier.
  *
  * @since 2.5.0
  */
@@ -175,7 +161,7 @@ if ( isset($plugin_page) ) {
 	if ( ! $page_hook = get_plugin_page_hook($plugin_page, $the_parent) ) {
 		$page_hook = get_plugin_page_hook($plugin_page, $plugin_page);
 
-		// Backwards compatibility for plugins using add_management_page().
+		// Back-compat for plugins using add_management_page().
 		if ( empty( $page_hook ) && 'edit.php' == $pagenow && '' != get_plugin_page_hook($plugin_page, 'tools.php') ) {
 			// There could be plugin specific params on the URL, so we need the whole query string
 			if ( !empty($_SERVER[ 'QUERY_STRING' ]) )
@@ -271,8 +257,9 @@ if ( isset($plugin_page) ) {
 
 	$importer = $_GET['import'];
 
-	if ( ! current_user_can('import') )
-		wp_die(__('You are not allowed to import.'));
+	if ( ! current_user_can( 'import' ) ) {
+		wp_die( __( 'Sorry, you are not allowed to import content.' ) );
+	}
 
 	if ( validate_file($importer) ) {
 		wp_redirect( admin_url( 'import.php?invalid=' . $importer ) );

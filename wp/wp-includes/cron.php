@@ -12,6 +12,10 @@
  * a time which you specify. The action will fire off when someone visits your
  * WordPress site, if the schedule time has passed.
  *
+ * Note that scheduling an event to occur within 10 minutes of an existing event
+ * with the same action hook will be ignored, unless you pass unique `$args` values
+ * for each scheduled event.
+ *
  * @since 2.1.0
  * @link https://codex.wordpress.org/Function_Reference/wp_schedule_single_event
  *
@@ -35,7 +39,7 @@ function wp_schedule_single_event( $timestamp, $hook, $args = array()) {
 	$crons = _get_cron_array();
 	$event = (object) array( 'hook' => $hook, 'timestamp' => $timestamp, 'schedule' => false, 'args' => $args );
 	/**
-	 * Filter a single event before it is scheduled.
+	 * Filters a single event before it is scheduled.
 	 *
 	 * @since 3.1.0
 	 *
@@ -62,7 +66,7 @@ function wp_schedule_single_event( $timestamp, $hook, $args = array()) {
  * visits your WordPress site, if the scheduled time has passed.
  *
  * Valid values for the recurrence are hourly, daily and twicedaily. These can
- * be extended using the cron_schedules filter in wp_get_schedules().
+ * be extended using the {@see 'cron_schedules'} filter in wp_get_schedules().
  *
  * Use wp_next_scheduled() to prevent duplicates
  *
@@ -191,7 +195,7 @@ function wp_clear_scheduled_hook( $hook, $args = array() ) {
 	// Backward compatibility
 	// Previously this function took the arguments as discrete vars rather than an array like the rest of the API
 	if ( !is_array($args) ) {
-		_deprecated_argument( __FUNCTION__, '3.0', __('This argument has changed to an array to match the behavior of the other cron functions.') );
+		_deprecated_argument( __FUNCTION__, '3.0.0', __('This argument has changed to an array to match the behavior of the other cron functions.') );
 		$args = array_slice( func_get_args(), 1 );
 	}
 
@@ -295,7 +299,7 @@ function spawn_cron( $gmt_time = 0 ) {
 	set_transient( 'doing_cron', $doing_wp_cron );
 
 	/**
-	 * Filter the cron request arguments.
+	 * Filters the cron request arguments.
 	 *
 	 * @since 3.5.0
 	 * @since 4.5.0 The `$doing_wp_cron` parameter was added.
@@ -363,7 +367,7 @@ function wp_cron() {
  * Retrieve supported and filtered Cron recurrences.
  *
  * The supported recurrences are 'hourly' and 'daily'. A plugin may add more by
- * hooking into the 'cron_schedules' filter. The filter accepts an array of
+ * hooking into the {@see 'cron_schedules'} filter. The filter accepts an array of
  * arrays. The outer array has a key that is the name of the schedule or for
  * example 'weekly'. The value is an array with two keys, one is 'interval' and
  * the other is 'display'.
@@ -396,7 +400,7 @@ function wp_get_schedules() {
 		'daily'      => array( 'interval' => DAY_IN_SECONDS,       'display' => __( 'Once Daily' ) ),
 	);
 	/**
-	 * Filter the non-default cron schedules.
+	 * Filters the non-default cron schedules.
 	 *
 	 * @since 2.1.0
 	 *
@@ -457,7 +461,7 @@ function _get_cron_array()  {
  * @since 2.1.0
  * @access private
  *
- * @param array $cron Cron info array from {@link _get_cron_array()}.
+ * @param array $cron Cron info array from _get_cron_array().
  */
 function _set_cron_array($cron) {
 	$cron['version'] = 2;
@@ -472,7 +476,7 @@ function _set_cron_array($cron) {
  * @since 2.1.0
  * @access private
  *
- * @param array $cron Cron info array from {@link _get_cron_array()}.
+ * @param array $cron Cron info array from _get_cron_array().
  * @return array An upgraded Cron info array.
  */
 function _upgrade_cron_array($cron) {

@@ -190,7 +190,7 @@ function edit_user( $user_id = 0 ) {
 		  * @since 4.4.0
 		  *
 		  * @param int    $user_id ID of the newly created user.
-		  * @param string $notify  Type of notification that should happen. See {@see wp_send_new_user_notifications()}
+		  * @param string $notify  Type of notification that should happen. See wp_send_new_user_notifications()
 		  *                        for more information on possible values.
 		  */
 		do_action( 'edit_user_created_user', $user_id, $notify );
@@ -218,7 +218,7 @@ function get_editable_roles() {
 	$all_roles = wp_roles()->roles;
 
 	/**
-	 * Filter the list of editable roles.
+	 * Filters the list of editable roles.
 	 *
 	 * @since 2.8.0
 	 *
@@ -261,7 +261,7 @@ function get_users_drafts( $user_id ) {
 	$query = $wpdb->prepare("SELECT ID, post_title FROM $wpdb->posts WHERE post_type = 'post' AND post_status = 'draft' AND post_author = %d ORDER BY post_modified DESC", $user_id);
 
 	/**
-	 * Filter the user's drafts query string.
+	 * Filters the user's drafts query string.
 	 *
 	 * @since 2.0.0
 	 *
@@ -275,7 +275,7 @@ function get_users_drafts( $user_id ) {
  * Remove user and optionally reassign posts and links to another user.
  *
  * If the $reassign parameter is not assigned to a User ID, then all posts will
- * be deleted of that user. The action 'delete_user' that is passed the User ID
+ * be deleted of that user. The action {@see 'delete_user'} that is passed the User ID
  * being deleted will be run after the posts are either reassigned or deleted.
  * The user meta will also be deleted that are for that User ID.
  *
@@ -329,7 +329,7 @@ function wp_delete_user( $id, $reassign = null ) {
 		}
 
 		/**
-		 * Filter the list of post types to delete with a user.
+		 * Filters the list of post types to delete with a user.
 		 *
 		 * @since 3.4.0
 		 *
@@ -489,6 +489,8 @@ jQuery(document).ready( function($) {
 
 /**
  * Optional SSL preference that can be turned on by hooking to the 'personal_options' action.
+ *
+ * See the {@see 'personal_options'} action.
  *
  * @since 2.7.0
  *
