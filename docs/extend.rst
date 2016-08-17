@@ -15,6 +15,8 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 * `Memcache`_: Install a memcached server, and configure WordPress to use it
   automatically.
 
+* `Redis`_: Install Redis server.
+
 * `phpMyAdmin`_: Set up phpMyAdmin on your Chassis box
 
 * `Tester`_: Install and configure PHPUnit, along with the WordPress additions
@@ -36,6 +38,7 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 .. _Mailcatcher: https://github.com/Chassis/mailcatcher
 .. _Memcache: https://github.com/Chassis/memcache
+.. _Redis: https://github.com/shadyvb/chassis-redis
 .. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
 .. _Tester: https://github.com/Chassis/Tester
 .. _Theme Review: https://github.com/Chassis/themereview
@@ -98,3 +101,12 @@ For an example of how it's done, take a look at one of the existing extensions
 linked above. The memcache extension includes an example of how to install a PHP
 extension and automatically configure WordPress to use it, and is a very simple
 introduction to the system.
+
+Example: Installing The Memcached Extension
+-------------------------------------------
+
+To install the memcached extension you would do the following:
+
+1. Open your terminal and navigate to your root Chassis folder.
+2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
+3. `vagrant provision`.

@@ -29,6 +29,17 @@ Changing your Chassis box is a quick two-step process:
 ``vagrant provision`` tells Vagrant to update the box with your new settings,
 and should take care of updating everything internally.
 
+wp-config.php
+-------------
+
+WordPress developers will often require customisation of optional constants that are defined in ``wp-config.php``.
+
+We discourage editing ``wp-config.php`` in Chassis as we have an optional php file ``local-config.php`` which can
+contain custom constants and overrides for WordPress.
+
+If ``local-config.php`` exists it will be loaded before ``wp-config.php`` so any constants that you define in
+``local-config.php`` will be the defaults.
+
 
 PHP Version
 -----------
@@ -234,3 +245,50 @@ into the generated VM like so:
    synced_folders:
      a/host/directory: a/vm/directory
      "this:ones:got:colons": another/vm/directory
+
+Paths
+-----
+
+**Key**: ``paths``
+
+If you're transplanting Chassis into an existing project, you can manually set some paths manually.
+These can be set to absolute paths, or relative paths.
+
+.. code-block:: yaml
+
+   paths:
+      base: .
+      wp: wordpress
+      content: wordpress/wp-content
+
+Plugins
+-------
+
+**Key**: ``plugins``
+
+If you're using plugins from the WordPress.org repository you can add them in a list using the plugins slug.
+These will be downloaded, installed and activated for you.
+
+To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Query Monitor is https://wordpress.org/plugins/query-monitor/ which makes the slug ``query-monitor``.
+
+.. code-block:: yaml
+
+   plugins:
+      - query-monitor
+      - user-switching
+
+Themes
+------
+
+**Key**: ``themes``
+
+If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
+These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
+
+To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slud ``twentysixteen``.
+
+.. code-block:: yaml
+
+   themes:
+      - twentyfifteen
+      - twentysixteen

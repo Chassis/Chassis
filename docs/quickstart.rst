@@ -81,10 +81,6 @@ Installing
          $ mkdir plugins
          $ mkdir themes
 
-     Alternatively you can use our Chassis Supercharger as a base::
-
-         $ git clone --recursive https://github.com/Chassis/Supercharger.git content
-
 3. Boot up a Virtual Machine::
 
        $ vagrant up

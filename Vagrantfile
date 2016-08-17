@@ -23,6 +23,9 @@ end
 require_relative "puppet/chassis.rb"
 CONF = Chassis.config
 
+# Install extensions defined in config file
+Chassis.install_extensions(CONF)
+
 # Add extra extension modules
 base_path = Pathname.new( File.dirname( __FILE__ ) )
 module_paths = [ base_path.to_s + "/puppet/modules" ]
