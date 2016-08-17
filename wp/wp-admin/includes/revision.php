@@ -80,14 +80,14 @@ function wp_get_revision_ui_diff( $post, $compare_from, $compare_to ) {
 		);
 
 		/**
-		 * Filter revisions text diff options.
+		 * Filters revisions text diff options.
 		 *
-		 * Filter the options passed to {@see wp_text_diff()} when viewing a post revision.
+		 * Filters the options passed to wp_text_diff() when viewing a post revision.
 		 *
 		 * @since 4.1.0
 		 *
 		 * @param array   $args {
-		 *     Associative array of options to pass to {@see wp_text_diff()}.
+		 *     Associative array of options to pass to wp_text_diff().
 		 *
 		 *     @type bool $show_split_view True for split view (two columns), false for
 		 *                                 un-split view (single column). Default true.
@@ -119,7 +119,7 @@ function wp_get_revision_ui_diff( $post, $compare_from, $compare_to ) {
 	}
 
 	/**
-	 * Filter the fields displayed in the post revision diff UI.
+	 * Filters the fields displayed in the post revision diff UI.
 	 *
 	 * @since 4.1.0
 	 *
@@ -213,7 +213,7 @@ function wp_prepare_revisions_for_js( $post, $selected_revision_id, $from = null
 		);
 
 		/**
-		 * Filter the array of revisions used on the revisions screen.
+		 * Filters the array of revisions used on the revisions screen.
 		 *
 		 * @since 4.4.0
 		 *

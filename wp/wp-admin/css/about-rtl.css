@@ -88,8 +88,14 @@
 /* 1.1 - Typography */
 
 .about-wrap p {
-	line-height: 1.6em;
+	line-height: 1.5;
 	font-size: 14px;
+}
+
+.about-wrap .feature-section p {
+	max-width: 38em;
+	margin-right: auto;
+	margin-left: auto;
 }
 
 .about-wrap h1 {
@@ -109,17 +115,10 @@
 	text-align: center;
 }
 
-.about-wrap .changelog h2,
 .about-wrap h3 {
 	margin: 1.25em 0 .6em;
 	font-size: 1.25em;
-	line-height: 1.5em;
-}
-
-.about-wrap .changelog h2 {
-	margin-top: 40px;
-	font-weight: 600;
-	text-align: right;
+	line-height: 1.5;
 }
 
 .about-wrap h4 {
@@ -136,13 +135,13 @@
 .about-wrap code,
 .about-wrap ol li p {
 	font-size: 14px;
-	font-weight: normal;
+	font-weight: 400;
 }
 
 .about-wrap .about-description,
 .about-wrap .about-text {
 	margin-top: 1.4em;
-	font-weight: normal;
+	font-weight: 400;
 	line-height: 1.6em;
 	font-size: 19px;
 }
@@ -194,8 +193,17 @@
 	overflow: hidden;
 }
 
-.about-wrap .under-the-hood:nth-of-type(2n) {
+.about-wrap .under-the-hood:nth-of-type(2n),
+.about-wrap .under-the-hood:nth-of-type(3n) {
 	margin-top: 3em;
+}
+
+.about-wrap .feature-video .mejs-controls {
+	display: none !important;
+}
+
+.about-wrap .feature-video .mejs-overlay-loading span {
+	background: transparent; /* Hide loading.gif */
 }
 
 /* 1.3 - Point Releases */
@@ -256,6 +264,11 @@
 
 .about-wrap .two-col-text p:first-of-type {
 	margin-top: 0;
+}
+
+.about-wrap .streamlined-updates p,
+.about-wrap .native-fonts p {
+	margin-bottom: 3em;
 }
 
 /* 2.2 - Structure */
@@ -325,7 +338,7 @@
 .about-wrap .return-to-dashboard {
 	margin: 30px -5px 0 0;
 	font-size: 14px;
-	font-weight: bold;
+	font-weight: 600;
 }
 
 .about-wrap .return-to-dashboard a {
@@ -387,7 +400,7 @@
 .about-wrap .wp-person .web {
 	margin: 6px 0 2px;
 	font-size: 16px;
-	font-weight: normal;
+	font-weight: 400;
 	line-height: 2em;
 	text-decoration: none;
 }
@@ -412,11 +425,11 @@
 
 .freedoms-php .about-wrap ol li {
 	list-style-type: decimal;
-	font-weight: bold;
+	font-weight: 600;
 }
 
 .freedoms-php .about-wrap ol p {
-	font-weight: normal;
+	font-weight: 400;
 	margin: 0.6em 0;
 }
 
@@ -471,11 +484,13 @@
 		padding-bottom: 0;
 	}
 
-	.about-wrap .under-the-hood:nth-of-type(2n) {
+	.about-wrap .under-the-hood:nth-of-type(2n),
+	.about-wrap .under-the-hood:nth-of-type(3n) {
 		margin-top: 0;
 	}
 
-	.about-wrap .under-the-hood:nth-of-type(2n) h4 {
+	.about-wrap .under-the-hood:nth-of-type(2n) h3,
+	.about-wrap .under-the-hood:nth-of-type(3n) h3 {
 		margin-top: 0;
 	}
 }

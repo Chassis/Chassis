@@ -59,6 +59,7 @@ class WP_Customize_Setting {
 	 *
 	 * @var callback
 	 */
+	public $validate_callback    = '';
 	public $sanitize_callback    = '';
 	public $sanitize_js_callback = '';
 
@@ -142,6 +143,9 @@ class WP_Customize_Setting {
 			$this->id .= '[' . implode( '][', $this->id_data['keys'] ) . ']';
 		}
 
+		if ( $this->validate_callback ) {
+			add_filter( "customize_validate_{$this->id}", $this->validate_callback, 10, 3 );
+		}
 		if ( $this->sanitize_callback ) {
 			add_filter( "customize_sanitize_{$this->id}", $this->sanitize_callback, 10, 2 );
 		}
@@ -338,26 +342,26 @@ class WP_Customize_Setting {
 			default :
 
 				/**
-				 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
+				 * Fires when the WP_Customize_Setting::preview() method is called for settings
 				 * not handled as theme_mods or options.
 				 *
 				 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
 				 *
 				 * @since 3.4.0
 				 *
-				 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+				 * @param WP_Customize_Setting $this WP_Customize_Setting instance.
 				 */
 				do_action( "customize_preview_{$this->id}", $this );
 
 				/**
-				 * Fires when the {@see WP_Customize_Setting::preview()} method is called for settings
+				 * Fires when the WP_Customize_Setting::preview() method is called for settings
 				 * not handled as theme_mods or options.
 				 *
 				 * The dynamic portion of the hook name, `$this->type`, refers to the setting type.
 				 *
 				 * @since 4.1.0
 				 *
-				 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+				 * @param WP_Customize_Setting $this WP_Customize_Setting instance.
 				 */
 				do_action( "customize_preview_{$this->type}", $this );
 		}
@@ -460,18 +464,21 @@ class WP_Customize_Setting {
 	}
 
 	/**
-	 * Check user capabilities and theme supports, and then save
+	 * Checks user capabilities and theme supports, and then saves
 	 * the value of the setting.
 	 *
 	 * @since 3.4.0
 	 *
-	 * @return false|void False if cap check fails or value isn't set.
+	 * @access public
+	 *
+	 * @return false|void False if cap check fails or value isn't set or is invalid.
 	 */
 	final public function save() {
 		$value = $this->post_value();
 
-		if ( ! $this->check_capabilities() || ! isset( $value ) )
+		if ( ! $this->check_capabilities() || ! isset( $value ) ) {
 			return false;
+		}
 
 		/**
 		 * Fires when the WP_Customize_Setting::save() method is called.
@@ -481,9 +488,9 @@ class WP_Customize_Setting {
 		 *
 		 * @since 3.4.0
 		 *
-		 * @param WP_Customize_Setting $this {@see WP_Customize_Setting} instance.
+		 * @param WP_Customize_Setting $this WP_Customize_Setting instance.
 		 */
-		do_action( 'customize_save_' . $this->id_data[ 'base' ], $this );
+		do_action( 'customize_save_' . $this->id_data['base'], $this );
 
 		$this->update( $value );
 	}
@@ -494,7 +501,7 @@ class WP_Customize_Setting {
 	 * @since 3.4.0
 	 *
 	 * @param mixed $default A default value which is used as a fallback. Default is null.
-	 * @return mixed The default value on failure, otherwise the sanitized value.
+	 * @return mixed The default value on failure, otherwise the sanitized and validated value.
 	 */
 	final public function post_value( $default = null ) {
 		return $this->manager->post_value( $this, $default );
@@ -505,13 +512,13 @@ class WP_Customize_Setting {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @param string|array $value The value to sanitize.
-	 * @return string|array|null Null if an input isn't valid, otherwise the sanitized value.
+	 * @param string|array $value    The value to sanitize.
+	 * @return string|array|null|WP_Error Sanitized value, or `null`/`WP_Error` if invalid.
 	 */
 	public function sanitize( $value ) {
 
 		/**
-		 * Filter a Customize setting value in un-slashed form.
+		 * Filters a Customize setting value in un-slashed form.
 		 *
 		 * @since 3.4.0
 		 *
@@ -519,6 +526,48 @@ class WP_Customize_Setting {
 		 * @param WP_Customize_Setting $this  WP_Customize_Setting instance.
 		 */
 		return apply_filters( "customize_sanitize_{$this->id}", $value, $this );
+	}
+
+	/**
+	 * Validates an input.
+	 *
+	 * @since 4.6.0
+	 * @access public
+	 *
+	 * @see WP_REST_Request::has_valid_params()
+	 *
+	 * @param mixed $value Value to validate.
+	 * @return true|WP_Error True if the input was validated, otherwise WP_Error.
+	 */
+	public function validate( $value ) {
+		if ( is_wp_error( $value ) ) {
+			return $value;
+		}
+		if ( is_null( $value ) ) {
+			return new WP_Error( 'invalid_value', __( 'Invalid value.' ) );
+		}
+
+		$validity = new WP_Error();
+
+		/**
+		 * Validates a Customize setting value.
+		 *
+		 * Plugins should amend the `$validity` object via its `WP_Error::add()` method.
+		 *
+		 * The dynamic portion of the hook name, `$this->ID`, refers to the setting ID.
+		 *
+		 * @since 4.6.0
+		 *
+		 * @param WP_Error             $validity Filtered from `true` to `WP_Error` when invalid.
+		 * @param mixed                $value    Value of the setting.
+		 * @param WP_Customize_Setting $this     WP_Customize_Setting instance.
+		 */
+		$validity = apply_filters( "customize_validate_{$this->id}", $validity, $value, $this );
+
+		if ( is_wp_error( $validity ) && empty( $validity->errors ) ) {
+			$validity = true;
+		}
+		return $validity;
 	}
 
 	/**
@@ -597,7 +646,7 @@ class WP_Customize_Setting {
 			}
 		} else {
 			/**
-			 * Fires when the {@see WP_Customize_Setting::update()} method is called for settings
+			 * Fires when the WP_Customize_Setting::update() method is called for settings
 			 * not handled as theme_mods or options.
 			 *
 			 * The dynamic portion of the hook name, `$this->type`, refers to the type of setting.
@@ -648,22 +697,29 @@ class WP_Customize_Setting {
 			$value = $this->get_root_value( $this->default );
 
 			/**
-			 * Filter a Customize setting value not handled as a theme_mod or option.
+			 * Filters a Customize setting value not handled as a theme_mod or option.
 			 *
-			 * The dynamic portion of the hook name, `$this->id_date['base']`, refers to
-			 * the base slug of the setting name.
+			 * The dynamic portion of the hook name, `$id_base`, refers to
+			 * the base slug of the setting name, initialized from `$this->id_data['base']`.
 			 *
 			 * For settings handled as theme_mods or options, see those corresponding
 			 * functions for available hooks.
 			 *
 			 * @since 3.4.0
+			 * @since 4.6.0 Added the `$this` setting instance as the second parameter.
 			 *
-			 * @param mixed $default The setting default value. Default empty.
+			 * @param mixed                $default The setting default value. Default empty.
+			 * @param WP_Customize_Setting $this    The setting instance.
 			 */
-			$value = apply_filters( "customize_value_{$id_base}", $value );
-		} else if ( $this->is_multidimensional_aggregated ) {
+			$value = apply_filters( "customize_value_{$id_base}", $value, $this );
+		} elseif ( $this->is_multidimensional_aggregated ) {
 			$root_value = self::$aggregated_multidimensionals[ $this->type ][ $id_base ]['root_value'];
 			$value = $this->multidimensional_get( $root_value, $this->id_data['keys'], $this->default );
+
+			// Ensure that the post value is used if the setting is previewed, since preview filters aren't applying on cached $root_value.
+			if ( $this->is_previewed ) {
+				$value = $this->post_value( $value );
+			}
 		} else {
 			$value = $this->get_root_value( $this->default );
 		}
@@ -680,14 +736,14 @@ class WP_Customize_Setting {
 	public function js_value() {
 
 		/**
-		 * Filter a Customize setting value for use in JavaScript.
+		 * Filters a Customize setting value for use in JavaScript.
 		 *
 		 * The dynamic portion of the hook name, `$this->id`, refers to the setting ID.
 		 *
 		 * @since 3.4.0
 		 *
 		 * @param mixed                $value The setting value.
-		 * @param WP_Customize_Setting $this  {@see WP_Customize_Setting} instance.
+		 * @param WP_Customize_Setting $this  WP_Customize_Setting instance.
 		 */
 		$value = apply_filters( "customize_sanitize_js_{$this->id}", $this->value(), $this );
 
@@ -695,6 +751,23 @@ class WP_Customize_Setting {
 			return html_entity_decode( $value, ENT_QUOTES, 'UTF-8');
 
 		return $value;
+	}
+
+	/**
+	 * Retrieves the data to export to the client via JSON.
+	 *
+	 * @since 4.6.0
+	 * @access public
+	 *
+	 * @return array Array of parameters passed to JavaScript.
+	 */
+	public function json() {
+		return array(
+			'value'     => $this->js_value(),
+			'transport' => $this->transport,
+			'dirty'     => $this->dirty,
+			'type'      => $this->type,
+		);
 	}
 
 	/**

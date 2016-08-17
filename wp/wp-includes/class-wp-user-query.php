@@ -255,13 +255,6 @@ class WP_User_Query {
 			$blog_id = absint( $qv['blog_id'] );
 		}
 
-		if ( isset( $qv['who'] ) && 'authors' == $qv['who'] && $blog_id ) {
-			$qv['meta_key'] = $wpdb->get_blog_prefix( $blog_id ) . 'user_level';
-			$qv['meta_value'] = 0;
-			$qv['meta_compare'] = '!=';
-			$qv['blog_id'] = $blog_id = 0; // Prevent extra meta query
-		}
-
 		if ( $qv['has_published_posts'] && $blog_id ) {
 			if ( true === $qv['has_published_posts'] ) {
 				$post_types = get_post_types( array( 'public' => true ) );
@@ -280,6 +273,29 @@ class WP_User_Query {
 		// Meta query.
 		$this->meta_query = new WP_Meta_Query();
 		$this->meta_query->parse_query_vars( $qv );
+
+		if ( isset( $qv['who'] ) && 'authors' == $qv['who'] && $blog_id ) {
+			$who_query = array(
+				'key' => $wpdb->get_blog_prefix( $blog_id ) . 'user_level',
+				'value' => 0,
+				'compare' => '!=',
+			);
+
+			// Prevent extra meta query.
+			$qv['blog_id'] = $blog_id = 0;
+
+			if ( empty( $this->meta_query->queries ) ) {
+				$this->meta_query->queries = array( $who_query );
+			} else {
+				// Append the cap query to the original queries and reparse the query.
+				$this->meta_query->queries = array(
+					'relation' => 'AND',
+					array( $this->meta_query->queries, $who_query ),
+				);
+			}
+
+			$this->meta_query->parse_query_vars( $this->meta_query->queries );
+		}
 
 		$roles = array();
 		if ( isset( $qv['role'] ) ) {
@@ -464,7 +480,7 @@ class WP_User_Query {
 			}
 
 			/**
-			 * Filter the columns to search in a WP_User_Query search.
+			 * Filters the columns to search in a WP_User_Query search.
 			 *
 			 * The default columns depend on the search term, and include 'user_email',
 			 * 'user_login', 'ID', 'user_url', 'display_name', and 'user_nicename'.
@@ -531,7 +547,7 @@ class WP_User_Query {
 		}
 
 		/**
-		 * Filter SELECT FOUND_ROWS() query for the current WP_User_Query instance.
+		 * Filters SELECT FOUND_ROWS() query for the current WP_User_Query instance.
 		 *
 		 * @since 3.2.0
 		 *
@@ -720,7 +736,7 @@ class WP_User_Query {
 	}
 
 	/**
-	 * Make private properties readable for backwards compatibility.
+	 * Make private properties readable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -735,7 +751,7 @@ class WP_User_Query {
 	}
 
 	/**
-	 * Make private properties settable for backwards compatibility.
+	 * Make private properties settable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -751,7 +767,7 @@ class WP_User_Query {
 	}
 
 	/**
-	 * Make private properties checkable for backwards compatibility.
+	 * Make private properties checkable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -766,7 +782,7 @@ class WP_User_Query {
 	}
 
 	/**
-	 * Make private properties un-settable for backwards compatibility.
+	 * Make private properties un-settable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -780,7 +796,7 @@ class WP_User_Query {
 	}
 
 	/**
-	 * Make private/protected methods readable for backwards compatibility.
+	 * Make private/protected methods readable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public

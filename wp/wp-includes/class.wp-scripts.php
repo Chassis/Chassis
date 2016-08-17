@@ -197,7 +197,7 @@ class WP_Scripts extends WP_Dependencies {
 	 * @return bool|string|void Void if no data exists, extra scripts if `$echo` is true, true otherwise.
 	 */
 	public function print_scripts_l10n( $handle, $echo = true ) {
-		_deprecated_function( __FUNCTION__, '3.3', 'print_extra_script()' );
+		_deprecated_function( __FUNCTION__, '3.3.0', 'print_extra_script()' );
 		return $this->print_extra_script( $handle, $echo );
 	}
 
@@ -286,7 +286,7 @@ class WP_Scripts extends WP_Dependencies {
 
 		if ( $this->do_concat ) {
 			/**
-			 * Filter the script loader source.
+			 * Filters the script loader source.
 			 *
 			 * @since 2.2.0
 			 *
@@ -345,7 +345,7 @@ class WP_Scripts extends WP_Dependencies {
 		$tag = "{$cond_before}{$before_handle}<script type='text/javascript' src='$src'></script>\n{$after_handle}{$cond_after}";
 
 		/**
-		 * Filter the HTML script tag of an enqueued script.
+		 * Filters the HTML script tag of an enqueued script.
 		 *
 		 * @since 4.1.0
 		 *
@@ -502,7 +502,7 @@ class WP_Scripts extends WP_Dependencies {
 		$r = parent::all_deps( $handles, $recursion, $group );
 		if ( ! $recursion ) {
 			/**
-			 * Filter the list of script dependencies left to print.
+			 * Filters the list of script dependencies left to print.
 			 *
 			 * @since 2.3.0
 			 *

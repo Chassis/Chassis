@@ -24,7 +24,7 @@ class WP_Tax_Query {
 	/**
 	 * Array of taxonomy queries.
 	 *
-	 * See {@see WP_Tax_Query::__construct()} for information on tax query arguments.
+	 * See WP_Tax_Query::__construct() for information on tax query arguments.
 	 *
 	 * @since 3.1.0
 	 * @access public
@@ -440,7 +440,7 @@ class WP_Tax_Query {
 				// Store the alias with this clause, so later siblings can use it.
 				$clause['alias'] = $alias;
 
-				$join .= " INNER JOIN $wpdb->term_relationships";
+				$join .= " LEFT JOIN $wpdb->term_relationships";
 				$join .= $i ? " AS $alias" : '';
 				$join .= " ON ($this->primary_table.$this->primary_id_column = $alias.object_id)";
 			}
@@ -562,14 +562,14 @@ class WP_Tax_Query {
 	private function clean_query( &$query ) {
 		if ( empty( $query['taxonomy'] ) ) {
 			if ( 'term_taxonomy_id' !== $query['field'] ) {
-				$query = new WP_Error( 'Invalid taxonomy' );
+				$query = new WP_Error( 'invalid_taxonomy', __( 'Invalid taxonomy.' ) );
 				return;
 			}
 
 			// so long as there are shared terms, include_children requires that a taxonomy is set
 			$query['include_children'] = false;
 		} elseif ( ! taxonomy_exists( $query['taxonomy'] ) ) {
-			$query = new WP_Error( 'Invalid taxonomy' );
+			$query = new WP_Error( 'invalid_taxonomy', __( 'Invalid taxonomy.' ) );
 			return;
 		}
 
@@ -655,7 +655,7 @@ class WP_Tax_Query {
 		}
 
 		if ( 'AND' == $query['operator'] && count( $terms ) < count( $query['terms'] ) ) {
-			$query = new WP_Error( 'Inexistent terms' );
+			$query = new WP_Error( 'inexistent_terms', __( 'Inexistent terms.' ) );
 			return;
 		}
 

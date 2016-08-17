@@ -91,7 +91,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 
 		$themes = array(
 			/**
-			 * Filter the full array of WP_Theme objects to list in the Multisite
+			 * Filters the full array of WP_Theme objects to list in the Multisite
 			 * themes list table.
 			 *
 			 * @since 3.1.0
@@ -148,6 +148,10 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 
 		$this->has_items = ! empty( $themes['all'] );
 		$total_this_page = $totals[ $status ];
+
+		wp_localize_script( 'updates', '_wpUpdatesItemCounts', array(
+			'totals' => $totals,
+		) );
 
 		if ( $orderby ) {
 			$orderby = ucfirst( $orderby );
@@ -468,7 +472,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 			), 'themes.php' );
 
 			/* translators: %s: theme name */
-			$aria_label = sprintf( __( 'Delete %s' ), $theme->display( 'Name' ) );
+			$aria_label = sprintf( _x( 'Delete %s', 'theme' ), $theme->display( 'Name' ) );
 
 			$actions['delete'] = sprintf( '<a href="%s" class="delete" aria-label="%s">%s</a>',
 				esc_url( wp_nonce_url( $url, 'bulk-themes' ) ),
@@ -477,7 +481,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 			);
 		}
 		/**
-		 * Filter the action links displayed for each theme in the Multisite
+		 * Filters the action links displayed for each theme in the Multisite
 		 * themes list table.
 		 *
 		 * The action links displayed are determined by the theme's status, and
@@ -501,7 +505,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 		$actions = apply_filters( 'theme_action_links', array_filter( $actions ), $theme, $context );
 
 		/**
-		 * Filter the action links of a specific theme in the Multisite themes
+		 * Filters the action links of a specific theme in the Multisite themes
 		 * list table.
 		 *
 		 * The dynamic portion of the hook name, `$stylesheet`, refers to the
@@ -569,7 +573,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 			);
 		}
 		/**
-		 * Filter the array of row meta for each theme in the Multisite themes
+		 * Filters the array of row meta for each theme in the Multisite themes
 		 * list table.
 		 *
 		 * @since 3.1.0

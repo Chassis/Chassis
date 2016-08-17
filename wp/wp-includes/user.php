@@ -27,6 +27,8 @@
  */
 function wp_signon( $credentials = array(), $secure_cookie = '' ) {
 	if ( empty($credentials) ) {
+		$credentials = array(); // Back-compat for plugins passing an empty string.
+
 		if ( ! empty($_POST['log']) )
 			$credentials['user_login'] = $_POST['log'];
 		if ( ! empty($_POST['pwd']) )
@@ -59,7 +61,7 @@ function wp_signon( $credentials = array(), $secure_cookie = '' ) {
 		$secure_cookie = is_ssl();
 
 	/**
-	 * Filter whether to use a secure sign-on cookie.
+	 * Filters whether to use a secure sign-on cookie.
 	 *
 	 * @since 3.1.0
 	 *
@@ -145,7 +147,7 @@ function wp_authenticate_username_password($user, $username, $password) {
 	}
 
 	/**
-	 * Filter whether the given user can be authenticated with the provided $password.
+	 * Filters whether the given user can be authenticated with the provided $password.
 	 *
 	 * @since 2.5.0
 	 *
@@ -295,14 +297,14 @@ function wp_authenticate_cookie($user, $username, $password) {
 function wp_authenticate_spam_check( $user ) {
 	if ( $user instanceof WP_User && is_multisite() ) {
 		/**
-		 * Filter whether the user has been marked as a spammer.
+		 * Filters whether the user has been marked as a spammer.
 		 *
 		 * @since 3.7.0
 		 *
 		 * @param bool    $spammed Whether the user is considered a spammer.
 		 * @param WP_User $user    User to check against.
 		 */
-		$spammed = apply_filters( 'check_is_user_spammed', is_user_spammy(), $user );
+		$spammed = apply_filters( 'check_is_user_spammed', is_user_spammy( $user ), $user );
 
 		if ( $spammed )
 			return new WP_Error( 'spammer_account', __( '<strong>ERROR</strong>: Your account has been marked as a spammer.' ) );
@@ -311,12 +313,12 @@ function wp_authenticate_spam_check( $user ) {
 }
 
 /**
- * Validate the logged-in cookie.
+ * Validates the logged-in cookie.
  *
  * Checks the logged-in cookie if the previous auth cookie could not be
  * validated and parsed.
  *
- * This is a callback for the determine_current_user filter, rather than API.
+ * This is a callback for the {@see 'determine_current_user'} filter, rather than API.
  *
  * @since 3.9.0
  *
@@ -360,7 +362,7 @@ function count_user_posts( $userid, $post_type = 'post', $public_only = false ) 
 	$count = $wpdb->get_var( "SELECT COUNT(*) FROM $wpdb->posts $where" );
 
 	/**
-	 * Filter the number of posts a user has written.
+	 * Filters the number of posts a user has written.
 	 *
 	 * @since 2.7.0
 	 * @since 4.1.0 Added `$post_type` argument.
@@ -450,7 +452,7 @@ function get_user_option( $option, $user = 0, $deprecated = '' ) {
 	global $wpdb;
 
 	if ( !empty( $deprecated ) )
-		_deprecated_argument( __FUNCTION__, '3.0' );
+		_deprecated_argument( __FUNCTION__, '3.0.0' );
 
 	if ( empty( $user ) )
 		$user = get_current_user_id();
@@ -467,7 +469,7 @@ function get_user_option( $option, $user = 0, $deprecated = '' ) {
 		$result = false;
 
 	/**
-	 * Filter a specific user option value.
+	 * Filters a specific user option value.
 	 *
 	 * The dynamic portion of the hook name, `$option`, refers to the user option name.
 	 *
@@ -542,7 +544,7 @@ function delete_user_option( $user_id, $option_name, $global = false ) {
  *
  * @see WP_User_Query
  *
- * @param array $args Optional. Arguments to retrieve users. See {@see WP_User_Query::prepare_query()}
+ * @param array $args Optional. Arguments to retrieve users. See WP_User_Query::prepare_query().
  *                    for more information on accepted arguments.
  * @return array List of users.
  */
@@ -577,6 +579,25 @@ function get_blogs_of_user( $user_id, $all = false ) {
 	// Logged out users can't have blogs
 	if ( empty( $user_id ) )
 		return array();
+
+	/**
+	 * Filters the list of a user's sites before it is populated.
+	 *
+	 * Passing a non-null value to the filter will effectively short circuit
+	 * get_blogs_of_user(), returning that value instead.
+	 *
+	 * @since 4.6.0
+	 *
+	 * @param null|array $blogs   An array of WP_Site objects of which the user is a member.
+	 * @param int        $user_id User ID.
+	 * @param bool       $all     Whether the returned array should contain all sites, including
+	 *                            those marked 'deleted', 'archived', or 'spam'. Default false.
+	 */
+	$blogs = apply_filters( 'pre_get_blogs_of_user', null, $user_id, $all );
+
+	if ( null !== $blogs ) {
+		return $blogs;
+	}
 
 	$keys = get_user_meta( $user_id );
 	if ( empty( $keys ) )
@@ -648,7 +669,7 @@ function get_blogs_of_user( $user_id, $all = false ) {
 	}
 
 	/**
-	 * Filter the list of blogs a user belongs to.
+	 * Filters the list of blogs a user belongs to.
 	 *
 	 * @since MU
 	 *
@@ -948,7 +969,7 @@ function setup_userdata($for_user_id = '') {
  *
  * @param array|string $args {
  *     Optional. Array or string of arguments to generate a drop-down of users.
- *     {@see WP_User_Query::prepare_query() for additional available arguments.
+ *     See WP_User_Query::prepare_query() for additional available arguments.
  *
  *     @type string       $show_option_all         Text to show as the drop-down default (all).
  *                                                 Default empty.
@@ -1021,7 +1042,7 @@ function wp_dropdown_users( $args = '' ) {
 	$option_none_value = $r['option_none_value'];
 
 	/**
-	 * Filter the query arguments for the user drop-down.
+	 * Filters the query arguments for the user drop-down.
 	 *
 	 * @since 4.4.0
 	 *
@@ -1084,7 +1105,7 @@ function wp_dropdown_users( $args = '' ) {
 	}
 
 	/**
-	 * Filter the wp_dropdown_users() HTML output.
+	 * Filters the wp_dropdown_users() HTML output.
 	 *
 	 * @since 2.3.0
 	 *
@@ -1135,7 +1156,7 @@ function sanitize_user_field($field, $value, $user_id, $context) {
 		} else {
 
 			/**
-			 * Filter a user field value in the 'edit' context.
+			 * Filters a user field value in the 'edit' context.
 			 *
 			 * The dynamic portion of the hook name, `$field`, refers to the prefixed user
 			 * field being filtered, such as 'user_login', 'user_email', 'first_name', etc.
@@ -1159,7 +1180,7 @@ function sanitize_user_field($field, $value, $user_id, $context) {
 		} else {
 
 			/**
-			 * Filter the value of a user field in the 'db' context.
+			 * Filters the value of a user field in the 'db' context.
 			 *
 			 * The dynamic portion of the hook name, `$field`, refers to the prefixed user
 			 * field being filtered, such as 'user_login', 'user_email', 'first_name', etc.
@@ -1179,7 +1200,7 @@ function sanitize_user_field($field, $value, $user_id, $context) {
 		} else {
 
 			/**
-			 * Filter the value of a user field in a standard context.
+			 * Filters the value of a user field in a standard context.
 			 *
 			 * The dynamic portion of the hook name, `$field`, refers to the prefixed user
 			 * field being filtered, such as 'user_login', 'user_email', 'first_name', etc.
@@ -1303,7 +1324,7 @@ function validate_username( $username ) {
 	$valid = ( $sanitized == $username && ! empty( $sanitized ) );
 
 	/**
-	 * Filter whether the provided username is valid or not.
+	 * Filters whether the provided username is valid or not.
 	 *
 	 * @since 2.0.1
 	 *
@@ -1393,7 +1414,7 @@ function wp_insert_user( $userdata ) {
 	$sanitized_user_login = sanitize_user( $userdata['user_login'], true );
 
 	/**
-	 * Filter a username after it has been sanitized.
+	 * Filters a username after it has been sanitized.
 	 *
 	 * This filter is called before the user is created or updated.
 	 *
@@ -1418,7 +1439,7 @@ function wp_insert_user( $userdata ) {
 	}
 
 	/**
-	 * Filter the list of blacklisted usernames.
+	 * Filters the list of blacklisted usernames.
 	 *
 	 * @since 4.4.0
 	 *
@@ -1449,7 +1470,7 @@ function wp_insert_user( $userdata ) {
 	$meta = array();
 
 	/**
-	 * Filter a user's nicename before the user is created or updated.
+	 * Filters a user's nicename before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1460,7 +1481,7 @@ function wp_insert_user( $userdata ) {
 	$raw_user_url = empty( $userdata['user_url'] ) ? '' : $userdata['user_url'];
 
 	/**
-	 * Filter a user's URL before the user is created or updated.
+	 * Filters a user's URL before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1471,7 +1492,7 @@ function wp_insert_user( $userdata ) {
 	$raw_user_email = empty( $userdata['user_email'] ) ? '' : $userdata['user_email'];
 
 	/**
-	 * Filter a user's email before the user is created or updated.
+	 * Filters a user's email before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1493,7 +1514,7 @@ function wp_insert_user( $userdata ) {
 	$nickname = empty( $userdata['nickname'] ) ? $user_login : $userdata['nickname'];
 
 	/**
-	 * Filter a user's nickname before the user is created or updated.
+	 * Filters a user's nickname before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1504,7 +1525,7 @@ function wp_insert_user( $userdata ) {
 	$first_name = empty( $userdata['first_name'] ) ? '' : $userdata['first_name'];
 
 	/**
-	 * Filter a user's first name before the user is created or updated.
+	 * Filters a user's first name before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1515,7 +1536,7 @@ function wp_insert_user( $userdata ) {
 	$last_name = empty( $userdata['last_name'] ) ? '' : $userdata['last_name'];
 
 	/**
-	 * Filter a user's last name before the user is created or updated.
+	 * Filters a user's last name before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1541,7 +1562,7 @@ function wp_insert_user( $userdata ) {
 	}
 
 	/**
-	 * Filter a user's display name before the user is created or updated.
+	 * Filters a user's display name before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1552,7 +1573,7 @@ function wp_insert_user( $userdata ) {
 	$description = empty( $userdata['description'] ) ? '' : $userdata['description'];
 
 	/**
-	 * Filter a user's description before the user is created or updated.
+	 * Filters a user's description before the user is created or updated.
 	 *
 	 * @since 2.0.3
 	 *
@@ -1604,7 +1625,7 @@ function wp_insert_user( $userdata ) {
 	$user = new WP_User( $user_id );
 
 	/**
- 	 * Filter a user's meta values and keys before the user is created or updated.
+ 	 * Filters a user's meta values and keys before the user is created or updated.
  	 *
  	 * Does not include contact methods. These are added using `wp_get_user_contact_methods( $user )`.
  	 *
@@ -1723,7 +1744,7 @@ function wp_update_user($userdata) {
 		$userdata['user_pass'] = wp_hash_password( $userdata['user_pass'] );
 
 		/**
-		 * Filter whether to send the password change email.
+		 * Filters whether to send the password change email.
 		 *
 		 * @since 4.3.0
 		 *
@@ -1739,7 +1760,7 @@ function wp_update_user($userdata) {
 
 	if ( isset( $userdata['user_email'] ) && $user['user_email'] !== $userdata['user_email'] ) {
 		/**
-		 * Filter whether to send the email change email.
+		 * Filters whether to send the email change email.
 		 *
 		 * @since 4.3.0
 		 *
@@ -1788,7 +1809,7 @@ All at ###SITENAME###
 			);
 
 			/**
-			 * Filter the contents of the email sent when the user's password is changed.
+			 * Filters the contents of the email sent when the user's password is changed.
 			 *
 			 * @since 4.3.0
 			 *
@@ -1843,7 +1864,7 @@ All at ###SITENAME###
 			);
 
 			/**
-			 * Filter the contents of the email sent when the user's email is changed.
+			 * Filters the contents of the email sent when the user's email is changed.
 			 *
 			 * @since 4.3.0
 			 *
@@ -1899,7 +1920,7 @@ All at ###SITENAME###
  * A simpler way of inserting a user into the database.
  *
  * Creates a new user with just the username, password, and email. For more
- * complex user creation use {@see wp_insert_user()} to specify more information.
+ * complex user creation use wp_insert_user() to specify more information.
  *
  * @since 2.0.0
  * @see wp_insert_user() More complete way to create a new user
@@ -1957,7 +1978,7 @@ function wp_get_user_contact_methods( $user = null ) {
 	}
 
 	/**
-	 * Filter the user contact methods.
+	 * Filters the user contact methods.
 	 *
 	 * @since 2.9.0
 	 *
@@ -1993,7 +2014,7 @@ function wp_get_password_hint() {
 	$hint = __( 'Hint: The password should be at least twelve characters long. To make it stronger, use upper and lower case letters, numbers, and symbols like ! " ? $ % ^ &amp; ).' );
 
 	/**
-	 * Filter the text describing the site's password complexity policy.
+	 * Filters the text describing the site's password complexity policy.
 	 *
 	 * @since 4.1.0
 	 *
@@ -2020,6 +2041,8 @@ function get_password_reset_key( $user ) {
 	/**
 	 * Fires before a new password is retrieved.
 	 *
+	 * Use the {@see 'retrieve_password'} hook instead.
+	 *
 	 * @since 1.5.0
 	 * @deprecated 1.5.1 Misspelled. Use 'retrieve_password' hook instead.
 	 *
@@ -2036,15 +2059,20 @@ function get_password_reset_key( $user ) {
 	 */
 	do_action( 'retrieve_password', $user->user_login );
 
+	$allow = true;
+	if ( is_multisite() && is_user_spammy( $user ) ) {
+		$allow = false;
+	}
+
 	/**
-	 * Filter whether to allow a password to be reset.
+	 * Filters whether to allow a password to be reset.
 	 *
 	 * @since 2.7.0
 	 *
 	 * @param bool $allow         Whether to allow the password to be reset. Default true.
 	 * @param int  $user_data->ID The ID of the user attempting to reset a password.
 	 */
-	$allow = apply_filters( 'allow_password_reset', true, $user->ID );
+	$allow = apply_filters( 'allow_password_reset', $allow, $user->ID );
 
 	if ( ! $allow ) {
 		return new WP_Error( 'no_password_reset', __( 'Password reset is not allowed for this user' ) );
@@ -2117,7 +2145,7 @@ function check_password_reset_key($key, $login) {
 	}
 
 	/**
-	 * Filter the expiration time of password reset keys.
+	 * Filters the expiration time of password reset keys.
 	 *
 	 * @since 4.3.0
 	 *
@@ -2151,7 +2179,7 @@ function check_password_reset_key($key, $login) {
 		$user_id = $row->ID;
 
 		/**
-		 * Filter the return value of check_password_reset_key() when an
+		 * Filters the return value of check_password_reset_key() when an
 		 * old-style key is used.
 		 *
 		 * @since 3.7.0 Previously plain-text keys were stored in the database.
@@ -2214,7 +2242,7 @@ function register_new_user( $user_login, $user_email ) {
 
 	$sanitized_user_login = sanitize_user( $user_login );
 	/**
-	 * Filter the email address of a user being registered.
+	 * Filters the email address of a user being registered.
 	 *
 	 * @since 2.1.0
 	 *
@@ -2263,7 +2291,7 @@ function register_new_user( $user_login, $user_email ) {
 	do_action( 'register_post', $sanitized_user_login, $user_email, $errors );
 
 	/**
-	 * Filter the errors encountered when a new user is being registered.
+	 * Filters the errors encountered when a new user is being registered.
 	 *
 	 * The filtered WP_Error object may, for example, contain errors for an invalid
 	 * or existing username or email address. A WP_Error object should always returned,
@@ -2305,15 +2333,18 @@ function register_new_user( $user_login, $user_email ) {
 }
 
 /**
- * Initiate email notifications related to the creation of new users.
+ * Initiates email notifications related to the creation of new users.
  *
  * Notifications are sent both to the site admin and to the newly created user.
  *
  * @since 4.4.0
+ * @since 4.6.0 Converted the `$notify` parameter to accept 'user' for sending
+ *              notifications only to the user created.
  *
  * @param int    $user_id ID of the newly created user.
- * @param string $notify  Optional. Type of notification that should happen. Accepts 'admin' or an empty string
- *                        (admin only), or 'both' (admin and user). Default 'both'.
+ * @param string $notify  Optional. Type of notification that should happen. Accepts 'admin'
+ *                        or an empty string (admin only), 'user', or 'both' (admin and user).
+ *                        Default 'both'.
  */
 function wp_send_new_user_notifications( $user_id, $notify = 'both' ) {
 	wp_new_user_notification( $user_id, null, $notify );
@@ -2454,7 +2485,7 @@ function _wp_get_current_user() {
 	}
 
 	/**
-	 * Filter the current user.
+	 * Filters the current user.
 	 *
 	 * The default filters use this to determine the current user from the
 	 * request's cookies, if available.

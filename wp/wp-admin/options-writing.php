@@ -10,7 +10,7 @@
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
 if ( ! current_user_can( 'manage_options' ) )
-	wp_die( __( 'You do not have sufficient permissions to manage options for this site.' ) );
+	wp_die( __( 'Sorry, you are not allowed to manage options for this site.' ) );
 
 $title = __('Writing Settings');
 $parent_file = 'options-general.php';
@@ -114,7 +114,15 @@ do_settings_fields('writing', 'remote_publishing'); // A deprecated section.
 if ( apply_filters( 'enable_post_by_email_configuration', true ) ) {
 ?>
 <h2 class="title"><?php _e( 'Post via email' ) ?></h2>
-<p><?php printf(__('To post to WordPress by email you must set up a secret email account with POP3 access. Any mail received at this address will be posted, so it&#8217;s a good idea to keep this address very secret. Here are three random strings you could use: <kbd>%s</kbd>, <kbd>%s</kbd>, <kbd>%s</kbd>.'), wp_generate_password(8, false), wp_generate_password(8, false), wp_generate_password(8, false)) ?></p>
+<p><?php
+printf(
+	/* translators: 1, 2, 3: examples of random email addresses */
+	__( 'To post to WordPress by email you must set up a secret email account with POP3 access. Any mail received at this address will be posted, so it&#8217;s a good idea to keep this address very secret. Here are three random strings you could use: %1$s, %2$s, %3$s.' ),
+	sprintf( '<kbd>%s</kbd>', wp_generate_password( 8, false ) ),
+	sprintf( '<kbd>%s</kbd>', wp_generate_password( 8, false ) ),
+	sprintf( '<kbd>%s</kbd>', wp_generate_password( 8, false ) )
+);
+?></p>
 
 <table class="form-table">
 <tr>
@@ -148,7 +156,7 @@ wp_dropdown_categories(array('hide_empty' => 0, 'name' => 'default_email_categor
 
 <?php
 /**
- * Filter whether to enable the Update Services section in the Writing settings screen.
+ * Filters whether to enable the Update Services section in the Writing settings screen.
  *
  * @since 3.0.0
  *

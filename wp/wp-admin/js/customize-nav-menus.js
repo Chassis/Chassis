@@ -142,16 +142,8 @@
 			} );
 
 			// Clear the search results.
-			$( '.clear-results' ).on( 'click keydown', function( event ) {
-				if ( event.type === 'keydown' && ( 13 !== event.which && 32 !== event.which ) ) { // "return" or "space" keys only
-					return;
-				}
-
-				event.preventDefault();
-
-				$( '#menu-items-search' ).val( '' ).focus();
-				event.target.value = '';
-				self.search( event );
+			$( '.clear-results' ).on( 'click', function() {
+				self.$search.val( '' ).focus().trigger( 'keyup' );
 			} );
 
 			this.$el.on( 'input', '#custom-menu-item-name.invalid, #custom-menu-item-url.invalid', function() {
@@ -208,15 +200,11 @@
 				$otherSections.fadeOut( 100 );
 				$searchSection.find( '.accordion-section-content' ).slideDown( 'fast' );
 				$searchSection.addClass( 'open' );
-				$searchSection.find( '.clear-results' )
-					.prop( 'tabIndex', 0 )
-					.addClass( 'is-visible' );
+				$searchSection.find( '.clear-results' ).addClass( 'is-visible' );
 			} else if ( '' === event.target.value ) {
 				$searchSection.removeClass( 'open' );
 				$otherSections.show();
-				$searchSection.find( '.clear-results' )
-					.prop( 'tabIndex', -1 )
-					.removeClass( 'is-visible' );
+				$searchSection.find( '.clear-results' ).removeClass( 'is-visible' );
 			}
 
 			this.searchTerm = event.target.value;
@@ -938,6 +926,19 @@
 				return parseInt( value, 10 );
 			};
 
+			// Edit menu button.
+			control.container.find( '.edit-menu' ).on( 'click', function() {
+				var menuId = control.setting();
+				api.section( 'nav_menu[' + menuId + ']' ).focus();
+			});
+			control.setting.bind( 'change', function() {
+				if ( 0 === control.setting() ) {
+					control.container.find( '.edit-menu' ).addClass( 'hidden' );
+				} else {
+					control.container.find( '.edit-menu' ).removeClass( 'hidden' );
+				}
+			});
+
 			// Add/remove menus from the available options when they are added and removed.
 			api.bind( 'add', function( setting ) {
 				var option, menuId, matches = setting.id.match( navMenuIdRegex );
@@ -993,6 +994,13 @@
 		 */
 		initialize: function( id, options ) {
 			var control = this;
+			control.expanded = new api.Value( false );
+			control.expandedArgumentsQueue = [];
+			control.expanded.bind( function( expanded ) {
+				var args = control.expandedArgumentsQueue.shift();
+				args = $.extend( {}, control.defaultExpandedArguments, args );
+				control.onChangeExpanded( expanded, args );
+			});
 			api.Control.prototype.initialize.call( control, id, options );
 			control.active.validate = function() {
 				var value, section = api.section( control.section() );
@@ -1370,6 +1378,23 @@
 		},
 
 		/**
+		 * @since 4.6.0
+		 *
+		 * @param {Boolean} expanded
+		 * @param {Object} [params]
+		 * @returns {Boolean} false if state already applied
+		 */
+		_toggleExpanded: api.Section.prototype._toggleExpanded,
+
+		/**
+		 * @since 4.6.0
+		 *
+		 * @param {Object} [params]
+		 * @returns {Boolean} false if already expanded
+		 */
+		expand: api.Section.prototype.expand,
+
+		/**
 		 * Expand the menu item form control.
 		 *
 		 * @since 4.5.0 Added params.completeCallback.
@@ -1378,8 +1403,16 @@
 		 * @param {Function} [params.completeCallback] - Function to call when the form toggle has finished animating.
 		 */
 		expandForm: function( params ) {
-			this.toggleForm( true, params );
+			this.expand( params );
 		},
+
+		/**
+		 * @since 4.6.0
+		 *
+		 * @param {Object} [params]
+		 * @returns {Boolean} false if already collapsed
+		 */
+		collapse: api.Section.prototype.collapse,
 
 		/**
 		 * Collapse the menu item form control.
@@ -1390,12 +1423,13 @@
 		 * @param {Function} [params.completeCallback] - Function to call when the form toggle has finished animating.
 		 */
 		collapseForm: function( params ) {
-			this.toggleForm( false, params );
+			this.collapse( params );
 		},
 
 		/**
 		 * Expand or collapse the menu item control.
 		 *
+		 * @deprecated this is poor naming, and it is better to directly set control.expanded( showOrHide )
 		 * @since 4.5.0 Added params.completeCallback.
 		 *
 		 * @param {boolean}  [showOrHide] - If not supplied, will be inverse of current visibility
@@ -1403,6 +1437,25 @@
 		 * @param {Function} [params.completeCallback] - Function to call when the form toggle has finished animating.
 		 */
 		toggleForm: function( showOrHide, params ) {
+			if ( typeof showOrHide === 'undefined' ) {
+				showOrHide = ! this.expanded();
+			}
+			if ( showOrHide ) {
+				this.expand( params );
+			} else {
+				this.collapse( params );
+			}
+		},
+
+		/**
+		 * Expand or collapse the menu item control.
+		 *
+		 * @since 4.6.0
+		 * @param {boolean}  [showOrHide] - If not supplied, will be inverse of current visibility
+		 * @param {Object}   [params] - Optional params.
+		 * @param {Function} [params.completeCallback] - Function to call when the form toggle has finished animating.
+		 */
+		onChangeExpanded: function( showOrHide, params ) {
 			var self = this, $menuitem, $inside, complete;
 
 			$menuitem = this.container;

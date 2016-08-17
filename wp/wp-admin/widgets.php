@@ -15,7 +15,7 @@ require_once(ABSPATH . 'wp-admin/includes/widgets.php');
 if ( ! current_user_can( 'edit_theme_options' ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'You are not allowed to edit theme options on this site.' ) . '</p>',
+		'<p>' . __( 'Sorry, you are not allowed to edit theme options on this site.' ) . '</p>',
 		403
 	);
 }
@@ -357,7 +357,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' ); ?>
 				),
 				admin_url( 'customize.php' )
 			) ),
-			__( 'Manage in Customizer' )
+			__( 'Manage with Live Preview' )
 		);
 	}
 ?>

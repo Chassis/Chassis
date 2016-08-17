@@ -11,13 +11,8 @@
 	clear: both;
 }
 
-.themes-php .wrap h1 {
-	float: right;
+.themes-php:not(.network-admin) .wrap h1 {
 	margin-bottom: 15px;
-}
-
-.network-admin.themes-php .wrap h1 {
-	margin-bottom: 0;
 }
 
 .themes-php .wrap h1 .button {
@@ -37,11 +32,13 @@
 }
 
 /* Position admin messages */
-.themes-php div.updated,
-.themes-php div.error,
-.themes-php div.notice {
-	margin: 0 0 20px 0;
-	clear: both;
+.theme .notice,
+.theme .notice.is-dismissible {
+	right: 0;
+	margin: 0;
+	position: absolute;
+	left: 0;
+	top: 0;
 }
 
 /**
@@ -168,8 +165,8 @@
 	opacity: 0;
 	position: absolute;
 	top: 35%;
-	left: 25%;
-	right: 25%;
+	left: 20%;
+	right: 20%;
 	background: #23282d;
 	background: rgba(0,0,0,0.7);
 	color: #fff;
@@ -205,43 +202,6 @@
 	-ms-filter: "progid:DXImageTransform.Microsoft.Alpha(Opacity=100)";
 	opacity: 1;
 }
-
-/**
- * Displays a theme update notice
- * when an update is available.
- */
-.theme-browser .theme .theme-update,
-.theme-browser .theme .theme-installed {
-	background: #d54e21;
-	background: rgba(213, 78, 33, 0.95);
-	color: #fff;
-	display: block;
-	font-size: 13px;
-	font-weight: 400;
-	height: 48px;
-	line-height: 48px;
-	padding: 0 10px;
-	position: absolute;
-	top: 0;
-	left: 0;
-	right: 0;
-	border-bottom: 1px solid rgba(0,0,0,0.25);
-	overflow: hidden;
-}
-
-.theme-browser .theme .theme-update:before,
-.theme-browser .theme .theme-installed:before {
-	content: "\f463";
-	display: inline-block;
-	font: normal 20px/1 dashicons;
-	margin: 0 0 0 6px;
-	opacity: 0.8;
-	position: relative;
-	top: 5px;
-	speak: none;
-	-webkit-font-smoothing: antialiased;
-}
-
 
 /**
  * The currently active theme
@@ -524,7 +484,7 @@
 	-webkit-overflow-scrolling: touch;
 }
 
-body.folded .theme-overlay .theme-wrap {
+body.folded .theme-browser ~ .theme-overlay .theme-wrap {
 	right: 70px;
 }
 
@@ -721,6 +681,8 @@ body.folded .theme-overlay .theme-wrap {
 	font-weight: 100;
 	margin: 10px 0 0;
 	line-height: 1.3;
+	word-wrap: break-word;
+	overflow-wrap: break-word;
 }
 
 .theme-overlay .theme-version {
@@ -763,7 +725,7 @@ body.folded .theme-overlay .theme-wrap {
 
 .theme-overlay .theme-tags span {
 	color: #444;
-	font-weight: bold;
+	font-weight: 600;
 	margin-left: 5px;
 }
 
@@ -772,7 +734,7 @@ body.folded .theme-overlay .theme-wrap {
 	border: 1px solid #eee;
 	border-right: 4px solid #00a0d2;
 	font-size: 14px;
-	font-weight: normal;
+	font-weight: 400;
 	margin-top: 30px;
 	padding: 10px 20px 10px 10px;
 }
@@ -951,7 +913,6 @@ body.folded .theme-overlay .theme-wrap {
 }
 
 @media only screen and (max-width: 650px) {
-	.theme-overlay .theme-update,
 	.theme-overlay .theme-description {
 		margin-right: 0;
 	}
@@ -1041,11 +1002,18 @@ body.folded .theme-overlay .theme-wrap {
 .theme-browser .theme .theme-installed {
 	background: #0073aa;
 }
-.theme-browser .theme .theme-installed:before {
+.theme-browser .theme .notice-success p:before {
+	color: #79ba49;
 	content: "\f147";
+	display: inline-block;
+	font: normal 20px/1 'dashicons';
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	vertical-align: top;
 }
-.theme-browser .theme.is-installed .theme-actions .button-primary {
-	display: none !important;
+
+.theme-install.updated-message:before {
+	content: '';
 }
 
 .theme-install-php .wp-filter {
@@ -1056,13 +1024,16 @@ body.folded .theme-overlay .theme-wrap {
 .theme-install-php a.browse-themes {
 	cursor: pointer;
 }
-.theme-install-php a.browse-themes,
-.theme-install-php.show-upload-theme a.upload {
+
+.upload-view-toggle .browse,
+.plugin-install-tab-upload .upload-view-toggle .upload {
 	display: none;
 }
-.theme-install-php.show-upload-theme a.browse-themes {
+
+.plugin-install-tab-upload .upload-view-toggle .browse {
 	display: inline;
 }
+
 .upload-theme,
 .upload-plugin {
 	-webkit-box-sizing: border-box;
@@ -1070,16 +1041,24 @@ body.folded .theme-overlay .theme-wrap {
 	box-sizing: border-box;
 	display: none;
 	margin: 0;
-	padding: 0;
+	padding: 50px 0;
 	width: 100%;
 	overflow: hidden;
 	position: relative;
 	top: 10px;
 }
-body.show-upload-theme .upload-theme,
-.upload-plugin {
+
+.upload-plugin-wrap {
+	display: none;
+}
+
+.show-upload-view .upload-theme,
+.show-upload-view .upload-plugin,
+.show-upload-view .upload-plugin-wrap,
+.plugin-install-tab-upload .upload-plugin {
 	display: block;
 }
+
 .upload-theme .wp-upload-form,
 .upload-plugin .wp-upload-form {
 	background: #fafafa;
@@ -1094,12 +1073,8 @@ body.show-upload-theme .upload-theme,
 	font-size: 18px;
 	font-style: normal;
 	margin: 0;
-	padding: 40px 0 0;
+	padding: 0;
 	text-align: center;
-}
-body.show-upload-theme .upload-theme + .wp-filter,
-body.show-upload-theme .upload-theme + .wp-filter + .theme-browser {
-	display: none;
 }
 
 p.no-themes {
@@ -1113,12 +1088,8 @@ p.no-themes {
 	display: none;
 }
 
-body.no-results p.no-themes {
+.no-results p.no-themes {
 	display: block;
-}
-
-body.show-upload-theme p.no-themes {
-	display: none !important;
 }
 
 .theme-install-php .add-new-theme {
@@ -1388,12 +1359,28 @@ body.full-overlay-active {
 	pointer-events: none;
 }
 
+.theme-install-overlay .close-full-overlay,
+.theme-install-overlay .previous-theme,
+.theme-install-overlay .next-theme {
+	border-right: 0;
+	border-top: 0;
+	border-bottom: 0;
+}
+
+.theme-install-overlay .close-full-overlay:before,
+.theme-install-overlay .previous-theme:before,
+.theme-install-overlay .next-theme:before {
+	top: 2px;
+	right: 0;
+}
+
 /* Collapse Button */
 .wp-core-ui .wp-full-overlay .collapse-sidebar {
 	position: fixed;
-	bottom: 8px;
-	right: 10px;
-	padding: 0;
+	bottom: 0;
+	right: 0;
+	padding: 9px 10px 9px 0;
+	height: 45px;
 	color: #656a6f;
 	outline: 0;
 	line-height: 1;
@@ -1455,6 +1442,10 @@ body.full-overlay-active {
 	-moz-osx-font-smoothing: grayscale;
 }
 
+.wp-core-ui .wp-full-overlay.collapsed .collapse-sidebar {
+	padding: 9px 10px;
+}
+
 /* rtl:ignore */
 .wp-full-overlay.collapsed .collapse-sidebar-arrow:before,
 .rtl .wp-full-overlay .collapse-sidebar-arrow:before {
@@ -1497,6 +1488,7 @@ body.full-overlay-active {
 	width: 300px;
 	height: 45px;
 	border-top: 1px solid #ddd;
+	background: #eee;
 }
 
 .wp-full-overlay-footer .devices {
@@ -1696,7 +1688,7 @@ body.full-overlay-active {
 	max-width: 100%;
 }
 
-.theme-install-overlay .wp-full-overlay-header .theme-install {
+.theme-install-overlay .wp-full-overlay-header .button {
 	float: left;
 	margin: 8px 0 0 10px;
 	/* For when .theme-install is a span rather than a.button-primary (already installed theme) */
@@ -1789,5 +1781,14 @@ body.full-overlay-active {
 	.theme-install-overlay .wp-full-overlay-header .theme-install {
 		margin-top: 6px;
 		line-height: normal;
+	}
+}
+
+@media aural {
+	.theme .notice:before,
+	.theme-info .updating-message:before,
+	.theme-info .updated-message:before,
+	.theme-install.updating-message:before {
+		speak: none;
 	}
 }

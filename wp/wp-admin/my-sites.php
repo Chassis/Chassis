@@ -13,7 +13,7 @@ if ( !is_multisite() )
 	wp_die( __( 'Multisite support is not enabled.' ) );
 
 if ( ! current_user_can('read') )
-	wp_die( __( 'You do not have sufficient permissions to access this page.' ) );
+	wp_die( __( 'Sorry, you are not allowed to access this page.' ) );
 
 $action = isset( $_POST['action'] ) ? $_POST['action'] : 'splash';
 
@@ -109,7 +109,7 @@ else :
 		echo "<li>";
 		echo "<h3>{$user_blog->blogname}</h3>";
 		/**
-		 * Filter the row links displayed for each site on the My Sites screen.
+		 * Filters the row links displayed for each site on the My Sites screen.
 		 *
 		 * @since MU
 		 *

@@ -137,9 +137,11 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 		if ( ! is_file( $this->file ) && ! preg_match( '|^https?://|', $this->file ) )
 			return new WP_Error( 'error_loading_image', __('File doesn&#8217;t exist?'), $this->file );
 
-		/** This filter is documented in wp-includes/class-wp-image-editor-imagick.php */
-		// Even though Imagick uses less PHP memory than GD, set higher limit for users that have low PHP.ini limits
-		@ini_set( 'memory_limit', apply_filters( 'image_memory_limit', WP_MAX_MEMORY_LIMIT ) );
+		/*
+		 * Even though Imagick uses less PHP memory than GD, set higher limit
+		 * for users that have low PHP.ini limits.
+		 */
+		wp_raise_memory_limit( 'image' );
 
 		try {
 			$this->image = new Imagick( $this->file );
@@ -311,7 +313,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 		}
 
 		/**
-		 * Filter whether to strip metadata from images when they're resized.
+		 * Filters whether to strip metadata from images when they're resized.
 		 *
 		 * This filter only applies when resizing using the Imagick editor since GD
 		 * always strips profiles by default.
@@ -343,7 +345,7 @@ class WP_Image_Editor_Imagick extends WP_Image_Editor {
 			 * Use resizeImage() when it's available and a valid filter value is set.
 			 * Otherwise, fall back to the scaleImage() method for resizing, which
 			 * results in better image quality over resizeImage() with default filter
-			 * settings and retains backwards compatibility with pre 4.5 functionality.
+			 * settings and retains backward compatibility with pre 4.5 functionality.
 			 */
 			if ( is_callable( array( $this->image, 'resizeImage' ) ) && $filter ) {
 				$this->image->setOption( 'filter:support', '2.0' );

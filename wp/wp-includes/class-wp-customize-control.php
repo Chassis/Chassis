@@ -175,7 +175,7 @@ class WP_Customize_Control {
 	 *                                                 attribute names are the keys and values are the values. Not
 	 *                                                 used for 'checkbox', 'radio', 'select', 'textarea', or
 	 *                                                 'dropdown-pages' control types. Default empty array.
-	 *     @type array                $json            Deprecated. Use {@see WP_Customize_Control->json()} instead.
+	 *     @type array                $json            Deprecated. Use WP_Customize_Control::json() instead.
 	 *     @type string               $type            Control type. Core controls include 'text', 'checkbox',
 	 *                                                 'textarea', 'radio', 'select', and 'dropdown-pages'. Additional
 	 *                                                 input types such as 'email', 'url', 'number', 'hidden', and
@@ -235,7 +235,7 @@ class WP_Customize_Control {
 		$active = call_user_func( $this->active_callback, $this );
 
 		/**
-		 * Filter response of WP_Customize_Control::active().
+		 * Filters response of WP_Customize_Control::active().
 		 *
 		 * @since 4.0.0
 		 *
@@ -381,7 +381,7 @@ class WP_Customize_Control {
 		 *
 		 * @since 3.4.0
 		 *
-		 * @param WP_Customize_Control $this {@see WP_Customize_Control} instance.
+		 * @param WP_Customize_Control $this WP_Customize_Control instance.
 		 */
 		do_action( 'customize_render_control_' . $this->id, $this );
 
@@ -444,12 +444,12 @@ class WP_Customize_Control {
 	/**
 	 * Render the control's content.
 	 *
-	 * Allows the content to be overriden without having to rewrite the wrapper in $this->render().
+	 * Allows the content to be overriden without having to rewrite the wrapper in `$this::render()`.
 	 *
 	 * Supports basic input types `text`, `checkbox`, `textarea`, `radio`, `select` and `dropdown-pages`.
 	 * Additional input types such as `email`, `url`, `number`, `hidden` and `date` are supported implicitly.
 	 *
-	 * Control content can alternately be rendered in JS. See {@see WP_Customize_Control::print_template()}.
+	 * Control content can alternately be rendered in JS. See WP_Customize_Control::print_template().
 	 *
 	 * @since 3.4.0
 	 */
@@ -570,7 +570,7 @@ class WP_Customize_Control {
 	 * Render the control's JS template.
 	 *
 	 * This function is only run for control types that have been registered with
-	 * {@see WP_Customize_Manager::register_control_type()}.
+	 * WP_Customize_Manager::register_control_type().
 	 *
 	 * In the future, this will also print the template for the control's container
 	 * element and be override-able.
@@ -589,7 +589,7 @@ class WP_Customize_Control {
 	 * An Underscore (JS) template for this control's content (but not its container).
 	 *
 	 * Class variables for this control class are available in the `data` JS object;
-	 * export custom variables by overriding {@see WP_Customize_Control::to_json()}.
+	 * export custom variables by overriding WP_Customize_Control::to_json().
 	 *
 	 * @see WP_Customize_Control::print_template()
 	 *

@@ -1,6 +1,8 @@
 /* global plugininstallL10n, tb_click, tb_remove */
 
-/* Plugin Browser Thickbox related JS*/
+/**
+ * Functionality for the plugin install screens.
+ */
 var tb_position;
 jQuery( document ).ready( function( $ ) {
 
@@ -9,7 +11,10 @@ jQuery( document ).ready( function( $ ) {
 		$iframeBody,
 		$tabbables,
 		$firstTabbable,
-		$lastTabbable;
+		$lastTabbable,
+		$uploadViewToggle = $( '.upload-view-toggle' ),
+		$wrap = $ ( '.wrap' ),
+		$body = $( document.body );
 
 	tb_position = function() {
 		var width = $( window ).width(),
@@ -51,7 +56,7 @@ jQuery( document ).ready( function( $ ) {
 	 * Custom events: when a Thickbox iframe has loaded and when the Thickbox
 	 * modal gets removed from the DOM.
 	 */
-	$( 'body' )
+	$body
 		.on( 'thickbox:iframe:loaded', tbWindow, function() {
 			iframeLoaded();
 		})
@@ -174,4 +179,25 @@ jQuery( document ).ready( function( $ ) {
 		$( '#section-holder div.section' ).hide(); // Hide 'em all.
 		$( '#section-' + tab ).show();
 	});
+
+	/*
+	 * When a user presses the "Upload Plugin" button, show the upload form in place
+	 * rather than sending them to the devoted upload plugin page.
+	 * The `?tab=upload` page still exists for no-js support and for plugins that
+	 * might access it directly. When we're in this page, let the link behave
+	 * like a link. Otherwise we're in the normal plugin installer pages and the
+	 * link should behave like a toggle button.
+	 */
+	if ( ! $wrap.hasClass( 'plugin-install-tab-upload' ) ) {
+		$uploadViewToggle
+			.attr({
+				role: 'button',
+				'aria-expanded': 'false'
+			})
+			.on( 'click', function( event ) {
+				event.preventDefault();
+				$body.toggleClass( 'show-upload-view' );
+				$uploadViewToggle.attr( 'aria-expanded', $body.hasClass( 'show-upload-view' ) );
+			});
+	}
 });
