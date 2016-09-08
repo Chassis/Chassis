@@ -362,6 +362,9 @@ class WP_Http {
 			}
 		}
 
+		// Work around a bug in Requests when the path starts with // See https://github.com/rmccue/Requests/issues/231
+		$url = preg_replace( '!^(\w+://[^/]+)//(.*)$!i', '$1/$2', $url );
+
 		try {
 			$requests_response = Requests::request( $url, $headers, $data, $type, $options );
 
@@ -433,7 +436,7 @@ class WP_Http {
 		foreach ( $cookies as $name => $value ) {
 			if ( $value instanceof WP_Http_Cookie ) {
 				$cookie_jar[ $value->name ] = new Requests_Cookie( $value->name, $value->value, $value->get_attributes() );
-			} elseif ( is_string( $value ) ) {
+			} elseif ( is_scalar( $value ) ) {
 				$cookie_jar[ $name ] = new Requests_Cookie( $name, $value );
 			}
 		}
