@@ -56,7 +56,7 @@ class WP {
 	public $query_string;
 
 	/**
-	 * Permalink or requested URI.
+	 * The request path, e.g. 2015/05/06.
 	 *
 	 * @since 2.0.0
 	 * @access public
@@ -146,7 +146,7 @@ class WP {
 		global $wp_rewrite;
 
 		/**
-		 * Filter whether to parse the request.
+		 * Filters whether to parse the request.
 		 *
 		 * @since 3.5.0
 		 *
@@ -202,18 +202,19 @@ class WP {
 			// The requested permalink is in $pathinfo for path info requests and
 			//  $req_uri for other requests.
 			if ( ! empty($pathinfo) && !preg_match('|^.*' . $wp_rewrite->index . '$|', $pathinfo) ) {
-				$request = $pathinfo;
+				$requested_path = $pathinfo;
 			} else {
 				// If the request uri is the index, blank it out so that we don't try to match it against a rule.
 				if ( $req_uri == $wp_rewrite->index )
 					$req_uri = '';
-				$request = $req_uri;
+				$requested_path = $req_uri;
 			}
+			$requested_file = $req_uri;
 
-			$this->request = $request;
+			$this->request = $requested_path;
 
 			// Look for matches.
-			$request_match = $request;
+			$request_match = $requested_path;
 			if ( empty( $request_match ) ) {
 				// An empty request could only match against ^$ regex
 				if ( isset( $rewrite['$'] ) ) {
@@ -223,9 +224,9 @@ class WP {
 				}
 			} else {
 				foreach ( (array) $rewrite as $match => $query ) {
-					// If the requesting file is the anchor of the match, prepend it to the path info.
-					if ( ! empty($req_uri) && strpos($match, $req_uri) === 0 && $req_uri != $request )
-						$request_match = $req_uri . '/' . $request;
+					// If the requested file is the anchor of the match, prepend it to the path info.
+					if ( ! empty($requested_file) && strpos($match, $requested_file) === 0 && $requested_file != $requested_path )
+						$request_match = $requested_file . '/' . $requested_path;
 
 					if ( preg_match("#^$match#", $request_match, $matches) ||
 						preg_match("#^$match#", urldecode($request_match), $matches) ) {
@@ -269,7 +270,7 @@ class WP {
 			}
 
 			// If req_uri is empty or if it is a request for ourself, unset error.
-			if ( empty($request) || $req_uri == $self || strpos($_SERVER['PHP_SELF'], 'wp-admin/') !== false ) {
+			if ( empty($requested_path) || $requested_file == $self || strpos($_SERVER['PHP_SELF'], 'wp-admin/') !== false ) {
 				unset( $error, $_GET['error'] );
 
 				if ( isset($perma_query_vars) && strpos($_SERVER['PHP_SELF'], 'wp-admin/') !== false )
@@ -280,7 +281,7 @@ class WP {
 		}
 
 		/**
-		 * Filter the query variables whitelist before processing.
+		 * Filters the query variables whitelist before processing.
 		 *
 		 * Allows (publicly allowed) query vars to be added, removed, or changed prior
 		 * to executing the query. Needed to allow custom rewrite rules using your own arguments
@@ -367,7 +368,7 @@ class WP {
 			$this->query_vars['error'] = $error;
 
 		/**
-		 * Filter the array of parsed query variables.
+		 * Filters the array of parsed query variables.
 		 *
 		 * @since 2.1.0
 		 *
@@ -462,7 +463,7 @@ class WP {
 		}
 
 		/**
-		 * Filter the HTTP headers before they're sent to the browser.
+		 * Filters the HTTP headers before they're sent to the browser.
 		 *
 		 * @since 2.8.0
 		 *
@@ -512,8 +513,8 @@ class WP {
 	/**
 	 * Sets the query string property based off of the query variable property.
 	 *
-	 * The 'query_string' filter is deprecated, but still works. Plugins should
-	 * use the 'request' filter instead.
+	 * The {@see 'query_string'} filter is deprecated, but still works. Plugins should
+	 * use the {@see 'request'} filter instead.
 	 *
 	 * @since 2.0.0
 	 * @access public
@@ -531,7 +532,7 @@ class WP {
 
 		if ( has_filter( 'query_string' ) ) {  // Don't bother filtering and parsing if no plugins are hooked in.
 			/**
-			 * Filter the query string before parsing.
+			 * Filters the query string before parsing.
 			 *
 			 * @since 1.5.0
 			 * @deprecated 2.1.0 Use 'query_vars' or 'request' filters instead.
@@ -630,7 +631,7 @@ class WP {
 		global $wp_query;
 
 		/**
-		 * Filter whether to short-circuit default header status handling.
+		 * Filters whether to short-circuit default header status handling.
 		 *
 		 * Returning a non-false value from the filter will short-circuit the handling
 		 * and return early.
@@ -710,14 +711,14 @@ class WP {
 	/**
 	 * Sets up all of the variables required by the WordPress environment.
 	 *
-	 * The action 'wp' has one parameter that references the WP object. It
+	 * The action {@see 'wp'} has one parameter that references the WP object. It
 	 * allows for accessing the properties and methods to further manipulate the
 	 * object.
 	 *
 	 * @since 2.0.0
 	 * @access public
 	 *
-	 * @param string|array $query_args Passed to {@link parse_request()}
+	 * @param string|array $query_args Passed to parse_request().
 	 */
 	public function main($query_args = '') {
 		$this->init();

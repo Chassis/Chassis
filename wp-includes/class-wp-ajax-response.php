@@ -1,6 +1,6 @@
 <?php
 /**
- * Send XML response back to AJAX request.
+ * Send XML response back to Ajax request.
  *
  * @package WordPress
  * @since 2.1.0
@@ -15,7 +15,7 @@ class WP_Ajax_Response {
 	public $responses = array();
 
 	/**
-	 * Constructor - Passes args to {@link WP_Ajax_Response::add()}.
+	 * Constructor - Passes args to WP_Ajax_Response::add().
 	 *
 	 * @since 2.1.0
 	 * @see WP_Ajax_Response::add()

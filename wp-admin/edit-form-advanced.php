@@ -11,9 +11,9 @@ if ( !defined('ABSPATH') )
 	die('-1');
 
 /**
- * @global string  $post_type
- * @global object  $post_type_object
- * @global WP_Post $post
+ * @global string       $post_type
+ * @global WP_Post_Type $post_type_object
+ * @global WP_Post      $post
  */
 global $post_type, $post_type_object, $post;
 
@@ -21,7 +21,7 @@ wp_enqueue_script('post');
 $_wp_editor_expand = $_content_editor_dfw = false;
 
 /**
- * Filter whether to enable the 'expand' functionality in the post editor.
+ * Filters whether to enable the 'expand' functionality in the post editor.
  *
  * @since 4.0.0
  * @since 4.1.0 Added the `$post_type` parameter.
@@ -129,7 +129,7 @@ if ( $viewable ) {
 
 }
 
-/* translators: Publish box date format, see http://php.net/date */
+/* translators: Publish box date format, see https://secure.php.net/date */
 $scheduled_date = date_i18n( __( 'M j, Y @ H:i' ), strtotime( $post->post_date ) );
 
 $messages['post'] = array(
@@ -163,7 +163,7 @@ $messages['page'] = array(
 $messages['attachment'] = array_fill( 1, 10, __( 'Media file updated.' ) ); // Hack, for now.
 
 /**
- * Filter the post updated messages.
+ * Filters the post updated messages.
  *
  * @since 3.0.0
  *
@@ -219,7 +219,7 @@ $publish_callback_args = null;
 if ( post_type_supports($post_type, 'revisions') && 'auto-draft' != $post->post_status ) {
 	$revisions = wp_get_post_revisions( $post_ID );
 
-	// We should aim to show the revisions metabox only when there are revisions.
+	// We should aim to show the revisions meta box only when there are revisions.
 	if ( count( $revisions ) > 1 ) {
 		reset( $revisions ); // Reset pointer for key()
 		$publish_callback_args = array( 'revisions_count' => count( $revisions ), 'revision_id' => key( $revisions ) );
@@ -543,7 +543,7 @@ do_action( 'edit_form_top', $post ); ?>
 <div id="titlewrap">
 	<?php
 	/**
-	 * Filter the title field placeholder text.
+	 * Filters the title field placeholder text.
 	 *
 	 * @since 3.1.0
 	 *

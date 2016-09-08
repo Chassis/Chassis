@@ -38,7 +38,7 @@ function _wp_post_revision_fields( $post = array(), $deprecated = false ) {
 	}
 
 	/**
-	 * Filter the list of fields saved in post revisions.
+	 * Filters the list of fields saved in post revisions.
 	 *
 	 * Included by default: 'post_title', 'post_content' and 'post_excerpt'.
 	 *
@@ -138,7 +138,7 @@ function wp_save_post_revision( $post_id ) {
 		}
 
 		/**
-		 * Filter whether the post has changed since the last revision.
+		 * Filters whether the post has changed since the last revision.
 		 *
 		 * By default a revision is saved only if one of the revisioned fields has changed.
 		 * This filter can override that so a revision is saved even if nothing has changed.
@@ -162,7 +162,7 @@ function wp_save_post_revision( $post_id ) {
 			}
 
 			/**
-			 * Filter whether a post has changed.
+			 * Filters whether a post has changed.
 			 *
 			 * By default a revision is saved only if one of the revisioned fields has changed.
 			 * This filter allows for additional checks to determine if there were changes.
@@ -322,7 +322,7 @@ function _wp_put_post_revision( $post = null, $autosave = false ) {
  *
  * @param int|WP_Post $post   The post ID or object.
  * @param string      $output Optional. OBJECT, ARRAY_A, or ARRAY_N.
- * @param string      $filter Optional sanitation filter. @see sanitize_post().
+ * @param string      $filter Optional sanitation filter. See sanitize_post().
  * @return WP_Post|array|null Null if error or post object if success.
  */
 function wp_get_post_revision(&$post, $output = OBJECT, $filter = 'raw') {
@@ -377,14 +377,6 @@ function wp_restore_post_revision( $revision_id, $fields = null ) {
 	$post_id = wp_update_post( $update );
 	if ( ! $post_id || is_wp_error( $post_id ) )
 		return $post_id;
-
-	// Add restore from details
-	$restore_details = array(
-		'restored_revision_id' => $revision_id,
-		'restored_by_user'     => get_current_user_id(),
-		'restored_time'        => time()
-	);
-	update_post_meta( $post_id, '_post_restored_from', $restore_details );
 
 	// Update last edit user
 	update_post_meta( $post_id, '_edit_last', get_current_user_id() );
@@ -500,7 +492,7 @@ function wp_revisions_to_keep( $post ) {
 		$num = 0;
 
 	/**
-	 * Filter the number of revisions to save for the given post.
+	 * Filters the number of revisions to save for the given post.
 	 *
 	 * Overrides the value of WP_POST_REVISIONS.
 	 *
@@ -538,6 +530,7 @@ function _set_preview( $post ) {
 	$post->post_excerpt = $preview->post_excerpt;
 
 	add_filter( 'get_the_terms', '_wp_preview_terms_filter', 10, 3 );
+	add_filter( 'get_post_metadata', '_wp_preview_post_thumbnail_filter', 10, 3 );
 
 	return $post;
 }
@@ -553,7 +546,7 @@ function _show_post_preview() {
 		$id = (int) $_GET['preview_id'];
 
 		if ( false === wp_verify_nonce( $_GET['preview_nonce'], 'post_preview_' . $id ) )
-			wp_die( __('You do not have permission to preview drafts.') );
+			wp_die( __('Sorry, you are not allowed to preview drafts.') );
 
 		add_filter('the_preview', '_set_preview');
 	}
@@ -583,6 +576,40 @@ function _wp_preview_terms_filter( $terms, $post_id, $taxonomy ) {
 		$terms = array( $term ); // Can only have one post format
 
 	return $terms;
+}
+
+/**
+ * Filters post thumbnail lookup to set the post thumbnail.
+ *
+ * @since 4.6.0
+ * @access private
+ *
+ * @param null|array|string $value    The value to return - a single metadata value, or an array of values.
+ * @param int               $post_id  Post ID.
+ * @param string            $meta_key Meta key.
+ * @return null|array The default return value or the post thumbnail meta array.
+ */
+function _wp_preview_post_thumbnail_filter( $value, $post_id, $meta_key ) {
+	if ( ! $post = get_post() ) {
+		return $value;
+	}
+
+	if ( empty( $_REQUEST['_thumbnail_id'] ) ||
+	     empty( $_REQUEST['preview_id'] ) ||
+	     $post->ID != $post_id ||
+	     '_thumbnail_id' != $meta_key ||
+	     'revision' == $post->post_type ||
+	     $post_id != $_REQUEST['preview_id']
+	) {
+		return $value;
+	}
+
+	$thumbnail_id = intval( $_REQUEST['_thumbnail_id'] );
+	if ( $thumbnail_id <= 0 ) {
+		return '';
+	}
+
+	return strval( $thumbnail_id );
 }
 
 /**

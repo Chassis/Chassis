@@ -159,7 +159,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer {
 				$processed_line = htmlspecialchars( $line );
 
 				/**
-				 * Contextually filter a diffed line.
+				 * Contextually filters a diffed line.
 				 *
 				 * Filters TextDiff processing of diffed line. By default, diffs are processed with
 				 * htmlspecialchars. Use this filter to remove or change the processing. Passes a context
@@ -458,7 +458,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer {
 	}
 
 	/**
-	 * Make private properties readable for backwards compatibility.
+	 * Make private properties readable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -473,7 +473,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer {
 	}
 
 	/**
-	 * Make private properties settable for backwards compatibility.
+	 * Make private properties settable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -489,7 +489,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer {
 	}
 
 	/**
-	 * Make private properties checkable for backwards compatibility.
+	 * Make private properties checkable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public
@@ -504,7 +504,7 @@ class WP_Text_Diff_Renderer_Table extends Text_Diff_Renderer {
 	}
 
 	/**
-	 * Make private properties un-settable for backwards compatibility.
+	 * Make private properties un-settable for backward compatibility.
 	 *
 	 * @since 4.0.0
 	 * @access public

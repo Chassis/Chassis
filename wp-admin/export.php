@@ -10,7 +10,7 @@
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
 if ( !current_user_can('export') )
-	wp_die(__('You do not have sufficient permissions to export the content of this site.'));
+	wp_die(__('Sorry, you are not allowed to export the content of this site.'));
 
 /** Load WordPress export API */
 require_once( ABSPATH . 'wp-admin/includes/export.php' );
@@ -103,7 +103,7 @@ if ( isset( $_GET['download'] ) ) {
 	}
 
 	/**
-	 * Filter the export args.
+	 * Filters the export args.
 	 *
 	 * @since 3.5.0
 	 *

@@ -144,7 +144,7 @@ function add_rewrite_rule( $regex, $query, $after = 'bottom' ) {
  * Add a new rewrite tag (like %postname%).
  *
  * The $query parameter is optional. If it is omitted you must ensure that
- * you call this on, or before, the 'init' hook. This is because $query defaults
+ * you call this on, or before, the {@see 'init'} hook. This is because $query defaults
  * to "$tag=", and for this to work a new query var has to be added.
  *
  * @since 2.1.0
@@ -202,7 +202,7 @@ function remove_rewrite_tag( $tag ) {
 function add_permastruct( $name, $struct, $args = array() ) {
 	global $wp_rewrite;
 
-	// backwards compatibility for the old parameters: $with_front and $ep_mask
+	// Back-compat for the old parameters: $with_front and $ep_mask.
 	if ( ! is_array( $args ) )
 		$args = array( 'with_front' => $args );
 	if ( func_num_args() == 4 )
@@ -311,7 +311,7 @@ function add_rewrite_endpoint( $name, $places, $query_var = true ) {
 }
 
 /**
- * Filter the URL base for taxonomies.
+ * Filters the URL base for taxonomies.
  *
  * To remove any manually prepended /index.php/.
  *
@@ -463,7 +463,7 @@ function url_to_postid( $url ) {
 	global $wp_rewrite;
 
 	/**
-	 * Filter the URL to derive the post ID from.
+	 * Filters the URL to derive the post ID from.
 	 *
 	 * @since 2.2.0
 	 *

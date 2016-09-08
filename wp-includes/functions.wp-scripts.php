@@ -43,15 +43,15 @@ function _wp_scripts_maybe_doing_it_wrong( $function ) {
 		'<code>wp_enqueue_scripts</code>',
 		'<code>admin_enqueue_scripts</code>',
 		'<code>login_enqueue_scripts</code>'
-	), '3.3' );
+	), '3.3.0' );
 }
 
 /**
- * Print scripts in document head that are in the $handles queue.
+ * Prints scripts in document head that are in the $handles queue.
  *
- * Called by admin-header.php and wp_head hook. Since it is called by wp_head on every page load,
+ * Called by admin-header.php and {@see 'wp_head'} hook. Since it is called by wp_head on every page load,
  * the function does not instantiate the WP_Scripts object unless script names are explicitly passed.
- * Makes use of already-instantiated $wp_scripts global if present. Use provided wp_print_scripts
+ * Makes use of already-instantiated $wp_scripts global if present. Use provided {@see 'wp_print_scripts'}
  * hook to register/enqueue new scripts.
  *
  * @see WP_Scripts::do_items()
@@ -107,7 +107,12 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
 	if ( false !== stripos( $data, '</script>' ) ) {
-		_doing_it_wrong( __FUNCTION__, __( 'Do not pass script tags to wp_add_inline_script().' ), '4.5.0' );
+		_doing_it_wrong( __FUNCTION__, sprintf(
+			/* translators: 1: <script>, 2: wp_add_inline_script() */
+			__( 'Do not pass %1$s tags to %2$s.' ),
+			'<code>&lt;script&gt;</code>',
+			'<code>wp_add_inline_script()</code>'
+		), '4.5.0' );
 		$data = trim( preg_replace( '#<script[^>]*>(.*)</script>#is', '$1', $data ) );
 	}
 
@@ -221,7 +226,7 @@ function wp_deregister_script( $handle ) {
 		if ( in_array( $handle, $no ) ) {
 			$message = sprintf( __( 'Do not deregister the %1$s script in the administration area. To target the front-end theme, use the %2$s hook.' ),
 				"<code>$handle</code>", '<code>wp_enqueue_scripts</code>' );
-			_doing_it_wrong( __FUNCTION__, $message, '3.6' );
+			_doing_it_wrong( __FUNCTION__, $message, '3.6.0' );
 			return;
 		}
 	}

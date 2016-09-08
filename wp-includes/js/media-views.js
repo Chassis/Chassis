@@ -462,14 +462,14 @@ EditImage = wp.media.controller.State.extend({
 	 * @since 3.9.0
 	 */
 	activate: function() {
-		this.listenTo( this.frame, 'toolbar:render:edit-image', this.toolbar );
+		this.frame.on( 'toolbar:render:edit-image', _.bind( this.toolbar, this ) );
 	},
 
 	/**
 	 * @since 3.9.0
 	 */
 	deactivate: function() {
-		this.stopListening( this.frame );
+		this.frame.off( 'toolbar:render:edit-image' );
 	},
 
 	/**
@@ -3772,11 +3772,11 @@ AttachmentsBrowser = View.extend({
 		this.controller.on( 'toggle:upload:attachment', this.toggleUploader, this );
 		this.controller.on( 'edit:selection', this.editSelection );
 		this.createToolbar();
+		this.createUploader();
+		this.createAttachments();
 		if ( this.options.sidebar ) {
 			this.createSidebar();
 		}
-		this.createUploader();
-		this.createAttachments();
 		this.updateContent();
 
 		if ( ! this.options.sidebar || 'errors' === this.options.sidebar ) {
@@ -4085,8 +4085,8 @@ AttachmentsBrowser = View.extend({
 		});
 
 		// Add keydown listener to the instance of the Attachments view
-		this.attachments.listenTo( this.controller, 'attachment:keydown:arrow',     this.attachments.arrowEvent );
-		this.attachments.listenTo( this.controller, 'attachment:details:shift-tab', this.attachments.restoreFocus );
+		this.controller.on( 'attachment:keydown:arrow',     _.bind( this.attachments.arrowEvent, this.attachments ) );
+		this.controller.on( 'attachment:details:shift-tab', _.bind( this.attachments.restoreFocus, this.attachments ) );
 
 		this.views.add( this.attachments );
 

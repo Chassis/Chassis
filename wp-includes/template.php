@@ -11,7 +11,7 @@
  *
  * Used to quickly retrieve the path of a template without including the file
  * extension. It will also check the parent theme, if the file exists, with
- * the use of {@link locate_template()}. Allows for more generic template location
+ * the use of locate_template(). Allows for more generic template location
  * without the use of the other get_*_template() functions.
  *
  * @since 1.5.0
@@ -29,7 +29,7 @@ function get_query_template( $type, $templates = array() ) {
 	$template = locate_template( $templates );
 
 	/**
-	 * Filter the path of the queried template by type.
+	 * Filters the path of the queried template by type.
 	 *
 	 * The dynamic portion of the hook name, `$type`, refers to the filename -- minus the file
 	 * extension and any non-alphanumeric characters delimiting words -- of the file to load.

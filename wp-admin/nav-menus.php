@@ -22,7 +22,7 @@ if ( ! current_theme_supports( 'menus' ) && ! current_theme_supports( 'widgets' 
 if ( ! current_user_can( 'edit_theme_options' ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'You are not allowed to edit theme options on this site.' ) . '</p>',
+		'<p>' . __( 'Sorry, you are not allowed to edit theme options on this site.' ) . '</p>',
 		403
 	);
 }
@@ -53,26 +53,8 @@ $action = isset( $_REQUEST['action'] ) ? $_REQUEST['action'] : 'edit';
  * If a JSON blob of navigation menu data is found, expand it and inject it
  * into `$_POST` to avoid PHP `max_input_vars` limitations. See #14134.
  */
-if ( isset( $_POST['nav-menu-data'] ) ) {
-	$data = json_decode( stripslashes( $_POST['nav-menu-data'] ) );
-	if ( ! is_null( $data ) && $data ) {
-		foreach ( $data as $post_input_data ) {
-			// For input names that are arrays (e.g. `menu-item-db-id[3]`), derive the array path keys via regex.
-			if ( preg_match( '#(.*)\[(\w+)\]#', $post_input_data->name, $matches ) ) {
-				if ( empty( $_POST[ $matches[1] ] ) ) {
-					$_POST[ $matches[1] ] = array();
-				}
-				// Cast input elements with a numeric array index to integers.
-				if ( is_numeric( $matches[2] ) ) {
-					$matches[2] = (int) $matches[2];
-				}
-				$_POST[ $matches[1] ][ $matches[2] ] = wp_slash( $post_input_data->value );
-			} else {
-				$_POST[ $post_input_data->name ] = wp_slash( $post_input_data->value );
-			}
-		}
-	}
-}
+_wp_expand_nav_menu_post_data();
+
 switch ( $action ) {
 	case 'add-menu-item':
 		check_admin_referer( 'add-menu_item', 'menu-settings-column-nonce' );
@@ -603,7 +585,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 					array( 'autofocus' => $focus ),
 					'return' => urlencode( wp_unslash( $_SERVER['REQUEST_URI'] ) ),
 				), admin_url( 'customize.php' ) ) ),
-				__( 'Manage in Customizer' )
+				__( 'Manage with Live Preview' )
 			);
 		endif;
 		?>
@@ -711,7 +693,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 							}
 
 							/**
-							 * Filter the number of locations listed per menu in the drop-down select.
+							 * Filters the number of locations listed per menu in the drop-down select.
 							 *
 							 * @since 3.6.0
 							 *

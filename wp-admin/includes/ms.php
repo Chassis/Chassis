@@ -112,7 +112,7 @@ function wpmu_delete_blog( $blog_id, $drop = false ) {
 
 		$tables = $wpdb->tables( 'blog' );
 		/**
-		 * Filter the tables to drop when the site is deleted.
+		 * Filters the tables to drop when the site is deleted.
 		 *
 		 * @since MU
 		 *
@@ -128,7 +128,7 @@ function wpmu_delete_blog( $blog_id, $drop = false ) {
 		$wpdb->delete( $wpdb->blogs, array( 'blog_id' => $blog_id ) );
 
 		/**
-		 * Filter the upload base directory to delete when the site is deleted.
+		 * Filters the upload base directory to delete when the site is deleted.
 		 *
 		 * @since MU
 		 *
@@ -291,7 +291,7 @@ All at ###SITENAME###
 ###SITEURL###' );
 
 	/**
-	 * Filter the email text sent when the site admin email is changed.
+	 * Filters the email text sent when the site admin email is changed.
 	 *
 	 * The following strings have a special meaning and will get replaced dynamically:
 	 * ###USERNAME###  The current user's username.
@@ -371,7 +371,7 @@ All at ###SITENAME###
 ###SITEURL###' );
 
 		/**
-		 * Filter the email text sent when a user changes emails.
+		 * Filters the email text sent when a user changes emails.
 		 *
 		 * The following strings have a special meaning and will get replaced dynamically:
 		 * ###USERNAME###  The current user's username.
@@ -528,7 +528,7 @@ function update_user_status( $id, $pref, $value, $deprecated = null ) {
 	global $wpdb;
 
 	if ( null !== $deprecated )
-		_deprecated_argument( __FUNCTION__, '3.1' );
+		_deprecated_argument( __FUNCTION__, '3.0.2' );
 
 	$wpdb->update( $wpdb->users, array( sanitize_key( $pref ) => $value ), array( 'ID' => $id ) );
 
@@ -604,7 +604,7 @@ function format_code_lang( $code = '' ) {
 		've' => 'Venda', 'vi' => 'Vietnamese', 'vo' => 'Volapük', 'cy' => 'Welsh','wa' => 'Walloon','wo' => 'Wolof', 'xh' => 'Xhosa', 'yi' => 'Yiddish', 'yo' => 'Yoruba', 'za' => 'Zhuang; Chuang', 'zu' => 'Zulu' );
 
 	/**
-	 * Filter the language codes.
+	 * Filters the language codes.
 	 *
 	 * @since MU
 	 *
@@ -621,10 +621,10 @@ function format_code_lang( $code = '' ) {
  * @since 3.0.0
  *
  * @param object $term     The term.
- * @param string $taxonomy The taxonomy for $term. Should be 'category' or 'post_tag', as these are
+ * @param string $taxonomy The taxonomy for `$term`. Should be 'category' or 'post_tag', as these are
  *                         the only taxonomies which are processed by this function; anything else
  *                         will be returned untouched.
- * @return object|array Returns `$term`, after filtering the 'slug' field with {@see sanitize_title()}
+ * @return object|array Returns `$term`, after filtering the 'slug' field with sanitize_title()
  *                      if $taxonomy is 'category' or 'post_tag'.
  */
 function sync_category_tag_slugs( $term, $taxonomy ) {
@@ -730,7 +730,7 @@ function mu_dropdown_languages( $lang_files = array(), $current = '' ) {
 	uksort( $output, 'strnatcasecmp' );
 
 	/**
-	 * Filter the languages available in the dropdown.
+	 * Filters the languages available in the dropdown.
 	 *
 	 * @since MU
 	 *
@@ -852,102 +852,6 @@ function choose_primary_blog() {
 }
 
 /**
- * Grants Super Admin privileges.
- *
- * @since 3.0.0
- *
- * @global array $super_admins
- *
- * @param int $user_id ID of the user to be granted Super Admin privileges.
- * @return bool True on success, false on failure. This can fail when the user is
- *              already a super admin or when the `$super_admins` global is defined.
- */
-function grant_super_admin( $user_id ) {
-	// If global super_admins override is defined, there is nothing to do here.
-	if ( isset( $GLOBALS['super_admins'] ) ) {
-		return false;
-	}
-
-	/**
-	 * Fires before the user is granted Super Admin privileges.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param int $user_id ID of the user that is about to be granted Super Admin privileges.
-	 */
-	do_action( 'grant_super_admin', $user_id );
-
-	// Directly fetch site_admins instead of using get_super_admins()
-	$super_admins = get_site_option( 'site_admins', array( 'admin' ) );
-
-	$user = get_userdata( $user_id );
-	if ( $user && ! in_array( $user->user_login, $super_admins ) ) {
-		$super_admins[] = $user->user_login;
-		update_site_option( 'site_admins' , $super_admins );
-
-		/**
-		 * Fires after the user is granted Super Admin privileges.
-		 *
-		 * @since 3.0.0
-		 *
-		 * @param int $user_id ID of the user that was granted Super Admin privileges.
-		 */
-		do_action( 'granted_super_admin', $user_id );
-		return true;
-	}
-	return false;
-}
-
-/**
- * Revokes Super Admin privileges.
- *
- * @since 3.0.0
- *
- * @global array $super_admins
- *
- * @param int $user_id ID of the user Super Admin privileges to be revoked from.
- * @return bool True on success, false on failure. This can fail when the user's email
- *              is the network admin email or when the `$super_admins` global is defined.
- */
-function revoke_super_admin( $user_id ) {
-	// If global super_admins override is defined, there is nothing to do here.
-	if ( isset( $GLOBALS['super_admins'] ) ) {
-		return false;
-	}
-
-	/**
-	 * Fires before the user's Super Admin privileges are revoked.
-	 *
-	 * @since 3.0.0
-	 *
-	 * @param int $user_id ID of the user Super Admin privileges are being revoked from.
-	 */
-	do_action( 'revoke_super_admin', $user_id );
-
-	// Directly fetch site_admins instead of using get_super_admins()
-	$super_admins = get_site_option( 'site_admins', array( 'admin' ) );
-
-	$user = get_userdata( $user_id );
-	if ( $user && 0 !== strcasecmp( $user->user_email, get_site_option( 'admin_email' ) ) ) {
-		if ( false !== ( $key = array_search( $user->user_login, $super_admins ) ) ) {
-			unset( $super_admins[$key] );
-			update_site_option( 'site_admins', $super_admins );
-
-			/**
-			 * Fires after the user's Super Admin privileges are revoked.
-			 *
-			 * @since 3.0.0
-			 *
-			 * @param int $user_id ID of the user Super Admin privileges were revoked from.
-			 */
-			do_action( 'revoked_super_admin', $user_id );
-			return true;
-		}
-	}
-	return false;
-}
-
-/**
  * Whether or not we can edit this network from this page.
  *
  * By default editing of network is restricted to the Network Admin for that `$site_id`
@@ -969,7 +873,7 @@ function can_edit_network( $site_id ) {
 		$result = false;
 
 	/**
-	 * Filter whether this network can be edited from this page.
+	 * Filters whether this network can be edited from this page.
 	 *
 	 * @since 3.1.0
 	 *
@@ -1123,4 +1027,87 @@ jQuery(document).ready( function($) {
 });
 </script>
 <?php
+}
+
+/**
+ * Outputs the HTML for a network's "Edit Site" tabular interface.
+ *
+ * @since 4.6.0
+ *
+ * @param $args {
+ *     Optional. Array or string of Query parameters. Default empty array.
+ *
+ *     @type int    $blog_id  The site ID. Default is the current site.
+ *     @type array  $links    The tabs to include with (label|url|cap) keys.
+ *     @type string $selected The ID of the selected link.
+ * }
+ */
+function network_edit_site_nav( $args = array() ) {
+
+	/**
+	 * Filters the links that appear on site-editing network pages.
+	 *
+	 * Default links: 'site-info', 'site-users', 'site-themes', and 'site-settings'.
+	 *
+	 * @since 4.6.0
+	 *
+	 * @param array $links {
+	 *     An array of link data representing individual network admin pages.
+	 *
+	 *     @type array $link_slug {
+	 *         An array of information about the individual link to a page.
+	 *
+	 *         $type string $label Label to use for the link.
+	 *         $type string $url   URL, relative to `network_admin_url()` to use for the link.
+	 *         $type string $cap   Capability required to see the link.
+	 *     }
+	 * }
+	 */
+	$links = apply_filters( 'network_edit_site_nav_links', array(
+		'site-info'     => array( 'label' => __( 'Info' ),     'url' => 'site-info.php',     'cap' => 'manage_sites' ),
+		'site-users'    => array( 'label' => __( 'Users' ),    'url' => 'site-users.php',    'cap' => 'manage_sites' ),
+		'site-themes'   => array( 'label' => __( 'Themes' ),   'url' => 'site-themes.php',   'cap' => 'manage_sites' ),
+		'site-settings' => array( 'label' => __( 'Settings' ), 'url' => 'site-settings.php', 'cap' => 'manage_sites' )
+	) );
+
+	// Parse arguments
+	$r = wp_parse_args( $args, array(
+		'blog_id'  => isset( $_GET['blog_id'] ) ? (int) $_GET['blog_id'] : 0,
+		'links'    => $links,
+		'selected' => 'site-info',
+	) );
+
+	// Setup the links array
+	$screen_links = array();
+
+	// Loop through tabs
+	foreach ( $r['links'] as $link_id => $link ) {
+
+		// Skip link if user can't access
+		if ( ! current_user_can( $link['cap'], $r['blog_id'] ) ) {
+			continue;
+		}
+
+		// Link classes
+		$classes = array( 'nav-tab' );
+
+		// Selected is set by the parent OR assumed by the $pagenow global
+		if ( $r['selected'] === $link_id || $link['url'] === $GLOBALS['pagenow'] ) {
+			$classes[] = 'nav-tab-active';
+		}
+
+		// Escape each class
+		$esc_classes = implode( ' ', $classes );
+
+		// Get the URL for this link
+		$url = add_query_arg( array( 'id' => $r['blog_id'] ), network_admin_url( $link['url'] ) );
+
+		// Add link to nav links
+		$screen_links[ $link_id ] = '<a href="' . esc_url( $url ) . '" id="' . esc_attr( $link_id ) . '" class="' . $esc_classes . '">' . esc_html( $link['label'] ) . '</a>';
+	}
+
+	// All done!
+	echo '<h2 class="nav-tab-wrapper wp-clearfix">';
+	echo implode( '', $screen_links );
+	echo '</h2>';
 }

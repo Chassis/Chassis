@@ -61,7 +61,7 @@ case 'editcomment' :
 		comment_footer_die( __( 'Invalid comment ID.' ) . sprintf(' <a href="%s">' . __('Go back') . '</a>.', 'javascript:history.go(-1)') );
 
 	if ( !current_user_can( 'edit_comment', $comment_id ) )
-		comment_footer_die( __('You are not allowed to edit this comment.') );
+		comment_footer_die( __('Sorry, you are not allowed to edit this comment.') );
 
 	if ( 'trash' == $comment->comment_approved )
 		comment_footer_die( __('This comment is in the Trash. Please move it out of the Trash if you want to edit it.') );
@@ -197,7 +197,7 @@ if ( $comment->comment_approved != '0' ) { // if not unapproved
 	<?php
 		/* translators: 1: comment date, 2: comment time */
 		$submitted = sprintf( __( '%1$s at %2$s' ),
-			/* translators: comment date format. See http://php.net/date */
+			/* translators: comment date format. See https://secure.php.net/date */
 			get_comment_date( __( 'Y/m/d' ), $comment ),
 			get_comment_date( __( 'g:i a' ), $comment )
 		);
@@ -254,7 +254,7 @@ case 'unapprovecomment' :
 	if ( !$comment = get_comment($comment_id) )
 		comment_footer_die( __( 'Invalid comment ID.' ) . sprintf(' <a href="%s">' . __('Go back') . '</a>.', 'edit-comments.php') );
 	if ( !current_user_can( 'edit_comment', $comment->comment_ID ) )
-		comment_footer_die( __('You are not allowed to edit comments on this post.') );
+		comment_footer_die( __('Sorry, you are not allowed to edit comments on this post.') );
 
 	if ( '' != wp_get_referer() && ! $noredir && false === strpos(wp_get_referer(), 'comment.php') )
 		$redir = wp_get_referer();
@@ -313,7 +313,7 @@ case 'editedcomment' :
 	$location = ( empty( $_POST['referredby'] ) ? "edit-comments.php?p=$comment_post_id" : $_POST['referredby'] ) . '#comment-' . $comment_id;
 
 	/**
-	 * Filter the URI the user is redirected to after editing a comment in the admin.
+	 * Filters the URI the user is redirected to after editing a comment in the admin.
 	 *
 	 * @since 2.1.0
 	 *

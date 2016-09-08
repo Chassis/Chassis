@@ -256,9 +256,9 @@ function redirect_canonical( $requested_url = null, $do_redirect = true ) {
 			}
 		} elseif ( is_single() && strpos($wp_rewrite->permalink_structure, '%category%') !== false && $cat = get_query_var( 'category_name' ) ) {
 			$category = get_category_by_path( $cat );
-			$post_terms = wp_get_object_terms($wp_query->get_queried_object_id(), 'category', array('fields' => 'tt_ids'));
-			if ( (!$category || is_wp_error($category)) || ( !is_wp_error($post_terms) && !empty($post_terms) && !in_array($category->term_taxonomy_id, $post_terms) ) )
+			if ( ( ! $category || is_wp_error( $category ) ) || ! has_term( $category->term_id, 'category', $wp_query->get_queried_object_id() ) ) {
 				$redirect_url = get_permalink($wp_query->get_queried_object_id());
+			}
 		}
 
 		// Post Paging
@@ -477,6 +477,15 @@ function redirect_canonical( $requested_url = null, $do_redirect = true ) {
 	// Hex encoded octets are case-insensitive.
 	if ( false !== strpos($requested_url, '%') ) {
 		if ( !function_exists('lowercase_octets') ) {
+			/**
+			 * Converts the first hex-encoded octet match to lowercase.
+			 *
+			 * @since 3.1.0
+			 * @ignore
+			 *
+			 * @param array $matches Hex-encoded octet matches for the requested URL.
+			 * @return string Lowercased version of the first match.
+			 */
 			function lowercase_octets($matches) {
 				return strtolower( $matches[0] );
 			}
@@ -485,7 +494,7 @@ function redirect_canonical( $requested_url = null, $do_redirect = true ) {
 	}
 
 	/**
-	 * Filter the canonical redirect URL.
+	 * Filters the canonical redirect URL.
 	 *
 	 * Returning false to this filter will cancel the redirect.
 	 *
