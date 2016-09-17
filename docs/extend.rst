@@ -9,9 +9,6 @@ Available Extensions
 
 This is a non-exhaustive list of what's available to drop into your Chassis box.
 
-* `Mailcatcher`_: Hijack emails sent from WordPress, and display them in your
-  browser to avoid cluttering your real inbox.
-
 * `Memcache`_: Install a memcached server, and configure WordPress to use it
   automatically.
 
@@ -36,7 +33,6 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 * `OpenSSL`_: A Chassis extension to install SSL.
 
-.. _Mailcatcher: https://github.com/Chassis/mailcatcher
 .. _Memcache: https://github.com/Chassis/memcache
 .. _Redis: https://github.com/shadyvb/chassis-redis
 .. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
