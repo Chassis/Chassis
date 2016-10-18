@@ -33,6 +33,8 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 * `NodeJS`_: A Chassis extension to install NodeJS.
 
+* `Imagick`_: A Chassis extension to install ImageMagick.
+
 
 .. _Memcache: https://github.com/Chassis/memcache
 .. _Redis: https://github.com/shadyvb/chassis-redis
@@ -46,6 +48,7 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 .. _Debugging: https://github.com/Chassis/Debugging
 .. _OpenSSL: https://github.com/javorszky/chassis-openssl
 .. _NodeJS: https://github.com/Chassis/nodejs
+.. _Imagick: https://github.com/Chassis/Imagick
 
 Creating your own
 -----------------
