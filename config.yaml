@@ -38,8 +38,8 @@ ip: dhcp
 apt_mirror: Yes
 
 # Should we use multisite?
-# (Only subdirectories are supported currently)
-# Values: Yes, No
+# (Set to Yes for subdorectories)
+# Values: No, Yes, subdomains
 multisite: No
 
 # Database configuration
