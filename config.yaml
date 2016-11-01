@@ -38,7 +38,7 @@ ip: dhcp
 apt_mirror: Yes
 
 # Should we use multisite?
-# (Set to Yes for subdorectories)
+# (Set to Yes for subdirectories)
 # Values: No, Yes, subdomains
 multisite: No
 
