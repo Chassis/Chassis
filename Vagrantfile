@@ -101,12 +101,12 @@ Vagrant.configure("2") do |config|
 	if vagrant_version >= "1.3.0"
 		config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ]
 		CONF["synced_folders"].each do |from, to|
-			config.vm.synced_folder from, to, :mount_options => [ "dmode=777,fmode=777" ]
+			config.vm.synced_folder from, to, :mount_options => [ "dmode=777,fmode=777" ], :create => true
 		end if CONF["synced_folders"]
 	else
 		config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"
 		CONF["synced_folders"].each do |from, to|
-			config.vm.synced_folder from, to, :extra => "dmode=777,fmode=777"
+			config.vm.synced_folder from, to, :extra => "dmode=777,fmode=777", :create => true
 		end if CONF["synced_folders"]
 	end
 
