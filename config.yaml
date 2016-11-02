@@ -70,6 +70,13 @@ paths:
     # Content directory. Relative to the base directory.
     content: content
 
+# Synced Folders
+#
+# You can sync as many folders as you like. We sync the nginx and php log folders by default.
+synced_folders:
+    logs/nginx: /var/log/nginx
+    logs/php: /var/log/php
+
 # Plugins
 #
 # Install and activate a list of plugins from wp.org
