@@ -48,6 +48,9 @@ Vagrant.configure("2") do |config|
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
 
+	# Disable updating of Virtual Box Guest Additions for faster provisioning.
+	config.vbguest.auto_update = false
+
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
 		config.vm.network :private_network, type: "dhcp"
