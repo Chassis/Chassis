@@ -55,9 +55,9 @@ Vagrant.configure("2") do |config|
 
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
-		config.vm.network :private_network, type: "dhcp"
+		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
 	else
-		config.vm.network :private_network, ip: CONF['ip']
+		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
 	end
 	config.vm.hostname = CONF['hosts'][0]
 
