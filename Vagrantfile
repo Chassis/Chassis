@@ -49,7 +49,9 @@ Vagrant.configure("2") do |config|
 	config.ssh.forward_agent = true
 
 	# Disable updating of Virtual Box Guest Additions for faster provisioning.
-	config.vbguest.auto_update = false
+	if Vagrant.has_plugin?("vagrant-vbguest")
+		config.vbguest.auto_update = false
+	end
 
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
