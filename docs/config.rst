@@ -215,12 +215,12 @@ APT Mirror
 
 **Key**: ``apt_mirror``
 
-To speed up package installation, Chassis will tell Ubuntu to use the closest
+To speed up package installation, Chassis can tell Ubuntu to use the closest
 mirror to you, rather than the main mirror (``ubuntu.com``). This typically
 speeds up installation by decreasing latency, however it may cause slowness with
 some slower or badly-behaving mirrors.
 
-You can tell Chassis to avoid doing this by setting ``apt_mirror: No``
+You can tell Chassis to do this by setting ``apt_mirror: Yes``
 
 If you have a specific mirror you'd like to use, you can set this as the value
 instead, such as:
