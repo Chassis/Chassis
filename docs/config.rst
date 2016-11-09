@@ -235,6 +235,8 @@ Synced Folders
 
 **Key**: ``synced_folders``
 
+By default Chassis syncs the ``php`` and ``nginx`` logs for you onto your local machine in the ``logs`` folder.
+
 You may want to keep your themes and projects along-side Chassis, instead of
 inside it. You'll need to tell Chassis about these external directories, as it
 won't know how to map them. You can tell Chassis to map some external directories
