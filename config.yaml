@@ -35,7 +35,7 @@ ip: dhcp
 # built-in repositories, or a mirror domain as a string.
 #
 # Values: Yes, No, or any mirror domain name e.g. http://mirror.optus.net/ubuntu/
-apt_mirror: Yes
+apt_mirror: No
 
 # Should we use multisite?
 # (Set to Yes for subdirectories)
