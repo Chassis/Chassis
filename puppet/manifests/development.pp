@@ -5,8 +5,6 @@ $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
 
-Class['mysql'] -> Package['php5-mysql']
-
 class { 'chassis::php':
 	extensions => $php_extensions,
 	version => $config[php]
