@@ -1,6 +1,7 @@
 class chassis::php (
 	$extensions = [],
 	$version = "5.6",
+	$supported_versions = [ '5.3', '5.4', '5.5', '5.6', '7.0', '7.1' ]
 ) {
 	apt::ppa { "ppa:ondrej/php5-oldstable": }
 	apt::ppa { "ppa:ondrej/php": }
@@ -87,6 +88,26 @@ class chassis::php (
 		ensure => running,
 		require => Package["${php_package}-fpm"]
 	}
+
+	$remove_php_versions = delete( $supported_versions, "${version}" )
+
+	define remove_php_fpm {
+		include chassis::php
+		$version = $chassis::php::version
+		$php_version = $name
+		if ( $version != '5.3' or $version != '5.4' ) {
+				package { "php${php_version}-fpm":
+					ensure => absent,
+				}
+		} else {
+			package { "php5-fpm":
+				ensure => absent,
+				notify => Service["php${php_version}-fpm"]
+			}
+		}
+	}
+
+	remove_php_fpm { $remove_php_versions: }
 
 	# Install the extensions we need
 	package { $prefixed_extensions:
