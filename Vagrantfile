@@ -63,7 +63,8 @@ Vagrant.configure("2") do |config|
 
 	# Before any other provisioning, ensure that we're up-to-date
 	preprovision_args = [
-		CONF['apt_mirror'].to_s
+		CONF['apt_mirror'].to_s,
+		CONF['database']['has_custom_prefix'] ? "" : "check_prefix"
 	]
 	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
 

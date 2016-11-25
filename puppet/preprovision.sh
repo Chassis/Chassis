@@ -43,3 +43,20 @@ if [[ ! -f /etc/chassis-updated ]]; then
 
 	touch /etc/chassis-updated
 fi
+
+# Check for existing table prefixes to update them.
+CHECK_PREFIX=$2
+if [[ ! -z $CHECK_PREFIX ]] && hash mysql 2>/dev/null; then
+	# MySQL is installed, so we probably already have an install here.
+	# Check for tables starting with anything that isn't `wp_`
+	HAS_OTHERS=$(HOME=/root/ mysql wordpress -e 'SHOW TABLES' -s | grep -v -e '^wp_')
+	if [[ ! -z $HAS_OTHERS ]]; then
+		echo "Warning: Since 2016-11-25, Chassis requires defining database.prefix in your"
+		echo "config.yaml. I found other tables in your database:"
+		echo
+		echo "$HAS_OTHERS"
+		echo
+		echo "You should define database.prefix in your config.local.yaml."
+		exit 1
+	fi
+fi
