@@ -1,13 +1,3 @@
-#puts "loaded"
-
-# class Command < Vagrant.plugin("2", :command)
-# 	def execute
-# 		puts "Hello!"
-# 		0
-# 	end
-# end
-
-require 'json'
 require_relative "puppet/chassis.rb"
 
 module Chassis
