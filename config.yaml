@@ -48,6 +48,7 @@ database:
     name: wordpress
     user: wordpress
     password: vagrantpassword
+    prefix: wp_
 
 # Admin configuration
 # (When overriding, include all values)

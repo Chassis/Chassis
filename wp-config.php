@@ -118,8 +118,9 @@ define( 'NONCE_SALT',       'put your unique phrase here' );
 // Table prefix
 // Change this if you have multiple installs in the same database
 // ==============================================================
-if ( empty( $table_prefix ) )
-	$table_prefix  = 'sz_';
+if ( empty( $table_prefix ) ) {
+	$table_prefix  = 'wp_';
+}
 
 // =====================================
 // Errors

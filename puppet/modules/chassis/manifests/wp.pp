@@ -7,6 +7,7 @@ define chassis::wp (
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost',
+	$database_prefix = 'wp_',
 	$admin_user     = 'admin',
 	$admin_email    = 'admin@example.com',
 	$admin_password = 'password',

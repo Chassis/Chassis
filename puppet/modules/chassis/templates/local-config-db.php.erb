@@ -7,6 +7,8 @@ define( 'DB_USER',     '<%= @database_user %>' );
 define( 'DB_PASSWORD', '<%= @database_password %>' );
 define( 'DB_HOST',     '<%= @database_host %>' );
 
+$table_prefix = '<%= @database_prefix %>';
+
 defined( 'ABSPATH' ) or define( 'ABSPATH', '<%= @wpdir %>/' );
 defined( 'WP_CONTENT_DIR' ) or define( 'WP_CONTENT_DIR', '<%= @contentdir %>' );
 
