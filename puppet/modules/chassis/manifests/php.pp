@@ -95,14 +95,21 @@ class chassis::php (
 		include chassis::php
 		$version = $chassis::php::version
 		$php_version = $name
-		if ( $version != '5.3' or $version != '5.4' ) {
+		case $version {
+			"5.3",
+			"5.4": {
 				package { "php${php_version}-fpm":
 					ensure => absent,
 				}
-		} else {
-			package { "php5-fpm":
-				ensure => absent,
-				notify => Service["php${php_version}-fpm"]
+			}
+			"5.5",
+			"5.6",
+			"7.0",
+			"7.1": {
+				package { "php5-fpm":
+					ensure => absent,
+					notify => Service["php${php_version}-fpm"]
+				}
 			}
 		}
 	}
