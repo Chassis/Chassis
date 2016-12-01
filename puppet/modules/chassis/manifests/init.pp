@@ -23,6 +23,10 @@ class chassis {
 		require    => Package['nginx']
 	}
 
+	file {['/etc/nginx', '/etc/nginx/sites-available', '/etc/nginx/sites-enabled']:
+		ensure => directory
+	}
+
 	file {'/etc/nginx/nginx.conf':
 		content => template('chassis/nginx.conf.erb'),
 		require => Package['nginx'],
