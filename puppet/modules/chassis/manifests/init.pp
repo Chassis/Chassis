@@ -28,4 +28,8 @@ class chassis {
 		require => Package['nginx'],
 		notify => Service['nginx']
 	}
+
+	file {['/etc/nginx/sites-available', '/etc/nginx/sites-enabled']:
+		ensure => directory
+	}
 }
