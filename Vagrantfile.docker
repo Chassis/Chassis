@@ -1,0 +1,6 @@
+Vagrant.configure("2") do |config|
+	config.vm.box = "hashicorp/boot2docker"
+	config.ssh.username = 'docker'
+	config.ssh.password = "tcuser"
+	config.ssh.insert_key = true
+end

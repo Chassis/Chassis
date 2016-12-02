@@ -1,3 +1,4 @@
+#!/bin/bash
 if [[ $1 == "false" ]]; then
 	# Ignore mirrors completely
 	MIRROR=""
@@ -36,10 +37,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 	dpkg -i puppetlabs-release-precise.deb
 
 	# Update apt
-	sudo apt-get update
+	apt-get update
 
 	# Install/Upgrade Puppet
-	sudo apt-get -q -y install puppet
+	apt-get -q -y install puppet
 
 	touch /etc/chassis-updated
 fi
