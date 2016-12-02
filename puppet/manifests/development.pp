@@ -37,6 +37,7 @@ chassis::wp { $config['hosts'][0]:
 	database          => $config[database][name],
 	database_user     => $config[database][user],
 	database_password => $config[database][password],
+	database_prefix   => $config[database][prefix],
 	network           => $config[multisite],
 	admin_user        => $config[admin][user],
 	admin_email       => $config[admin][email],

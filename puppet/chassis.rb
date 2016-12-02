@@ -7,6 +7,7 @@ module Chassis
 	def self.load_config()
 		# Load git-managed configuration
 		_config = YAML.load_file(File.join(@@dir, "config.yaml"))
+		has_custom_prefix = false
 
 		# Load other configuration files
 		config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
@@ -16,7 +17,12 @@ module Chassis
 			begin
 				confvars = YAML.load_file(path)
 
-				_config.merge!(confvars) if confvars.is_a?(Hash)
+				if confvars.is_a?(Hash)
+					_config.merge!(confvars)
+
+					# Check for prefix.
+					has_custom_prefix = true if confvars.has_key? "database" and confvars["database"].has_key? "prefix"
+				end
 			rescue Errno::ENOENT
 				# No overriden YAML found -- that's OK; just use the defaults.
 			rescue Psych::Error => e
@@ -25,6 +31,12 @@ module Chassis
 			end
 		end
 
+		unless _config["database"].has_key? "prefix"
+			puts "ERROR: database.prefix is required as of 2016-11-25 but was not found."
+			raise "Could not load Chassis configuration"
+		end
+
+		_config["database"]["has_custom_prefix"] = has_custom_prefix
 		return _config
 	end
 
