@@ -42,6 +42,12 @@ Vagrant.configure("2") do |config|
 	# with possible backward compatible issues.
 	vagrant_version = Vagrant::VERSION.sub(/^v/, '')
 
+	# Set up potential providers.
+	config.vm.provider "virtualbox" do |vb|
+		# Use linked clones to preserve disk space.
+		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+	end
+
 	# We <3 Ubuntu LTS
 	config.vm.box = "hashicorp/precise64"
 
