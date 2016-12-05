@@ -6,11 +6,11 @@ from watchdog.observers import Observer
 from watchdog.events import PatternMatchingEventHandler
 from encodings.idna import ToASCII
 
-# Got these from /usr/include/avahi-common/defs.h
+# From /usr/include/avahi-common/defs.h
 CLASS_IN = 0x01
 TYPE_CNAME = 0x05
 
-TTL = 60
+TTL = 60 # seconds
 
 class DomainManager(object):
 	def __init__(self):
