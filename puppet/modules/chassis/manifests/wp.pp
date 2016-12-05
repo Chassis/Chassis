@@ -17,7 +17,8 @@ define chassis::wp (
 
 	$extensions = [],
 ) {
-	if ( $network == true ) {
+	$subdomains = ( $network == "subdomains" )
+	if ( $network ) {
 		chassis::network { $name:
 			location          => $location,
 			wpdir             => $wpdir,
