@@ -89,32 +89,53 @@ class chassis::php (
 		require => Package["${php_package}-fpm"]
 	}
 
-	$remove_php_versions = delete( $supported_versions, "${version}" )
-
 	define remove_php_fpm {
-		include chassis::php
-		$version = $chassis::php::version
-		$php_version = $name
-		case $version {
-			"5.3",
-			"5.4": {
-				package { "php${php_version}-fpm":
-					ensure => absent,
-				}
-			}
+		case $name {
 			"5.5",
 			"5.6",
 			"7.0",
 			"7.1": {
-				package { "php5-fpm":
+				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
 					ensure => absent,
-					notify => Service["php${php_version}-fpm"]
+				}
+			}
+			# "5.3",
+			# "5.4",
+			default: {
+				package { [ "php5-fpm", "php5-cli", "php5-common" ]:
+					ensure => absent,
 				}
 			}
 		}
 	}
 
-	remove_php_fpm { $remove_php_versions: }
+	case $version {
+		"5.3": {
+			remove_php_fpm { [ "5.5", "5.6", "7.0", "7.1" ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+		"5.4": {
+			remove_php_fpm { [ "5.5", "5.6", "7.0", "7.1" ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+		"5.5": {
+			remove_php_fpm { [ "other", "5.6", "7.0", "7.1" ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+		"5.6": {
+			remove_php_fpm { [ "other", "5.5", "7.0", "7.1" ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+		default: {
+			remove_php_fpm { [ "other", "5.5", "5.6" ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+	}
 
 	# Install the extensions we need
 	package { $prefixed_extensions:
