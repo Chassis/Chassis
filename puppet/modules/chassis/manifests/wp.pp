@@ -21,6 +21,7 @@ define chassis::wp (
 	if ( $network ) {
 		chassis::network { $name:
 			location          => $location,
+			subdomains        => $subdomains,
 			wpdir             => $wpdir,
 			contentdir        => $contentdir,
 			hosts             => $hosts,

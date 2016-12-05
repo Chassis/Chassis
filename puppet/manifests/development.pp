@@ -26,7 +26,12 @@ class { 'chassis':
 	require => Class['chassis::php'],
 }
 
-class { 'chassis::hosts': }
+$subdomains = ( $config[multisite] == 'subdomains' )
+
+class { 'chassis::hosts':
+	aliases => $config[hosts],
+	subdomains => $subdomains,
+}
 
 chassis::wp { $config['hosts'][0]:
 	location          => $config[mapped_paths][base],

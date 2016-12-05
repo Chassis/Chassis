@@ -1,0 +1,5 @@
+start on runlevel [2345]
+stop on runlevel [016]
+
+respawn
+exec python /vagrant/puppet/chassis-hosts.py

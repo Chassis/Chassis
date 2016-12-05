@@ -1,5 +1,6 @@
 define chassis::network (
 	$location,
+	$subdomains = false,
 	$wpdir = 'wp',
 	$contentdir,
 	$hosts = [],
@@ -12,7 +13,12 @@ define chassis::network (
 	$admin_password = 'password',
 ) {
 	$extra_hosts = join($hosts, ' ')
-	$server_name = rstrip("${name} ${extra_hosts}")
+	if ( $subdomains ) {
+		$server_name = rstrip(".${name} ${extra_hosts}")
+	}
+	else {
+		$server_name = rstrip("${name} ${extra_hosts}")
+	}
 	file { $wpdir:
 		ensure => directory
 	}
@@ -38,6 +44,7 @@ define chassis::network (
 		name           => 'Vagrant Site',
 		require        => Mysql::Db[$database],
 		network        => true,
+		subdomains     => $subdomains,
 		admin_user     => $admin_user,
 		admin_email    => $admin_email,
 		admin_password => $admin_password,
