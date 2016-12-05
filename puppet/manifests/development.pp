@@ -3,7 +3,7 @@ import "/vagrant/extensions/*/chassis.pp"
 
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
-$php_extensions = [ 'curl', 'gd', 'mysql' ]
+$php_extensions = [ 'curl', 'gd', 'mysql', 'xml', 'mbstring' ]
 
 class { 'chassis::php':
 	extensions => $php_extensions,
