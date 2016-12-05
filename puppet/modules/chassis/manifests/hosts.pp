@@ -26,13 +26,14 @@ class chassis::hosts(
 			content => template("chassis/avahi-aliases.erb"),
 		}
 
-		file { '/vagrant/subdomain-hosts':
-			ensure => file
-		}
-
 		file { '/etc/chassis-hosts/conf.d/subdomains':
 			ensure => file,
 			owner => "www-data",
+		}
+
+		file { '/vagrant/local-config-hosts.php':
+			source => "puppet:///modules/chassis/local-config-hosts.php",
+			mode => "0644",
 		}
 
 		service { "chassis-hosts":
