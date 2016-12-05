@@ -40,11 +40,11 @@ define chassis::network (
 	}
 
 	wp::site {"${wpdir}":
-		url => "http://${name}/",
-		name => 'Vagrant Site',
-		require => Mysql::Db[$database],
-		network => true,
-		subdomains => $subdomains,
+		url            => "http://${name}/",
+		name           => 'Vagrant Site',
+		require        => Mysql::Db[$database],
+		network        => true,
+		subdomains     => $subdomains,
 		admin_user     => $admin_user,
 		admin_email    => $admin_email,
 		admin_password => $admin_password,
