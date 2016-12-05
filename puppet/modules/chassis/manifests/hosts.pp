@@ -7,12 +7,11 @@ class chassis::hosts(
 	}
 
 	if ( $subdomains ) {
-		/*package { 'watchdog':
-			ensure => latest,
+		package { 'watchdog':
+			ensure => '0.8.3',
 			provider => 'pip',
 			require => Package['python-pip'],
-			noop => true,
-		}*/
+		}
 
 		file { '/etc/init/chassis-hosts.conf':
 			source => "puppet:///modules/chassis/hosts.init",
@@ -41,7 +40,7 @@ class chassis::hosts(
 			require => [
 				Package[ 'avahi-daemon' ],
 				Package[ 'python-avahi' ],
-				# Package[ 'watchdog' ],
+				Package[ 'watchdog' ],
 				File[ '/etc/init/chassis-hosts.conf' ],
 				File[ '/etc/chassis-hosts/conf.d/aliases' ],
 				File[ '/etc/chassis-hosts/conf.d/subdomains' ],
