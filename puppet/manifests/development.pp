@@ -26,8 +26,11 @@ class { 'chassis':
 	require => Class['chassis::php'],
 }
 
+$subdomains = ( $config[multisite] == 'subdomains' )
+
 class { 'chassis::hosts':
-	aliases => $config[hosts]
+	aliases => $config[hosts],
+	subdomains => $subdomains,
 }
 
 chassis::wp { $config['hosts'][0]:
