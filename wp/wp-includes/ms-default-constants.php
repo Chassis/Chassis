@@ -14,6 +14,8 @@
  * wp-includes/ms-files.php (wp-content/blogs.php in MU).
  *
  * @since 3.0.0
+ *
+ * @global wpdb $wpdb WordPress database abstraction object.
  */
 function ms_upload_constants() {
 	global $wpdb;
@@ -114,38 +116,49 @@ function ms_file_constants() {
  * we will have translations loaded and can trigger warnings easily.
  *
  * @since 3.0.0
+ *
+ * @staticvar bool $subdomain_error
+ * @staticvar bool $subdomain_error_warn
  */
 function ms_subdomain_constants() {
-	static $error = null;
-	static $error_warn = false;
+	static $subdomain_error = null;
+	static $subdomain_error_warn = null;
 
-	if ( false === $error )
+	if ( false === $subdomain_error ) {
 		return;
+	}
 
-	if ( $error ) {
-		$vhost_deprecated = __( 'The constant <code>VHOST</code> <strong>is deprecated</strong>. Use the boolean constant <code>SUBDOMAIN_INSTALL</code> in wp-config.php to enable a subdomain configuration. Use is_subdomain_install() to check whether a subdomain configuration is enabled.' );
-		if ( $error_warn ) {
+	if ( $subdomain_error ) {
+		$vhost_deprecated = sprintf(
+			/* translators: 1: VHOST, 2: SUBDOMAIN_INSTALL, 3: wp-config.php, 4: is_subdomain_install() */
+			__( 'The constant %1$s <strong>is deprecated</strong>. Use the boolean constant %2$s in %3$s to enable a subdomain configuration. Use %4$s to check whether a subdomain configuration is enabled.' ),
+			'<code>VHOST</code>',
+			'<code>SUBDOMAIN_INSTALL</code>',
+			'<code>wp-config.php</code>',
+			'<code>is_subdomain_install()</code>'
+		);
+		if ( $subdomain_error_warn ) {
 			trigger_error( __( '<strong>Conflicting values for the constants VHOST and SUBDOMAIN_INSTALL.</strong> The value of SUBDOMAIN_INSTALL will be assumed to be your subdomain configuration setting.' ) . ' ' . $vhost_deprecated, E_USER_WARNING );
 		} else {
-	 		_deprecated_argument( 'define()', '3.0', $vhost_deprecated );
+	 		_deprecated_argument( 'define()', '3.0.0', $vhost_deprecated );
 		}
 		return;
 	}
 
 	if ( defined( 'SUBDOMAIN_INSTALL' ) && defined( 'VHOST' ) ) {
-		if ( SUBDOMAIN_INSTALL == ( 'yes' == VHOST ) ) {
-			$error = true;
-		} else {
-			$error = $error_warn = true;
+		$subdomain_error = true;
+		if ( SUBDOMAIN_INSTALL !== ( 'yes' == VHOST ) ) {
+			$subdomain_error_warn = true;
 		}
 	} elseif ( defined( 'SUBDOMAIN_INSTALL' ) ) {
+		$subdomain_error = false;
 		define( 'VHOST', SUBDOMAIN_INSTALL ? 'yes' : 'no' );
 	} elseif ( defined( 'VHOST' ) ) {
-		$error = true;
+		$subdomain_error = true;
 		define( 'SUBDOMAIN_INSTALL', 'yes' == VHOST );
 	} else {
+		$subdomain_error = false;
 		define( 'SUBDOMAIN_INSTALL', false );
 		define( 'VHOST', 'no' );
 	}
 }
-add_action( 'init', 'ms_subdomain_constants' );

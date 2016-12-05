@@ -1,5 +1,6 @@
 /shared
 /.vagrant
+/index.php
 /local-config.php
 /local-config-db.php
 /local-config-extensions.php
@@ -9,3 +10,4 @@
 .DS_Store
 .idea
 config.local.yaml
+/.wp-cli

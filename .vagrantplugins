@@ -1,0 +1,12 @@
+require_relative "puppet/chassis.rb"
+
+module Chassis
+	@@dir = File.dirname(__FILE__)
+
+	def self.load_extension_plugins()
+		subplugins = Dir.glob(File.join(@@dir, "extensions", "*", ".vagrantplugins"))
+		subplugins.each {|pluginfile| load pluginfile}
+	end
+end
+
+Chassis.load_extension_plugins()

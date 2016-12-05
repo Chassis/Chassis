@@ -4,7 +4,7 @@
  *
  * Displays posts from Aside, Quote, Video, Audio, Image, Gallery, and Link formats.
  *
- * @link http://codex.wordpress.org/Widgets_API#Developing_Widgets
+ * @link https://codex.wordpress.org/Widgets_API#Developing_Widgets
  *
  * @package WordPress
  * @subpackage Twenty_Fourteen
@@ -34,7 +34,28 @@ class Twenty_Fourteen_Ephemera_Widget extends WP_Widget {
 		parent::__construct( 'widget_twentyfourteen_ephemera', __( 'Twenty Fourteen Ephemera', 'twentyfourteen' ), array(
 			'classname'   => 'widget_twentyfourteen_ephemera',
 			'description' => __( 'Use this widget to list your recent Aside, Quote, Video, Audio, Image, Gallery, and Link posts.', 'twentyfourteen' ),
+			'customize_selective_refresh' => true,
 		) );
+
+		if ( is_active_widget( false, false, $this->id_base ) || is_customize_preview() ) {
+			add_action( 'wp_enqueue_scripts', array( $this, 'enqueue_scripts' ) );
+		}
+	}
+
+	/**
+	 * Enqueue scripts.
+	 *
+	 * @since Twenty Fourteen 1.7
+	 */
+	public function enqueue_scripts() {
+		/** This filter is documented in wp-includes/media.php */
+		$audio_library = apply_filters( 'wp_audio_shortcode_library', 'mediaelement' );
+		/** This filter is documented in wp-includes/media.php */
+		$video_library = apply_filters( 'wp_video_shortcode_library', 'mediaelement' );
+		if ( in_array( 'mediaelement', array( $video_library, $audio_library ), true ) ) {
+			wp_enqueue_style( 'wp-mediaelement' );
+			wp_enqueue_script( 'wp-mediaelement' );
+		}
 	}
 
 	/**
@@ -47,7 +68,7 @@ class Twenty_Fourteen_Ephemera_Widget extends WP_Widget {
 	 * @param array $instance An array of settings for this widget instance.
 	 */
 	public function widget( $args, $instance ) {
-		$format = $instance['format'];
+		$format = isset( $instance['format'] ) && in_array( $instance['format'], $this->formats ) ? $instance['format'] : 'aside';
 
 		switch ( $format ) {
 			case 'image':
@@ -107,7 +128,7 @@ class Twenty_Fourteen_Ephemera_Widget extends WP_Widget {
 			echo $args['before_widget'];
 			?>
 			<h1 class="widget-title <?php echo esc_attr( $format ); ?>">
-				<a class="entry-format" href="<?php echo esc_url( get_post_format_link( $format ) ); ?>"><?php echo $title; ?></a>
+				<a class="entry-format" href="<?php echo esc_url( get_post_format_link( $format ) ); ?>"><?php echo esc_html( $title ); ?></a>
 			</h1>
 			<ol>
 
@@ -149,7 +170,7 @@ class Twenty_Fourteen_Ephemera_Widget extends WP_Widget {
 									if ( has_post_thumbnail() ) :
 										$post_thumbnail = get_the_post_thumbnail();
 									elseif ( $total_images > 0 ) :
-										$image          = array_shift( $images );
+										$image          = reset( $images );
 										$post_thumbnail = wp_get_attachment_image( $image, 'post-thumbnail' );
 									endif;
 
@@ -261,7 +282,7 @@ class Twenty_Fourteen_Ephemera_Widget extends WP_Widget {
 			<p><label for="<?php echo esc_attr( $this->get_field_id( 'format' ) ); ?>"><?php _e( 'Post format to show:', 'twentyfourteen' ); ?></label>
 			<select id="<?php echo esc_attr( $this->get_field_id( 'format' ) ); ?>" class="widefat" name="<?php echo esc_attr( $this->get_field_name( 'format' ) ); ?>">
 				<?php foreach ( $this->formats as $slug ) : ?>
-				<option value="<?php echo esc_attr( $slug ); ?>"<?php selected( $format, $slug ); ?>><?php echo get_post_format_string( $slug ); ?></option>
+				<option value="<?php echo esc_attr( $slug ); ?>"<?php selected( $format, $slug ); ?>><?php echo esc_html( get_post_format_string( $slug ) ); ?></option>
 				<?php endforeach; ?>
 			</select>
 		<?php

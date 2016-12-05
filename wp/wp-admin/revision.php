@@ -29,7 +29,7 @@ if ( ! $revision_id )
 	$revision_id = absint( $to );
 $redirect = 'edit.php';
 
-switch ( $action ) :
+switch ( $action ) {
 case 'restore' :
 	if ( ! $revision = wp_get_post_revision( $revision_id ) )
 		break;
@@ -40,8 +40,8 @@ case 'restore' :
 	if ( ! $post = get_post( $revision->post_parent ) )
 		break;
 
-	// Revisions disabled (previously checked autosaves && ! wp_is_post_autosave( $revision ))
-	if ( ! wp_revisions_enabled( $post ) ) {
+	// Restore if revisions are enabled or this is an autosave.
+	if ( ! wp_revisions_enabled( $post ) && ! wp_is_post_autosave( $revision ) ) {
 		$redirect = 'edit.php?post_type=' . $post->post_type;
 		break;
 	}
@@ -63,7 +63,7 @@ default :
 	if ( ! $post = get_post( $revision->post_parent ) )
 		break;
 
-	if ( ! current_user_can( 'read_post', $revision->ID ) || ! current_user_can( 'read_post', $post->ID ) )
+	if ( ! current_user_can( 'read_post', $revision->ID ) || ! current_user_can( 'edit_post', $revision->post_parent ) )
 		break;
 
 	// Revisions disabled and we're not looking at an autosave
@@ -74,13 +74,13 @@ default :
 
 	$post_edit_link = get_edit_post_link();
 	$post_title     = '<a href="' . $post_edit_link . '">' . _draft_or_post_title() . '</a>';
-	$h2             = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;' ), $post_title );
-	$return_to_post = '<a href="' . $post_edit_link . '">' . __( '&larr; Return to post editor' ) . '</a>';
+	$h1             = sprintf( __( 'Compare Revisions of &#8220;%1$s&#8221;' ), $post_title );
+	$return_to_post = '<a href="' . $post_edit_link . '">' . __( '&larr; Return to editor' ) . '</a>';
 	$title          = __( 'Revisions' );
 
 	$redirect = false;
 	break;
-endswitch;
+}
 
 // Empty post_type means either malformed object found, or no valid parent was found.
 if ( ! $redirect && empty( $post->post_type ) )
@@ -116,7 +116,7 @@ get_current_screen()->add_help_tab( array(
 ) );
 
 $revisions_sidebar  = '<p><strong>' . __( 'For more information:' ) . '</strong></p>';
-$revisions_sidebar .= '<p>' . __( '<a href="http://codex.wordpress.org/Revision_Management" target="_blank">Revisions Management</a>' ) . '</p>';
+$revisions_sidebar .= '<p>' . __( '<a href="https://codex.wordpress.org/Revision_Management" target="_blank">Revisions Management</a>' ) . '</p>';
 $revisions_sidebar .= '<p>' . __( '<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>' ) . '</p>';
 
 get_current_screen()->set_help_sidebar( $revisions_sidebar );
@@ -126,96 +126,10 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 ?>
 
 <div class="wrap">
-	<h2 class="long-header"><?php echo $h2; ?></h2>
+	<h1 class="long-header"><?php echo $h1; ?></h1>
 	<?php echo $return_to_post; ?>
 </div>
-
-<script id="tmpl-revisions-frame" type="text/html">
-	<div class="revisions-control-frame"></div>
-	<div class="revisions-diff-frame"></div>
-</script>
-
-<script id="tmpl-revisions-buttons" type="text/html">
-	<div class="revisions-previous">
-		<input class="button" type="button" value="<?php echo esc_attr_x( 'Previous', 'Button label for a previous revision' ); ?>" />
-	</div>
-
-	<div class="revisions-next">
-		<input class="button" type="button" value="<?php echo esc_attr_x( 'Next', 'Button label for a next revision' ); ?>" />
-	</div>
-</script>
-
-<script id="tmpl-revisions-checkbox" type="text/html">
-	<div class="revision-toggle-compare-mode">
-		<label>
-			<input type="checkbox" class="compare-two-revisions"
-			<#
-			if ( 'undefined' !== typeof data && data.model.attributes.compareTwoMode ) {
-			 	#> checked="checked"<#
-			}
-			#>
-			/>
-			<?php esc_attr_e( 'Compare any two revisions' ); ?>
-		</label>
-	</div>
-</script>
-
-<script id="tmpl-revisions-meta" type="text/html">
-	<# if ( ! _.isUndefined( data.attributes ) ) { #>
-		<div class="diff-title">
-			<# if ( 'from' === data.type ) { #>
-				<strong><?php _ex( 'From:', 'Followed by post revision info' ); ?></strong>
-			<# } else if ( 'to' === data.type ) { #>
-				<strong><?php _ex( 'To:', 'Followed by post revision info' ); ?></strong>
-			<# } #>
-			<div class="author-card<# if ( data.attributes.autosave ) { #> autosave<# } #>">
-				{{{ data.attributes.author.avatar }}}
-				<div class="author-info">
-				<# if ( data.attributes.autosave ) { #>
-					<span class="byline"><?php printf( __( 'Autosave by %s' ),
-						'<span class="author-name">{{ data.attributes.author.name }}</span>' ); ?></span>
-				<# } else if ( data.attributes.current ) { #>
-					<span class="byline"><?php printf( __( 'Current Revision by %s' ),
-						'<span class="author-name">{{ data.attributes.author.name }}</span>' ); ?></span>
-				<# } else { #>
-					<span class="byline"><?php printf( __( 'Revision by %s' ),
-						'<span class="author-name">{{ data.attributes.author.name }}</span>' ); ?></span>
-				<# } #>
-					<span class="time-ago">{{ data.attributes.timeAgo }}</span>
-					<span class="date">({{ data.attributes.dateShort }})</span>
-				</div>
-			<# if ( 'to' === data.type && data.attributes.restoreUrl ) { #>
-				<input  <?php if ( wp_check_post_lock( $post->ID ) ) { ?>
-					disabled="disabled"
-				<?php } else { ?>
-					<# if ( data.attributes.current ) { #>
-						disabled="disabled"
-					<# } #>
-				<?php } ?>
-				<# if ( data.attributes.autosave ) { #>
-					type="button" class="restore-revision button button-primary" value="<?php esc_attr_e( 'Restore This Autosave' ); ?>" />
-				<# } else { #>
-					type="button" class="restore-revision button button-primary" value="<?php esc_attr_e( 'Restore This Revision' ); ?>" />
-				<# } #>
-			<# } #>
-		</div>
-	<# if ( 'tooltip' === data.type ) { #>
-		<div class="revisions-tooltip-arrow"><span></span></div>
-	<# } #>
-<# } #>
-</script>
-
-<script id="tmpl-revisions-diff" type="text/html">
-	<div class="loading-indicator"><span class="spinner"></span></div>
-	<div class="diff-error"><?php _e( 'Sorry, something went wrong. The requested comparison could not be loaded.' ); ?></div>
-	<div class="diff">
-	<# _.each( data.fields, function( field ) { #>
-		<h3>{{ field.name }}</h3>
-		{{{ field.diff }}}
-	<# }); #>
-	</div>
-</script>
-
-
 <?php
+wp_print_revision_templates();
+
 require_once( ABSPATH . 'wp-admin/admin-footer.php' );

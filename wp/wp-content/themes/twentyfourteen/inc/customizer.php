@@ -1,6 +1,6 @@
 <?php
 /**
- * Twenty Fourteen Theme Customizer support
+ * Twenty Fourteen Customizer support
  *
  * @package WordPress
  * @subpackage Twenty_Fourteen
@@ -8,21 +8,30 @@
  */
 
 /**
- * Implement Theme Customizer additions and adjustments.
+ * Implement Customizer additions and adjustments.
  *
  * @since Twenty Fourteen 1.0
  *
- * @param WP_Customize_Manager $wp_customize Theme Customizer object.
+ * @param WP_Customize_Manager $wp_customize Customizer object.
  */
 function twentyfourteen_customize_register( $wp_customize ) {
-	// Add custom description to Colors and Background sections.
-	$wp_customize->get_section( 'colors' )->description           = __( 'Background may only be visible on wide screens.', 'twentyfourteen' );
-	$wp_customize->get_section( 'background_image' )->description = __( 'Background may only be visible on wide screens.', 'twentyfourteen' );
-
 	// Add postMessage support for site title and description.
 	$wp_customize->get_setting( 'blogname' )->transport         = 'postMessage';
 	$wp_customize->get_setting( 'blogdescription' )->transport  = 'postMessage';
 	$wp_customize->get_setting( 'header_textcolor' )->transport = 'postMessage';
+
+	if ( isset( $wp_customize->selective_refresh ) ) {
+		$wp_customize->selective_refresh->add_partial( 'blogname', array(
+			'selector' => '.site-title a',
+			'container_inclusive' => false,
+			'render_callback' => 'twentyfourteen_customize_partial_blogname',
+		) );
+		$wp_customize->selective_refresh->add_partial( 'blogdescription', array(
+			'selector' => '.site-description',
+			'container_inclusive' => false,
+			'render_callback' => 'twentyfourteen_customize_partial_blogdescription',
+		) );
+	}
 
 	// Rename the label to "Site Title Color" because this only affects the site title in this theme.
 	$wp_customize->get_control( 'header_textcolor' )->label = __( 'Site Title Color', 'twentyfourteen' );
@@ -30,14 +39,24 @@ function twentyfourteen_customize_register( $wp_customize ) {
 	// Rename the label to "Display Site Title & Tagline" in order to make this option extra clear.
 	$wp_customize->get_control( 'display_header_text' )->label = __( 'Display Site Title &amp; Tagline', 'twentyfourteen' );
 
+	// Add custom description to Colors and Background controls or sections.
+	if ( property_exists( $wp_customize->get_control( 'background_color' ), 'description' ) ) {
+		$wp_customize->get_control( 'background_color' )->description = __( 'May only be visible on wide screens.', 'twentyfourteen' );
+		$wp_customize->get_control( 'background_image' )->description = __( 'May only be visible on wide screens.', 'twentyfourteen' );
+	} else {
+		$wp_customize->get_section( 'colors' )->description           = __( 'Background may only be visible on wide screens.', 'twentyfourteen' );
+		$wp_customize->get_section( 'background_image' )->description = __( 'Background may only be visible on wide screens.', 'twentyfourteen' );
+	}
+
 	// Add the featured content section in case it's not already there.
 	$wp_customize->add_section( 'featured_content', array(
-		'title'       => __( 'Featured Content', 'twentyfourteen' ),
-		'description' => sprintf( __( 'Use a <a href="%1$s">tag</a> to feature your posts. If no posts match the tag, <a href="%2$s">sticky posts</a> will be displayed instead.', 'twentyfourteen' ),
+		'title'           => __( 'Featured Content', 'twentyfourteen' ),
+		'description'     => sprintf( __( 'Use a <a href="%1$s">tag</a> to feature your posts. If no posts match the tag, <a href="%2$s">sticky posts</a> will be displayed instead.', 'twentyfourteen' ),
 			esc_url( add_query_arg( 'tag', _x( 'featured', 'featured content default tag slug', 'twentyfourteen' ), admin_url( 'edit.php' ) ) ),
 			admin_url( 'edit.php?show_sticky=1' )
 		),
-		'priority'    => 130,
+		'priority'        => 130,
+		'active_callback' => 'is_front_page',
 	) );
 
 	// Add the featured content layout setting and control.
@@ -59,6 +78,30 @@ function twentyfourteen_customize_register( $wp_customize ) {
 add_action( 'customize_register', 'twentyfourteen_customize_register' );
 
 /**
+ * Render the site title for the selective refresh partial.
+ *
+ * @since Twenty Fourteen 1.7
+ * @see twentyfourteen_customize_register()
+ *
+ * @return void
+ */
+function twentyfourteen_customize_partial_blogname() {
+	bloginfo( 'name' );
+}
+
+/**
+ * Render the site tagline for the selective refresh partial.
+ *
+ * @since Twenty Fourteen 1.7
+ * @see twentyfourteen_customize_register()
+ *
+ * @return void
+ */
+function twentyfourteen_customize_partial_blogdescription() {
+	bloginfo( 'description' );
+}
+
+/**
  * Sanitize the Featured Content layout value.
  *
  * @since Twenty Fourteen 1.0
@@ -75,7 +118,7 @@ function twentyfourteen_sanitize_layout( $layout ) {
 }
 
 /**
- * Bind JS handlers to make Theme Customizer preview reload changes asynchronously.
+ * Bind JS handlers to make Customizer preview reload changes asynchronously.
  *
  * @since Twenty Fourteen 1.0
  */
@@ -100,8 +143,8 @@ function twentyfourteen_contextual_help() {
 		'content' =>
 			'<ul>' .
 				'<li>' . sprintf( __( 'The home page features your choice of up to 6 posts prominently displayed in a grid or slider, controlled by a <a href="%1$s">tag</a>; you can change the tag and layout in <a href="%2$s">Appearance &rarr; Customize</a>. If no posts match the tag, <a href="%3$s">sticky posts</a> will be displayed instead.', 'twentyfourteen' ), esc_url( add_query_arg( 'tag', _x( 'featured', 'featured content default tag slug', 'twentyfourteen' ), admin_url( 'edit.php' ) ) ), admin_url( 'customize.php' ), admin_url( 'edit.php?show_sticky=1' ) ) . '</li>' .
-				'<li>' . sprintf( __( 'Enhance your site design by using <a href="%s">Featured Images</a> for posts you&rsquo;d like to stand out (also known as post thumbnails). This allows you to associate an image with your post without inserting it. Twenty Fourteen uses featured images for posts and pages&mdash;above the title&mdash;and in the Featured Content area on the home page.', 'twentyfourteen' ), 'http://codex.wordpress.org/Post_Thumbnails#Setting_a_Post_Thumbnail' ) . '</li>' .
-				'<li>' . sprintf( __( 'For an in-depth tutorial, and more tips and tricks, visit the <a href="%s">Twenty Fourteen documentation</a>.', 'twentyfourteen' ), 'http://codex.wordpress.org/Twenty_Fourteen' ) . '</li>' .
+				'<li>' . sprintf( __( 'Enhance your site design by using <a href="%s">Featured Images</a> for posts you&rsquo;d like to stand out (also known as post thumbnails). This allows you to associate an image with your post without inserting it. Twenty Fourteen uses featured images for posts and pages&mdash;above the title&mdash;and in the Featured Content area on the home page.', 'twentyfourteen' ), 'https://codex.wordpress.org/Post_Thumbnails#Setting_a_Post_Thumbnail' ) . '</li>' .
+				'<li>' . sprintf( __( 'For an in-depth tutorial, and more tips and tricks, visit the <a href="%s">Twenty Fourteen documentation</a>.', 'twentyfourteen' ), 'https://codex.wordpress.org/Twenty_Fourteen' ) . '</li>' .
 			'</ul>',
 	) );
 }

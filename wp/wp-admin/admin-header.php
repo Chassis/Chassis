@@ -10,7 +10,19 @@
 if ( ! defined( 'WP_ADMIN' ) )
 	require_once( dirname( __FILE__ ) . '/admin.php' );
 
-// In case admin-header.php is included in a function.
+/**
+ * In case admin-header.php is included in a function.
+ *
+ * @global string    $title
+ * @global string    $hook_suffix
+ * @global WP_Screen $current_screen
+ * @global WP_Locale $wp_locale
+ * @global string    $pagenow
+ * @global string    $wp_version
+ * @global string    $update_title
+ * @global int       $total_update_count
+ * @global string    $parent_file
+ */
 global $title, $hook_suffix, $current_screen, $wp_locale, $pagenow, $wp_version,
 	$update_title, $total_update_count, $parent_file;
 
@@ -24,7 +36,7 @@ $title = esc_html( strip_tags( $title ) );
 if ( is_network_admin() )
 	$admin_title = sprintf( __( 'Network Admin: %s' ), esc_html( get_current_site()->site_name ) );
 elseif ( is_user_admin() )
-	$admin_title = sprintf( __( 'Global Dashboard: %s' ), esc_html( get_current_site()->site_name ) );
+	$admin_title = sprintf( __( 'User Dashboard: %s' ), esc_html( get_current_site()->site_name ) );
 else
 	$admin_title = get_bloginfo( 'name' );
 
@@ -34,7 +46,7 @@ else
 	$admin_title = sprintf( __( '%1$s &lsaquo; %2$s &#8212; WordPress' ), $title, $admin_title );
 
 /**
- * Filter the <title> content for an admin page.
+ * Filters the title tag content for an admin page.
  *
  * @since 3.1.0
  *
@@ -108,14 +120,17 @@ do_action( "admin_print_scripts-$hook_suffix" );
 do_action( 'admin_print_scripts' );
 
 /**
- * Fires in <head> for a specific admin page based on $hook_suffix.
+ * Fires in head section for a specific admin page.
+ *
+ * The dynamic portion of the hook, `$hook_suffix`, refers to the hook suffix
+ * for the admin page.
  *
  * @since 2.1.0
  */
 do_action( "admin_head-$hook_suffix" );
 
 /**
- * Fires in <head> for all admin pages.
+ * Fires in head section for all admin pages.
  *
  * @since 2.1.0
  */
@@ -159,30 +174,34 @@ $admin_body_class .= ' no-customize-support no-svg';
 </head>
 <?php
 /**
- * Filter the admin <body> CSS classes.
+ * Filters the CSS classes for the body tag in the admin.
  *
- * This filter differs from the post_class or body_class filters in two important ways:
- * 1. $classes is a space-separated string of class names instead of an array.
- * 2. Not all core admin classes are filterable, notably: wp-admin, wp-core-ui, and no-js cannot be removed.
+ * This filter differs from the {@see 'post_class'} and {@see 'body_class'} filters
+ * in two important ways:
+ *
+ * 1. `$classes` is a space-separated string of class names instead of an array.
+ * 2. Not all core admin classes are filterable, notably: wp-admin, wp-core-ui,
+ *    and no-js cannot be removed.
  *
  * @since 2.3.0
  *
- * @param string $classes Space-separated string of CSS classes.
+ * @param string $classes Space-separated list of CSS classes.
  */
+$admin_body_classes = apply_filters( 'admin_body_class', '' );
 ?>
-<body class="wp-admin wp-core-ui no-js <?php echo apply_filters( 'admin_body_class', '' ) . " $admin_body_class"; ?>">
+<body class="wp-admin wp-core-ui no-js <?php echo $admin_body_classes . ' ' . $admin_body_class; ?>">
 <script type="text/javascript">
 	document.body.className = document.body.className.replace('no-js','js');
 </script>
 
 <?php
 // Make sure the customize body classes are correct as early as possible.
-if ( current_user_can( 'edit_theme_options' ) )
+if ( current_user_can( 'customize' ) ) {
 	wp_customize_support_script();
+}
 ?>
 
 <div id="wpwrap">
-<a tabindex="1" href="#wpbody-content" class="screen-reader-shortcut"><?php _e('Skip to main content'); ?></a>
 <?php require(ABSPATH . 'wp-admin/menu-header.php'); ?>
 <div id="wpcontent">
 
@@ -195,7 +214,7 @@ if ( current_user_can( 'edit_theme_options' ) )
 do_action( 'in_admin_header' );
 ?>
 
-<div id="wpbody">
+<div id="wpbody" role="main">
 <?php
 unset($title_class, $blog_name, $total_update_count, $update_title);
 
@@ -210,21 +229,21 @@ $current_screen->render_screen_meta();
 
 if ( is_network_admin() ) {
 	/**
-	 * Print network admin screen notices.
+	 * Prints network admin screen notices.
 	 *
 	 * @since 3.1.0
 	 */
 	do_action( 'network_admin_notices' );
 } elseif ( is_user_admin() ) {
 	/**
-	 * Print user admin screen notices.
+	 * Prints user admin screen notices.
 	 *
 	 * @since 3.1.0
 	 */
 	do_action( 'user_admin_notices' );
 } else {
 	/**
-	 * Print admin screen notices.
+	 * Prints admin screen notices.
 	 *
 	 * @since 3.1.0
 	 */
@@ -232,7 +251,7 @@ if ( is_network_admin() ) {
 }
 
 /**
- * Print generic admin screen notices.
+ * Prints generic admin screen notices.
  *
  * @since 3.1.0
  */

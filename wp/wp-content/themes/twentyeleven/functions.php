@@ -9,8 +9,8 @@
  * The first function, twentyeleven_setup(), sets up the theme by registering support
  * for various features in WordPress, such as post thumbnails, navigation menus, and the like.
  *
- * When using a child theme (see http://codex.wordpress.org/Theme_Development and
- * http://codex.wordpress.org/Child_Themes), you can override certain functions
+ * When using a child theme (see https://codex.wordpress.org/Theme_Development and
+ * https://codex.wordpress.org/Child_Themes), you can override certain functions
  * (those wrapped in a function_exists() call) by defining them first in your child theme's
  * functions.php file. The child theme's functions.php file is included before the parent
  * theme's file, so the child theme functions would be used.
@@ -31,7 +31,7 @@
  * }
  * </code>
  *
- * For more information on hooks, actions, and filters, see http://codex.wordpress.org/Plugin_API.
+ * For more information on hooks, actions, and filters, see https://codex.wordpress.org/Plugin_API.
  *
  * @package WordPress
  * @subpackage Twenty_Eleven
@@ -226,6 +226,9 @@ function twentyeleven_setup() {
 			'description' => __( 'Hanoi Plant', 'twentyeleven' )
 		)
 	) );
+
+	// Indicate widget sidebars can use selective refresh in the Customizer.
+	add_theme_support( 'customize-selective-refresh-widgets' );
 }
 endif; // twentyeleven_setup
 
@@ -251,7 +254,7 @@ function twentyeleven_header_style() {
 	?>
 		#site-title,
 		#site-description {
-			position: absolute !important;
+			position: absolute;
 			clip: rect(1px 1px 1px 1px); /* IE6, IE7 */
 			clip: rect(1px, 1px, 1px, 1px);
 		}
@@ -261,7 +264,7 @@ function twentyeleven_header_style() {
 	?>
 		#site-title a,
 		#site-description {
-			color: #<?php echo $text_color; ?> !important;
+			color: #<?php echo $text_color; ?>;
 		}
 	<?php endif; ?>
 	</style>
@@ -332,14 +335,14 @@ function twentyeleven_admin_header_image() { ?>
 		<?php
 		$color = get_header_textcolor();
 		$image = get_header_image();
-		if ( $color && $color != 'blank' )
-			$style = ' style="color:#' . $color . '"';
-		else
-			$style = ' style="display:none"';
+		$style = 'display: none;';
+		if ( $color && $color != 'blank' ) {
+			$style = 'color: #' . $color . ';';
+		}
 		?>
-		<h1 class="displaying-header-text"><a id="name"<?php echo $style; ?> onclick="return false;" href="<?php echo esc_url( home_url( '/' ) ); ?>"><?php bloginfo( 'name' ); ?></a></h1>
-		<div id="desc" class="displaying-header-text"<?php echo $style; ?>><?php bloginfo( 'description' ); ?></div>
-		<?php if ( $image ) : ?>
+		<h1 class="displaying-header-text"><a id="name" style="<?php echo esc_attr( $style ); ?>" onclick="return false;" href="<?php echo esc_url( home_url( '/' ) ); ?>" tabindex="-1"><?php bloginfo( 'name' ); ?></a></h1>
+		<div id="desc" class="displaying-header-text" style="<?php echo esc_attr( $style ); ?>"><?php bloginfo( 'description' ); ?></div>
+  		<?php if ( $image ) : ?>
 			<img src="<?php echo esc_url( $image ); ?>" alt="" />
 		<?php endif; ?>
 	</div>
@@ -390,7 +393,10 @@ endif; // twentyeleven_continue_reading_link
  * @return The filtered Read More text.
  */
 function twentyeleven_auto_excerpt_more( $more ) {
-	return ' &hellip;' . twentyeleven_continue_reading_link();
+	if ( ! is_admin() ) {
+		return ' &hellip;' . twentyeleven_continue_reading_link();
+	}
+	return $more;
 }
 add_filter( 'excerpt_more', 'twentyeleven_auto_excerpt_more' );
 
@@ -406,7 +412,7 @@ add_filter( 'excerpt_more', 'twentyeleven_auto_excerpt_more' );
  * @return string The filtered "Continue Reading" link.
  */
 function twentyeleven_custom_excerpt_more( $output ) {
-	if ( has_excerpt() && ! is_attachment() ) {
+	if ( has_excerpt() && ! is_attachment() && ! is_admin() ) {
 		$output .= twentyeleven_continue_reading_link();
 	}
 	return $output;
@@ -443,7 +449,7 @@ function twentyeleven_widgets_init() {
 		'name' => __( 'Main Sidebar', 'twentyeleven' ),
 		'id' => 'sidebar-1',
 		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
+		'after_widget' => '</aside>',
 		'before_title' => '<h3 class="widget-title">',
 		'after_title' => '</h3>',
 	) );
@@ -453,7 +459,7 @@ function twentyeleven_widgets_init() {
 		'id' => 'sidebar-2',
 		'description' => __( 'The sidebar for the optional Showcase Template', 'twentyeleven' ),
 		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
+		'after_widget' => '</aside>',
 		'before_title' => '<h3 class="widget-title">',
 		'after_title' => '</h3>',
 	) );
@@ -463,7 +469,7 @@ function twentyeleven_widgets_init() {
 		'id' => 'sidebar-3',
 		'description' => __( 'An optional widget area for your site footer', 'twentyeleven' ),
 		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
+		'after_widget' => '</aside>',
 		'before_title' => '<h3 class="widget-title">',
 		'after_title' => '</h3>',
 	) );
@@ -473,7 +479,7 @@ function twentyeleven_widgets_init() {
 		'id' => 'sidebar-4',
 		'description' => __( 'An optional widget area for your site footer', 'twentyeleven' ),
 		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
+		'after_widget' => '</aside>',
 		'before_title' => '<h3 class="widget-title">',
 		'after_title' => '</h3>',
 	) );
@@ -483,7 +489,7 @@ function twentyeleven_widgets_init() {
 		'id' => 'sidebar-5',
 		'description' => __( 'An optional widget area for your site footer', 'twentyeleven' ),
 		'before_widget' => '<aside id="%1$s" class="widget %2$s">',
-		'after_widget' => "</aside>",
+		'after_widget' => '</aside>',
 		'before_title' => '<h3 class="widget-title">',
 		'after_title' => '</h3>',
 	) );
@@ -578,7 +584,7 @@ function twentyeleven_footer_sidebar_class() {
 	}
 
 	if ( $class )
-		echo 'class="' . $class . '"';
+		echo 'class="' . esc_attr( $class ) . '"';
 }
 
 if ( ! function_exists( 'twentyeleven_comment' ) ) :
@@ -714,7 +720,7 @@ function twentyeleven_get_gallery_images() {
 	if ( function_exists( 'get_post_galleries' ) ) {
 		$galleries = get_post_galleries( get_the_ID(), false );
 		if ( isset( $galleries[0]['ids'] ) )
-		 	$images = explode( ',', $galleries[0]['ids'] );
+			$images = explode( ',', $galleries[0]['ids'] );
 	} else {
 		$pattern = get_shortcode_regex();
 		preg_match( "/$pattern/s", get_the_content(), $match );

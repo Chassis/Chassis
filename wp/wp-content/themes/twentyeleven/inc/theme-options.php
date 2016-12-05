@@ -117,8 +117,8 @@ function twentyeleven_theme_options_help() {
 			'<p>' . __( 'Remember to click "Save Changes" to save any changes you have made to the theme options.', 'twentyeleven' ) . '</p>';
 
 	$sidebar = '<p><strong>' . __( 'For more information:', 'twentyeleven' ) . '</strong></p>' .
-		'<p>' . __( '<a href="http://codex.wordpress.org/Appearance_Theme_Options_Screen" target="_blank">Documentation on Theme Options</a>', 'twentyeleven' ) . '</p>' .
-		'<p>' . __( '<a href="http://wordpress.org/support/" target="_blank">Support Forums</a>', 'twentyeleven' ) . '</p>';
+		'<p>' . __( '<a href="https://codex.wordpress.org/Appearance_Theme_Options_Screen" target="_blank">Documentation on Theme Options</a>', 'twentyeleven' ) . '</p>' .
+		'<p>' . __( '<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>', 'twentyeleven' ) . '</p>';
 
 	$screen = get_current_screen();
 
@@ -218,7 +218,7 @@ function twentyeleven_get_default_theme_options() {
 	);
 
 	if ( is_rtl() )
- 		$default_theme_options['theme_layout'] = 'sidebar-content';
+		$default_theme_options['theme_layout'] = 'sidebar-content';
 
 	/**
 	 * Filter the Twenty Eleven default options.
@@ -277,7 +277,7 @@ function twentyeleven_settings_field_color_scheme() {
 		<input type="hidden" id="default-color-<?php echo esc_attr( $scheme['value'] ); ?>" value="<?php echo esc_attr( $scheme['default_link_color'] ); ?>" />
 		<span>
 			<img src="<?php echo esc_url( $scheme['thumbnail'] ); ?>" width="136" height="122" alt="" />
-			<?php echo $scheme['label']; ?>
+			<?php echo esc_html( $scheme['label'] ); ?>
 		</span>
 	</label>
 	</div>
@@ -316,7 +316,7 @@ function twentyeleven_settings_field_layout() {
 			<input type="radio" name="twentyeleven_theme_options[theme_layout]" value="<?php echo esc_attr( $layout['value'] ); ?>" <?php checked( $options['theme_layout'], $layout['value'] ); ?> />
 			<span>
 				<img src="<?php echo esc_url( $layout['thumbnail'] ); ?>" width="136" height="122" alt="" />
-				<?php echo $layout['label']; ?>
+				<?php echo esc_html( $layout['label'] ); ?>
 			</span>
 		</label>
 		</div>
@@ -325,7 +325,7 @@ function twentyeleven_settings_field_layout() {
 }
 
 /**
- * Return the options array for Twenty Eleven.
+ * Render the theme options page for Twenty Eleven.
  *
  * @since Twenty Eleven 1.2
  */
@@ -499,15 +499,29 @@ function twentyeleven_layout_classes( $existing_classes ) {
 add_filter( 'body_class', 'twentyeleven_layout_classes' );
 
 /**
- * Implements Twenty Eleven theme options into Theme Customizer
+ * Implements Twenty Eleven theme options into Customizer
  *
  * @since Twenty Eleven 1.3
  *
- * @param object $wp_customize Theme Customizer object.
+ * @param object $wp_customize Customizer object.
  */
 function twentyeleven_customize_register( $wp_customize ) {
 	$wp_customize->get_setting( 'blogname' )->transport = 'postMessage';
 	$wp_customize->get_setting( 'blogdescription' )->transport = 'postMessage';
+	$wp_customize->get_setting( 'header_textcolor' )->transport = 'postMessage';
+
+	if ( isset( $wp_customize->selective_refresh ) ) {
+		$wp_customize->selective_refresh->add_partial( 'blogname', array(
+			'selector' => '#site-title a',
+			'container_inclusive' => false,
+			'render_callback' => 'twentyeleven_customize_partial_blogname',
+		) );
+		$wp_customize->selective_refresh->add_partial( 'blogdescription', array(
+			'selector' => '#site-description',
+			'container_inclusive' => false,
+			'render_callback' => 'twentyeleven_customize_partial_blogdescription',
+		) );
+	}
 
 	$options  = twentyeleven_get_theme_options();
 	$defaults = twentyeleven_get_default_theme_options();
@@ -533,7 +547,7 @@ function twentyeleven_customize_register( $wp_customize ) {
 		'priority' => 5,
 	) );
 
-	// Link Color (added to Color Scheme section in Theme Customizer)
+	// Link Color (added to Color Scheme section in Customizer)
 	$wp_customize->add_setting( 'twentyeleven_theme_options[link_color]', array(
 		'default'           => twentyeleven_get_default_link_color( $options['color_scheme'] ),
 		'type'              => 'option',
@@ -562,7 +576,7 @@ function twentyeleven_customize_register( $wp_customize ) {
 	$layouts = twentyeleven_layouts();
 	$choices = array();
 	foreach ( $layouts as $layout ) {
-		$choices[$layout['value']] = $layout['label'];
+		$choices[ $layout['value'] ] = $layout['label'];
 	}
 
 	$wp_customize->add_control( 'twentyeleven_theme_options[theme_layout]', array(
@@ -574,13 +588,37 @@ function twentyeleven_customize_register( $wp_customize ) {
 add_action( 'customize_register', 'twentyeleven_customize_register' );
 
 /**
- * Bind JS handlers to make Theme Customizer preview reload changes asynchronously.
+ * Render the site title for the selective refresh partial.
+ *
+ * @since Twenty Eleven 2.4
+ * @see twentyeleven_customize_register()
+ *
+ * @return void
+ */
+function twentyeleven_customize_partial_blogname() {
+	bloginfo( 'name' );
+}
+
+/**
+ * Render the site tagline for the selective refresh partial.
+ *
+ * @since Twenty Eleven 2.4
+ * @see twentyeleven_customize_register()
+ *
+ * @return void
+ */
+function twentyeleven_customize_partial_blogdescription() {
+	bloginfo( 'description' );
+}
+
+/**
+ * Bind JS handlers to make Customizer preview reload changes asynchronously.
  *
  * Used with blogname and blogdescription.
  *
  * @since Twenty Eleven 1.3
  */
 function twentyeleven_customize_preview_js() {
-	wp_enqueue_script( 'twentyeleven-customizer', get_template_directory_uri() . '/inc/theme-customizer.js', array( 'customize-preview' ), '20120523', true );
+	wp_enqueue_script( 'twentyeleven-customizer', get_template_directory_uri() . '/inc/theme-customizer.js', array( 'customize-preview' ), '20150401', true );
 }
 add_action( 'customize_preview_init', 'twentyeleven_customize_preview_js' );

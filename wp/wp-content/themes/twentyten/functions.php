@@ -9,8 +9,8 @@
  * The first function, twentyten_setup(), sets up the theme by registering support
  * for various features in WordPress, such as post thumbnails, navigation menus, and the like.
  *
- * When using a child theme (see http://codex.wordpress.org/Theme_Development and
- * http://codex.wordpress.org/Child_Themes), you can override certain functions
+ * When using a child theme (see https://codex.wordpress.org/Theme_Development and
+ * https://codex.wordpress.org/Child_Themes), you can override certain functions
  * (those wrapped in a function_exists() call) by defining them first in your child theme's
  * functions.php file. The child theme's functions.php file is included before the parent
  * theme's file, so the child theme functions would be used.
@@ -31,7 +31,7 @@
  * }
  * </code>
  *
- * For more information on hooks, actions, and filters, see http://codex.wordpress.org/Plugin_API.
+ * For more information on hooks, actions, and filters, see https://codex.wordpress.org/Plugin_API.
  *
  * @package WordPress
  * @subpackage Twenty_Ten
@@ -295,7 +295,10 @@ endif;
  * @return string An ellipsis.
  */
 function twentyten_auto_excerpt_more( $more ) {
-	return ' &hellip;' . twentyten_continue_reading_link();
+	if ( ! is_admin() ) {
+		return ' &hellip;' . twentyten_continue_reading_link();
+	}
+	return $more;
 }
 add_filter( 'excerpt_more', 'twentyten_auto_excerpt_more' );
 
@@ -311,7 +314,7 @@ add_filter( 'excerpt_more', 'twentyten_auto_excerpt_more' );
  * @return string Excerpt with a pretty "Continue Reading" link.
  */
 function twentyten_custom_excerpt_more( $output ) {
-	if ( has_excerpt() && ! is_attachment() ) {
+	if ( has_excerpt() && ! is_attachment() && ! is_admin() ) {
 		$output .= twentyten_continue_reading_link();
 	}
 	return $output;
@@ -567,7 +570,7 @@ function twentyten_get_gallery_images() {
 	if ( function_exists( 'get_post_galleries' ) ) {
 		$galleries = get_post_galleries( get_the_ID(), false );
 		if ( isset( $galleries[0]['ids'] ) )
-		 	$images = explode( ',', $galleries[0]['ids'] );
+			$images = explode( ',', $galleries[0]['ids'] );
 	} else {
 		$pattern = get_shortcode_regex();
 		preg_match( "/$pattern/s", get_the_content(), $match );

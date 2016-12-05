@@ -13,6 +13,8 @@
  * @access private
  * @since 3.1.0
  *
+ * @global string $hook_suffix
+ *
  * @param string $class The type of the list table, which is the class name.
  * @param array $args Optional. Arguments to pass to the class. Accepts 'screen'.
  * @return object|bool Object on success, false if the class does not exist.
@@ -25,7 +27,7 @@ function _get_list_table( $class, $args = array() ) {
 		'WP_Terms_List_Table' => 'terms',
 		'WP_Users_List_Table' => 'users',
 		'WP_Comments_List_Table' => 'comments',
-		'WP_Post_Comments_List_Table' => 'comments',
+		'WP_Post_Comments_List_Table' => array( 'comments', 'post-comments' ),
 		'WP_Links_List_Table' => 'links',
 		'WP_Plugin_Install_List_Table' => 'plugin-install',
 		'WP_Themes_List_Table' => 'themes',
@@ -71,11 +73,14 @@ function register_column_headers($screen, $columns) {
  * Prints column headers for a particular screen.
  *
  * @since 2.7.0
+ *
+ * @param string|WP_Screen $screen  The screen hook name or screen object.
+ * @param bool             $with_id Whether to set the id attribute or not.
  */
-function print_column_headers($screen, $id = true) {
+function print_column_headers( $screen, $with_id = true ) {
 	$wp_list_table = new _WP_List_Table_Compat($screen);
 
-	$wp_list_table->print_column_headers($id);
+	$wp_list_table->print_column_headers( $with_id );
 }
 
 /**
@@ -84,10 +89,10 @@ function print_column_headers($screen, $id = true) {
  * @since 3.1.0
  */
 class _WP_List_Table_Compat extends WP_List_Table {
-	var $_screen;
-	var $_columns;
+	public $_screen;
+	public $_columns;
 
-	function _WP_List_Table_Compat( $screen, $columns = array() ) {
+	public function __construct( $screen, $columns = array() ) {
 		if ( is_string( $screen ) )
 			$screen = convert_to_screen( $screen );
 
@@ -99,15 +104,26 @@ class _WP_List_Table_Compat extends WP_List_Table {
 		}
 	}
 
-	function get_column_info() {
+	/**
+	 * @access protected
+	 *
+	 * @return array
+	 */
+	protected function get_column_info() {
 		$columns = get_column_headers( $this->_screen );
 		$hidden = get_hidden_columns( $this->_screen );
 		$sortable = array();
+		$primary = $this->get_default_primary_column_name();
 
-		return array( $columns, $hidden, $sortable );
+		return array( $columns, $hidden, $sortable, $primary );
 	}
 
-	function get_columns() {
+	/**
+	 * @access public
+	 *
+	 * @return array
+	 */
+	public function get_columns() {
 		return $this->_columns;
 	}
 }

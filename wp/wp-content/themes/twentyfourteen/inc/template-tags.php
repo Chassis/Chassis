@@ -12,10 +12,15 @@ if ( ! function_exists( 'twentyfourteen_paging_nav' ) ) :
  * Display navigation to next/previous set of posts when applicable.
  *
  * @since Twenty Fourteen 1.0
+ *
+ * @global WP_Query   $wp_query   WordPress Query object.
+ * @global WP_Rewrite $wp_rewrite WordPress Rewrite object.
  */
 function twentyfourteen_paging_nav() {
+	global $wp_query, $wp_rewrite;
+
 	// Don't print empty markup if there's only one page.
-	if ( $GLOBALS['wp_query']->max_num_pages < 2 ) {
+	if ( $wp_query->max_num_pages < 2 ) {
 		return;
 	}
 
@@ -31,14 +36,14 @@ function twentyfourteen_paging_nav() {
 	$pagenum_link = remove_query_arg( array_keys( $query_args ), $pagenum_link );
 	$pagenum_link = trailingslashit( $pagenum_link ) . '%_%';
 
-	$format  = $GLOBALS['wp_rewrite']->using_index_permalinks() && ! strpos( $pagenum_link, 'index.php' ) ? 'index.php/' : '';
-	$format .= $GLOBALS['wp_rewrite']->using_permalinks() ? user_trailingslashit( 'page/%#%', 'paged' ) : '?paged=%#%';
+	$format  = $wp_rewrite->using_index_permalinks() && ! strpos( $pagenum_link, 'index.php' ) ? 'index.php/' : '';
+	$format .= $wp_rewrite->using_permalinks() ? user_trailingslashit( $wp_rewrite->pagination_base . '/%#%', 'paged' ) : '?paged=%#%';
 
 	// Set up paginated links.
 	$links = paginate_links( array(
 		'base'     => $pagenum_link,
 		'format'   => $format,
-		'total'    => $GLOBALS['wp_query']->max_num_pages,
+		'total'    => $wp_query->max_num_pages,
 		'current'  => $paged,
 		'mid_size' => 1,
 		'add_args' => array_map( 'urlencode', $query_args ),
@@ -156,6 +161,7 @@ function twentyfourteen_category_transient_flusher() {
 add_action( 'edit_category', 'twentyfourteen_category_transient_flusher' );
 add_action( 'save_post',     'twentyfourteen_category_transient_flusher' );
 
+if ( ! function_exists( 'twentyfourteen_post_thumbnail' ) ) :
 /**
  * Display an optional post thumbnail.
  *
@@ -163,6 +169,7 @@ add_action( 'save_post',     'twentyfourteen_category_transient_flusher' );
  * views, or a div element when on single views.
  *
  * @since Twenty Fourteen 1.0
+ * @since Twenty Fourteen 1.4 Was made 'pluggable', or overridable.
  */
 function twentyfourteen_post_thumbnail() {
 	if ( post_password_required() || is_attachment() || ! has_post_thumbnail() ) {
@@ -184,15 +191,37 @@ function twentyfourteen_post_thumbnail() {
 
 	<?php else : ?>
 
-	<a class="post-thumbnail" href="<?php the_permalink(); ?>">
+	<a class="post-thumbnail" href="<?php the_permalink(); ?>" aria-hidden="true">
 	<?php
 		if ( ( ! is_active_sidebar( 'sidebar-2' ) || is_page_template( 'page-templates/full-width.php' ) ) ) {
 			the_post_thumbnail( 'twentyfourteen-full-width' );
 		} else {
-			the_post_thumbnail();
+			the_post_thumbnail( 'post-thumbnail', array( 'alt' => get_the_title() ) );
 		}
 	?>
 	</a>
 
 	<?php endif; // End is_singular()
 }
+endif;
+
+if ( ! function_exists( 'twentyfourteen_excerpt_more' ) && ! is_admin() ) :
+/**
+ * Replaces "[...]" (appended to automatically generated excerpts) with ...
+ * and a Continue reading link.
+ *
+ * @since Twenty Fourteen 1.3
+ *
+ * @param string $more Default Read More excerpt link.
+ * @return string Filtered Read More excerpt link.
+ */
+function twentyfourteen_excerpt_more( $more ) {
+	$link = sprintf( '<a href="%1$s" class="more-link">%2$s</a>',
+		esc_url( get_permalink( get_the_ID() ) ),
+			/* translators: %s: Name of current post */
+			sprintf( __( 'Continue reading %s <span class="meta-nav">&rarr;</span>', 'twentyfourteen' ), '<span class="screen-reader-text">' . get_the_title( get_the_ID() ) . '</span>' )
+		);
+	return ' &hellip; ' . $link;
+}
+add_filter( 'excerpt_more', 'twentyfourteen_excerpt_more' );
+endif;

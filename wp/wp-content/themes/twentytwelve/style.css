@@ -1,13 +1,13 @@
 /*
 Theme Name: Twenty Twelve
-Theme URI: http://wordpress.org/themes/twentytwelve
+Theme URI: https://wordpress.org/themes/twentytwelve/
 Author: the WordPress team
-Author URI: http://wordpress.org/
+Author URI: https://wordpress.org/
 Description: The 2012 theme for WordPress is a fully responsive theme that looks great on any device. Features include a front page template with its own widgets, an optional display font, styling for post formats on both index and single views, and an optional no-sidebar page template. Make it yours with a custom menu, header image, and background.
-Version: 1.4
+Version: 2.1
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: light, gray, white, one-column, two-columns, right-sidebar, fluid-layout, responsive-layout, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready
+Tags: blog, one-column, two-columns, right-sidebar, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, footer-widgets, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready
 Text Domain: twentytwelve
 
 This theme, like WordPress, is licensed under the GPL.
@@ -272,6 +272,7 @@ input[disabled] {
 	cursor: default;
 }
 .menu-toggle:hover,
+.menu-toggle:focus,
 button:hover,
 input[type="submit"]:hover,
 input[type="button"]:hover,
@@ -505,8 +506,14 @@ a:hover {
 .site .screen-reader-text {
 	position: absolute !important;
 	clip: rect(1px, 1px, 1px, 1px);
+	overflow: hidden;
+	height: 1px;
+	width: 1px;
 }
-.main-navigation .assistive-text:focus {
+.main-navigation .assistive-text:focus,
+.site .screen-reader-text:hover,
+.site .screen-reader-text:active,
+.site .screen-reader-text:focus {
 	background: #fff;
 	border: 2px solid #333;
 	border-radius: 3px;
@@ -514,10 +521,12 @@ a:hover {
 	color: #000;
 	display: block;
 	font-size: 12px;
+	height: auto;
 	padding: 12px;
 	position: absolute;
 	top: 5px;
 	left: 5px;
+	width: auto;
 	z-index: 100000; /* Above WP toolbar */
 }
 
@@ -803,6 +812,9 @@ article.sticky .featured-post {
 .entry-content a:visited,
 .comment-content a:visited {
 	color: #9f9f9f;
+}
+.entry-content .more-link {
+	white-space: nowrap;
 }
 .entry-content ol,
 .comment-content ol,
@@ -1448,7 +1460,7 @@ img#wpstats {
 /* Does the same thing as <meta name="viewport" content="width=device-width">,
  * but in the future W3C standard way. -ms- prefix is required for IE10+ to
  * render responsive styling in Windows 8 "snapped" views; IE10+ does not honor
- * the meta tag. See http://core.trac.wordpress.org/ticket/25888.
+ * the meta tag. See https://core.trac.wordpress.org/ticket/25888.
  */
 @-ms-viewport {
 	width: device-width;

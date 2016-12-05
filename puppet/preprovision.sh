@@ -30,7 +30,33 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		rm /tmp/mirrors-sources.list /tmp/apt-sources.list
 	fi
 
-	apt-get update
+	# Allow Puppet to be upgraded
+	# (Note that preicse's package is 2.7, so we need the custom deb)
+	wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+	dpkg -i puppetlabs-release-precise.deb
+
+	# Update apt
+	sudo apt-get update
+
+	# Install/Upgrade Puppet
+	sudo apt-get -q -y install puppet
 
 	touch /etc/chassis-updated
+fi
+
+# Check for existing table prefixes to update them.
+CHECK_PREFIX=$2
+if [[ ! -z $CHECK_PREFIX ]] && hash mysql 2>/dev/null; then
+	# MySQL is installed, so we probably already have an install here.
+	# Check for tables starting with anything that isn't `wp_`
+	HAS_OTHERS=$(HOME=/root/ mysql wordpress -e 'SHOW TABLES' -s | grep -v -e '^wp_')
+	if [[ ! -z $HAS_OTHERS ]]; then
+		echo "Warning: Since 2016-11-25, Chassis requires defining database.prefix in your"
+		echo "config.yaml. I found other tables in your database:"
+		echo
+		echo "$HAS_OTHERS"
+		echo
+		echo "You should define database.prefix in your config.local.yaml."
+		exit 1
+	fi
 fi

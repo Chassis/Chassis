@@ -7,6 +7,7 @@
  *
  * @package WordPress
  * @subpackage Feed
+ * @since 2.1.0
  */
 
 /**
@@ -25,7 +26,7 @@
 function get_bloginfo_rss($show = '') {
 	$info = strip_tags(get_bloginfo($show));
 	/**
-	 * Filter the bloginfo for use in RSS feeds.
+	 * Filters the bloginfo for use in RSS feeds.
 	 *
 	 * @since 2.2.0
 	 *
@@ -52,7 +53,7 @@ function get_bloginfo_rss($show = '') {
  */
 function bloginfo_rss($show = '') {
 	/**
-	 * Filter the bloginfo for display in RSS feeds.
+	 * Filters the bloginfo for display in RSS feeds.
 	 *
 	 * @since 2.1.0
 	 *
@@ -68,16 +69,15 @@ function bloginfo_rss($show = '') {
  * Retrieve the default feed.
  *
  * The default feed is 'rss2', unless a plugin changes it through the
- * 'default_feed' filter.
+ * {@see 'default_feed'} filter.
  *
  * @since 2.5.0
- * @uses apply_filters() Calls 'default_feed' hook on the default feed string.
  *
  * @return string Default feed, or for example 'rss2', 'atom', etc.
  */
 function get_default_feed() {
 	/**
-	 * Filter the default feed type.
+	 * Filters the default feed type.
 	 *
 	 * @since 2.5.0
 	 *
@@ -92,46 +92,55 @@ function get_default_feed() {
  * Retrieve the blog title for the feed title.
  *
  * @since 2.2.0
+ * @since 4.4.0 The optional `$sep` parameter was deprecated and renamed to `$deprecated`.
  *
- * @param string $sep Optional.How to separate the title. See wp_title() for more info.
- * @return string Error message on failure or blog title on success.
+ * @param string $deprecated Unused..
+ * @return string The document title.
  */
-function get_wp_title_rss($sep = '&#187;') {
-	$title = wp_title($sep, false);
-	if ( is_wp_error( $title ) )
-		return $title->get_error_message();
+function get_wp_title_rss( $deprecated = '&#8211;' ) {
+	if ( '&#8211;' !== $deprecated ) {
+		/* translators: %s: 'document_title_separator' filter name */
+		_deprecated_argument( __FUNCTION__, '4.4.0', sprintf( __( 'Use the %s filter instead.' ), '<code>document_title_separator</code>' ) );
+	}
+
 	/**
-	 * Filter the blog title for use as the feed title.
+	 * Filters the blog title for use as the feed title.
 	 *
 	 * @since 2.2.0
+	 * @since 4.4.0 The `$sep` parameter was deprecated and renamed to `$deprecated`.
 	 *
-	 * @param string $title The current blog title.
-	 * @param string $sep   Separator used by wp_title().
+	 * @param string $title      The current blog title.
+	 * @param string $deprecated Unused.
 	 */
-	$title = apply_filters( 'get_wp_title_rss', $title, $sep );
-	return $title;
+	return apply_filters( 'get_wp_title_rss', wp_get_document_title(), $deprecated );
 }
 
 /**
  * Display the blog title for display of the feed title.
  *
  * @since 2.2.0
- * @see wp_title() $sep parameter usage.
+ * @since 4.4.0 The optional `$sep` parameter was deprecated and renamed to `$deprecated`.
  *
- * @param string $sep Optional.
+ * @param string $deprecated Unused.
  */
-function wp_title_rss( $sep = '&#187;' ) {
+function wp_title_rss( $deprecated = '&#8211;' ) {
+	if ( '&#8211;' !== $deprecated ) {
+		/* translators: %s: 'document_title_separator' filter name */
+		_deprecated_argument( __FUNCTION__, '4.4.0', sprintf( __( 'Use the %s filter instead.' ), '<code>document_title_separator</code>' ) );
+	}
+
 	/**
-	 * Filter the blog title for display of the feed title.
+	 * Filters the blog title for display of the feed title.
 	 *
 	 * @since 2.2.0
+	 * @since 4.4.0 The `$sep` parameter was deprecated and renamed to `$deprecated`.
 	 *
 	 * @see get_wp_title_rss()
 	 *
-	 * @param string $wp_title The current blog title.
-	 * @param string $sep      Separator used by wp_title().
+	 * @param string $wp_title_rss The current blog title.
+	 * @param string $deprecated   Unused.
 	 */
-	echo apply_filters( 'wp_title_rss', get_wp_title_rss( $sep ), $sep );
+	echo apply_filters( 'wp_title_rss', get_wp_title_rss(), $deprecated );
 }
 
 /**
@@ -143,8 +152,9 @@ function wp_title_rss( $sep = '&#187;' ) {
  */
 function get_the_title_rss() {
 	$title = get_the_title();
+
 	/**
-	 * Filter the post title for use in a feed.
+	 * Filters the post title for use in a feed.
 	 *
 	 * @since 1.2.0
 	 *
@@ -158,7 +168,6 @@ function get_the_title_rss() {
  * Display the post title in the feed.
  *
  * @since 0.71
- * @uses get_the_title_rss() Used to retrieve current post title.
  */
 function the_title_rss() {
 	echo get_the_title_rss();
@@ -177,11 +186,11 @@ function get_the_content_feed($feed_type = null) {
 	if ( !$feed_type )
 		$feed_type = get_default_feed();
 
-	/** This filter is documented in wp-admin/post-template.php */
+	/** This filter is documented in wp-includes/post-template.php */
 	$content = apply_filters( 'the_content', get_the_content() );
 	$content = str_replace(']]>', ']]&gt;', $content);
 	/**
-	 * Filter the post content for use in feeds.
+	 * Filters the post content for use in feeds.
 	 *
 	 * @since 2.9.0
 	 *
@@ -196,8 +205,6 @@ function get_the_content_feed($feed_type = null) {
  * Display the post content for feeds.
  *
  * @since 2.9.0
- * @uses apply_filters() Calls 'the_content_feed' on the content before processing.
- * @see get_the_content()
  *
  * @param string $feed_type The type of feed. rss2 | atom | rss | rdf
  */
@@ -213,7 +220,7 @@ function the_content_feed($feed_type = null) {
 function the_excerpt_rss() {
 	$output = get_the_excerpt();
 	/**
-	 * Filter the post excerpt for a feed.
+	 * Filters the post excerpt for a feed.
 	 *
 	 * @since 1.2.0
 	 *
@@ -229,7 +236,7 @@ function the_excerpt_rss() {
  */
 function the_permalink_rss() {
 	/**
-	 * Filter the permalink to the post for use in feeds.
+	 * Filters the permalink to the post for use in feeds.
 	 *
 	 * @since 2.3.0
 	 *
@@ -246,7 +253,7 @@ function the_permalink_rss() {
  */
 function comments_link_feed() {
 	/**
-	 * Filter the comments permalink for the current post.
+	 * Filters the comments permalink for the current post.
 	 *
 	 * @since 3.6.0
 	 *
@@ -261,7 +268,7 @@ function comments_link_feed() {
  *
  * @since 2.5.0
  *
- * @param int|object $comment_id Optional comment object or id. Defaults to global comment object.
+ * @param int|WP_Comment $comment_id Optional comment object or id. Defaults to global comment object.
  */
 function comment_guid($comment_id = null) {
 	echo esc_url( get_comment_guid($comment_id) );
@@ -272,8 +279,8 @@ function comment_guid($comment_id = null) {
  *
  * @since 2.5.0
  *
- * @param int|object $comment_id Optional comment object or id. Defaults to global comment object.
- * @return bool|string false on failure or guid for comment on success.
+ * @param int|WP_Comment $comment_id Optional comment object or id. Defaults to global comment object.
+ * @return false|string false on failure or guid for comment on success.
  */
 function get_comment_guid($comment_id = null) {
 	$comment = get_comment($comment_id);
@@ -288,10 +295,13 @@ function get_comment_guid($comment_id = null) {
  * Display the link to the comments.
  *
  * @since 1.5.0
+ * @since 4.4.0 Introduced the `$comment` argument.
+ *
+ * @param int|WP_Comment $comment Optional. Comment object or id. Defaults to global comment object.
  */
-function comment_link() {
+function comment_link( $comment = null ) {
 	/**
-	 * Filter the current comment's permalink.
+	 * Filters the current comment's permalink.
 	 *
 	 * @since 3.6.0
 	 *
@@ -299,20 +309,19 @@ function comment_link() {
 	 *
 	 * @param string $comment_permalink The current comment permalink.
 	 */
-	echo esc_url( apply_filters( 'comment_link', get_comment_link() ) );
+	echo esc_url( apply_filters( 'comment_link', get_comment_link( $comment ) ) );
 }
 
 /**
  * Retrieve the current comment author for use in the feeds.
  *
  * @since 2.0.0
- * @uses get_comment_author()
  *
  * @return string Comment Author
  */
 function get_comment_author_rss() {
 	/**
-	 * Filter the current comment author for use in a feed.
+	 * Filters the current comment author for use in a feed.
 	 *
 	 * @since 1.5.0
 	 *
@@ -336,12 +345,11 @@ function comment_author_rss() {
  * Display the current comment content for use in the feeds.
  *
  * @since 1.0.0
- * @uses get_comment_text()
  */
 function comment_text_rss() {
 	$comment_text = get_comment_text();
 	/**
-	 * Filter the current comment content for use in a feed.
+	 * Filters the current comment content for use in a feed.
 	 *
 	 * @since 1.5.0
 	 *
@@ -389,14 +397,13 @@ function get_the_category_rss($type = null) {
 		if ( 'rdf' == $type )
 			$the_list .= "\t\t<dc:subject><![CDATA[$cat_name]]></dc:subject>\n";
 		elseif ( 'atom' == $type )
-			/** This filter is documented in wp-includes/feed.php */
-			$the_list .= sprintf( '<category scheme="%1$s" term="%2$s" />', esc_attr( apply_filters( 'get_bloginfo_rss', get_bloginfo( 'url' ) ) ), esc_attr( $cat_name ) );
+			$the_list .= sprintf( '<category scheme="%1$s" term="%2$s" />', esc_attr( get_bloginfo_rss( 'url' ) ), esc_attr( $cat_name ) );
 		else
 			$the_list .= "\t\t<category><![CDATA[" . @html_entity_decode( $cat_name, ENT_COMPAT, get_option('blog_charset') ) . "]]></category>\n";
 	}
 
 	/**
-	 * Filter all of the post categories for display in a feed.
+	 * Filters all of the post categories for display in a feed.
 	 *
 	 * @since 1.2.0
 	 *
@@ -448,7 +455,6 @@ function html_type_rss() {
  * attributes.
  *
  * @since 1.5.0
- * @uses get_post_custom() To get the current post enclosure metadata.
  */
 function rss_enclosure() {
 	if ( post_password_required() )
@@ -464,7 +470,7 @@ function rss_enclosure() {
 				$type = $t[0];
 
 				/**
-				 * Filter the RSS enclosure HTML link tag for the current post.
+				 * Filters the RSS enclosure HTML link tag for the current post.
 				 *
 				 * @since 2.2.0
 				 *
@@ -488,7 +494,6 @@ function rss_enclosure() {
  * enclosure(s) consist of link HTML tag(s) with a URI and other attributes.
  *
  * @since 2.2.0
- * @uses get_post_custom() To get the current post enclosure metadata.
  */
 function atom_enclosure() {
 	if ( post_password_required() )
@@ -499,7 +504,7 @@ function atom_enclosure() {
 			foreach ( (array) $val as $enc ) {
 				$enclosure = explode("\n", $enc);
 				/**
-				 * Filter the atom enclosure HTML link tag for the current post.
+				 * Filters the atom enclosure HTML link tag for the current post.
 				 *
 				 * @since 2.2.0
 				 *
@@ -547,10 +552,48 @@ function prep_atom_text_construct($data) {
 		}
 	}
 
-	if (strpos($data, ']]>') == false) {
+	if (strpos($data, ']]>') === false) {
 		return array('html', "<![CDATA[$data]]>");
 	} else {
 		return array('html', htmlspecialchars($data));
+	}
+}
+
+/**
+ * Displays Site Icon in atom feeds.
+ *
+ * @since 4.3.0
+ *
+ * @see get_site_icon_url()
+ */
+function atom_site_icon() {
+	$url = get_site_icon_url( 32 );
+	if ( $url ) {
+		echo "<icon>$url</icon>\n";
+	}
+}
+
+/**
+ * Displays Site Icon in RSS2.
+ *
+ * @since 4.3.0
+ */
+function rss2_site_icon() {
+	$rss_title = get_wp_title_rss();
+	if ( empty( $rss_title ) ) {
+		$rss_title = get_bloginfo_rss( 'name' );
+	}
+
+	$url = get_site_icon_url( 32 );
+	if ( $url ) {
+		echo '
+<image>
+	<url>' . convert_chars( $url ) . '</url>
+	<title>' . $rss_title . '</title>
+	<link>' . get_bloginfo_rss( 'url' ) . '</link>
+	<width>32</width>
+	<height>32</height>
+</image> ' . "\n";
 	}
 }
 
@@ -564,7 +607,7 @@ function prep_atom_text_construct($data) {
 function self_link() {
 	$host = @parse_url(home_url());
 	/**
-	 * Filter the current feed URL.
+	 * Filters the current feed URL.
 	 *
 	 * @since 3.6.0
 	 *
@@ -580,29 +623,30 @@ function self_link() {
  * Return the content type for specified feed type.
  *
  * @since 2.8.0
+ *
+ * @param string $type Type of feed. Possible values include 'rss', rss2', 'atom', and 'rdf'.
  */
 function feed_content_type( $type = '' ) {
 	if ( empty($type) )
 		$type = get_default_feed();
 
 	$types = array(
-		'rss'  => 'application/rss+xml',
-		'rss2' => 'application/rss+xml',
-		'rss-http'  => 'text/xml',
-		'atom' => 'application/atom+xml',
-		'rdf'  => 'application/rdf+xml'
+		'rss'      => 'application/rss+xml',
+		'rss2'     => 'application/rss+xml',
+		'rss-http' => 'text/xml',
+		'atom'     => 'application/atom+xml',
+		'rdf'      => 'application/rdf+xml'
 	);
 
 	$content_type = ( !empty($types[$type]) ) ? $types[$type] : 'application/octet-stream';
 
 	/**
-	 * Filter the content type for a specific feed type.
+	 * Filters the content type for a specific feed type.
 	 *
 	 * @since 2.8.0
 	 *
 	 * @param string $content_type Content type indicating the type of data that a feed contains.
-	 * @param string $type         Type of feed. Possible values include 'rss2', 'atom'.
-	 *                             Default 'rss2'.
+	 * @param string $type         Type of feed. Possible values include 'rss', rss2', 'atom', and 'rdf'.
 	 */
 	return apply_filters( 'feed_content_type', $content_type, $type );
 }
@@ -644,6 +688,7 @@ function fetch_feed( $url ) {
 	 */
 	do_action_ref_array( 'wp_feed_options', array( &$feed, $url ) );
 	$feed->init();
+	$feed->set_output_encoding( get_option( 'blog_charset' ) );
 	$feed->handle_content_type();
 
 	if ( $feed->error() )

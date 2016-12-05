@@ -1,17 +1,6 @@
 <?php
-// Database constants
-// These are probably defined in local-config-db.php
-# define( 'DB_NAME', 'local_db_name' );
-# define( 'DB_USER', 'local_db_user' );
-# define( 'DB_PASSWORD', 'local_db_password' );
-# define( 'DB_HOST', 'localhost' ); // Probably 'localhost'
-
-// Custom table prefix
-# $table_prefix  = 'sz_';
-
-// URL to the content directory
-// You'll probably want to change this.
-define( 'WP_CONTENT_URL', 'http://' . $_SERVER['HTTP_HOST'] . '/content' );
+// Note: Database constants are set in the automatically-generated
+// local-config-db.php. Change these via your config.local.yaml instead.
 
 // Loopback connections can suck, disable if you don't need cron
 # define( 'DISABLE_WP_CRON', true );

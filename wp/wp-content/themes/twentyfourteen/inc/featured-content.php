@@ -8,7 +8,7 @@
  * For maximum compatibility with different methods of posting users
  * will designate a featured post tag to associate posts with. Since
  * this tag now has special meaning beyond that of a normal tags, users
- * will have the ability to hide it from the front-end of their site.
+ * will have the ability to hide it from the front end of their site.
  */
 class Featured_Content {
 
@@ -95,9 +95,9 @@ class Featured_Content {
 	}
 
 	/**
-	 * Hide "featured" tag from the front-end.
+	 * Hide "featured" tag from the front end.
 	 *
-	 * Has to run on wp_loaded so that the preview filters of the customizer
+	 * Has to run on wp_loaded so that the preview filters of the Customizer
 	 * have a chance to alter the value.
 	 *
 	 * @static
@@ -106,7 +106,7 @@ class Featured_Content {
 	 */
 	public static function wp_loaded() {
 		if ( self::get_setting( 'hide-tag' ) ) {
-			add_filter( 'get_terms',     array( __CLASS__, 'hide_featured_term'     ), 10, 2 );
+			add_filter( 'get_terms',     array( __CLASS__, 'hide_featured_term'     ), 10, 3 );
 			add_filter( 'get_the_terms', array( __CLASS__, 'hide_the_featured_term' ), 10, 3 );
 		}
 	}
@@ -151,46 +151,39 @@ class Featured_Content {
 	 * @return array Array of post IDs.
 	 */
 	public static function get_featured_post_ids() {
-		// Return array of cached results if they exist.
+		// Get array of cached results if they exist.
 		$featured_ids = get_transient( 'featured_content_ids' );
-		if ( ! empty( $featured_ids ) ) {
-			return array_map( 'absint', (array) $featured_ids );
+
+		if ( false === $featured_ids ) {
+			$settings = self::get_setting();
+			$term     = get_term_by( 'name', $settings['tag-name'], 'post_tag' );
+
+			if ( $term ) {
+				// Query for featured posts.
+				$featured_ids = get_posts( array(
+					'fields'           => 'ids',
+					'numberposts'      => self::$max_posts,
+					'suppress_filters' => false,
+					'tax_query'        => array(
+						array(
+							'field'    => 'term_id',
+							'taxonomy' => 'post_tag',
+							'terms'    => $term->term_id,
+						),
+					),
+				) );
+			}
+
+			// Get sticky posts if no Featured Content exists.
+			if ( ! $featured_ids ) {
+				$featured_ids = self::get_sticky_posts();
+			}
+
+			set_transient( 'featured_content_ids', $featured_ids );
 		}
 
-		$settings = self::get_setting();
-
-		// Return sticky post ids if no tag name is set.
-		$term = get_term_by( 'name', $settings['tag-name'], 'post_tag' );
-		if ( $term ) {
-			$tag = $term->term_id;
-		} else {
-			return self::get_sticky_posts();
-		}
-
-		// Query for featured posts.
-		$featured = get_posts( array(
-			'numberposts' => self::$max_posts,
-			'tax_query'   => array(
-				array(
-					'field'    => 'term_id',
-					'taxonomy' => 'post_tag',
-					'terms'    => $tag,
-				),
-			),
-		) );
-
-		// Return array with sticky posts if no Featured Content exists.
-		if ( ! $featured ) {
-			return self::get_sticky_posts();
-		}
-
-		// Ensure correct format before save/return.
-		$featured_ids = wp_list_pluck( (array) $featured, 'ID' );
-		$featured_ids = array_map( 'absint', $featured_ids );
-
-		set_transient( 'featured_content_ids', $featured_ids );
-
-		return $featured_ids;
+		// Ensure correct format before return.
+		return array_map( 'absint', $featured_ids );
 	}
 
 	/**
@@ -203,7 +196,6 @@ class Featured_Content {
 	 * @return array Array of sticky posts.
 	 */
 	public static function get_sticky_posts() {
-		$settings = self::get_setting();
 		return array_slice( get_option( 'sticky_posts', array() ), 0, self::$max_posts );
 	}
 
@@ -243,10 +235,8 @@ class Featured_Content {
 			return;
 		}
 
-		$page_on_front = get_option( 'page_on_front' );
-
 		// Bail if the blog page is not the front page.
-		if ( ! empty( $page_on_front ) ) {
+		if ( 'posts' !== get_option( 'show_on_front' ) ) {
 			return;
 		}
 
@@ -298,7 +288,7 @@ class Featured_Content {
 	}
 
 	/**
-	 * Hide featured tag from displaying when global terms are queried from the front-end.
+	 * Hide featured tag from displaying when global terms are queried from the front end.
 	 *
 	 * Hooks into the "get_terms" filter.
 	 *
@@ -312,9 +302,9 @@ class Featured_Content {
 	 *
 	 * @uses Featured_Content::get_setting()
 	 */
-	public static function hide_featured_term( $terms, $taxonomies ) {
+	public static function hide_featured_term( $terms, $taxonomies, $args ) {
 
-		// This filter is only appropriate on the front-end.
+		// This filter is only appropriate on the front end.
 		if ( is_admin() ) {
 			return $terms;
 		}
@@ -329,8 +319,13 @@ class Featured_Content {
 			return $terms;
 		}
 
+		// Bail if term objects are unavailable.
+		if ( 'all' != $args['fields'] ) {
+			return $terms;
+		}
+
 		$settings = self::get_setting();
-		foreach( $terms as $order => $term ) {
+		foreach ( $terms as $order => $term ) {
 			if ( ( $settings['tag-id'] === $term->term_id || $settings['tag-name'] === $term->name ) && 'post_tag' === $term->taxonomy ) {
 				unset( $terms[ $order ] );
 			}
@@ -341,7 +336,7 @@ class Featured_Content {
 
 	/**
 	 * Hide featured tag from display when terms associated with a post object
-	 * are queried from the front-end.
+	 * are queried from the front end.
 	 *
 	 * Hooks into the "get_the_terms" filter.
 	 *
@@ -358,7 +353,7 @@ class Featured_Content {
 	 */
 	public static function hide_the_featured_term( $terms, $id, $taxonomy ) {
 
-		// This filter is only appropriate on the front-end.
+		// This filter is only appropriate on the front end.
 		if ( is_admin() ) {
 			return $terms;
 		}
@@ -374,7 +369,7 @@ class Featured_Content {
 		}
 
 		$settings = self::get_setting();
-		foreach( $terms as $order => $term ) {
+		foreach ( $terms as $order => $term ) {
 			if ( ( $settings['tag-id'] === $term->term_id || $settings['tag-name'] === $term->name ) && 'post_tag' === $term->taxonomy ) {
 				unset( $terms[ $term->term_id ] );
 			}
@@ -401,7 +396,7 @@ class Featured_Content {
 	 * @access public
 	 * @since Twenty Fourteen 1.0
 	 *
-	 * @param WP_Customize_Manager $wp_customize Theme Customizer object.
+	 * @param WP_Customize_Manager $wp_customize Customizer object.
 	 */
 	public static function customize_register( $wp_customize ) {
 		$wp_customize->add_section( 'featured_content', array(

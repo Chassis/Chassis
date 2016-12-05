@@ -40,14 +40,14 @@ var tb_position;
 		var tbWindow = $('#TB_window'),
 			width = $(window).width(),
 			H = $(window).height(),
-			W = ( 720 < width ) ? 720 : width,
+			W = ( 833 < width ) ? 833 : width,
 			adminbar_height = 0;
 
 		if ( $('#wpadminbar').length ) {
 			adminbar_height = parseInt( $('#wpadminbar').css('height'), 10 );
 		}
 
-		if ( tbWindow.size() ) {
+		if ( tbWindow.length ) {
 			tbWindow.width( W - 50 ).height( H - 45 - adminbar_height );
 			$('#TB_iframeContent').width( W - 50 ).height( H - 75 - adminbar_height );
 			tbWindow.css({'margin-left': '-' + parseInt( ( ( W - 50 ) / 2 ), 10 ) + 'px'});

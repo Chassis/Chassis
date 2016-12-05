@@ -1,13 +1,13 @@
 /*
 Theme Name: Twenty Fourteen
-Theme URI: http://wordpress.org/themes/twentyfourteen
+Theme URI: https://wordpress.org/themes/twentyfourteen/
 Author: the WordPress team
-Author URI: http://wordpress.org/
+Author URI: https://wordpress.org/
 Description: In 2014, our default theme lets you create a responsive magazine website with a sleek, modern design. Feature your favorite homepage content in either a grid or a slider. Use the three widget areas to customize your website, and change your content's layout with a full-width page template and a contributor page to show off your authors. Creating a magazine website with WordPress has never been easier.
-Version: 1.1
+Version: 1.8
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
-Tags: black, green, white, light, dark, two-columns, three-columns, left-sidebar, right-sidebar, fixed-layout, responsive-layout, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready, accessibility-ready
+Tags: blog, news, two-columns, three-columns, left-sidebar, right-sidebar, custom-background, custom-header, custom-menu, editor-style, featured-images, flexible-header, footer-widgets, full-width-template, microformats, post-formats, rtl-language-support, sticky-post, theme-options, translation-ready, accessibility-ready
 Text Domain: twentyfourteen
 
 This theme, like WordPress, is licensed under the GPL.
@@ -53,10 +53,7 @@ Use it to make something cool, have fun, and share what you've learned with othe
  * 1.0 Reset
  *
  * Resetting and rebuilding styles have been helped along thanks to the fine
- * work of Eric Meyer http://meyerweb.com/eric/tools/css/reset/index.html
- * along with Nicolas Gallagher and Jonathan Neal
- * http://necolas.github.com/normalize.css/ and Blueprint
- * http://www.blueprintcss.org/
+ * work of Eric Meyer, Nicolas Gallagher, Jonathan Neal, and Blueprint.
  *
  * -----------------------------------------------------------------------------
  */
@@ -350,6 +347,7 @@ figure {
 fieldset {
 	border: 1px solid rgba(0, 0, 0, 0.1);
 	margin: 0 0 24px;
+	min-width: inherit;
 	padding: 11px 12px 0;
 }
 
@@ -459,7 +457,7 @@ hr {
 }
 
 /* Support a widely-adopted but non-standard selector for text selection styles
- * to achieve a better experience. See http://core.trac.wordpress.org/ticket/25898.
+ * to achieve a better experience. See https://core.trac.wordpress.org/ticket/25898.
  */
 ::selection {
 	background: #24890d;
@@ -719,7 +717,10 @@ div.wp-caption.alignright .wp-caption-text {
 
 .screen-reader-text {
 	clip: rect(1px, 1px, 1px, 1px);
-	position: absolute;
+	overflow: hidden;
+	position: absolute !important;
+	height: 1px;
+	width: 1px;
 }
 
 .screen-reader-text:focus {
@@ -863,11 +864,19 @@ span + .edit-link:before,
 	font-weight: 700;
 	line-height: 48px;
 	margin: 0;
+
+	/* Nav-toggle width + search-toggle width - gutter = 86px */
+	max-width: -webkit-calc(100% - 86px);
+	max-width:         calc(100% - 86px);
 }
 
 .site-title a,
 .site-title a:hover {
 	color: #fff;
+	display: block;
+	overflow: hidden;
+	text-overflow: ellipsis;
+	white-space: nowrap;
 }
 
 /* Search in the header */
@@ -1003,7 +1012,6 @@ span + .edit-link:before,
 	background-color: #000;
 	border-radius: 0;
 	cursor: pointer;
-	font-size: 0;
 	height: 48px;
 	margin: 0;
 	overflow: hidden;
@@ -1018,8 +1026,7 @@ span + .edit-link:before,
 .menu-toggle:before {
 	color: #fff;
 	content: "\f419";
-	display: inline;
-	margin-top: 16px;
+	padding: 16px;
 }
 
 .menu-toggle:active,
@@ -1330,6 +1337,10 @@ a.post-thumbnail:hover {
 	color: #41a62a;
 }
 
+.entry-content .more-link {
+	white-space: nowrap;
+}
+
 /* Mediaelements */
 
 .hentry .mejs-container {
@@ -1367,6 +1378,83 @@ a.post-thumbnail:hover {
 
 .hentry .mejs-overlay-loading {
 	background: transparent;
+}
+
+.hentry .mejs-overlay-button {
+	background-color: #fff;
+	background-image: none;
+	border-radius: 2px;
+	box-shadow: 1px 1px 1px rgba(0,0,0,.8);
+	color: #000;
+	height: 36px;
+	margin-left: -24px;
+	width: 48px;
+}
+
+.hentry .mejs-overlay-button:before {
+	-webkit-font-smoothing: antialiased;
+	content: '\f452';
+	display: inline-block;
+	font: normal 32px/1.125 Genericons;
+	position: absolute;
+	top: 1px;
+	left: 10px;
+}
+
+.hentry .mejs-controls .mejs-button button:focus {
+	outline: none;
+}
+
+.hentry .mejs-controls .mejs-button button {
+	-webkit-font-smoothing: antialiased;
+	background: none;
+	color: #fff;
+	display: inline-block;
+	font: normal 16px/1 Genericons;
+}
+
+.hentry .mejs-playpause-button.mejs-play button:before {
+	content: '\f452';
+}
+
+.hentry .mejs-playpause-button.mejs-pause button:before {
+	content: '\f448';
+}
+
+.hentry .mejs-volume-button.mejs-mute button:before {
+	content: '\f109';
+	font-size: 20px;
+	position: absolute;
+	top: -2px;
+	left: 0;
+}
+
+.hentry .mejs-volume-button.mejs-unmute button:before {
+	content: '\f109';
+	left: 0;
+	position: absolute;
+	top: 0;
+}
+
+.hentry .mejs-fullscreen-button button:before {
+	content: '\f474';
+}
+
+.hentry .mejs-fullscreen-button.mejs-unfullscreen button:before {
+	content: '\f406';
+}
+
+.hentry .mejs-overlay:hover .mejs-overlay-button {
+	background-color: #24890d;
+	color: #fff;
+}
+
+.hentry .mejs-controls .mejs-button button:hover {
+	color: #41a62a;
+}
+
+.content-sidebar .wp-playlist-item .wp-playlist-caption {
+	color: #000;
 }
 
 /* Page links */
@@ -2248,8 +2336,8 @@ a.post-thumbnail:hover {
 	margin-bottom: 18px;
 }
 
-.widget input,
-.widget textarea {
+.widget-area .widget input,
+.widget-area .widget textarea {
 	background-color: rgba(255, 255, 255, 0.1);
 	border-color: rgba(255, 255, 255, 0.2);
 	color: #fff;
@@ -2257,8 +2345,8 @@ a.post-thumbnail:hover {
 	padding: 1px 2px 2px 4px;
 }
 
-.widget input:focus,
-.widget textarea:focus {
+.widget-area .widget input:focus,
+.widget-area .widget textarea:focus {
 	border-color: rgba(255, 255, 255, 0.3);
 }
 
@@ -2990,7 +3078,7 @@ a.post-thumbnail:hover {
 /* Does the same thing as <meta name="viewport" content="width=device-width">,
  * but in the future W3C standard way. -ms- prefix is required for IE10+ to
  * render responsive styling in Windows 8 "snapped" views; IE10+ does not honor
- * the meta tag. See http://core.trac.wordpress.org/ticket/25888.
+ * the meta tag. See https://core.trac.wordpress.org/ticket/25888.
  */
 @-ms-viewport {
 	width: device-width;
@@ -3261,8 +3349,7 @@ a.post-thumbnail:hover {
 	}
 
 	.full-width .site-content .has-post-thumbnail .entry-header,
-	.full-width.singular .site-content .hentry.has-post-thumbnail,
-	.full-width.home .site-content .hentry.has-post-thumbnail {
+	.full-width .site-content .hentry.has-post-thumbnail:first-child {
 		margin-top: -48px;
 	}
 
@@ -3349,6 +3436,12 @@ a.post-thumbnail:hover {
 }
 
 @media screen and (min-width: 783px) {
+	.site-title {
+		/* Search-toggle width = 48px */
+		max-width: -webkit-calc(100% - 48px);
+		max-width:         calc(100% - 48px);
+	}
+
 	.header-main {
 		padding-right: 0;
 	}
@@ -3589,8 +3682,7 @@ a.post-thumbnail:hover {
 		margin-left: 20px;
 	}
 
-	.full-width.singular .site-content .hentry.has-post-thumbnail,
-	.full-width.home .site-content .hentry.has-post-thumbnail {
+	.full-width .site-content .hentry.has-post-thumbnail:first-child {
 		margin-top: -72px;
 	}
 
@@ -3655,7 +3747,7 @@ a.post-thumbnail:hover {
 
 	.site-description {
 		display: block;
-		margin: -3px 0 21px;
+		margin: 0 0 18px;
 	}
 
 	.site-description:empty {

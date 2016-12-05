@@ -1,0 +1,22 @@
+<?php
+
+// This is generated automatically by Puppet. Edit at your own risk.
+
+define( 'DB_NAME',     '<%= @database %>' );
+define( 'DB_USER',     '<%= @database_user %>' );
+define( 'DB_PASSWORD', '<%= @database_password %>' );
+define( 'DB_HOST',     '<%= @database_host %>' );
+
+$table_prefix = '<%= @database_prefix %>';
+
+defined( 'ABSPATH' ) or define( 'ABSPATH', '<%= @wpdir %>/' );
+defined( 'WP_CONTENT_DIR' ) or define( 'WP_CONTENT_DIR', '<%= @contentdir %>' );
+
+<% if @network != false %>
+define( 'MULTISITE', true );
+define( 'SUBDOMAIN_INSTALL', false );
+define( 'DOMAIN_CURRENT_SITE', '<%= @name %>' );
+define( 'PATH_CURRENT_SITE', '/' );
+define( 'SITE_ID_CURRENT_SITE', 1 );
+define( 'BLOG_ID_CURRENT_SITE', 1 );
+<% end %>

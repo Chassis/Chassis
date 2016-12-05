@@ -35,11 +35,11 @@ ip: dhcp
 # built-in repositories, or a mirror domain as a string.
 #
 # Values: Yes, No, or any mirror domain name e.g. http://mirror.optus.net/ubuntu/
-apt_mirror: Yes
+apt_mirror: No
 
 # Should we use multisite?
-# (Only subdirectories are supported currently)
-# Values: Yes, No
+# (Set to Yes for subdirectories)
+# Values: No, Yes, subdomains
 multisite: No
 
 # Database configuration
@@ -48,6 +48,7 @@ database:
     name: wordpress
     user: wordpress
     password: vagrantpassword
+    prefix: wp_
 
 # Admin configuration
 # (When overriding, include all values)
@@ -56,11 +57,47 @@ admin:
     email: admin@example.com
     password: password
 
-# WordPress directory
-# (This is usually `wp`, unless you're transplanting Chassis into
-# an existing project)
-wpdir: wp
+# Paths
+#
+# If transplanting Chassis into an existing project, you can set these manually.
+# These can be set to absolute paths, or relative paths.
+paths:
+    # Base directory for reference. Relative to the Chassis directory.
+    base: .
+
+    # Where WordPress lives. Relative to the base directory.
+    wp: wp
+
+    # Content directory. Relative to the base directory.
+    content: content
+
+# Synced Folders
+#
+# You can sync as many folders as you like. We sync the nginx and php log folders by default.
+synced_folders:
+    logs/nginx: /var/log/nginx
+    logs/php: /var/log/php
+
+# Plugins
+#
+# Install and activate a list of plugins from wp.org
+#plugins:
+#    - query-monitor
+
+# Themes
+#
+# Install a list of themes, and activate the last one of them
+# NOTE: This will activate all themes going down the list, so might activate some activation actions within each
+#themes:
+#    - twentysixteen
+
+# Extensions
+#
+# Install a list of extensions automatically
+#extensions:
+#  - Chassis/Tester
+#  - git@github.com:Chassis/memcache.git
 
 # PHP version
-# Values: 5.3, 5.4, 5.5 (or e.g. 5.3.3)
-php: 5.4
+# Values: 5.3, 5.4, 5.5, 5.6, 7.0, 7.1 (or e.g. 5.3.3)
+php: 5.6

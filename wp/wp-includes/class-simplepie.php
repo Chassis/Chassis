@@ -1,5 +1,5 @@
 <?php
-if ( ! class_exists( 'SimplePie' ) ) :
+if ( ! class_exists( 'SimplePie', false ) ) :
 
 // Load classes we will need.
 require ABSPATH . WPINC . '/SimplePie/Misc.php';
@@ -26,38 +26,13 @@ function wp_simplepie_autoload( $class ) {
 		return;
 
 	$file = ABSPATH . WPINC . '/' . str_replace( '_', '/', $class ) . '.php';
-	include $file;
+	include( $file );
 }
 
-if ( function_exists( 'spl_autoload_register' ) ) {
-	/**
-	 * We autoload classes we may not need.
-	 *
-	 * If SPL is disabled, we load all of SimplePie manually.
-	 *
-	 * Core.php is not loaded manually, because SimplePie_Core (a deprecated class)
-	 * was never included in WordPress core.
-	 */
-	spl_autoload_register( 'wp_simplepie_autoload' );
-} else {
-	require ABSPATH . WPINC . '/SimplePie/Cache/Base.php';
-	require ABSPATH . WPINC . '/SimplePie/Cache/DB.php';
-	require ABSPATH . WPINC . '/SimplePie/Cache/File.php';
-	require ABSPATH . WPINC . '/SimplePie/Cache/Memcache.php';
-	require ABSPATH . WPINC . '/SimplePie/Cache/MySQL.php';
-	require ABSPATH . WPINC . '/SimplePie/Caption.php';
-	require ABSPATH . WPINC . '/SimplePie/Category.php';
-	require ABSPATH . WPINC . '/SimplePie/Copyright.php';
-	require ABSPATH . WPINC . '/SimplePie/Credit.php';
-	require ABSPATH . WPINC . '/SimplePie/Decode/HTML/Entities.php';
-	require ABSPATH . WPINC . '/SimplePie/Enclosure.php';
-	require ABSPATH . WPINC . '/SimplePie/gzdecode.php';
-	require ABSPATH . WPINC . '/SimplePie/HTTP/Parser.php';
-	require ABSPATH . WPINC . '/SimplePie/Net/IPv6.php';
-	require ABSPATH . WPINC . '/SimplePie/Rating.php';
-	require ABSPATH . WPINC . '/SimplePie/Restriction.php';
-	require ABSPATH . WPINC . '/SimplePie/Source.php';
-}
+/**
+ * We autoload classes we may not need.
+ */
+spl_autoload_register( 'wp_simplepie_autoload' );
 
 /**
  * SimplePie
@@ -1612,7 +1587,7 @@ class SimplePie
 	}
 
 	/**
-	 * Get the error message for the occured error
+	 * Get the error message for the occurred error.
 	 *
 	 * @return string|array Error message, or array of messages for multifeeds
 	 */

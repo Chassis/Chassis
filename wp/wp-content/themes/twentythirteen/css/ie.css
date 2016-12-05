@@ -2,9 +2,7 @@
 Styles for older IE versions (previous to IE9).
 */
 
-.site {
-	min-width: 1040px;
-}
+
 
 .genericon:before:hover,
 .menu-toggle:after:hover,
@@ -197,7 +195,7 @@ img.alignleft {
 }
 
 .ie7 .screen-reader-text {
-	clip: rect(1px 1px 1px 1px); /* IE7 */
+	clip: rect(1px 1px 1px 1px);
 }
 
 .ie7 .site-header {

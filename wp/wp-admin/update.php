@@ -12,7 +12,7 @@ if ( ! defined( 'IFRAME_REQUEST' ) && isset( $_GET['action'] ) && in_array( $_GE
 /** WordPress Administration Bootstrap */
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
-include_once ABSPATH . 'wp-admin/includes/class-wp-upgrader.php';
+include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' );
 
 if ( isset($_GET['action']) ) {
 	$plugin = isset($_REQUEST['plugin']) ? trim($_REQUEST['plugin']) : '';
@@ -21,7 +21,7 @@ if ( isset($_GET['action']) ) {
 
 	if ( 'update-selected' == $action ) {
 		if ( ! current_user_can( 'update_plugins' ) )
-			wp_die( __( 'You do not have sufficient permissions to update plugins for this site.' ) );
+			wp_die( __( 'Sorry, you are not allowed to update plugins for this site.' ) );
 
 		check_admin_referer( 'bulk-update-plugins' );
 
@@ -47,7 +47,7 @@ if ( isset($_GET['action']) ) {
 
 	} elseif ( 'upgrade-plugin' == $action ) {
 		if ( ! current_user_can('update_plugins') )
-			wp_die(__('You do not have sufficient permissions to update plugins for this site.'));
+			wp_die(__('Sorry, you are not allowed to update plugins for this site.'));
 
 		check_admin_referer('upgrade-plugin_' . $plugin);
 
@@ -68,7 +68,7 @@ if ( isset($_GET['action']) ) {
 
 	} elseif ('activate-plugin' == $action ) {
 		if ( ! current_user_can('update_plugins') )
-			wp_die(__('You do not have sufficient permissions to update plugins for this site.'));
+			wp_die(__('Sorry, you are not allowed to update plugins for this site.'));
 
 		check_admin_referer('activate-plugin_' . $plugin);
 		if ( ! isset($_GET['failure']) && ! isset($_GET['success']) ) {
@@ -93,15 +93,32 @@ if ( isset($_GET['action']) ) {
 	} elseif ( 'install-plugin' == $action ) {
 
 		if ( ! current_user_can('install_plugins') )
-			wp_die( __( 'You do not have sufficient permissions to install plugins on this site.' ) );
+			wp_die( __( 'Sorry, you are not allowed to install plugins on this site.' ) );
 
-		include_once ABSPATH . 'wp-admin/includes/plugin-install.php'; //for plugins_api..
+		include_once( ABSPATH . 'wp-admin/includes/plugin-install.php' ); //for plugins_api..
 
-		check_admin_referer('install-plugin_' . $plugin);
-		$api = plugins_api('plugin_information', array('slug' => $plugin, 'fields' => array('sections' => false) ) ); //Save on a bit of bandwidth.
+		check_admin_referer( 'install-plugin_' . $plugin );
+		$api = plugins_api( 'plugin_information', array(
+			'slug' => $plugin,
+			'fields' => array(
+				'short_description' => false,
+				'sections' => false,
+				'requires' => false,
+				'rating' => false,
+				'ratings' => false,
+				'downloaded' => false,
+				'last_updated' => false,
+				'added' => false,
+				'tags' => false,
+				'compatibility' => false,
+				'homepage' => false,
+				'donate_link' => false,
+			),
+		) );
 
-		if ( is_wp_error($api) )
-	 		wp_die($api);
+		if ( is_wp_error( $api ) ) {
+	 		wp_die( $api );
+		}
 
 		$title = __('Plugin Install');
 		$parent_file = 'plugins.php';
@@ -123,8 +140,9 @@ if ( isset($_GET['action']) ) {
 
 	} elseif ( 'upload-plugin' == $action ) {
 
-		if ( ! current_user_can('install_plugins') )
-			wp_die( __( 'You do not have sufficient permissions to install plugins on this site.' ) );
+		if ( ! current_user_can( 'upload_plugins' ) ) {
+			wp_die( __( 'Sorry, you are not allowed to install plugins on this site.' ) );
+		}
 
 		check_admin_referer('plugin-upload');
 
@@ -151,7 +169,7 @@ if ( isset($_GET['action']) ) {
 	} elseif ( 'upgrade-theme' == $action ) {
 
 		if ( ! current_user_can('update_themes') )
-			wp_die(__('You do not have sufficient permissions to update themes for this site.'));
+			wp_die(__('Sorry, you are not allowed to update themes for this site.'));
 
 		check_admin_referer('upgrade-theme_' . $theme);
 
@@ -172,7 +190,7 @@ if ( isset($_GET['action']) ) {
 		include(ABSPATH . 'wp-admin/admin-footer.php');
 	} elseif ( 'update-selected-themes' == $action ) {
 		if ( ! current_user_can( 'update_themes' ) )
-			wp_die( __( 'You do not have sufficient permissions to update themes for this site.' ) );
+			wp_die( __( 'Sorry, you are not allowed to update themes for this site.' ) );
 
 		check_admin_referer( 'bulk-update-themes' );
 
@@ -198,9 +216,9 @@ if ( isset($_GET['action']) ) {
 	} elseif ( 'install-theme' == $action ) {
 
 		if ( ! current_user_can('install_themes') )
-			wp_die( __( 'You do not have sufficient permissions to install themes on this site.' ) );
+			wp_die( __( 'Sorry, you are not allowed to install themes on this site.' ) );
 
-		include_once ABSPATH . 'wp-admin/includes/theme-install.php'; //for themes_api..
+		include_once( ABSPATH . 'wp-admin/includes/class-wp-upgrader.php' ); //for themes_api..
 
 		check_admin_referer( 'install-theme_' . $theme );
 		$api = themes_api('theme_information', array('slug' => $theme, 'fields' => array('sections' => false, 'tags' => false) ) ); //Save on a bit of bandwidth.
@@ -227,8 +245,9 @@ if ( isset($_GET['action']) ) {
 
 	} elseif ( 'upload-theme' == $action ) {
 
-		if ( ! current_user_can('install_themes') )
-			wp_die( __( 'You do not have sufficient permissions to install themes on this site.' ) );
+		if ( ! current_user_can( 'upload_themes' ) ) {
+			wp_die( __( 'Sorry, you are not allowed to install themes on this site.' ) );
+		}
 
 		check_admin_referer('theme-upload');
 
@@ -259,7 +278,7 @@ if ( isset($_GET['action']) ) {
 		/**
 		 * Fires when a custom plugin or theme update request is received.
 		 *
-		 * The dynamic portion of the hook name, $action, refers to the action
+		 * The dynamic portion of the hook name, `$action`, refers to the action
 		 * provided in the request for wp-admin/update.php. Can be used to
 		 * provide custom update functionality for themes and plugins.
 		 *

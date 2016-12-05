@@ -2,7 +2,7 @@
 /**
  * The template for displaying image attachments
  *
- * @link http://codex.wordpress.org/Template_Hierarchy
+ * @link https://codex.wordpress.org/Template_Hierarchy
  *
  * @package WordPress
  * @subpackage Twenty_Twelve
@@ -58,15 +58,15 @@ foreach ( $attachments as $k => $attachment ) :
 		break;
 endforeach;
 
-$k++;
 // If there is more than 1 attachment in a gallery
 if ( count( $attachments ) > 1 ) :
+	$k++;
 	if ( isset( $attachments[ $k ] ) ) :
 		// get the URL of the next image attachment
 		$next_attachment_url = get_attachment_link( $attachments[ $k ]->ID );
 	else :
 		// or get the URL of the first image attachment
-		$next_attachment_url = get_attachment_link( $attachments[ 0 ]->ID );
+		$next_attachment_url = get_attachment_link( $attachments[0]->ID );
 	endif;
 else :
 	// or, if there's only 1 image, get the URL of the image

@@ -1,30 +1,61 @@
 /* global mejs, _wpmejsSettings */
-(function ($) {
+(function( window, $ ) {
+
+	window.wp = window.wp || {};
+
 	// add mime-type aliases to MediaElement plugin support
 	mejs.plugins.silverlight[0].types.push('video/x-ms-wmv');
 	mejs.plugins.silverlight[0].types.push('audio/x-ms-wma');
 
-	$(function () {
+	function wpMediaElement() {
 		var settings = {};
 
-		if ( $( document.body ).hasClass( 'mce-content-body' ) ) {
-			return;
-		}
-
-		if ( typeof _wpmejsSettings !== 'undefined' ) {
-			settings.pluginPath = _wpmejsSettings.pluginPath;
-		}
-
-		settings.success = function (mejs) {
-			var autoplay = mejs.attributes.autoplay && 'false' !== mejs.attributes.autoplay;
-			if ( 'flash' === mejs.pluginType && autoplay ) {
-				mejs.addEventListener( 'canplay', function () {
-					mejs.play();
-				}, false );
+		/**
+		 * Initialize media elements.
+		 *
+		 * Ensures media elements that have already been initialized won't be
+		 * processed again.
+		 *
+		 * @since 4.4.0
+		 */
+		function initialize() {
+			if ( typeof _wpmejsSettings !== 'undefined' ) {
+				settings = $.extend( true, {}, _wpmejsSettings );
 			}
+
+			settings.success = settings.success || function (mejs) {
+				var autoplay, loop;
+
+				if ( 'flash' === mejs.pluginType ) {
+					autoplay = mejs.attributes.autoplay && 'false' !== mejs.attributes.autoplay;
+					loop = mejs.attributes.loop && 'false' !== mejs.attributes.loop;
+
+					autoplay && mejs.addEventListener( 'canplay', function () {
+						mejs.play();
+					}, false );
+
+					loop && mejs.addEventListener( 'ended', function () {
+						mejs.play();
+					}, false );
+				}
+			};
+
+			// Only initialize new media elements.
+			$( '.wp-audio-shortcode, .wp-video-shortcode' )
+				.not( '.mejs-container' )
+				.filter(function () {
+					return ! $( this ).parent().hasClass( '.mejs-mediaelement' );
+				})
+				.mediaelementplayer( settings );
+		}
+
+		return {
+			initialize: initialize
 		};
+	}
 
-		$('.wp-audio-shortcode, .wp-video-shortcode').mediaelementplayer( settings );
-	});
+	window.wp.mediaelement = new wpMediaElement();
 
-}(jQuery));
+	$( window.wp.mediaelement.initialize );
+
+})( window, jQuery );

@@ -1,13 +1,11 @@
 # Load extensions
 import "/vagrant/extensions/*/chassis.pp"
 
-$config = sz_load_config('/vagrant')
+$config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
 
-Class['mysql'] -> Package['php5-mysql']
-
-class { 'sennza::php':
+class { 'chassis::php':
 	extensions => $php_extensions,
 	version => $config[php]
 }
@@ -24,31 +22,35 @@ class { 'mysql::server':
 	config_hash => { 'root_password' => 'password' }
 }
 
-class { 'sennza':
-	require => Class['sennza::php'],
+class { 'chassis':
+	require => Class['chassis::php'],
 }
 
-class { 'sennza::hosts':
+class { 'chassis::hosts':
 	aliases => $config[hosts]
 }
 
-sennza::wp { $config['hosts'][0]:
-	location          => '/vagrant',
+chassis::wp { $config['hosts'][0]:
+	location          => $config[mapped_paths][base],
+	wpdir             => $config[mapped_paths][wp],
+	contentdir        => $config[mapped_paths][content],
 
-	wpdir             => $config[wpdir],
 	hosts             => $config[hosts],
 	database          => $config[database][name],
 	database_user     => $config[database][user],
 	database_password => $config[database][password],
+	database_prefix   => $config[database][prefix],
 	network           => $config[multisite],
 	admin_user        => $config[admin][user],
 	admin_email       => $config[admin][email],
 	admin_password    => $config[admin][password],
+	plugins           => $config[plugins],
+	themes            => $config[themes],
 
 	extensions        => $extensions,
 
 	require  => [
-		Class['sennza::php'],
+		Class['chassis::php'],
 		Package['git-core'],
 		Class['mysql::server'],
 	]

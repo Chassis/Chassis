@@ -2,7 +2,7 @@
 /**
  * The template for displaying image attachments
  *
- * @link http://codex.wordpress.org/Template_Hierarchy
+ * @link https://codex.wordpress.org/Template_Hierarchy
  *
  * @package WordPress
  * @subpackage Twenty_Thirteen
@@ -13,6 +13,12 @@ get_header(); ?>
 
 	<div id="primary" class="content-area">
 		<div id="content" class="site-content" role="main">
+
+			<?php
+				// Start the Loop.
+				while ( have_posts() ) : the_post();
+			?>
+
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'image-attachment' ); ?>>
 				<header class="entry-header">
 					<h1 class="entry-title"><?php the_title(); ?></h1>
@@ -75,6 +81,8 @@ get_header(); ?>
 			</article><!-- #post -->
 
 			<?php comments_template(); ?>
+
+			<?php endwhile; // End the loop. ?>
 
 		</div><!-- #content -->
 	</div><!-- #primary -->

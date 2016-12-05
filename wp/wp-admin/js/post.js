@@ -1,187 +1,14 @@
 /* global postL10n, ajaxurl, wpAjax, setPostThumbnailL10n, postboxes, pagenow, tinymce, alert, deleteUserSetting */
-/* global theList:true, theExtraList:true, getUserSetting, setUserSetting */
+/* global theList:true, theExtraList:true, getUserSetting, setUserSetting, commentReply */
 
-var tagBox, commentsBox, WPSetThumbnailHTML, WPSetThumbnailID, WPRemoveThumbnail, wptitlehint, makeSlugeditClickable, editPermalink;
+var commentsBox, WPSetThumbnailHTML, WPSetThumbnailID, WPRemoveThumbnail, wptitlehint, makeSlugeditClickable, editPermalink;
 // Back-compat: prevent fatal errors
 makeSlugeditClickable = editPermalink = function(){};
 
 window.wp = window.wp || {};
 
-// return an array with any duplicate, whitespace or values removed
-function array_unique_noempty(a) {
-	var out = [];
-	jQuery.each( a, function(key, val) {
-		val = jQuery.trim(val);
-		if ( val && jQuery.inArray(val, out) == -1 )
-			out.push(val);
-		} );
-	return out;
-}
-
-( function($) {
+( function( $ ) {
 	var titleHasFocus = false;
-
-tagBox = {
-	clean : function(tags) {
-		var comma = postL10n.comma;
-		if ( ',' !== comma )
-			tags = tags.replace(new RegExp(comma, 'g'), ',');
-		tags = tags.replace(/\s*,\s*/g, ',').replace(/,+/g, ',').replace(/[,\s]+$/, '').replace(/^[,\s]+/, '');
-		if ( ',' !== comma )
-			tags = tags.replace(/,/g, comma);
-		return tags;
-	},
-
-	parseTags : function(el) {
-		var id = el.id, num = id.split('-check-num-')[1], taxbox = $(el).closest('.tagsdiv'),
-			thetags = taxbox.find('.the-tags'), comma = postL10n.comma,
-			current_tags = thetags.val().split(comma), new_tags = [];
-		delete current_tags[num];
-
-		$.each( current_tags, function(key, val) {
-			val = $.trim(val);
-			if ( val ) {
-				new_tags.push(val);
-			}
-		});
-
-		thetags.val( this.clean( new_tags.join(comma) ) );
-
-		this.quickClicks(taxbox);
-		return false;
-	},
-
-	quickClicks : function(el) {
-		var thetags = $('.the-tags', el),
-			tagchecklist = $('.tagchecklist', el),
-			id = $(el).attr('id'),
-			current_tags, disabled;
-
-		if ( !thetags.length )
-			return;
-
-		disabled = thetags.prop('disabled');
-
-		current_tags = thetags.val().split(postL10n.comma);
-		tagchecklist.empty();
-
-		$.each( current_tags, function( key, val ) {
-			var span, xbutton;
-
-			val = $.trim( val );
-
-			if ( ! val )
-				return;
-
-			// Create a new span, and ensure the text is properly escaped.
-			span = $('<span />').text( val );
-
-			// If tags editing isn't disabled, create the X button.
-			if ( ! disabled ) {
-				xbutton = $( '<a id="' + id + '-check-num-' + key + '" class="ntdelbutton">X</a>' );
-				xbutton.click( function(){ tagBox.parseTags(this); });
-				span.prepend('&nbsp;').prepend( xbutton );
-			}
-
-			// Append the span to the tag list.
-			tagchecklist.append( span );
-		});
-	},
-
-	flushTags : function(el, a, f) {
-		var tagsval, newtags, text,
-			tags = $('.the-tags', el),
-			newtag = $('input.newtag', el),
-			comma = postL10n.comma;
-		a = a || false;
-
-		text = a ? $(a).text() : newtag.val();
-		tagsval = tags.val();
-		newtags = tagsval ? tagsval + comma + text : text;
-
-		newtags = this.clean( newtags );
-		newtags = array_unique_noempty( newtags.split(comma) ).join(comma);
-		tags.val(newtags);
-		this.quickClicks(el);
-
-		if ( !a )
-			newtag.val('');
-		if ( 'undefined' == typeof(f) )
-			newtag.focus();
-
-		return false;
-	},
-
-	get : function(id) {
-		var tax = id.substr(id.indexOf('-')+1);
-
-		$.post(ajaxurl, {'action':'get-tagcloud', 'tax':tax}, function(r, stat) {
-			if ( 0 === r || 'success' != stat )
-				r = wpAjax.broken;
-
-			r = $('<p id="tagcloud-'+tax+'" class="the-tagcloud">'+r+'</p>');
-			$('a', r).click(function(){
-				tagBox.flushTags( $(this).closest('.inside').children('.tagsdiv'), this);
-				return false;
-			});
-
-			$('#'+id).after(r);
-		});
-	},
-
-	init : function() {
-		var t = this, ajaxtag = $('div.ajaxtag');
-
-		$('.tagsdiv').each( function() {
-			tagBox.quickClicks(this);
-		});
-
-		$('input.tagadd', ajaxtag).click(function(){
-			t.flushTags( $(this).closest('.tagsdiv') );
-		});
-
-		$('div.taghint', ajaxtag).click(function(){
-			$(this).css('visibility', 'hidden').parent().siblings('.newtag').focus();
-		});
-
-		$('input.newtag', ajaxtag).blur(function() {
-			if ( '' === this.value )
-				$(this).parent().siblings('.taghint').css('visibility', '');
-		}).focus(function(){
-			$(this).parent().siblings('.taghint').css('visibility', 'hidden');
-		}).keyup(function(e){
-			if ( 13 == e.which ) {
-				tagBox.flushTags( $(this).closest('.tagsdiv') );
-				return false;
-			}
-		}).keypress(function(e){
-			if ( 13 == e.which ) {
-				e.preventDefault();
-				return false;
-			}
-		}).each(function(){
-			var tax = $(this).closest('div.tagsdiv').attr('id');
-			$(this).suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: postL10n.comma + ' ' } );
-		});
-
-		// save tags on post save/publish
-		$('#post').submit(function(){
-			$('div.tagsdiv').each( function() {
-				tagBox.flushTags(this, false, 1);
-			});
-		});
-
-		// tag cloud
-		$('a.tagcloud-link').click(function(){
-			tagBox.get( $(this).attr('id') );
-			$(this).unbind().click(function(){
-				$(this).siblings('.the-tagcloud').toggle();
-				return false;
-			});
-			return false;
-		});
-	}
-};
 
 commentsBox = {
 	st : 0,
@@ -193,7 +20,7 @@ commentsBox = {
 
 		this.st += num;
 		this.total = total;
-		$('#commentsdiv .spinner').show();
+		$( '#commentsdiv .spinner' ).addClass( 'is-active' );
 
 		data = {
 			'action' : 'get-comments',
@@ -208,7 +35,7 @@ commentsBox = {
 			function(r) {
 				r = wpAjax.parseAjaxResponse(r);
 				$('#commentsdiv .widefat').show();
-				$('#commentsdiv .spinner').hide();
+				$( '#commentsdiv .spinner' ).removeClass( 'is-active' );
 
 				if ( 'object' == typeof r && r.responses[0] ) {
 					$('#the-comment-list').append( r.responses[0].data );
@@ -232,6 +59,11 @@ commentsBox = {
 		);
 
 		return false;
+	},
+
+	load: function(total){
+		this.st = jQuery('#the-comment-list tr.comment:visible').length;
+		this.get(total);
 	}
 };
 
@@ -241,7 +73,7 @@ WPSetThumbnailHTML = function(html){
 
 WPSetThumbnailID = function(id){
 	var field = $('input[value="_thumbnail_id"]', '#list-table');
-	if ( field.size() > 0 ) {
+	if ( field.length > 0 ) {
 		$('#meta\\[' + field.attr('id').match(/[0-9]+/) + '\\]\\[value\\]').text(id);
 	}
 };
@@ -299,7 +131,7 @@ $(document).on( 'heartbeat-send.refresh-lock', function( e, data ) {
 				}
 
 				if ( received.lock_error.avatar_src ) {
-					avatar = $('<img class="avatar avatar-64 photo" width="64" height="64" />').attr( 'src', received.lock_error.avatar_src.replace(/&amp;/g, '&') );
+					avatar = $( '<img class="avatar avatar-64 photo" width="64" height="64" alt="" />' ).attr( 'src', received.lock_error.avatar_src.replace( /&amp;/g, '&' ) );
 					wrap.find('div.post-locked-avatar').empty().append( avatar );
 				}
 
@@ -343,13 +175,13 @@ $(document).on( 'heartbeat-send.refresh-lock', function( e, data ) {
 	}
 
 	$(document).on( 'heartbeat-send.wp-refresh-nonces', function( e, data ) {
-		var nonce, post_id;
+		var post_id,
+			$authCheck = $('#wp-auth-check-wrap');
 
-		if ( check ) {
-			if ( ( post_id = $('#post_ID').val() ) && ( nonce = $('#_wpnonce').val() ) ) {
+		if ( check || ( $authCheck.length && ! $authCheck.hasClass( 'hidden' ) ) ) {
+			if ( ( post_id = $('#post_ID').val() ) && $('#_wpnonce').val() ) {
 				data['wp-refresh-post-nonces'] = {
-					post_id: post_id,
-					post_nonce: nonce
+					post_id: post_id
 				};
 			}
 		}
@@ -376,16 +208,15 @@ $(document).on( 'heartbeat-send.refresh-lock', function( e, data ) {
 jQuery(document).ready( function($) {
 	var stamp, visibility, $submitButtons, updateVisibility, updateText,
 		sticky = '',
-		last = 0,
-		co = $('#content'),
+		$textarea = $('#content'),
 		$document = $(document),
-		$editSlugWrap = $('#edit-slug-box'),
 		postId = $('#post_ID').val() || 0,
 		$submitpost = $('#submitpost'),
 		releaseLock = true,
 		$postVisibilitySelect = $('#post-visibility-select'),
 		$timestampdiv = $('#timestampdiv'),
-		$postStatusSelect = $('#post-status-select');
+		$postStatusSelect = $('#post-status-select'),
+		isMac = window.navigator.platform ? window.navigator.platform.indexOf( 'Mac' ) !== -1 : false;
 
 	postboxes.add_postbox_toggles(pagenow);
 
@@ -415,7 +246,7 @@ jQuery(document).ready( function($) {
 	}
 
 	// The form is being submitted by the user
-	$submitButtons = $submitpost.find( ':button, :submit, a.submitdelete, #post-preview' ).on( 'click.edit-post', function( event ) {
+	$submitButtons = $submitpost.find( ':submit, a.submitdelete, #post-preview' ).on( 'click.edit-post', function( event ) {
 		var $button = $(this);
 
 		if ( $button.hasClass('disabled') ) {
@@ -439,15 +270,31 @@ jQuery(document).ready( function($) {
 				wp.autosave.server.suspend();
 			}
 
+			if ( typeof commentReply !== 'undefined' ) {
+				/*
+				 * Warn the user they have an unsaved comment before submitting
+				 * the post data for update.
+				 */
+				if ( ! commentReply.discardCommentChanges() ) {
+					return false;
+				}
+
+				/*
+				 * Close the comment edit/reply form if open to stop the form
+				 * action from interfering with the post's form action.
+				 */
+				commentReply.close();
+			}
+
 			releaseLock = false;
 			$(window).off( 'beforeunload.edit-post' );
 
 			$submitButtons.addClass( 'disabled' );
 
 			if ( $button.attr('id') === 'publish' ) {
-				$submitpost.find('#major-publishing-actions .spinner').show();
+				$submitpost.find( '#major-publishing-actions .spinner' ).addClass( 'is-active' );
 			} else {
-				$submitpost.find('#minor-publishing .spinner').show();
+				$submitpost.find( '#minor-publishing .spinner' ).addClass( 'is-active' );
 			}
 		});
 	});
@@ -486,11 +333,10 @@ jQuery(document).ready( function($) {
 
 	// This code is meant to allow tabbing from Title to Post content.
 	$('#title').on( 'keydown.editor-focus', function( event ) {
-		var editor, $textarea;
+		var editor;
 
 		if ( event.keyCode === 9 && ! event.ctrlKey && ! event.altKey && ! event.shiftKey ) {
 			editor = typeof tinymce != 'undefined' && tinymce.get('content');
-			$textarea = $('#content');
 
 			if ( editor && ! editor.isHidden() ) {
 				editor.focus();
@@ -536,6 +382,10 @@ jQuery(document).ready( function($) {
 		$( '.autosave-message' ).text( postL10n.savingText );
 	}).on( 'after-autosave.edit-post', function( event, data ) {
 		$( '.autosave-message' ).text( data.message );
+
+		if ( $( document.body ).hasClass( 'post-new-php' ) ) {
+			$( '.submitbox .submitdelete' ).show();
+		}
 	});
 
 	$(window).on( 'beforeunload.edit-post', function() {
@@ -572,11 +422,11 @@ jQuery(document).ready( function($) {
 
 	// multi-taxonomies
 	if ( $('#tagsdiv-post_tag').length ) {
-		tagBox.init();
+		window.tagBox && window.tagBox.init();
 	} else {
-		$('#side-sortables, #normal-sortables, #advanced-sortables').children('div.postbox').each(function(){
+		$('.meta-box-sortables').children('div.postbox').each(function(){
 			if ( this.id.indexOf('tagsdiv-') === 0 ) {
-				tagBox.init();
+				window.tagBox && window.tagBox.init();
 				return false;
 			}
 		});
@@ -594,7 +444,8 @@ jQuery(document).ready( function($) {
 			settingName = 'cats';
 
 		// TODO: move to jQuery 1.3+, support for multiple hierarchical taxonomies, see wp-lists.js
-		$('a', '#' + taxonomy + '-tabs').click( function(){
+		$('a', '#' + taxonomy + '-tabs').click( function( e ) {
+			e.preventDefault();
 			var t = $(this).attr('href');
 			$(this).parent().addClass('tabs').siblings('li').removeClass('tabs');
 			$('#' + taxonomy + '-tabs').siblings('.tabs-panel').hide();
@@ -603,7 +454,6 @@ jQuery(document).ready( function($) {
 				deleteUserSetting( settingName );
 			else
 				setUserSetting( settingName, 'pop' );
-			return false;
 		});
 
 		if ( getUserSetting( settingName ) )
@@ -645,11 +495,11 @@ jQuery(document).ready( function($) {
 			addAfter: catAddAfter
 		});
 
-		$('#' + taxonomy + '-add-toggle').click( function() {
+		$('#' + taxonomy + '-add-toggle').click( function( e ) {
+			e.preventDefault();
 			$('#' + taxonomy + '-adder').toggleClass( 'wp-hidden-children' );
 			$('a[href="#' + taxonomy + '-all"]', '#' + taxonomy + '-tabs').click();
 			$('#new'+taxonomy).focus();
-			return false;
 		});
 
 		$('#' + taxonomy + 'checklist, #' + taxonomy + 'checklist-pop').on( 'click', 'li.popular-category > label input[type="checkbox"]', function() {
@@ -724,12 +574,13 @@ jQuery(document).ready( function($) {
 				$('#timestamp').html(stamp);
 			} else {
 				$('#timestamp').html(
-					publishOn + ' <b>' +
-					postL10n.dateFormat.replace( '%1$s', $('option[value="' + $('#mm').val() + '"]', '#mm').text() )
-						.replace( '%2$s', jj )
+					'\n' + publishOn + ' <b>' +
+					postL10n.dateFormat
+						.replace( '%1$s', $( 'option[value="' + mm + '"]', '#mm' ).attr( 'data-text' ) )
+						.replace( '%2$s', parseInt( jj, 10 ) )
 						.replace( '%3$s', aa )
-						.replace( '%4$s', hh )
-						.replace( '%5$s', mn ) +
+						.replace( '%4$s', ( '00' + hh ).slice( -2 ) )
+						.replace( '%5$s', ( '00' + mn ).slice( -2 ) ) +
 						'</b> '
 				);
 			}
@@ -769,13 +620,15 @@ jQuery(document).ready( function($) {
 			return true;
 		};
 
-		$( '#visibility .edit-visibility').click( function () {
+		$( '#visibility .edit-visibility').click( function( e ) {
+			e.preventDefault();
 			if ( $postVisibilitySelect.is(':hidden') ) {
 				updateVisibility();
-				$postVisibilitySelect.slideDown('fast').find('input[type="radio"]').first().focus();
+				$postVisibilitySelect.slideDown( 'fast', function() {
+					$postVisibilitySelect.find( 'input[type="radio"]' ).first().focus();
+				} );
 				$(this).hide();
 			}
-			return false;
 		});
 
 		$postVisibilitySelect.find('.cancel-post-visibility').click( function( event ) {
@@ -791,7 +644,7 @@ jQuery(document).ready( function($) {
 
 		$postVisibilitySelect.find('.save-post-visibility').click( function( event ) { // crazyhorse - multiple ok cancels
 			$postVisibilitySelect.slideUp('fast');
-			$('#visibility .edit-visibility').show();
+			$('#visibility .edit-visibility').show().focus();
 			updateText();
 
 			if ( $postVisibilitySelect.find('input:radio:checked').val() != 'public' ) {
@@ -814,8 +667,9 @@ jQuery(document).ready( function($) {
 
 		$timestampdiv.siblings('a.edit-timestamp').click( function( event ) {
 			if ( $timestampdiv.is( ':hidden' ) ) {
-				$timestampdiv.slideDown('fast');
-				$('#mm').focus();
+				$timestampdiv.slideDown( 'fast', function() {
+					$( 'input, select', $timestampdiv.find( '.timestamp-wrap' ) ).first().focus();
+				} );
 				$(this).hide();
 			}
 			event.preventDefault();
@@ -835,7 +689,7 @@ jQuery(document).ready( function($) {
 		$timestampdiv.find('.save-timestamp').click( function( event ) { // crazyhorse - multiple ok cancels
 			if ( updateText() ) {
 				$timestampdiv.slideUp('fast');
-				$timestampdiv.siblings('a.edit-timestamp').show();
+				$timestampdiv.siblings('a.edit-timestamp').show().focus();
 			}
 			event.preventDefault();
 		});
@@ -849,26 +703,28 @@ jQuery(document).ready( function($) {
 					wp.autosave.enableButtons();
 				}
 
-				$('#publishing-action .spinner').hide();
+				$( '#publishing-action .spinner' ).removeClass( 'is-active' );
 			}
 		});
 
 		$postStatusSelect.siblings('a.edit-post-status').click( function( event ) {
 			if ( $postStatusSelect.is( ':hidden' ) ) {
-				$postStatusSelect.slideDown('fast').find('select').focus();
+				$postStatusSelect.slideDown( 'fast', function() {
+					$postStatusSelect.find('select').focus();
+				} );
 				$(this).hide();
 			}
 			event.preventDefault();
 		});
 
 		$postStatusSelect.find('.save-post-status').click( function( event ) {
-			$postStatusSelect.slideUp('fast').siblings('a.edit-post-status').show();
+			$postStatusSelect.slideUp( 'fast' ).siblings( 'a.edit-post-status' ).show().focus();
 			updateText();
 			event.preventDefault();
 		});
 
 		$postStatusSelect.find('.cancel-post-status').click( function( event ) {
-			$('#post-status-select').slideUp('fast').siblings( 'a.edit-post-status' ).show().focus();
+			$postStatusSelect.slideUp( 'fast' ).siblings( 'a.edit-post-status' ).show().focus();
 			$('#post_status').val( $('#hidden_post_status').val() );
 			updateText();
 			event.preventDefault();
@@ -878,21 +734,32 @@ jQuery(document).ready( function($) {
 	// permalink
 	function editPermalink() {
 		var i, slug_value,
+			$el, revert_e,
 			c = 0,
-			e = $('#editable-post-name'),
-			revert_e = e.html(),
 			real_slug = $('#post_name'),
 			revert_slug = real_slug.val(),
-			b = $('#edit-slug-buttons'),
-			revert_b = b.html(),
-			full = $('#editable-post-name-full').html();
+			permalink = $( '#sample-permalink' ),
+			permalinkOrig = permalink.html(),
+			permalinkInner = $( '#sample-permalink a' ).html(),
+			buttons = $('#edit-slug-buttons'),
+			buttonsOrig = buttons.html(),
+			full = $('#editable-post-name-full');
 
-		$('#view-post-btn').hide();
-		b.html('<a href="#" class="save button button-small">'+postL10n.ok+'</a> <a class="cancel" href="#">'+postL10n.cancel+'</a>');
-		b.children('.save').click(function() {
-			var new_slug = e.children('input').val();
+		// Deal with Twemoji in the post-name
+		full.find( 'img' ).replaceWith( function() { return this.alt; } );
+		full = full.html();
+
+		permalink.html( permalinkInner );
+		$el = $( '#editable-post-name' );
+		revert_e = $el.html();
+
+		buttons.html( '<button type="button" class="save button button-small">' + postL10n.ok + '</button> <button type="button" class="cancel button-link">' + postL10n.cancel + '</button>' );
+		buttons.children( '.save' ).click( function() {
+			var new_slug = $el.children( 'input' ).val();
+
 			if ( new_slug == $('#editable-post-name-full').text() ) {
-				return $('#edit-slug-buttons .cancel').click();
+				buttons.children('.cancel').click();
+				return;
 			}
 			$.post(ajaxurl, {
 				action: 'sample-permalink',
@@ -908,19 +775,22 @@ jQuery(document).ready( function($) {
 						box.removeClass('hidden');
 					});
 				}
-				b.html(revert_b);
+
+				buttons.html(buttonsOrig);
+				permalink.html(permalinkOrig);
 				real_slug.val(new_slug);
-				$('#view-post-btn').show();
+				$( '.edit-slug' ).focus();
+				wp.a11y.speak( postL10n.permalinkSaved );
 			});
-			return false;
 		});
 
-		$('#edit-slug-buttons .cancel').click(function() {
+		buttons.children( '.cancel' ).click( function() {
 			$('#view-post-btn').show();
-			e.html(revert_e);
-			b.html(revert_b);
+			$el.html(revert_e);
+			buttons.html(buttonsOrig);
+			permalink.html(permalinkOrig);
 			real_slug.val(revert_slug);
-			return false;
+			$( '.edit-slug' ).focus();
 		});
 
 		for ( i = 0; i < full.length; ++i ) {
@@ -929,49 +799,24 @@ jQuery(document).ready( function($) {
 		}
 
 		slug_value = ( c > full.length / 4 ) ? '' : full;
-		e.html('<input type="text" id="new-post-slug" value="'+slug_value+'" />').children('input').keypress(function(e) {
-			var key = e.keyCode || 0;
-			// on enter, just save the new slug, don't save the post
-			if ( 13 == key ) {
-				b.children('.save').click();
-				return false;
+		$el.html( '<input type="text" id="new-post-slug" value="' + slug_value + '" autocomplete="off" />' ).children( 'input' ).keydown( function( e ) {
+			var key = e.which;
+			// On enter, just save the new slug, don't save the post.
+			if ( 13 === key ) {
+				e.preventDefault();
+				buttons.children( '.save' ).click();
 			}
-			if ( 27 == key ) {
-				b.children('.cancel').click();
-				return false;
+			if ( 27 === key ) {
+				buttons.children( '.cancel' ).click();
 			}
 		} ).keyup( function() {
-			real_slug.val(this.value);
+			real_slug.val( this.value );
 		}).focus();
 	}
 
-	if ( $editSlugWrap.length ) {
-		$editSlugWrap.on( 'click', function( event ) {
-			var $target = $( event.target );
-
-			if ( $target.is('#editable-post-name') || $target.hasClass('edit-slug') ) {
-				editPermalink();
-			}
-		});
-	}
-
-	// word count
-	if ( typeof(wpWordCount) != 'undefined' ) {
-		$document.triggerHandler('wpcountwords', [ co.val() ]);
-
-		co.keyup( function(e) {
-			var k = e.keyCode || e.charCode;
-
-			if ( k == last )
-				return true;
-
-			if ( 13 == k || 8 == last || 46 == last )
-				$document.triggerHandler('wpcountwords', [ co.val() ]);
-
-			last = k;
-			return true;
-		});
-	}
+	$( '#titlediv' ).on( 'click', '.edit-slug', function() {
+		editPermalink();
+	});
 
 	wptitlehint = function(id) {
 		id = id || 'title';
@@ -1002,15 +847,21 @@ jQuery(document).ready( function($) {
 	// Resize the visual and text editors
 	( function() {
 		var editor, offset, mce,
-			$textarea = $('textarea#content'),
-			$handle = $('#post-status-info');
+			$handle = $('#post-status-info'),
+			$postdivrich = $('#postdivrich');
 
 		// No point for touch devices
 		if ( ! $textarea.length || 'ontouchstart' in window ) {
+			// Hide the resize handle
+			$('#content-resize-handle').hide();
 			return;
 		}
 
 		function dragging( event ) {
+			if ( $postdivrich.hasClass( 'wp-editor-expand' ) ) {
+				return;
+			}
+
 			if ( mce ) {
 				editor.theme.resizeTo( null, offset + event.pageY );
 			} else {
@@ -1022,6 +873,10 @@ jQuery(document).ready( function($) {
 
 		function endDrag() {
 			var height, toolbarHeight;
+
+			if ( $postdivrich.hasClass( 'wp-editor-expand' ) ) {
+				return;
+			}
 
 			if ( mce ) {
 				editor.focus();
@@ -1044,8 +899,6 @@ jQuery(document).ready( function($) {
 				setUserSetting( 'ed_size', height );
 			}
 		}
-
-		$textarea.css( 'resize', 'none' );
 
 		$handle.on( 'mousedown.wp-editor-resize', function( event ) {
 			if ( typeof tinymce !== 'undefined' ) {
@@ -1073,15 +926,77 @@ jQuery(document).ready( function($) {
 		$( '#post-formats-select input.post-format' ).on( 'change.set-editor-class', function() {
 			var editor, body, format = this.id;
 
-			if ( format && $( this ).prop('checked') ) {
-				editor = tinymce.get( 'content' );
-
-				if ( editor ) {
-					body = editor.getBody();
-					body.className = body.className.replace( /\bpost-format-[^ ]+/, '' );
-					editor.dom.addClass( body, format == 'post-format-0' ? 'post-format-standard' : format );
-				}
+			if ( format && $( this ).prop( 'checked' ) && ( editor = tinymce.get( 'content' ) ) ) {
+				body = editor.getBody();
+				body.className = body.className.replace( /\bpost-format-[^ ]+/, '' );
+				editor.dom.addClass( body, format == 'post-format-0' ? 'post-format-standard' : format );
+				$( document ).trigger( 'editor-classchange' );
 			}
 		});
 	}
+
+	// Save on pressing Ctrl/Command + S in the Text editor
+	$textarea.on( 'keydown.wp-autosave', function( event ) {
+		if ( event.which === 83 ) {
+			if ( event.shiftKey || event.altKey || ( isMac && ( ! event.metaKey || event.ctrlKey ) ) || ( ! isMac && ! event.ctrlKey ) ) {
+				return;
+			}
+
+			wp.autosave && wp.autosave.server.triggerSave();
+			event.preventDefault();
+		}
+	});
+
+	if ( $( '#original_post_status' ).val() === 'auto-draft' && window.history.replaceState ) {
+		var location;
+
+		$( '#publish' ).on( 'click', function() {
+			location = window.location.href;
+			location += ( location.indexOf( '?' ) !== -1 ) ? '&' : '?';
+			location += 'wp-post-new-reload=true';
+
+			window.history.replaceState( null, null, location );
+		});
+	}
 });
+
+( function( $, counter ) {
+	$( function() {
+		var $content = $( '#content' ),
+			$count = $( '#wp-word-count' ).find( '.word-count' ),
+			prevCount = 0,
+			contentEditor;
+
+		function update() {
+			var text, count;
+
+			if ( ! contentEditor || contentEditor.isHidden() ) {
+				text = $content.val();
+			} else {
+				text = contentEditor.getContent( { format: 'raw' } );
+			}
+
+			count = counter.count( text );
+
+			if ( count !== prevCount ) {
+				$count.text( count );
+			}
+
+			prevCount = count;
+		}
+
+		$( document ).on( 'tinymce-editor-init', function( event, editor ) {
+			if ( editor.id !== 'content' ) {
+				return;
+			}
+
+			contentEditor = editor;
+
+			editor.on( 'nodechange keyup', _.debounce( update, 1000 ) );
+		} );
+
+		$content.on( 'input keyup', _.debounce( update, 1000 ) );
+
+		update();
+	} );
+} )( jQuery, new wp.utils.WordCounter() );
