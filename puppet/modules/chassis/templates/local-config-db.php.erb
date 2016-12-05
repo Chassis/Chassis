@@ -14,7 +14,11 @@ defined( 'WP_CONTENT_DIR' ) or define( 'WP_CONTENT_DIR', '<%= @contentdir %>' );
 
 <% if @network != false %>
 define( 'MULTISITE', true );
+<% if @subdomains != false -%>
+define( 'SUBDOMAIN_INSTALL', true );
+<% else -%>
 define( 'SUBDOMAIN_INSTALL', false );
+<% end -%>
 define( 'DOMAIN_CURRENT_SITE', '<%= @name %>' );
 define( 'PATH_CURRENT_SITE', '/' );
 define( 'SITE_ID_CURRENT_SITE', 1 );
