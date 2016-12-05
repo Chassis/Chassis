@@ -2,18 +2,20 @@
 /**
  * Name: Chassis Multisite Hosts
  * Description: Automatically set up DNS for multisite hosts.
- *
- * To set up: symlink this from your content/mu-plugins/ directory!
  */
 
 namespace Chassis\Hosts;
 
-if ( ! defined( 'ABSPATH' ) ) {
-	return;
-}
+$GLOBALS['wp_filter']['muplugins_loaded'][10]['chassis-hosts'] = array(
+	'function' => __NAMESPACE__ . '\\bootstrap',
+	'accepted_args' => 1,
+);
 
-add_filter( 'wpmu_new_blog', __NAMESPACE__ . '\\add_host' );
-add_filter( 'delete_blog', __NAMESPACE__ . '\\remove_host' );
+function bootstrap() {
+	write_hosts();
+	add_filter( 'wpmu_new_blog', __NAMESPACE__ . '\\add_host' );
+	add_filter( 'delete_blog', __NAMESPACE__ . '\\remove_host' );
+}
 
 function add_host() {
 	write_hosts();
@@ -24,9 +26,8 @@ function remove_host( $blog_id ) {
 }
 
 function write_hosts( $exclude = array() ) {
-	$sites = wp_get_sites( array(
+	$sites = get_sites( array(
 		'deleted' => 0,
-		'limit' => 0,
 	) );
 	$domains = array();
 
