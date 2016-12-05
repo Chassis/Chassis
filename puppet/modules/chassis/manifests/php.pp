@@ -1,6 +1,6 @@
 class chassis::php (
 	$extensions = [],
-	$version = "5.6"
+	$version = "5.6",
 ) {
 	apt::ppa { "ppa:ondrej/php5-oldstable": }
 	apt::ppa { "ppa:ondrej/php": }
