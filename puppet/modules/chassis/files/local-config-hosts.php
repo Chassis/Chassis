@@ -12,7 +12,6 @@ $GLOBALS['wp_filter']['muplugins_loaded'][10]['chassis-hosts'] = array(
 );
 
 function bootstrap() {
-	write_hosts();
 	add_filter( 'wpmu_new_blog', __NAMESPACE__ . '\\add_host' );
 	add_filter( 'delete_blog', __NAMESPACE__ . '\\remove_host' );
 }
@@ -32,11 +31,11 @@ function write_hosts( $exclude = array() ) {
 	$domains = array();
 
 	foreach ( $sites as $site ) {
-		if ( in_array( $site['blog_id'], $exclude ) ) {
+		if ( in_array( $site->id, $exclude ) ) {
 			continue;
 		}
 
-		$domains[] = $site['domain'];
+		$domains[] = $site->domain;
 	}
 
 	$domains = array_unique( $domains );
