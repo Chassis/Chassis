@@ -133,10 +133,16 @@ class chassis::php (
 			remove_php_fpm { [ "old", "5.5", "5.6", "7.1" ]:
 				notify => Service["${php_package}-fpm"],
 			}
+			package { [ "${php_package}-mbstring" ]:
+				ensure => latest,
+			}
 		}
 		"7.1": {
 			remove_php_fpm { [ "old", "5.5", "5.6", "7.0" ]:
 				notify => Service["${php_package}-fpm"],
+			}
+			package { [ "${php_package}-mbstring" ]:
+				ensure => latest,
 			}
 		}
 		default: {
