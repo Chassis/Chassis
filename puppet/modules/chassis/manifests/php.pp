@@ -54,7 +54,12 @@ class chassis::php (
 		}
 	}
 
-	$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common" ]
+	# Add mbstring to all versions of php
+	if versioncmp( "${version}", '5.5') < 0 {
+		$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common", 'php-mbstring' ]
+	} else {
+		$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common", "${php_package}-mbstring" ]
+	}
 	$prefixed_extensions = prefix($extensions, "${php_package}-")
 
 	# Hold the packages at the necessary version
@@ -138,16 +143,10 @@ class chassis::php (
 			remove_php_fpm { [ "old", "5.5", "5.6", "7.1" ]:
 				notify => Service["${php_package}-fpm"],
 			}
-			package { [ "${php_package}-mbstring" ]:
-				ensure => latest,
-			}
 		}
 		"7.1": {
 			remove_php_fpm { [ "old", "5.5", "5.6", "7.0" ]:
 				notify => Service["${php_package}-fpm"],
-			}
-			package { [ "${php_package}-mbstring" ]:
-				ensure => latest,
 			}
 		}
 		default: {
