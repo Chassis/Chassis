@@ -54,7 +54,7 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 .. _NodeJS: https://github.com/Chassis/nodejs
 .. _Imagick: https://github.com/Chassis/Imagick
 .. _Fish: https://github.com/Chassis/Fish
-.. _Xml: https://github.com/Chassis/xml
+.. _XML: https://github.com/Chassis/XML
 
 Creating your own
 -----------------
