@@ -37,7 +37,7 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 * `Fish`_: A Chassis extension to install Fish Shell.
 
-* `Xml`_: A Chassis extension to install PHP packages to use XML.
+* `XML`_: A Chassis extension to install PHP packages to use XML.
 
 
 .. _Memcache: https://github.com/Chassis/memcache
