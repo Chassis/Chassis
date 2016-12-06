@@ -79,6 +79,11 @@ class chassis::php (
 		],
 	}
 
+	# Tell wp module what package to use.
+	class { 'wp':
+		php_package => "${php_package}-cli",
+	}
+
 	# Ensure we always do common before fpm/cli
 	Package["${php_package}-common"] -> Package["${php_package}-fpm"]
 	Package["${php_package}-common"] -> Package["${php_package}-cli"]
