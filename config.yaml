@@ -100,4 +100,4 @@ synced_folders:
 
 # PHP version
 # Values: 5.3, 5.4, 5.5, 5.6, 7.0, 7.1 (or e.g. 5.3.3)
-php: 5.6
+php: 7.0
