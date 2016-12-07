@@ -327,13 +327,13 @@ if ( $action ) {
 						}
 					?>
 					<?php wp_nonce_field('bulk-plugins') ?>
-					<?php submit_button( $data_to_delete ? __( 'Yes, delete these files and data' ) : __( 'Yes, delete these files' ), 'button', 'submit', false ); ?>
+					<?php submit_button( $data_to_delete ? __( 'Yes, delete these files and data' ) : __( 'Yes, delete these files' ), '', 'submit', false ); ?>
 				</form>
 				<?php
 				$referer = wp_get_referer();
 				?>
 				<form method="post" action="<?php echo $referer ? esc_url( $referer ) : ''; ?>" style="display:inline;">
-					<?php submit_button( __( 'No, return me to the plugin list' ), 'button', 'submit', false ); ?>
+					<?php submit_button( __( 'No, return me to the plugin list' ), '', 'submit', false ); ?>
 				</form>
 			</div>
 				<?php
@@ -356,7 +356,21 @@ if ( $action ) {
 				update_site_option( 'recently_activated', array() );
 			}
 			break;
+
+		default:
+			if ( isset( $_POST['checked'] ) ) {
+				check_admin_referer('bulk-plugins');
+				$plugins = isset( $_POST['checked'] ) ? (array) $_POST['checked'] : array();
+				$sendback = wp_get_referer();
+
+				/** This action is documented in wp-admin/edit-comments.php */
+				$sendback = apply_filters( 'handle_bulk_actions-' . get_current_screen()->id, $sendback, $action, $plugins );
+				wp_safe_redirect( $sendback );
+				exit;
+			}
+			break;
 	}
+
 }
 
 $wp_list_table->prepare_items();
@@ -374,8 +388,8 @@ get_current_screen()->add_help_tab( array(
 	'<p>' . __( 'The search for installed plugins will search for terms in their name, description, or author.' ) . ' <span id="live-search-desc" class="hide-if-no-js">' . __( 'The search results will be updated as you type.' ) . '</span></p>' .
 	'<p>' . sprintf(
 		/* translators: %s: WordPress Plugin Directory URL */
-		__( 'If you would like to see more plugins to choose from, click on the &#8220;Add New&#8221; button and you will be able to browse or search for additional plugins from the <a href="%s" target="_blank">WordPress Plugin Directory</a>. Plugins in the WordPress Plugin Directory are designed and developed by third parties, and are compatible with the license WordPress uses. Oh, and they&#8217;re free!' ),
-		'https://wordpress.org/plugins/'
+		__( 'If you would like to see more plugins to choose from, click on the &#8220;Add New&#8221; button and you will be able to browse or search for additional plugins from the <a href="%s">WordPress Plugin Directory</a>. Plugins in the WordPress Plugin Directory are designed and developed by third parties, and are compatible with the license WordPress uses. Oh, and they&#8217;re free!' ),
+		__( 'https://wordpress.org/plugins/' )
 	) . '</p>'
 ) );
 get_current_screen()->add_help_tab( array(
@@ -392,8 +406,8 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Managing_Plugins#Plugin_Management" target="_blank">Documentation on Managing Plugins</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Managing_Plugins#Plugin_Management">Documentation on Managing Plugins</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(

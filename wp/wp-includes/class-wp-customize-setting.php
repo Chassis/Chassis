@@ -498,6 +498,8 @@ class WP_Customize_Setting {
 	/**
 	 * Fetch and sanitize the $_POST value for the setting.
 	 *
+	 * During a save request prior to save, post_value() provides the new value while value() does not.
+	 *
 	 * @since 3.4.0
 	 *
 	 * @param mixed $default A default value which is used as a fallback. Default is null.
@@ -694,6 +696,15 @@ class WP_Customize_Setting {
 		$is_core_type = ( 'option' === $this->type || 'theme_mod' === $this->type );
 
 		if ( ! $is_core_type && ! $this->is_multidimensional_aggregated ) {
+
+			// Use post value if previewed and a post value is present.
+			if ( $this->is_previewed ) {
+				$value = $this->post_value( null );
+				if ( null !== $value ) {
+					return $value;
+				}
+			}
+
 			$value = $this->get_root_value( $this->default );
 
 			/**

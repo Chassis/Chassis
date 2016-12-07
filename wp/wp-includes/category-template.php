@@ -100,45 +100,6 @@ function get_the_category( $id = false ) {
 }
 
 /**
- * Sort categories by name.
- *
- * Used by usort() as a callback, should not be used directly. Can actually be
- * used to sort any term object.
- *
- * @since 2.3.0
- * @access private
- *
- * @param object $a
- * @param object $b
- * @return int
- */
-function _usort_terms_by_name( $a, $b ) {
-	return strcmp( $a->name, $b->name );
-}
-
-/**
- * Sort categories by ID.
- *
- * Used by usort() as a callback, should not be used directly. Can actually be
- * used to sort any term object.
- *
- * @since 2.3.0
- * @access private
- *
- * @param object $a
- * @param object $b
- * @return int
- */
-function _usort_terms_by_ID( $a, $b ) {
-	if ( $a->term_id > $b->term_id )
-		return 1;
-	elseif ( $a->term_id < $b->term_id )
-		return -1;
-	else
-		return 0;
-}
-
-/**
  * Retrieve category name based on category ID.
  *
  * @since 0.71
@@ -255,7 +216,7 @@ function get_the_category_list( $separator = '', $parents='', $post_id = false )
 }
 
 /**
- * Check if the current post in within any of the given categories.
+ * Check if the current post is within any of the given categories.
  *
  * The given categories are checked against the post's categories' term_ids, names and slugs.
  * Categories given as integers will only be checked against the post's categories' term_ids.
@@ -663,8 +624,9 @@ function wp_list_categories( $args = '' ) {
 		$output .= walk_category_tree( $categories, $depth, $r );
 	}
 
-	if ( $r['title_li'] && 'list' == $r['style'] )
+	if ( $r['title_li'] && 'list' == $r['style'] && ( ! empty( $categories ) || ! $r['hide_title_if_empty'] ) ) {
 		$output .= '</ul></li>';
+	}
 
 	/**
 	 * Filters the HTML output of a taxonomy list.
@@ -917,6 +879,7 @@ function wp_generate_tag_cloud( $tags, $args = '' ) {
 		$tags_data[] = array(
 			'id'         => $tag_id,
 			'url'        => '#' != $tag->link ? $tag->link : '#',
+			'role'       => '#' != $tag->link ? '' : ' role="button"',
 			'name'	     => $tag->name,
 			'title'      => $title,
 			'slug'       => $tag->slug,
@@ -940,7 +903,7 @@ function wp_generate_tag_cloud( $tags, $args = '' ) {
 	// generate the output links array
 	foreach ( $tags_data as $key => $tag_data ) {
 		$class = $tag_data['class'] . ' tag-link-position-' . ( $key + 1 );
-		$a[] = "<a href='" . esc_url( $tag_data['url'] ) . "' class='" . esc_attr( $class ) . "' title='" . esc_attr( $tag_data['title'] ) . "' style='font-size: " . esc_attr( str_replace( ',', '.', $tag_data['font_size'] ) . $args['unit'] ) . ";'>" . esc_html( $tag_data['name'] ) . "</a>";
+		$a[] = "<a href='" . esc_url( $tag_data['url'] ) . "'" . $tag_data['role'] . " class='" . esc_attr( $class ) . "' title='" . esc_attr( $tag_data['title'] ) . "' style='font-size: " . esc_attr( str_replace( ',', '.', $tag_data['font_size'] ) . $args['unit'] ) . ";'>" . esc_html( $tag_data['name'] ) . "</a>";
 	}
 
 	switch ( $args['format'] ) {
@@ -1142,7 +1105,12 @@ function get_the_tag_list( $before = '', $sep = '', $after = '', $id = 0 ) {
 function the_tags( $before = null, $sep = ', ', $after = '' ) {
 	if ( null === $before )
 		$before = __('Tags: ');
-	echo get_the_tag_list($before, $sep, $after);
+
+	$the_tags = get_the_tag_list( $before, $sep, $after );
+
+	if ( ! is_wp_error( $the_tags ) ) {
+		echo $the_tags;
+	}
 }
 
 /**
@@ -1259,7 +1227,7 @@ function get_the_term_list( $id, $taxonomy, $before = '', $sep = '', $after = ''
 	 *
 	 * @param array $links An array of term links.
 	 */
-	$term_links = apply_filters( "term_links-$taxonomy", $links );
+	$term_links = apply_filters( "term_links-{$taxonomy}", $links );
 
 	return $before . join( $sep, $term_links ) . $after;
 }

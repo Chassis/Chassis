@@ -48,15 +48,16 @@ final class WP_Theme implements ArrayAccess {
 	 * @var array
 	 */
 	private static $default_themes = array(
-		'classic'        => 'WordPress Classic',
-		'default'        => 'WordPress Default',
-		'twentyten'      => 'Twenty Ten',
-		'twentyeleven'   => 'Twenty Eleven',
-		'twentytwelve'   => 'Twenty Twelve',
-		'twentythirteen' => 'Twenty Thirteen',
-		'twentyfourteen' => 'Twenty Fourteen',
-		'twentyfifteen'  => 'Twenty Fifteen',
-		'twentysixteen'  => 'Twenty Sixteen',
+		'classic'         => 'WordPress Classic',
+		'default'         => 'WordPress Default',
+		'twentyten'       => 'Twenty Ten',
+		'twentyeleven'    => 'Twenty Eleven',
+		'twentytwelve'    => 'Twenty Twelve',
+		'twentythirteen'  => 'Twenty Thirteen',
+		'twentyfourteen'  => 'Twenty Fourteen',
+		'twentyfifteen'   => 'Twenty Fifteen',
+		'twentysixteen'   => 'Twenty Sixteen',
+		'twentyseventeen' => 'Twenty Seventeen',
 	);
 
 	/**
@@ -537,7 +538,7 @@ final class WP_Theme implements ArrayAccess {
 	 * @since 3.4.0
 	 * @access private
 	 *
-	 * @param string $key Type of data to store (theme, screenshot, headers, page_templates)
+	 * @param string $key Type of data to store (theme, screenshot, headers, post_templates)
 	 * @param string $data Data to store
 	 * @return bool Return value from wp_cache_add()
 	 */
@@ -553,7 +554,7 @@ final class WP_Theme implements ArrayAccess {
 	 * @since 3.4.0
 	 * @access private
 	 *
-	 * @param string $key Type of data to retrieve (theme, screenshot, headers, page_templates)
+	 * @param string $key Type of data to retrieve (theme, screenshot, headers, post_templates)
 	 * @return mixed Retrieved data
 	 */
 	private function cache_get( $key ) {
@@ -567,7 +568,7 @@ final class WP_Theme implements ArrayAccess {
 	 * @access public
 	 */
 	public function cache_delete() {
-		foreach ( array( 'theme', 'screenshot', 'headers', 'page_templates' ) as $key )
+		foreach ( array( 'theme', 'screenshot', 'headers', 'post_templates' ) as $key )
 			wp_cache_delete( $key . '-' . $this->cache_hash, 'themes' );
 		$this->template = $this->textdomain_loaded = $this->theme_root_uri = $this->parent = $this->errors = $this->headers_sanitized = $this->name_translated = null;
 		$this->headers = array();
@@ -1005,56 +1006,101 @@ final class WP_Theme implements ArrayAccess {
 	}
 
 	/**
-	 * Returns the theme's page templates.
+	 * Returns the theme's post templates.
 	 *
-	 * @since 3.4.0
+	 * @since 4.7.0
 	 * @access public
 	 *
-	 * @param WP_Post|null $post Optional. The post being edited, provided for context.
-	 * @return array Array of page templates, keyed by filename, with the value of the translated header name.
+	 * @return array Array of page templates, keyed by filename and post type,
+	 *               with the value of the translated header name.
 	 */
-	public function get_page_templates( $post = null ) {
+	public function get_post_templates() {
 		// If you screw up your current theme and we invalidate your parent, most things still work. Let it slide.
-		if ( $this->errors() && $this->errors()->get_error_codes() !== array( 'theme_parent_invalid' ) )
+		if ( $this->errors() && $this->errors()->get_error_codes() !== array( 'theme_parent_invalid' ) ) {
 			return array();
+		}
 
-		$page_templates = $this->cache_get( 'page_templates' );
+		$post_templates = $this->cache_get( 'post_templates' );
 
-		if ( ! is_array( $page_templates ) ) {
-			$page_templates = array();
+		if ( ! is_array( $post_templates ) ) {
+			$post_templates = array();
 
 			$files = (array) $this->get_files( 'php', 1 );
 
 			foreach ( $files as $file => $full_path ) {
-				if ( ! preg_match( '|Template Name:(.*)$|mi', file_get_contents( $full_path ), $header ) )
+				if ( ! preg_match( '|Template Name:(.*)$|mi', file_get_contents( $full_path ), $header ) ) {
 					continue;
-				$page_templates[ $file ] = _cleanup_header_comment( $header[1] );
+				}
+
+				$types = array( 'page' );
+				if ( preg_match( '|Template Post Type:(.*)$|mi', file_get_contents( $full_path ), $type ) ) {
+					$types = explode( ',', _cleanup_header_comment( $type[1] ) );
+				}
+
+				foreach ( $types as $type ) {
+					$type = sanitize_key( $type );
+					if ( ! isset( $post_templates[ $type ] ) ) {
+						$post_templates[ $type ] = array();
+					}
+
+					$post_templates[ $type ][ $file ] = _cleanup_header_comment( $header[1] );
+				}
 			}
 
-			$this->cache_add( 'page_templates', $page_templates );
+			$this->cache_add( 'post_templates', $post_templates );
 		}
 
 		if ( $this->load_textdomain() ) {
-			foreach ( $page_templates as &$page_template ) {
-				$page_template = $this->translate_header( 'Template Name', $page_template );
+			foreach ( $post_templates as &$post_type ) {
+				foreach ( $post_type as &$post_template ) {
+					$post_template = $this->translate_header( 'Template Name', $post_template );
+				}
 			}
 		}
 
-		if ( $this->parent() )
-			$page_templates += $this->parent()->get_page_templates( $post );
+		return $post_templates;
+	}
+
+	/**
+	 * Returns the theme's post templates for a given post type.
+	 *
+	 * @since 3.4.0
+	 * @since 4.7.0 Added the `$post_type` parameter.
+	 * @access public
+	 *
+	 * @param WP_Post|null $post      Optional. The post being edited, provided for context.
+	 * @param string       $post_type Optional. Post type to get the templates for. Default 'page'.
+	 *                                If a post is provided, its post type is used.
+	 * @return array Array of page templates, keyed by filename, with the value of the translated header name.
+	 */
+	public function get_page_templates( $post = null, $post_type = 'page' ) {
+		if ( $post ) {
+			$post_type = get_post_type( $post );
+		}
+
+		$post_templates = $this->get_post_templates();
+		$post_templates = isset( $post_templates[ $post_type ] ) ? $post_templates[ $post_type ] : array();
+
+		if ( $this->parent() ) {
+			$post_templates += $this->parent()->get_page_templates( $post, $post_type );
+		}
 
 		/**
 		 * Filters list of page templates for a theme.
 		 *
+		 * The dynamic portion of the hook name, `$post_type`, refers to the post type.
+		 *
 		 * @since 3.9.0
 		 * @since 4.4.0 Converted to allow complete control over the `$page_templates` array.
+		 * @since 4.7.0 Added the `$post_type` parameter.
 		 *
-		 * @param array        $page_templates Array of page templates. Keys are filenames,
+		 * @param array        $post_templates Array of page templates. Keys are filenames,
 		 *                                     values are translated names.
 		 * @param WP_Theme     $this           The theme object.
 		 * @param WP_Post|null $post           The post being edited, provided for context, or null.
+		 * @param string       $post_type      Post type to get the templates for.
 		 */
-		return (array) apply_filters( 'theme_page_templates', $page_templates, $this, $post );
+		return (array) apply_filters( "theme_{$post_type}_templates", $post_templates, $this, $post, $post_type );
 	}
 
 	/**
@@ -1395,7 +1441,7 @@ final class WP_Theme implements ArrayAccess {
 	 * @param array $themes Array of themes to sort, passed by reference.
 	 */
 	public static function sort_by_name( &$themes ) {
-		if ( 0 === strpos( get_locale(), 'en_' ) ) {
+		if ( 0 === strpos( get_user_locale(), 'en_' ) ) {
 			uasort( $themes, array( 'WP_Theme', '_name_sort' ) );
 		} else {
 			uasort( $themes, array( 'WP_Theme', '_name_sort_i18n' ) );

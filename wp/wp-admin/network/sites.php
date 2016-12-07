@@ -10,9 +10,6 @@
 /** Load WordPress Administration Bootstrap */
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
-if ( ! is_multisite() )
-	wp_die( __( 'Multisite support is not enabled.' ) );
-
 if ( ! current_user_can( 'manage_sites' ) )
 	wp_die( __( 'Sorry, you are not allowed to access this page.' ), 403 );
 
@@ -42,8 +39,8 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Sites_Screen" target="_blank">Documentation on Site Management</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Sites_Screen">Documentation on Site Management</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/">Support Forums</a>') . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(
@@ -90,11 +87,11 @@ if ( isset( $_GET['action'] ) ) {
 			header( 'Content-Type: text/html; charset=utf-8' );
 		}
 
-		if ( $current_site->blog_id == $id ) {
+		if ( get_network()->site_id == $id ) {
 			wp_die( __( 'Sorry, you are not allowed to change the current site.' ) );
 		}
 
-		$site_details = get_blog_details( $id );
+		$site_details = get_site( $id );
 		$site_address = untrailingslashit( $site_details->domain . $site_details->path );
 
 		require_once( ABSPATH . 'wp-admin/admin-header.php' );
@@ -129,7 +126,7 @@ if ( isset( $_GET['action'] ) ) {
 				wp_die( __( 'Sorry, you are not allowed to access this page.' ), '', array( 'response' => 403 ) );
 
 			$updated_action = 'not_deleted';
-			if ( $id != '0' && $id != $current_site->blog_id && current_user_can( 'delete_site', $id ) ) {
+			if ( $id != '0' && $id != get_network()->site_id && current_user_can( 'delete_site', $id ) ) {
 				wpmu_delete_blog( $id, true );
 				$updated_action = 'delete';
 			}
@@ -140,7 +137,7 @@ if ( isset( $_GET['action'] ) ) {
 				$doaction = $_POST['action'] != -1 ? $_POST['action'] : $_POST['action2'];
 
 				foreach ( (array) $_POST['allblogs'] as $key => $val ) {
-					if ( $val != '0' && $val != $current_site->blog_id ) {
+					if ( $val != '0' && $val != get_network()->site_id ) {
 						switch ( $doaction ) {
 							case 'delete':
 								if ( ! current_user_can( 'delete_site', $val ) )
@@ -159,6 +156,14 @@ if ( isset( $_GET['action'] ) ) {
 					} else {
 						wp_die( __( 'Sorry, you are not allowed to change the current site.' ) );
 					}
+				}
+				if ( ! in_array( $doaction, array( 'delete', 'spam', 'notspam' ), true ) ) {
+					$redirect_to = wp_get_referer();
+					$blogs = (array) $_POST['allblogs'];
+					/** This action is documented in wp-admin/network/site-themes.php */
+					$redirect_to = apply_filters( 'handle_network_bulk_actions-' . get_current_screen()->id, $redirect_to, $doaction, $blogs, $id );
+					wp_safe_redirect( $redirect_to );
+					exit();
 				}
 			} else {
 				$location = network_admin_url( 'sites.php' );
@@ -273,7 +278,7 @@ if ( isset( $_GET['updated'] ) ) {
 	}
 
 	if ( ! empty( $msg ) )
-		$msg = '<div class="updated" id="message notice is-dismissible"><p>' . $msg . '</p></div>';
+		$msg = '<div id="message" class="updated notice is-dismissible"><p>' . $msg . '</p></div>';
 }
 
 $wp_list_table->prepare_items();

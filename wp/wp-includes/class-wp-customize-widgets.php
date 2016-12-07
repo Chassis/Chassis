@@ -93,16 +93,18 @@ final class WP_Customize_Widgets {
 	public function __construct( $manager ) {
 		$this->manager = $manager;
 
-		// Skip useless hooks when the user can't manage widgets anyway.
+		// See https://github.com/xwp/wp-customize-snapshots/blob/962586659688a5b1fd9ae93618b7ce2d4e7a421c/php/class-customize-snapshot-manager.php#L420-L449
+		add_filter( 'customize_dynamic_setting_args',          array( $this, 'filter_customize_dynamic_setting_args' ), 10, 2 );
+		add_action( 'widgets_init',                            array( $this, 'register_settings' ), 95 );
+		add_action( 'customize_register',                      array( $this, 'schedule_customize_register' ), 1 );
+
+		// Skip remaining hooks when the user can't manage widgets anyway.
 		if ( ! current_user_can( 'edit_theme_options' ) ) {
 			return;
 		}
 
-		add_filter( 'customize_dynamic_setting_args',          array( $this, 'filter_customize_dynamic_setting_args' ), 10, 2 );
-		add_action( 'widgets_init',                            array( $this, 'register_settings' ), 95 );
 		add_action( 'wp_loaded',                               array( $this, 'override_sidebars_widgets_for_theme_switch' ) );
 		add_action( 'customize_controls_init',                 array( $this, 'customize_controls_init' ) );
-		add_action( 'customize_register',                      array( $this, 'schedule_customize_register' ), 1 );
 		add_action( 'customize_controls_enqueue_scripts',      array( $this, 'enqueue_scripts' ) );
 		add_action( 'customize_controls_print_styles',         array( $this, 'print_styles' ) );
 		add_action( 'customize_controls_print_scripts',        array( $this, 'print_scripts' ) );
@@ -276,6 +278,7 @@ final class WP_Customize_Widgets {
 
 		$this->old_sidebars_widgets = wp_get_sidebars_widgets();
 		add_filter( 'customize_value_old_sidebars_widgets_data', array( $this, 'filter_customize_value_old_sidebars_widgets_data' ) );
+		$this->manager->set_post_value( 'old_sidebars_widgets_data', $this->old_sidebars_widgets ); // Override any value cached in changeset.
 
 		// retrieve_widgets() looks at the global $sidebars_widgets
 		$sidebars_widgets = $this->old_sidebars_widgets;
@@ -712,7 +715,7 @@ final class WP_Customize_Widgets {
 					<% }); %>
 				</ul>
 				<div class="move-widget-actions">
-					<button class="move-widget-btn button-secondary" type="button">{btn}</button>
+					<button class="move-widget-btn button" type="button">{btn}</button>
 				</div>
 			</div>'
 		);
@@ -729,11 +732,12 @@ final class WP_Customize_Widgets {
 				'error'            => __( 'An error has occurred. Please reload the page and try again.' ),
 				'widgetMovedUp'    => __( 'Widget moved up' ),
 				'widgetMovedDown'  => __( 'Widget moved down' ),
-				'noAreasRendered'  => __( 'There are no widget areas currently rendered in the preview. Navigate in the preview to a template that makes use of a widget area in order to access its widgets here.' ),
+				'noAreasRendered'  => __( 'There are no widget areas on the page shown, however other pages in this theme do have them.' ),
 				'reorderModeOn'    => __( 'Reorder mode enabled' ),
 				'reorderModeOff'   => __( 'Reorder mode closed' ),
 				'reorderLabelOn'   => esc_attr__( 'Reorder widgets' ),
-				'reorderLabelOff'  => esc_attr__( 'Close reorder mode' ),
+				'widgetsFound'     => __( 'Number of widgets found: %d' ),
+				'noWidgetsFound'   => __( 'No widgets found.' ),
 			),
 			'tpl' => array(
 				'widgetReorderNav' => $widget_reorder_nav_tpl,
@@ -777,7 +781,10 @@ final class WP_Customize_Widgets {
 			</div>
 			<div id="available-widgets-filter">
 				<label class="screen-reader-text" for="widgets-search"><?php _e( 'Search Widgets' ); ?></label>
-				<input type="search" id="widgets-search" placeholder="<?php esc_attr_e( 'Search widgets&hellip;' ) ?>" />
+				<input type="text" id="widgets-search" placeholder="<?php esc_attr_e( 'Search widgets&hellip;' ) ?>" aria-describedby="widgets-search-desc" />
+				<div class="search-icon" aria-hidden="true"></div>
+				<button type="button" class="clear-results"><span class="screen-reader-text"><?php _e( 'Clear Results' ); ?></span></button>
+				<p class="screen-reader-text" id="widgets-search-desc"><?php _e( 'The search results will be updated as you type.' ); ?></p>
 			</div>
 			<div id="available-widgets-list">
 			<?php foreach ( $this->get_available_widgets() as $available_widget ): ?>
@@ -785,6 +792,7 @@ final class WP_Customize_Widgets {
 					<?php echo $available_widget['control_tpl']; ?>
 				</div>
 			<?php endforeach; ?>
+			<p class="no-widgets-found-message"><?php _e( 'No widgets found.' ); ?></p>
 			</div><!-- #available-widgets-list -->
 		</div><!-- #available-widgets -->
 		</div><!-- #widgets-left -->

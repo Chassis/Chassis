@@ -124,8 +124,8 @@ class Custom_Image_Header {
 
 		get_current_screen()->set_help_sidebar(
 			'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
-			'<p>' . __( '<a href="https://codex.wordpress.org/Appearance_Header_Screen" target="_blank">Documentation on Custom Header</a>' ) . '</p>' .
-			'<p>' . __( '<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>' ) . '</p>'
+			'<p>' . __( '<a href="https://codex.wordpress.org/Appearance_Header_Screen">Documentation on Custom Header</a>' ) . '</p>' .
+			'<p>' . __( '<a href="https://wordpress.org/support/">Support Forums</a>' ) . '</p>'
 		);
 	}
 
@@ -576,7 +576,7 @@ class Custom_Image_Header {
 		<input type="file" id="upload" name="import" />
 		<input type="hidden" name="action" value="save" />
 		<?php wp_nonce_field( 'custom-header-upload', '_wpnonce-custom-header-upload' ); ?>
-		<?php submit_button( __( 'Upload' ), 'button', 'submit', false ); ?>
+		<?php submit_button( __( 'Upload' ), '', 'submit', false ); ?>
 	</p>
 	<?php
 		$modal_update_href = esc_url( add_query_arg( array(
@@ -634,18 +634,18 @@ class Custom_Image_Header {
 <th scope="row"><?php _e( 'Remove Image' ); ?></th>
 <td>
 	<p><?php _e( 'This will remove the header image. You will not be able to restore any customizations.' ) ?></p>
-	<?php submit_button( __( 'Remove Header Image' ), 'button', 'removeheader', false ); ?>
+	<?php submit_button( __( 'Remove Header Image' ), '', 'removeheader', false ); ?>
 </td>
 </tr>
 	<?php endif;
 
-	$default_image = get_theme_support( 'custom-header', 'default-image' );
+	$default_image = sprintf( get_theme_support( 'custom-header', 'default-image' ), get_template_directory_uri(), get_stylesheet_directory_uri() );
 	if ( $default_image && get_header_image() != $default_image ) : ?>
 <tr>
 <th scope="row"><?php _e( 'Reset Image' ); ?></th>
 <td>
 	<p><?php _e( 'This will restore the original header image. You will not be able to restore any customizations.' ) ?></p>
-	<?php submit_button( __( 'Restore Original Header Image' ), 'button', 'resetheader', false ); ?>
+	<?php submit_button( __( 'Restore Original Header Image' ), '', 'resetheader', false ); ?>
 </td>
 </tr>
 	<?php endif; ?>
@@ -823,7 +823,7 @@ wp_nonce_field( 'custom-header-options', '_wpnonce-custom-header-options' ); ?>
 	<?php submit_button( __( 'Crop and Publish' ), 'primary', 'submit', false ); ?>
 	<?php
 	if ( isset( $oitar ) && 1 == $oitar && ( current_theme_supports( 'custom-header', 'flex-height' ) || current_theme_supports( 'custom-header', 'flex-width' ) ) )
-		submit_button( __( 'Skip Cropping, Publish Image as Is' ), 'secondary', 'skip-cropping', false );
+		submit_button( __( 'Skip Cropping, Publish Image as Is' ), '', 'skip-cropping', false );
 	?>
 	</p>
 </form>

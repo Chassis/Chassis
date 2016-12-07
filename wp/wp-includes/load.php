@@ -2,8 +2,6 @@
 /**
  * These functions are needed to load WordPress.
  *
- * @internal This file must be parsable by PHP4.
- *
  * @package WordPress
  */
 
@@ -130,6 +128,7 @@ function wp_check_php_mysql_versions() {
 		$protocol = wp_get_server_protocol();
 		header( sprintf( '%s 500 Internal Server Error', $protocol ), true, 500 );
 		header( 'Content-Type: text/html; charset=utf-8' );
+		/* translators: 1: Current PHP version number, 2: WordPress version number, 3: Minimum required PHP version number */
 		die( sprintf( __( 'Your server is running PHP version %1$s but WordPress %2$s requires at least %3$s.' ), $php_version, $wp_version, $required_php_version ) );
 	}
 
@@ -334,7 +333,7 @@ function wp_debug_mode() {
 		error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	}
 
-	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'DOING_AJAX' ) && DOING_AJAX ) ) {
+	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) || wp_doing_ajax() ) {
 		@ini_set( 'display_errors', 0 );
 	}
 }
@@ -398,8 +397,9 @@ function require_wp_db() {
 	if ( file_exists( WP_CONTENT_DIR . '/db.php' ) )
 		require_once( WP_CONTENT_DIR . '/db.php' );
 
-	if ( isset( $wpdb ) )
+	if ( isset( $wpdb ) ) {
 		return;
+	}
 
 	$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
 }
@@ -470,18 +470,15 @@ function wp_using_ext_object_cache( $using = null ) {
  *
  * @since 3.0.0
  * @access private
- *
- * @global int $blog_id Blog ID.
  */
 function wp_start_object_cache() {
-	global $blog_id;
-
 	$first_init = false;
  	if ( ! function_exists( 'wp_cache_init' ) ) {
 		if ( file_exists( WP_CONTENT_DIR . '/object-cache.php' ) ) {
 			require_once ( WP_CONTENT_DIR . '/object-cache.php' );
-			if ( function_exists( 'wp_cache_init' ) )
+			if ( function_exists( 'wp_cache_init' ) ) {
 				wp_using_ext_object_cache( true );
+			}
 		}
 
 		$first_init = true;
@@ -495,18 +492,20 @@ function wp_start_object_cache() {
 		wp_using_ext_object_cache( true );
 	}
 
-	if ( ! wp_using_ext_object_cache() )
+	if ( ! wp_using_ext_object_cache() ) {
 		require_once ( ABSPATH . WPINC . '/cache.php' );
+	}
 
 	/*
 	 * If cache supports reset, reset instead of init if already
 	 * initialized. Reset signals to the cache that global IDs
 	 * have changed and it may need to update keys and cleanup caches.
 	 */
-	if ( ! $first_init && function_exists( 'wp_cache_switch_to_blog' ) )
-		wp_cache_switch_to_blog( $blog_id );
-	elseif ( function_exists( 'wp_cache_init' ) )
+	if ( ! $first_init && function_exists( 'wp_cache_switch_to_blog' ) ) {
+		wp_cache_switch_to_blog( get_current_blog_id() );
+	} elseif ( function_exists( 'wp_cache_init' ) ) {
 		wp_cache_init();
+	}
 
 	if ( function_exists( 'wp_cache_add_global_groups' ) ) {
 		wp_cache_add_global_groups( array( 'users', 'userlogins', 'usermeta', 'user_meta', 'useremail', 'userslugs', 'site-transient', 'site-options', 'site-lookup', 'blog-lookup', 'blog-details', 'site-details', 'rss', 'global-posts', 'blog-id-cache', 'networks', 'sites' ) );
@@ -814,8 +813,6 @@ function get_current_blog_id() {
  *
  * @since 4.6.0
  *
- * @global WP_Network $current_site The current network.
- *
  * @return int The ID of the current network.
  */
 function get_current_network_id() {
@@ -823,13 +820,13 @@ function get_current_network_id() {
 		return 1;
 	}
 
-	$current_site = get_current_site();
+	$current_network = get_network();
 
-	if ( ! isset( $current_site->id ) ) {
+	if ( ! isset( $current_network->id ) ) {
 		return get_main_network_id();
 	}
 
-	return absint( $current_site->id );
+	return absint( $current_network->id );
 }
 
 /**
@@ -845,13 +842,12 @@ function get_current_network_id() {
  * @since 3.4.0
  * @access private
  *
- * @global string    $text_direction
- * @global WP_Locale $wp_locale      The WordPress date and time locale object.
+ * @global WP_Locale $wp_locale The WordPress date and time locale object.
  *
  * @staticvar bool $loaded
  */
 function wp_load_translations_early() {
-	global $text_direction, $wp_locale;
+	global $wp_locale;
 
 	static $loaded = false;
 	if ( $loaded )
@@ -867,7 +863,8 @@ function wp_load_translations_early() {
 	// Translation and localization
 	require_once ABSPATH . WPINC . '/pomo/mo.php';
 	require_once ABSPATH . WPINC . '/l10n.php';
-	require_once ABSPATH . WPINC . '/locale.php';
+	require_once ABSPATH . WPINC . '/class-wp-locale.php';
+	require_once ABSPATH . WPINC . '/class-wp-locale-switcher.php';
 
 	// General libraries
 	require_once ABSPATH . WPINC . '/plugin.php';
@@ -981,8 +978,8 @@ function is_ssl() {
  * @since 2.3.0
  * @since 4.6.0 Moved from media.php to load.php.
  *
- * @link http://php.net/manual/en/function.ini-get.php
- * @link http://php.net/manual/en/faq.using.php#faq.using.shorthandbytes
+ * @link https://secure.php.net/manual/en/function.ini-get.php
+ * @link https://secure.php.net/manual/en/faq.using.php#faq.using.shorthandbytes
  *
  * @param string $value A (PHP ini) byte value, either shorthand or ordinary.
  * @return int An integer byte value.
@@ -1008,7 +1005,7 @@ function wp_convert_hr_to_bytes( $value ) {
  *
  * @since 4.6.0
  *
- * @link http://php.net/manual/en/function.ini-get-all.php
+ * @link https://secure.php.net/manual/en/function.ini-get-all.php
  *
  * @param string $setting The name of the ini setting to check.
  * @return bool True if the value is changeable at runtime. False otherwise.
@@ -1035,4 +1032,36 @@ function wp_is_ini_value_changeable( $setting ) {
 	}
 
 	return false;
+}
+
+/**
+ * Determines whether the current request is a WordPress Ajax request.
+ *
+ * @since 4.7.0
+ *
+ * @return bool True if it's a WordPress Ajax request, false otherwise.
+ */
+function wp_doing_ajax() {
+	/**
+	 * Filters whether the current request is a WordPress Ajax request.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param bool $wp_doing_ajax Whether the current request is a WordPress Ajax request.
+	 */
+	return apply_filters( 'wp_doing_ajax', defined( 'DOING_AJAX' ) && DOING_AJAX );
+}
+
+/**
+ * Check whether variable is a WordPress Error.
+ *
+ * Returns true if $thing is an object of the WP_Error class.
+ *
+ * @since 2.1.0
+ *
+ * @param mixed $thing Check if unknown variable is a WP_Error object.
+ * @return bool True, if WP_Error. False, if not WP_Error.
+ */
+function is_wp_error( $thing ) {
+	return ( $thing instanceof WP_Error );
 }

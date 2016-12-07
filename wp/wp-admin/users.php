@@ -13,7 +13,7 @@ require_once( dirname( __FILE__ ) . '/admin.php' );
 if ( ! current_user_can( 'list_users' ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'Sorry, you are not allowed to browse users.' ) . '</p>',
+		'<p>' . __( 'Sorry, you are not allowed to list users.' ) . '</p>',
 		403
 	);
 }
@@ -64,9 +64,9 @@ unset( $help );
 
 get_current_screen()->set_help_sidebar(
     '<p><strong>' . __('For more information:') . '</strong></p>' .
-    '<p>' . __('<a href="https://codex.wordpress.org/Users_Screen" target="_blank">Documentation on Managing Users</a>') . '</p>' .
-    '<p>' . __('<a href="https://codex.wordpress.org/Roles_and_Capabilities" target="_blank">Descriptions of Roles and Capabilities</a>') . '</p>' .
-    '<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+    '<p>' . __('<a href="https://codex.wordpress.org/Users_Screen">Documentation on Managing Users</a>') . '</p>' .
+    '<p>' . __('<a href="https://codex.wordpress.org/Roles_and_Capabilities">Descriptions of Roles and Capabilities</a>') . '</p>' .
+    '<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(
@@ -94,7 +94,7 @@ case 'promote':
 	check_admin_referer('bulk-users');
 
 	if ( ! current_user_can( 'promote_users' ) )
-		wp_die( __( 'You can&#8217;t edit that user.' ) );
+		wp_die( __( 'Sorry, you are not allowed to edit this user.' ) );
 
 	if ( empty($_REQUEST['users']) ) {
 		wp_redirect($redirect);
@@ -110,7 +110,7 @@ case 'promote':
 	}
 
 	if ( ! $role || empty( $editable_roles[ $role ] ) ) {
-		wp_die( __( 'You can&#8217;t give users that role.' ) );
+		wp_die( __( 'Sorry, you are not allowed to give users that role.' ) );
 	}
 
 	$userids = $_REQUEST['users'];
@@ -119,7 +119,7 @@ case 'promote':
 		$id = (int) $id;
 
 		if ( ! current_user_can('promote_user', $id) )
-			wp_die(__('You can&#8217;t edit that user.'));
+			wp_die(__('Sorry, you are not allowed to edit this user.'));
 		// The new role of the current user must also have the promote_users cap or be a multisite super admin
 		if ( $id == $current_user->ID && ! $wp_roles->role_objects[ $role ]->has_cap('promote_users')
 			&& ! ( is_multisite() && is_super_admin() ) ) {
@@ -164,14 +164,14 @@ case 'dodelete':
 	}
 
 	if ( ! current_user_can( 'delete_users' ) )
-		wp_die(__('You can&#8217;t delete users.'));
+		wp_die(__('Sorry, you are not allowed to delete users.'));
 
 	$update = 'del';
 	$delete_count = 0;
 
 	foreach ( $userids as $id ) {
 		if ( ! current_user_can( 'delete_user', $id ) )
-			wp_die(__( 'You can&#8217;t delete that user.' ) );
+			wp_die(__( 'Sorry, you are not allowed to delete that user.' ) );
 
 		if ( $id == $current_user->ID ) {
 			$update = 'err_admin_del';
@@ -204,7 +204,7 @@ case 'delete':
 	}
 
 	if ( ! current_user_can( 'delete_users' ) )
-		$errors = new WP_Error( 'edit_users', __( 'You can&#8217;t delete users.' ) );
+		$errors = new WP_Error( 'edit_users', __( 'Sorry, you are not allowed to delete users.' ) );
 
 	if ( empty($_REQUEST['users']) )
 		$userids = array( intval( $_REQUEST['user'] ) );
@@ -314,7 +314,7 @@ case 'doremove':
 	}
 
 	if ( ! current_user_can( 'remove_users' ) )
-		wp_die( __( 'You can&#8217;t remove users.' ) );
+		wp_die( __( 'Sorry, you are not allowed to remove users.' ) );
 
 	$userids = $_REQUEST['users'];
 
@@ -349,7 +349,7 @@ case 'remove':
 	}
 
 	if ( !current_user_can('remove_users') )
-		$error = new WP_Error('edit_users', __('You can&#8217;t remove users.'));
+		$error = new WP_Error('edit_users', __('Sorry, you are not allowed to remove users.'));
 
 	if ( empty($_REQUEST['users']) )
 		$userids = array(intval($_REQUEST['user']));
@@ -382,7 +382,7 @@ case 'remove':
 			echo "<li>" . sprintf(__('ID #%1$s: %2$s <strong>The current user will not be removed.</strong>'), $id, $user->user_login) . "</li>\n";
 		} elseif ( !current_user_can('remove_user', $id) ) {
 			/* translators: 1: user id, 2: user login */
-			echo "<li>" . sprintf(__('ID #%1$s: %2$s <strong>You don&#8217;t have permission to remove this user.</strong>'), $id, $user->user_login) . "</li>\n";
+			echo "<li>" . sprintf(__('ID #%1$s: %2$s <strong>Sorry, you are not allowed to remove this user.</strong>'), $id, $user->user_login) . "</li>\n";
 		} else {
 			/* translators: 1: user id, 2: user login */
 			echo "<li><input type=\"hidden\" name=\"users[]\" value=\"{$id}\" />" . sprintf(__('ID #%1$s: %2$s'), $id, $user->user_login) . "</li>\n";
@@ -407,6 +407,17 @@ default:
 
 	if ( !empty($_GET['_wp_http_referer']) ) {
 		wp_redirect( remove_query_arg( array( '_wp_http_referer', '_wpnonce'), wp_unslash( $_SERVER['REQUEST_URI'] ) ) );
+		exit;
+	}
+
+	if ( $wp_list_table->current_action() && ! empty( $_REQUEST['users'] ) ) {
+		$userids = $_REQUEST['users'];
+		$sendback = wp_get_referer();
+
+		/** This action is documented in wp-admin/edit-comments.php */
+		$sendback = apply_filters( 'handle_bulk_actions-' . get_current_screen()->id, $sendback, $wp_list_table->current_action(), $userids );
+
+		wp_safe_redirect( $sendback );
 		exit;
 	}
 

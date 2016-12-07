@@ -205,7 +205,7 @@ function wp_cookie_constants() {
 		if ( $siteurl )
 			define( 'COOKIEHASH', md5( $siteurl ) );
 		else
-			define( 'COOKIEHASH', '' );
+			define( 'COOKIEHASH', md5( wp_guess_url() ) );
 	}
 
 	/**
@@ -357,6 +357,6 @@ function wp_templating_constants() {
 	 * @see WP_Theme::get_core_default_theme()
 	 */
 	if ( !defined('WP_DEFAULT_THEME') )
-		define( 'WP_DEFAULT_THEME', 'twentysixteen' );
+		define( 'WP_DEFAULT_THEME', 'twentyseventeen' );
 
 }

@@ -221,8 +221,7 @@ table.fixed td {
 }
 
 #wpbody-content input.button,
-#wpbody-content input.button-primary,
-#wpbody-content input.button-secondary {
+#wpbody-content input.button-primary {
 	overflow: visible;
 }
 
@@ -442,13 +441,17 @@ div#dashboard-widgets {
 	padding-left: 1px;
 }
 
-.tagchecklist span, .tagchecklist span a {
+.tagchecklist > span, .tagchecklist .ntdelbutton {
 	display: inline-block;
 	display: block;
 }
 
-.tablenav .button-secondary,
-.nav .button-secondary {
+.tagchecklist .ntdelbutton:focus .remove-tag-icon:before {
+	outline: 1px solid #5b9dd9;
+}
+
+.tablenav .button,
+.nav .button {
 	padding-top: 2px;
 	padding-bottom: 2px;
 }
@@ -507,7 +510,7 @@ table.ie-fixed {
 	border-collapse: collapse;
 }
 
-.tablenav a.button-secondary {
+.tablenav a.button {
 	display: inline-block;
 	padding: 2px 5px;
 }

@@ -16,16 +16,29 @@
  */
 class WP_Customize_Color_Control extends WP_Customize_Control {
 	/**
+	 * Type.
+	 *
 	 * @access public
 	 * @var string
 	 */
 	public $type = 'color';
 
 	/**
+	 * Statuses.
+	 *
 	 * @access public
 	 * @var array
 	 */
 	public $statuses;
+
+	/**
+	 * Mode.
+	 *
+	 * @since 4.7.0
+	 * @access public
+	 * @var string
+	 */
+	public $mode = 'full';
 
 	/**
 	 * Constructor.
@@ -62,6 +75,7 @@ class WP_Customize_Color_Control extends WP_Customize_Control {
 		parent::to_json();
 		$this->json['statuses'] = $this->statuses;
 		$this->json['defaultValue'] = $this->setting->default;
+		$this->json['mode'] = $this->mode;
 	}
 
 	/**
@@ -78,8 +92,10 @@ class WP_Customize_Color_Control extends WP_Customize_Control {
 	 */
 	public function content_template() {
 		?>
-		<# var defaultValue = '';
-		if ( data.defaultValue ) {
+		<# var defaultValue = '',
+			isHueSlider = data.mode === 'hue';
+
+		if ( data.defaultValue && ! isHueSlider ) {
 			if ( '#' !== data.defaultValue.substring( 0, 1 ) ) {
 				defaultValue = '#' + data.defaultValue;
 			} else {
@@ -95,7 +111,11 @@ class WP_Customize_Color_Control extends WP_Customize_Control {
 				<span class="description customize-control-description">{{{ data.description }}}</span>
 			<# } #>
 			<div class="customize-control-content">
-				<input class="color-picker-hex" type="text" maxlength="7" placeholder="<?php esc_attr_e( 'Hex Value' ); ?>" {{ defaultValue }} />
+				<# if ( isHueSlider ) { #>
+					<input class="color-picker-hue" type="text" data-type="hue" />
+				<# } else { #>
+					<input class="color-picker-hex" type="text" maxlength="7" placeholder="<?php esc_attr_e( 'Hex Value' ); ?>" {{ defaultValue }} />
+				<# } #>
 			</div>
 		</label>
 		<?php

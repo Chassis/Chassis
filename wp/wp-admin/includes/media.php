@@ -135,7 +135,7 @@ function get_image_send_to_editor( $id, $caption, $title, $align, $url = '', $re
 		$html = '<a href="' . esc_attr( $url ) . '"' . $rel . '>' . $html . '</a>';
 
 	/**
-	 * Filters the image HTML markup to send to the editor.
+	 * Filters the image HTML markup to send to the editor when inserting an image.
 	 *
 	 * @since 2.5.0
 	 *
@@ -278,19 +278,19 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 			$time = $post->post_date;
 	}
 
-	$name = $_FILES[$file_id]['name'];
 	$file = wp_handle_upload($_FILES[$file_id], $overrides, $time);
 
 	if ( isset($file['error']) )
 		return new WP_Error( 'upload_error', $file['error'] );
 
-	$name_parts = pathinfo($name);
-	$name = trim( substr( $name, 0, -(1 + strlen($name_parts['extension'])) ) );
+	$name = $_FILES[$file_id]['name'];
+	$ext  = pathinfo( $name, PATHINFO_EXTENSION );
+	$name = wp_basename( $name, ".$ext" );
 
 	$url = $file['url'];
 	$type = $file['type'];
 	$file = $file['file'];
-	$title = sanitize_title( $name );
+	$title = sanitize_text_field( $name );
 	$content = '';
 	$excerpt = '';
 
@@ -313,6 +313,7 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 				/* translators: 1: audio track title, 2: artist name */
 				$content .= sprintf( __( '"%1$s" by %2$s.' ), $title, $meta['artist'] );
 			} else {
+				/* translators: 1: audio track title */
 				$content .= sprintf( __( '"%s".' ), $title );
 			}
 
@@ -331,19 +332,26 @@ function media_handle_upload($file_id, $post_id, $post_data = array(), $override
 
 		}
 
-		if ( ! empty( $meta['year'] ) )
+		if ( ! empty( $meta['year'] ) ) {
+			/* translators: Audio file track information. 1: Year of audio track release */
 			$content .= ' ' . sprintf( __( 'Released: %d.' ), $meta['year'] );
+		}
 
 		if ( ! empty( $meta['track_number'] ) ) {
 			$track_number = explode( '/', $meta['track_number'] );
-			if ( isset( $track_number[1] ) )
+			if ( isset( $track_number[1] ) ) {
+				/* translators: Audio file track information. 1: Audio track number, 2: Total audio tracks */
 				$content .= ' ' . sprintf( __( 'Track %1$s of %2$s.' ), number_format_i18n( $track_number[0] ), number_format_i18n( $track_number[1] ) );
-			else
+			} else {
+				/* translators: Audio file track information. 1: Audio track number */
 				$content .= ' ' . sprintf( __( 'Track %1$s.' ), number_format_i18n( $track_number[0] ) );
+			}
 		}
 
-		if ( ! empty( $meta['genre'] ) )
+		if ( ! empty( $meta['genre'] ) ) {
+			/* translators: Audio file genre information. 1: Audio genre name */
 			$content .= ' ' . sprintf( __( 'Genre: %s.' ), $meta['genre'] );
+		}
 
 	// Use image exif/iptc data for title and caption defaults if possible.
 	} elseif ( 0 === strpos( $type, 'image/' ) && $image_meta = @wp_read_image_metadata( $file ) ) {
@@ -619,7 +627,7 @@ function get_upload_iframe_src( $type = null, $post_id = null, $tab = null ) {
 	 *
 	 * @param string $upload_iframe_src The upload iframe source URL by type.
 	 */
-	$upload_iframe_src = apply_filters( $type . '_upload_iframe_src', $upload_iframe_src );
+	$upload_iframe_src = apply_filters( "{$type}_upload_iframe_src", $upload_iframe_src );
 
 	return add_query_arg('TB_iframe', true, $upload_iframe_src);
 }
@@ -787,7 +795,7 @@ function wp_media_upload_handler() {
 			 * @param string $src   Media source URL.
 			 * @param string $title Media title.
 			 */
-			$html = apply_filters( $type . '_send_to_editor_url', $html, esc_url_raw( $src ), $title );
+			$html = apply_filters( "{$type}_send_to_editor_url", $html, esc_url_raw( $src ), $title );
 		} else {
 			$align = '';
 			$alt = esc_attr( wp_unslash( $_POST['alt'] ) );
@@ -1482,7 +1490,7 @@ function get_media_item( $attachment_id, $args = null ) {
 	);
 
 	if ( $r['send'] ) {
-		$r['send'] = get_submit_button( __( 'Insert into Post' ), 'button', "send[$attachment_id]", false );
+		$r['send'] = get_submit_button( __( 'Insert into Post' ), '', "send[$attachment_id]", false );
 	}
 
 	$delete = empty( $r['delete'] ) ? '' : $r['delete'];
@@ -2033,7 +2041,7 @@ if ( $id ) {
 ?></div>
 
 <p class="savebutton ml-submit">
-<?php submit_button( __( 'Save all changes' ), 'button', 'save', false ); ?>
+<?php submit_button( __( 'Save all changes' ), '', 'save', false ); ?>
 </p>
 </form>
 <?php
@@ -2244,7 +2252,7 @@ jQuery(function($){
 </div>
 
 <p class="ml-submit">
-<?php submit_button( __( 'Save all changes' ), 'button savebutton', 'save', false, array( 'id' => 'save-all', 'style' => 'display: none;' ) ); ?>
+<?php submit_button( __( 'Save all changes' ), 'savebutton', 'save', false, array( 'id' => 'save-all', 'style' => 'display: none;' ) ); ?>
 <input type="hidden" name="post_id" id="post_id" value="<?php echo (int) $post_id; ?>" />
 <input type="hidden" name="type" value="<?php echo esc_attr( $GLOBALS['type'] ); ?>" />
 <input type="hidden" name="tab" value="<?php echo esc_attr( $GLOBALS['tab'] ); ?>" />
@@ -2384,7 +2392,7 @@ function media_upload_library_form($errors) {
 <p id="media-search" class="search-box">
 	<label class="screen-reader-text" for="media-search-input"><?php _e('Search Media');?>:</label>
 	<input type="search" id="media-search-input" name="s" value="<?php the_search_query(); ?>" />
-	<?php submit_button( __( 'Search Media' ), 'button', '', false ); ?>
+	<?php submit_button( __( 'Search Media' ), '', '', false ); ?>
 </p>
 
 <ul class="subsubsub">
@@ -2481,7 +2489,7 @@ foreach ($arc_result as $arc_row) {
 </select>
 <?php } ?>
 
-<?php submit_button( __( 'Filter &#187;' ), 'button', 'post-query-submit', false ); ?>
+<?php submit_button( __( 'Filter &#187;' ), '', 'post-query-submit', false ); ?>
 
 </div>
 
@@ -2511,7 +2519,7 @@ jQuery(function($){
 <?php echo get_media_items(null, $errors); ?>
 </div>
 <p class="ml-submit">
-<?php submit_button( __( 'Save all changes' ), 'button savebutton', 'save', false ); ?>
+<?php submit_button( __( 'Save all changes' ), 'savebutton', 'save', false ); ?>
 <input type="hidden" name="post_id" id="post_id" value="<?php echo (int) $post_id; ?>" />
 </p>
 </form>
@@ -2614,7 +2622,7 @@ function wp_media_insert_url_form( $default_view = 'image' ) {
 		<tr class="not-image">
 			<td></td>
 			<td>
-				' . get_submit_button( __( 'Insert into Post' ), 'button', 'insertonlybutton', false ) . '
+				' . get_submit_button( __( 'Insert into Post' ), '', 'insertonlybutton', false ) . '
 			</td>
 		</tr>
 	</tbody></table>
@@ -2766,7 +2774,17 @@ function edit_form_image_editor( $post ) {
 
 		echo wp_video_shortcode( $attr );
 
-	else :
+	elseif ( isset( $thumb_url[0] ) ):
+
+		?>
+		<div class="wp_attachment_image wp-clearfix" id="media-head-<?php echo $attachment_id; ?>">
+			<p id="thumbnail-head-<?php echo $attachment_id; ?>">
+				<img class="thumbnail" src="<?php echo set_url_scheme( $thumb_url[0] ); ?>" style="max-width:100%" alt="" />
+			</p>
+		</div>
+		<?php
+
+	else:
 
 		/**
 		 * Fires when an attachment type can't be rendered in the edit form.

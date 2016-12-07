@@ -107,19 +107,36 @@ function wp_admin_bar_render() {
  * @param WP_Admin_Bar $wp_admin_bar
  */
 function wp_admin_bar_wp_menu( $wp_admin_bar ) {
-	$wp_admin_bar->add_menu( array(
+	if ( current_user_can( 'read' ) ) {
+		$about_url = self_admin_url( 'about.php' );
+	} elseif ( is_multisite() ) {
+		$about_url = get_dashboard_url( get_current_user_id(), 'about.php' );
+	} else {
+		$about_url = false;
+	}
+
+	$wp_logo_menu_args = array(
 		'id'    => 'wp-logo',
 		'title' => '<span class="ab-icon"></span><span class="screen-reader-text">' . __( 'About WordPress' ) . '</span>',
-		'href'  => self_admin_url( 'about.php' ),
-	) );
+		'href'  => $about_url,
+	);
 
-	if ( is_user_logged_in() ) {
+	// Set tabindex="0" to make sub menus accessible when no URL is available.
+	if ( ! $about_url ) {
+		$wp_logo_menu_args['meta'] = array(
+			'tabindex' => 0,
+		);
+	}
+
+	$wp_admin_bar->add_menu( $wp_logo_menu_args );
+
+	if ( $about_url ) {
 		// Add "About WordPress" link
 		$wp_admin_bar->add_menu( array(
 			'parent' => 'wp-logo',
 			'id'     => 'about',
 			'title'  => __('About WordPress'),
-			'href'   => self_admin_url( 'about.php' ),
+			'href'   => $about_url,
 		) );
 	}
 
@@ -196,7 +213,8 @@ function wp_admin_bar_my_account_item( $wp_admin_bar ) {
 	}
 
 	$avatar = get_avatar( $user_id, 26 );
-	$howdy  = sprintf( __('Howdy, %1$s'), $current_user->display_name );
+	/* translators: %s: current user's display name */
+	$howdy  = sprintf( __( 'Howdy, %s' ), $current_user->display_name );
 	$class  = empty( $avatar ) ? '' : 'with-avatar';
 
 	$wp_admin_bar->add_menu( array(
@@ -293,9 +311,11 @@ function wp_admin_bar_site_menu( $wp_admin_bar ) {
 	}
 
 	if ( is_network_admin() ) {
-		$blogname = sprintf( __('Network Admin: %s'), esc_html( get_current_site()->site_name ) );
+		/* translators: %s: site name */
+		$blogname = sprintf( __( 'Network Admin: %s' ), esc_html( get_network()->site_name ) );
 	} elseif ( is_user_admin() ) {
-		$blogname = sprintf( __('User Dashboard: %s'), esc_html( get_current_site()->site_name ) );
+		/* translators: %s: site name */
+		$blogname = sprintf( __( 'User Dashboard: %s' ), esc_html( get_network()->site_name ) );
 	}
 
 	$title = wp_html_excerpt( $blogname, 40, '&hellip;' );
@@ -346,15 +366,30 @@ function wp_admin_bar_site_menu( $wp_admin_bar ) {
  * @since 4.3.0
  *
  * @param WP_Admin_Bar $wp_admin_bar WP_Admin_Bar instance.
+ * @global WP_Customize_Manager $wp_customize
  */
 function wp_admin_bar_customize_menu( $wp_admin_bar ) {
+	global $wp_customize;
+
 	// Don't show for users who can't access the customizer or when in the admin.
 	if ( ! current_user_can( 'customize' ) || is_admin() ) {
 		return;
 	}
 
+	// Don't show if the user cannot edit a given customize_changeset post currently being previewed.
+	if ( is_customize_preview() && $wp_customize->changeset_post_id() && ! current_user_can( get_post_type_object( 'customize_changeset' )->cap->edit_post, $wp_customize->changeset_post_id() ) ) {
+		return;
+	}
+
 	$current_url = ( is_ssl() ? 'https://' : 'http://' ) . $_SERVER['HTTP_HOST'] . $_SERVER['REQUEST_URI'];
+	if ( is_customize_preview() && $wp_customize->changeset_uuid() ) {
+		$current_url = remove_query_arg( 'customize_changeset_uuid', $current_url );
+	}
+
 	$customize_url = add_query_arg( 'url', urlencode( $current_url ), wp_customize_url() );
+	if ( is_customize_preview() ) {
+		$customize_url = add_query_arg( array( 'changeset_uuid' => $wp_customize->changeset_uuid() ), $customize_url );
+	}
 
 	$wp_admin_bar->add_menu( array(
 		'id'     => 'customize',
@@ -574,6 +609,18 @@ function wp_admin_bar_edit_menu( $wp_admin_bar ) {
 					'href' => get_permalink( $post->ID )
 				) );
 			}
+		} elseif ( 'edit' == $current_screen->base
+ 			&& ( $post_type_object = get_post_type_object( $current_screen->post_type ) )
+ 			&& ( $post_type_object->public )
+ 			&& ( $post_type_object->show_in_admin_bar )
+ 			&& ( get_post_type_archive_link( $post_type_object->name ) )
+			&& ! ( 'post' === $post_type_object->name && 'posts' === get_option( 'show_on_front' ) ) )
+ 		{
+ 			$wp_admin_bar->add_node( array(
+ 				'id' => 'archive',
+ 				'title' => $post_type_object->labels->view_items,
+ 				'href' => get_post_type_archive_link( $current_screen->post_type )
+ 			) );
 		} elseif ( 'term' == $current_screen->base
 			&& isset( $tag ) && is_object( $tag ) && ! is_wp_error( $tag )
 			&& ( $tax = get_taxonomy( $tag->taxonomy ) )
@@ -604,7 +651,7 @@ function wp_admin_bar_edit_menu( $wp_admin_bar ) {
 			) );
 		} elseif ( ! empty( $current_object->taxonomy )
 			&& ( $tax = get_taxonomy( $current_object->taxonomy ) )
-			&& current_user_can( $tax->cap->edit_terms )
+			&& current_user_can( 'edit_term', $current_object->term_id )
 			&& $edit_term_link = get_edit_term_link( $current_object->term_id, $current_object->taxonomy ) )
 		{
 			$wp_admin_bar->add_menu( array(
@@ -696,7 +743,7 @@ function wp_admin_bar_comments_menu( $wp_admin_bar ) {
 	$awaiting_text = sprintf( _n( '%s comment awaiting moderation', '%s comments awaiting moderation', $awaiting_mod ), number_format_i18n( $awaiting_mod ) );
 
 	$icon  = '<span class="ab-icon"></span>';
-	$title = '<span id="ab-awaiting-mod" class="ab-label awaiting-mod pending-count count-' . $awaiting_mod . '" aria-hidden="true">' . number_format_i18n( $awaiting_mod ) . '</span>';
+	$title = '<span class="ab-label awaiting-mod pending-count count-' . $awaiting_mod . '" aria-hidden="true">' . number_format_i18n( $awaiting_mod ) . '</span>';
 	$title .= '<span class="screen-reader-text">' . $awaiting_text . '</span>';
 
 	$wp_admin_bar->add_menu( array(

@@ -4,6 +4,8 @@
 var tagBox, array_unique_noempty;
 
 ( function( $ ) {
+	var tagDelimiter = ( window.tagsSuggestL10n && window.tagsSuggestL10n.tagDelimiter ) || ',';
+
 	// Return an array with any duplicate, whitespace or empty values removed
 	array_unique_noempty = function( array ) {
 		var out = [];
@@ -20,13 +22,17 @@ var tagBox, array_unique_noempty;
 	};
 
 	tagBox = {
-		clean : function(tags) {
-			var comma = window.tagsBoxL10n.tagDelimiter;
-			if ( ',' !== comma )
-				tags = tags.replace(new RegExp(comma, 'g'), ',');
+		clean : function( tags ) {
+			if ( ',' !== tagDelimiter ) {
+				tags = tags.replace( new RegExp( tagDelimiter, 'g' ), ',' );
+			}
+
 			tags = tags.replace(/\s*,\s*/g, ',').replace(/,+/g, ',').replace(/[,\s]+$/, '').replace(/^[,\s]+/, '');
-			if ( ',' !== comma )
-				tags = tags.replace(/,/g, comma);
+
+			if ( ',' !== tagDelimiter ) {
+				tags = tags.replace( /,/g, tagDelimiter );
+			}
+
 			return tags;
 		},
 
@@ -35,8 +41,7 @@ var tagBox, array_unique_noempty;
 				num = id.split('-check-num-')[1],
 				taxbox = $(el).closest('.tagsdiv'),
 				thetags = taxbox.find('.the-tags'),
-				comma = window.tagsBoxL10n.tagDelimiter,
-				current_tags = thetags.val().split( comma ),
+				current_tags = thetags.val().split( tagDelimiter ),
 				new_tags = [];
 
 			delete current_tags[num];
@@ -48,7 +53,7 @@ var tagBox, array_unique_noempty;
 				}
 			});
 
-			thetags.val( this.clean( new_tags.join( comma ) ) );
+			thetags.val( this.clean( new_tags.join( tagDelimiter ) ) );
 
 			this.quickClicks( taxbox );
 			return false;
@@ -65,7 +70,7 @@ var tagBox, array_unique_noempty;
 
 			disabled = thetags.prop('disabled');
 
-			current_tags = thetags.val().split( window.tagsBoxL10n.tagDelimiter );
+			current_tags = thetags.val().split( tagDelimiter );
 			tagchecklist.empty();
 
 			$.each( current_tags, function( key, val ) {
@@ -81,16 +86,28 @@ var tagBox, array_unique_noempty;
 
 				// If tags editing isn't disabled, create the X button.
 				if ( ! disabled ) {
-					xbutton = $( '<a id="' + id + '-check-num-' + key + '" class="ntdelbutton" tabindex="0">X</a>' );
+					/*
+					 * Build the X buttons, hide the X icon with aria-hidden and
+					 * use visually hidden text for screen readers.
+					 */
+					xbutton = $( '<button type="button" id="' + id + '-check-num-' + key + '" class="ntdelbutton">' +
+						'<span class="remove-tag-icon" aria-hidden="true"></span>' +
+						'<span class="screen-reader-text">' + window.tagsSuggestL10n.removeTerm + ' ' + val + '</span>' +
+						'</button>' );
 
 					xbutton.on( 'click keypress', function( e ) {
-						// Trigger function if pressed Enter - keyboard navigation
-						if ( e.type === 'click' || e.keyCode === 13 ) {
-							// When using keyboard, move focus back to the new tag field.
-							if ( e.keyCode === 13 ) {
-								$( this ).closest( '.tagsdiv' ).find( 'input.newtag' ).focus();
-							}
+						// On click or when using the Enter/Spacebar keys.
+						if ( 'click' === e.type || 13 === e.keyCode || 32 === e.keyCode ) {
+							/*
+							 * When using the keyboard, move focus back to the
+							 * add new tag field. Note: when releasing the pressed
+							 * key this will fire the `keyup` event on the input.
+							 */
+							if ( 13 === e.keyCode || 32 === e.keyCode ) {
+ 								$( this ).closest( '.tagsdiv' ).find( 'input.newtag' ).focus();
+ 							}
 
+							tagBox.userAction = 'remove';
 							tagBox.parseTags( this );
 						}
 					});
@@ -101,27 +118,35 @@ var tagBox, array_unique_noempty;
 				// Append the span to the tag list.
 				tagchecklist.append( span );
 			});
+			// The buttons list is built now, give feedback to screen reader users.
+			tagBox.screenReadersMessage();
 		},
 
 		flushTags : function( el, a, f ) {
 			var tagsval, newtags, text,
 				tags = $( '.the-tags', el ),
-				newtag = $( 'input.newtag', el ),
-				comma = window.tagsBoxL10n.tagDelimiter;
+				newtag = $( 'input.newtag', el );
 
 			a = a || false;
 
 			text = a ? $(a).text() : newtag.val();
 
-			if ( 'undefined' == typeof( text ) ) {
+			/*
+			 * Return if there's no new tag or if the input field is empty.
+			 * Note: when using the keyboard to add tags, focus is moved back to
+			 * the input field and the `keyup` event attached on this field will
+			 * fire when releasing the pressed key. Checking also for the field
+			 * emptiness avoids to set the tags and call quickClicks() again.
+			 */
+			if ( 'undefined' == typeof( text ) || '' === text ) {
 				return false;
 			}
 
 			tagsval = tags.val();
-			newtags = tagsval ? tagsval + comma + text : text;
+			newtags = tagsval ? tagsval + tagDelimiter + text : text;
 
 			newtags = this.clean( newtags );
-			newtags = array_unique_noempty( newtags.split( comma ) ).join( comma );
+			newtags = array_unique_noempty( newtags.split( tagDelimiter ) ).join( tagDelimiter );
 			tags.val( newtags );
 			this.quickClicks( el );
 
@@ -144,6 +169,7 @@ var tagBox, array_unique_noempty;
 				r = $( '<p id="tagcloud-' + tax + '" class="the-tagcloud">' + r + '</p>' );
 
 				$( 'a', r ).click( function() {
+					tagBox.userAction = 'add';
 					tagBox.flushTags( $( '#' + tax ), this );
 					return false;
 				});
@@ -152,33 +178,63 @@ var tagBox, array_unique_noempty;
 			});
 		},
 
+		/**
+		 * Track the user's last action.
+		 *
+		 * @since 4.7.0
+		 */
+		userAction: '',
+
+		/**
+		 * Dispatch an audible message to screen readers.
+		 *
+		 * @since 4.7.0
+		 */
+		screenReadersMessage: function() {
+			var message;
+
+			switch ( this.userAction ) {
+				case 'remove':
+					message = window.tagsSuggestL10n.termRemoved;
+					break;
+
+				case 'add':
+					message = window.tagsSuggestL10n.termAdded;
+					break;
+
+				default:
+					return;
+			}
+
+			window.wp.a11y.speak( message, 'assertive' );
+		},
+
 		init : function() {
-			var t = this, ajaxtag = $('div.ajaxtag');
+			var ajaxtag = $('div.ajaxtag');
 
 			$('.tagsdiv').each( function() {
-				tagBox.quickClicks(this);
+				tagBox.quickClicks( this );
 			});
 
-			$('.tagadd', ajaxtag).click(function(){
-				t.flushTags( $(this).closest('.tagsdiv') );
+			$( '.tagadd', ajaxtag ).click( function() {
+				tagBox.userAction = 'add';
+				tagBox.flushTags( $( this ).closest( '.tagsdiv' ) );
 			});
 
-			$('input.newtag', ajaxtag).keyup(function(e){
-				if ( 13 == e.which ) {
-					tagBox.flushTags( $(this).closest('.tagsdiv') );
-					return false;
+			$( 'input.newtag', ajaxtag ).keyup( function( event ) {
+				if ( 13 == event.which ) {
+					tagBox.userAction = 'add';
+					tagBox.flushTags( $( this ).closest( '.tagsdiv' ) );
+					event.preventDefault();
+					event.stopPropagation();
 				}
-			}).keypress(function(e){
-				if ( 13 == e.which ) {
-					e.preventDefault();
-					return false;
+			}).keypress( function( event ) {
+				if ( 13 == event.which ) {
+					event.preventDefault();
+					event.stopPropagation();
 				}
-			}).each( function() {
-				var tax = $(this).closest('div.tagsdiv').attr('id');
-				$(this).suggest(
-					ajaxurl + '?action=ajax-tag-search&tax=' + tax,
-					{ delay: 500, minchars: 2, multiple: true, multipleSep: window.tagsBoxL10n.tagDelimiter }
-				);
+			}).each( function( i, element ) {
+				$( element ).wpTagsSuggest();
 			});
 
 			// save tags on post save/publish
@@ -188,14 +244,19 @@ var tagBox, array_unique_noempty;
 				});
 			});
 
-			// tag cloud
+			// Fetch and toggle the Tag cloud.
 			$('.tagcloud-link').click(function(){
-				tagBox.get( $(this).attr('id') );
-				$(this).unbind().click(function(){
-					$(this).siblings('.the-tagcloud').toggle();
-					return false;
-				});
-				return false;
+				// On the first click, fetch the tag cloud and insert it in the DOM.
+				tagBox.get( $( this ).attr( 'id' ) );
+				// Update button state, remove previous click event and attach a new one to toggle the cloud.
+				$( this )
+					.attr( 'aria-expanded', 'true' )
+					.unbind()
+					.click( function() {
+						$( this )
+							.attr( 'aria-expanded', 'false' === $( this ).attr( 'aria-expanded' ) ? 'true' : 'false' )
+							.siblings( '.the-tagcloud' ).toggle();
+					});
 			});
 		}
 	};
