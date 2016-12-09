@@ -28,6 +28,7 @@ module Chassis
 			rescue Psych::SyntaxError => e
 				# Syntax error of some sort, probably
 				puts "ERROR: Could not load config:\n    #{e.message}"
+				exit 1
 			end
 		end
 
