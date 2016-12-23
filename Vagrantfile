@@ -111,14 +111,14 @@ Vagrant.configure("2") do |config|
 
 	# Ensure that WordPress can install/update plugins, themes and core
 	if vagrant_version >= "1.3.0"
-		config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ]
+		config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ], :linux__nfs_options => ["no_root_squash"], :map_uid => 0, :map_gid => 0
 		CONF["synced_folders"].each do |from, to|
-			config.vm.synced_folder from, to, :mount_options => [ "dmode=777,fmode=777" ]
+			config.vm.synced_folder from, to, :mount_options => [ "dmode=777,fmode=777" ], :linux__nfs_options => ["no_root_squash"], :map_uid => 0, :map_gid => 0
 		end if CONF["synced_folders"]
 	else
-		config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"
+		config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777", :linux__nfs_options => ["no_root_squash"], :map_uid => 0, :map_gid => 0
 		CONF["synced_folders"].each do |from, to|
-			config.vm.synced_folder from, to, :extra => "dmode=777,fmode=777"
+			config.vm.synced_folder from, to, :extra => "dmode=777,fmode=777", :linux__nfs_options => ["no_root_squash"], :map_uid => 0, :map_gid => 0
 		end if CONF["synced_folders"]
 	end
 
