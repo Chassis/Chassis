@@ -39,6 +39,8 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 
 * `XML`_: A Chassis extension to install PHP packages to use XML.
 
+* `Composer`_: A Chassis extension to install PHP packages to install Composer.
+
 
 .. _Memcache: https://github.com/Chassis/memcache
 .. _Redis: https://github.com/shadyvb/chassis-redis
@@ -55,6 +57,7 @@ This is a non-exhaustive list of what's available to drop into your Chassis box.
 .. _Imagick: https://github.com/Chassis/Imagick
 .. _Fish: https://github.com/Chassis/Fish
 .. _XML: https://github.com/Chassis/XML
+.. _Composer: https://github.com/Chassis/Composer
 
 Creating your own
 -----------------
