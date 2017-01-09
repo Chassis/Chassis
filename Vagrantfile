@@ -46,6 +46,10 @@ Vagrant.configure("2") do |config|
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
 		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+
+		# Workaround for issues with VirtualBox 5.0.x
+		# https://github.com/chef/bento/issues/688
+		vb.customize ["modifyvm", :id, "--cableconnected1", "on"]
 	end
 
 	# We <3 Ubuntu LTS
