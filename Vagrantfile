@@ -49,7 +49,7 @@ Vagrant.configure("2") do |config|
 	end
 
 	# We <3 Ubuntu LTS
-	config.vm.box = "ubuntu/xenial64"
+	config.vm.box = "bento/ubuntu-16.04"
 
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
