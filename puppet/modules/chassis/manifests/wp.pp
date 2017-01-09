@@ -62,11 +62,11 @@ define chassis::wp (
 		content => template('chassis/local-config-extensions.php.erb')
 	}
 
-	file { '/home/vagrant/.wp-cli':
+	file { '/home/ubuntu/.wp-cli':
 		ensure => directory
 	}
 
-	file { '/home/vagrant/.wp-cli/config.yml':
+	file { '/home/ubuntu/.wp-cli/config.yml':
 		content => template('chassis/wp-cli.yml.erb')
 	}
 
