@@ -56,7 +56,7 @@ class chassis::php (
 
 	# Add mbstring to all versions of php
 	if versioncmp( "${version}", '5.5') < 0 {
-		$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common", "${php_package}-xml", 'php-mbstring' ]
+		$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common", 'php-xml', 'php-mbstring' ]
 	} else {
 		$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common", "${php_package}-xml", "${php_package}-mbstring" ]
 	}
