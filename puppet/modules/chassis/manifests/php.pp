@@ -2,7 +2,6 @@ class chassis::php (
 	$extensions = [],
 	$version = "5.6",
 ) {
-	apt::ppa { "ppa:ondrej/php5-oldstable": }
 	apt::ppa { "ppa:ondrej/php": }
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
@@ -79,7 +78,6 @@ class chassis::php (
 		notify => Service["${php_package}-fpm"],
 		require => [
 			Apt::Hold[$packages],
-			Apt::Ppa["ppa:ondrej/php5-oldstable"],
 			Apt::Ppa["ppa:ondrej/php"],
 		],
 	}
