@@ -14,7 +14,7 @@ $GLOBALS['wp_filter']['muplugins_loaded'][10]['chassis-hosts'] = array(
 function bootstrap() {
 	add_filter( 'wpmu_new_blog', __NAMESPACE__ . '\\add_host' );
 	add_filter( 'delete_blog', __NAMESPACE__ . '\\remove_host' );
-    add_action( 'init', __NAMESPACE__ . '\\maybe_add_host' );
+	add_action( 'init', __NAMESPACE__ . '\\maybe_add_host' );
 }
 
 function maybe_add_host() {
