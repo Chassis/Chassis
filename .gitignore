@@ -12,3 +12,4 @@
 config.local.yaml
 /.wp-cli
 /wp-cli.local.yml
+/extensions
