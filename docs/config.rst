@@ -294,3 +294,16 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
    themes:
       - twentyfifteen
       - twentysixteen
+
+Extensions
+----------
+
+**Key**: ``extensions``
+
+You can enable official Chassis extensions and third party extensions by listing their repo name in the ``extensions`` section:
+
+.. code-block:: yaml
+
+   extensions:
+      - Chassis/Tester
+      - javorszky/chassis-openssl
