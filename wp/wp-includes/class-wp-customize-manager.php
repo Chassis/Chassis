@@ -997,13 +997,19 @@ final class WP_Customize_Manager {
 			wp_list_pluck( $posts, 'post_name' )
 		);
 
+		/*
+		 * Obtain all post types referenced in starter content to use in query.
+		 * This is needed because 'any' will not account for post types not yet registered.
+		 */
+		$post_types = array_filter( array_merge( array( 'attachment' ), wp_list_pluck( $posts, 'post_type' ) ) );
+
 		// Re-use auto-draft starter content posts referenced in the current customized state.
 		$existing_starter_content_posts = array();
 		if ( ! empty( $starter_content_auto_draft_post_ids ) ) {
 			$existing_posts_query = new WP_Query( array(
 				'post__in' => $starter_content_auto_draft_post_ids,
 				'post_status' => 'auto-draft',
-				'post_type' => 'any',
+				'post_type' => $post_types,
 				'posts_per_page' => -1,
 			) );
 			foreach ( $existing_posts_query->posts as $existing_post ) {
@@ -1571,6 +1577,7 @@ final class WP_Customize_Manager {
 		add_filter( 'wp_redirect', array( $this, 'add_state_query_params' ) );
 
 		wp_enqueue_script( 'customize-preview' );
+		wp_enqueue_style( 'customize-preview' );
 		add_action( 'wp_head', array( $this, 'customize_preview_loading_style' ) );
 		add_action( 'wp_head', array( $this, 'remove_frameless_preview_messenger_channel' ) );
 		add_action( 'wp_footer', array( $this, 'customize_preview_settings' ), 20 );
@@ -2487,6 +2494,14 @@ final class WP_Customize_Manager {
 		} elseif ( $args['date_gmt'] ) {
 			$post_array['post_date_gmt'] = $args['date_gmt'];
 			$post_array['post_date'] = get_date_from_gmt( $args['date_gmt'] );
+		} elseif ( $changeset_post_id && 'auto-draft' === get_post_status( $changeset_post_id ) ) {
+			/*
+			 * Keep bumping the date for the auto-draft whenever it is modified;
+			 * this extends its life, preserving it from garbage-collection via
+			 * wp_delete_auto_drafts().
+			 */
+			$post_array['post_date'] = current_time( 'mysql' );
+			$post_array['post_date_gmt'] = '';
 		}
 
 		$this->store_changeset_revision = $allow_revision;
