@@ -220,7 +220,10 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 
 		if ( isset( $registered['sticky'], $request['sticky'] ) ) {
 			$sticky_posts = get_option( 'sticky_posts', array() );
-			if ( $sticky_posts && $request['sticky'] ) {
+			if ( ! is_array( $sticky_posts ) ) {
+				$sticky_posts = array();
+			}
+			if ( $request['sticky'] ) {
 				/*
 				 * As post__in will be used to only get sticky posts,
 				 * we have to support the case where post__in was already
@@ -234,7 +237,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 				 * so we have to fake it a bit.
 				 */
 				if ( ! $args['post__in'] ) {
-					$args['post__in'] = array( -1 );
+					$args['post__in'] = array( 0 );
 				}
 			} elseif ( $sticky_posts ) {
 				/*
@@ -999,12 +1002,14 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 
 			if ( ! empty( $date_data ) ) {
 				list( $prepared_post->post_date, $prepared_post->post_date_gmt ) = $date_data;
+				$prepared_post->edit_date = true;
 			}
 		} elseif ( ! empty( $schema['properties']['date_gmt'] ) && ! empty( $request['date_gmt'] ) ) {
 			$date_data = rest_get_date_with_gmt( $request['date_gmt'], true );
 
 			if ( ! empty( $date_data ) ) {
 				list( $prepared_post->post_date, $prepared_post->post_date_gmt ) = $date_data;
+				$prepared_post->edit_date = true;
 			}
 		}
 
@@ -1383,7 +1388,16 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		}
 
 		if ( ! empty( $schema['properties']['date_gmt'] ) ) {
-			$data['date_gmt'] = $this->prepare_date_response( $post->post_date_gmt );
+			// For drafts, `post_date_gmt` may not be set, indicating that the
+			// date of the draft should be updated each time it is saved (see
+			// #38883).  In this case, shim the value based on the `post_date`
+			// field with the site's timezone offset applied.
+			if ( '0000-00-00 00:00:00' === $post->post_date_gmt ) {
+				$post_date_gmt = date( 'Y-m-d H:i:s', strtotime( $post->post_date ) - ( get_option( 'gmt_offset' ) * 3600 ) );
+			} else {
+				$post_date_gmt = $post->post_date_gmt;
+			}
+			$data['date_gmt'] = $this->prepare_date_response( $post_date_gmt );
 		}
 
 		if ( ! empty( $schema['properties']['guid'] ) ) {
@@ -1399,7 +1413,16 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 		}
 
 		if ( ! empty( $schema['properties']['modified_gmt'] ) ) {
-			$data['modified_gmt'] = $this->prepare_date_response( $post->post_modified_gmt );
+			// For drafts, `post_modified_gmt` may not be set (see
+			// `post_date_gmt` comments above).  In this case, shim the value
+			// based on the `post_modified` field with the site's timezone
+			// offset applied.
+			if ( '0000-00-00 00:00:00' === $post->post_modified_gmt ) {
+				$post_modified_gmt = date( 'Y-m-d H:i:s', strtotime( $post->post_modified ) - ( get_option( 'gmt_offset' ) * 3600 ) );
+			} else {
+				$post_modified_gmt = $post->post_modified_gmt;
+			}
+			$data['modified_gmt'] = $this->prepare_date_response( $post_modified_gmt );
 		}
 
 		if ( ! empty( $schema['properties']['password'] ) ) {
@@ -1758,7 +1781,7 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 					'description' => __( 'A named status for the object.' ),
 					'type'        => 'string',
 					'enum'        => array_keys( get_post_stati( array( 'internal' => false ) ) ),
-					'context'     => array( 'edit' ),
+					'context'     => array( 'view', 'edit' ),
 				),
 				'type'            => array(
 					'description' => __( 'Type of Post for the object.' ),
@@ -1960,17 +1983,13 @@ class WP_REST_Posts_Controller extends WP_REST_Controller {
 					break;
 
 				case 'post-formats':
-					$supports_formats = get_theme_support( 'post-formats' );
-
-					// Force to an array. Supports formats can return true even if empty in some cases.
-					$supports_formats = is_array( $supports_formats ) ? array_values( $supports_formats[0] ) : array();
-
-					$supported_formats = array_merge( array( 'standard' ), $supports_formats );
+					// Get the native post formats and remove the array keys.
+					$formats = array_values( get_post_format_slugs() );
 
 					$schema['properties']['format'] = array(
 						'description' => __( 'The format for the object.' ),
 						'type'        => 'string',
-						'enum'        => $supported_formats,
+						'enum'        => $formats,
 						'context'     => array( 'view', 'edit' ),
 					);
 					break;
