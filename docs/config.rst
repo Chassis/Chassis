@@ -287,10 +287,23 @@ Themes
 If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
 These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
 
-To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slud ``twentysixteen``.
+To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slug ``twentysixteen``.
 
 .. code-block:: yaml
 
    themes:
       - twentyfifteen
       - twentysixteen
+
+Extensions
+----------
+
+**Key**: ``extensions``
+
+You can enable official Chassis extensions and third party extensions by listing their repo name in the ``extensions`` section:
+
+.. code-block:: yaml
+
+   extensions:
+      - Chassis/Tester
+      - javorszky/chassis-openssl

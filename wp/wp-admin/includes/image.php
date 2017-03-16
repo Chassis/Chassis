@@ -221,14 +221,28 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
 		$fallback_sizes = apply_filters( 'fallback_intermediate_image_sizes', $fallback_sizes, $metadata );
 
 		$sizes = array();
+		$_wp_additional_image_sizes = wp_get_additional_image_sizes();
 
 		foreach ( $fallback_sizes as $s ) {
-			$sizes[ $s ]['width']  = get_option( "{$s}_size_w" );
-			$sizes[ $s ]['height'] = get_option( "{$s}_size_h" );
+			if ( isset( $_wp_additional_image_sizes[ $s ]['width'] ) ) {
+				$sizes[ $s ]['width'] = intval( $_wp_additional_image_sizes[ $s ]['width'] );
+			} else {
+				$sizes[ $s ]['width'] = get_option( "{$s}_size_w" );
+			}
 
-			// Force thumbnails to be soft crops.
-			if ( ! 'thumbnail' === $s ) {
-				$sizes[ $s ]['crop'] = get_option( "{$s}_crop" );
+			if ( isset( $_wp_additional_image_sizes[ $s ]['height'] ) ) {
+				$sizes[ $s ]['height'] = intval( $_wp_additional_image_sizes[ $s ]['height'] );
+			} else {
+				$sizes[ $s ]['height'] = get_option( "{$s}_size_h" );
+			}
+
+			if ( isset( $_wp_additional_image_sizes[ $s ]['crop'] ) ) {
+				$sizes[ $s ]['crop'] = $_wp_additional_image_sizes[ $s ]['crop'];
+			} else {
+				// Force thumbnails to be soft crops.
+				if ( ! 'thumbnail' === $s ) {
+					$sizes[ $s ]['crop'] = get_option( "{$s}_crop" );
+				}
 			}
 		}
 
@@ -237,7 +251,15 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
 			$editor = wp_get_image_editor( $file );
 
 			if ( ! is_wp_error( $editor ) ) { // No support for this type of file
-				$uploaded = $editor->save( $file, 'image/jpeg' );
+				/*
+				 * PDFs may have the same file filename as JPEGs.
+				 * Ensure the PDF preview image does not overwrite any JPEG images that already exist.
+				 */
+				$dirname = dirname( $file ) . '/';
+				$ext = '.' . pathinfo( $file, PATHINFO_EXTENSION );
+				$preview_file = $dirname . wp_unique_filename( $dirname, wp_basename( $file, $ext ) . '-pdf.jpg' );
+
+				$uploaded = $editor->save( $preview_file, 'image/jpeg' );
 				unset( $editor );
 
 				// Resize based on the full size image, rather than the source.

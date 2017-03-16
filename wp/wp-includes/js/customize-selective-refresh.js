@@ -121,12 +121,12 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 				return;
 			}
 			$shortcut = partial.createEditShortcut();
-			partial.addEditShortcutToPlacement( placement, $shortcut );
 			$shortcut.on( 'click', function( event ) {
 				event.preventDefault();
 				event.stopPropagation();
 				partial.showControl();
 			} );
+			partial.addEditShortcutToPlacement( placement, $shortcut );
 		},
 
 		/**
@@ -312,14 +312,15 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 		 * @since 4.5.0
 		 */
 		showControl: function() {
-			var partial = this, settingId = partial.params.primarySetting, menuSlug;
+			var partial = this, settingId = partial.params.primarySetting;
 			if ( ! settingId ) {
 				settingId = _.first( partial.settings() );
 			}
 			if ( partial.getType() === 'nav_menu' ) {
-				menuSlug = partial.params.navMenuArgs.theme_location;
-				if ( menuSlug ) {
-					settingId = 'nav_menu_locations[' + menuSlug + ']';
+				if ( partial.params.navMenuArgs.theme_location ) {
+					settingId = 'nav_menu_locations[' + partial.params.navMenuArgs.theme_location + ']';
+				} else if ( partial.params.navMenuArgs.menu )   {
+					settingId = 'nav_menu[' + String( partial.params.navMenuArgs.menu ) + ']';
 				}
 			}
 			api.preview.send( 'focus-control-for-setting', settingId );
@@ -848,7 +849,7 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 			containerElements = containerElements.add( rootElement );
 		}
 		containerElements.each( function() {
-			var containerElement = $( this ), partial, id, Constructor, partialOptions, containerContext;
+			var containerElement = $( this ), partial, placement, id, Constructor, partialOptions, containerContext;
 			id = containerElement.data( 'customize-partial-id' );
 			if ( ! id ) {
 				return;
@@ -873,14 +874,19 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 			 */
 			if ( options.triggerRendered && ! containerElement.data( 'customize-partial-content-rendered' ) ) {
 
-				/**
-				 * Announce when a partial's nested placement has been re-rendered.
-				 */
-				self.trigger( 'partial-content-rendered', new Placement( {
+				placement = new Placement( {
 					partial: partial,
 					context: containerContext,
 					container: containerElement
-				} ) );
+				} );
+
+				$( placement.container ).attr( 'title', self.data.l10n.shiftClickToEdit );
+				partial.createEditShortcutForPlacement( placement );
+
+				/**
+				 * Announce when a partial's nested placement has been re-rendered.
+				 */
+				self.trigger( 'partial-content-rendered', placement );
 			}
 			containerElement.data( 'customize-partial-content-rendered', true );
 		} );

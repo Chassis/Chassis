@@ -43,6 +43,21 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 			<a href="freedoms.php" class="nav-tab"><?php _e( 'Freedoms' ); ?></a>
 		</h2>
 
+		<div class="changelog point-releases">
+			<h3><?php _e( 'Maintenance and Security Releases' ); ?></h3>
+			<p><?php printf( _n( '<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug.',
+					'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs.', 39 ), '4.7.3', number_format_i18n( 39 ) ); ?>
+				<?php printf( __( 'For more information, see <a href="%s">the release notes</a>.' ), 'https://codex.wordpress.org/Version_4.7.3' ); ?>
+			</p>
+			<p><?php printf( __( '<strong>Version %s</strong> addressed some security issues.' ), '4.7.2' ); ?>
+				<?php printf( __( 'For more information, see <a href="%s">the release notes</a>.' ), 'https://codex.wordpress.org/Version_4.7.2' ); ?>
+			</p>
+			<p><?php printf( _n( '<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug.',
+					'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs.', 62 ), '4.7.1', number_format_i18n( 62 ) ); ?>
+				<?php printf( __( 'For more information, see <a href="%s">the release notes</a>.' ), 'https://codex.wordpress.org/Version_4.7.1' ); ?>
+			</p>
+		</div>
+
 		<div class="headline-feature feature-video">
 			<iframe width="1050" height="591" src="<?php echo esc_url( $video_url ); ?>" frameborder="0" allowfullscreen></iframe>
 			<script src="https://videopress.com/videopress-iframe.js"></script>
@@ -78,8 +93,6 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 				echo wp_video_shortcode( array(
 					'mp4'      => 'https://s.w.org/images/core/4.7/starter-content-v1.mp4',
 					'poster'   => 'https://s.w.org/images/core/4.7/starter-content.jpg?v2',
-					'loop'     => true,
-					'autoplay' => true,
 					'width'    => 1140,
 					'height'   => 624,
 					// 'class'    => 'wp-video-shortcode feature-video',
@@ -95,8 +108,6 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 				echo wp_video_shortcode( array(
 					'mp4'      => 'https://s.w.org/images/core/4.7/edit-shortcuts-v1.mp4',
 					'poster'   => 'https://s.w.org/images/core/4.7/edit-shortcuts.jpg?v2',
-					'loop'     => true,
-					'autoplay' => true,
 					'width'    => 2520,
 					'height'   => 1454,
 					// 'class'    => 'wp-video-shortcode feature-video',
@@ -110,8 +121,6 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 				echo wp_video_shortcode( array(
 					'mp4'      => 'https://s.w.org/images/core/4.7/header-video-v1.mp4',
 					'poster'   => 'https://s.w.org/images/core/4.7/header-video.jpg?v2',
-					'loop'     => true,
-					'autoplay' => true,
 					'width'    => 2520,
 					'height'   => 1454,
 					// 'class'    => 'wp-video-shortcode feature-video',

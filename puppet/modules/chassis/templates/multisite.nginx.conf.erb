@@ -7,6 +7,8 @@ server {
 	fastcgi_split_path_info ^(.+\.php)(/.+)$;
 	fastcgi_index index.php;
 
+	include /etc/nginx/sites-available/<%= @fqdn %>.d/*;
+
 	# Handle X-Accel-Redirect file serving
 	location ^~ /blogs.dir {
 		internal;

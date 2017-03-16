@@ -798,7 +798,8 @@ final class WP_Customize_Manager {
 			'no_found_rows' => true,
 			'cache_results' => true,
 			'update_post_meta_cache' => false,
-			'update_term_meta_cache' => false,
+			'update_post_term_cache' => false,
+			'lazy_load_term_meta' => false,
 		) );
 		if ( ! empty( $changeset_post_query->posts ) ) {
 			// Note: 'fields'=>'ids' is not being used in order to cache the post object as it will be needed.
@@ -996,13 +997,19 @@ final class WP_Customize_Manager {
 			wp_list_pluck( $posts, 'post_name' )
 		);
 
+		/*
+		 * Obtain all post types referenced in starter content to use in query.
+		 * This is needed because 'any' will not account for post types not yet registered.
+		 */
+		$post_types = array_filter( array_merge( array( 'attachment' ), wp_list_pluck( $posts, 'post_type' ) ) );
+
 		// Re-use auto-draft starter content posts referenced in the current customized state.
 		$existing_starter_content_posts = array();
 		if ( ! empty( $starter_content_auto_draft_post_ids ) ) {
 			$existing_posts_query = new WP_Query( array(
 				'post__in' => $starter_content_auto_draft_post_ids,
 				'post_status' => 'auto-draft',
-				'post_type' => 'any',
+				'post_type' => $post_types,
 				'posts_per_page' => -1,
 			) );
 			foreach ( $existing_posts_query->posts as $existing_post ) {
@@ -1570,6 +1577,7 @@ final class WP_Customize_Manager {
 		add_filter( 'wp_redirect', array( $this, 'add_state_query_params' ) );
 
 		wp_enqueue_script( 'customize-preview' );
+		wp_enqueue_style( 'customize-preview' );
 		add_action( 'wp_head', array( $this, 'customize_preview_loading_style' ) );
 		add_action( 'wp_head', array( $this, 'remove_frameless_preview_messenger_channel' ) );
 		add_action( 'wp_footer', array( $this, 'customize_preview_settings' ), 20 );
@@ -1776,6 +1784,17 @@ final class WP_Customize_Manager {
 			}
 			$allowed_hosts[] = $host;
 		}
+
+		$switched_locale = switch_to_locale( get_user_locale() );
+		$l10n = array(
+			'shiftClickToEdit' => __( 'Shift-click to edit this element.' ),
+			'linkUnpreviewable' => __( 'This link is not live-previewable.' ),
+			'formUnpreviewable' => __( 'This form is not live-previewable.' ),
+		);
+		if ( $switched_locale ) {
+			restore_previous_locale();
+		}
+
 		$settings = array(
 			'changeset' => array(
 				'uuid' => $this->_changeset_uuid,
@@ -1800,11 +1819,7 @@ final class WP_Customize_Manager {
 			'activeControls' => array(),
 			'settingValidities' => $exported_setting_validities,
 			'nonce' => current_user_can( 'customize' ) ? $this->get_nonces() : array(),
-			'l10n' => array(
-				'shiftClickToEdit' => __( 'Shift-click to edit this element.' ),
-				'linkUnpreviewable' => __( 'This link is not live-previewable.' ),
-				'formUnpreviewable' => __( 'This form is not live-previewable.' ),
-			),
+			'l10n' => $l10n,
 			'_dirty' => array_keys( $post_values ),
 		);
 
@@ -2479,6 +2494,14 @@ final class WP_Customize_Manager {
 		} elseif ( $args['date_gmt'] ) {
 			$post_array['post_date_gmt'] = $args['date_gmt'];
 			$post_array['post_date'] = get_date_from_gmt( $args['date_gmt'] );
+		} elseif ( $changeset_post_id && 'auto-draft' === get_post_status( $changeset_post_id ) ) {
+			/*
+			 * Keep bumping the date for the auto-draft whenever it is modified;
+			 * this extends its life, preserving it from garbage-collection via
+			 * wp_delete_auto_drafts().
+			 */
+			$post_array['post_date'] = current_time( 'mysql' );
+			$post_array['post_date_gmt'] = '';
 		}
 
 		$this->store_changeset_revision = $allow_revision;
@@ -3889,7 +3912,7 @@ final class WP_Customize_Manager {
 		$this->add_setting( 'external_header_video', array(
 			'theme_supports'    => array( 'custom-header', 'video' ),
 			'transport'         => 'postMessage',
-			'sanitize_callback' => 'esc_url_raw',
+			'sanitize_callback' => array( $this, '_sanitize_external_header_video' ),
 			'validate_callback' => array( $this, '_validate_external_header_video' ),
 		) );
 
@@ -4309,6 +4332,18 @@ final class WP_Customize_Manager {
 			}
 		}
 		return $validity;
+	}
+
+	/**
+	 * Callback for sanitizing the external_header_video value.
+	 *
+	 * @since 4.7.1
+	 *
+	 * @param string $value URL.
+	 * @return string Sanitized URL.
+	 */
+	public function _sanitize_external_header_video( $value ) {
+		return esc_url_raw( trim( $value ) );
 	}
 
 	/**
