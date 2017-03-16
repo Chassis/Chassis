@@ -28,4 +28,5 @@ if ( ! defined( 'WP_INSTALLING' ) || ! WP_INSTALLING ) {
 if ( empty( $_SERVER['HTTP_HOST'] ) ) {
 	$_SERVER['HTTP_HOST'] = '<%= @name %>';
 }
+defined( 'WP_SITEURL' ) or define( 'WP_SITEURL', 'http://<%= @name %>' );
 <% end %>
