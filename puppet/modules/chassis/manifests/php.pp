@@ -62,11 +62,15 @@ class chassis::php (
 	$prefixed_extensions = prefix($extensions, "${php_package}-")
 
 	# Hold the packages at the necessary version
-	apt::hold { $packages:
-		version => $package_version
+	apt::pin { $packages:
+		packages => $packages,
+		version => $package_version,
+		priority => 1001,
 	}
-	apt::hold { $prefixed_extensions:
-		version => $package_version
+	apt::pin { $prefixed_extensions:
+		packages => $prefixed_extensions,
+		version => $package_version,
+		priority => 1001,
 	}
 
 	# Grab the packages at the given versions
@@ -77,7 +81,7 @@ class chassis::php (
 
 		notify => Service["${php_package}-fpm"],
 		require => [
-			Apt::Hold[$packages],
+			Apt::Pin[$packages],
 			Apt::Ppa["ppa:ondrej/php"],
 		],
 	}
@@ -162,7 +166,7 @@ class chassis::php (
 
 		require => [
 			Package[ $packages ],
-			Apt::Hold[ $prefixed_extensions ]
+			Apt::Pin[ $prefixed_extensions ]
 		]
 	}
 

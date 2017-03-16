@@ -14,9 +14,7 @@ package { 'git-core':
 	ensure => installed
 }
 
-class { 'apt':
- 	update_timeout       => undef
-}
+class { 'apt': }
 
 class { 'mysql::server':
 	root_password => 'password',
