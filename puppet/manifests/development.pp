@@ -5,16 +5,19 @@ $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
 
+class { 'apt': }
+
 class { 'chassis::php':
 	extensions => $php_extensions,
-	version => $config[php]
+	version => $config[php],
+	require => [
+		Class['apt'],
+	],
 }
 
 package { 'git-core':
 	ensure => installed
 }
-
-class { 'apt': }
 
 class { 'mysql::server':
 	root_password => 'password',

@@ -2,7 +2,16 @@ class chassis::php (
 	$extensions = [],
 	$version = "5.6",
 ) {
-	apt::ppa { "ppa:ondrej/php": }
+	# Ensure add-apt-repository is actually available.
+	if !defined(Package[$::apt::ppa_package]) {
+		package { $::apt::ppa_package:
+			ensure => latest,
+		}
+	}
+
+	apt::ppa { "ppa:ondrej/php":
+		require => [ Package[ $::apt::ppa_package ] ],
+	}
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
 		$package_version = "${version}.*"
