@@ -53,9 +53,9 @@ if [[ ! -z $CHECK_PREFIX ]] && hash mysql 2>/dev/null; then
 	if [[ ! -z $HAS_OTHERS ]]; then
 		echo "ERROR: Since 2016-11-25, Chassis requires defining database.prefix in your"
 		echo "config.yaml. I found other tables in your database:"
-		echo
-		echo "$HAS_OTHERS"
-		echo
+		echo " "
+		echo "$HAS_OTHERS" | sed s/^/\\t/
+		echo " "
 		echo "You MUST define database.prefix in your config.local.yaml."
 		exit 1
 	fi
