@@ -44,14 +44,14 @@ CHECK_PREFIX=$2
 if [[ ! -z $CHECK_PREFIX ]] && hash mysql 2>/dev/null; then
 	# MySQL is installed, so we probably already have an install here.
 	# Check for tables starting with anything that isn't `wp_`
-	HAS_OTHERS=$(HOME=/root/ mysql wordpress -e 'SHOW TABLES' -s | grep -v -e '^wp_')
+	HAS_OTHERS=$(HOME=/root/ mysql wordpress -e 'SHOW TABLES' -s 2>/dev/null | grep -v -e '^wp_')
 	if [[ ! -z $HAS_OTHERS ]]; then
-		echo "Warning: Since 2016-11-25, Chassis requires defining database.prefix in your"
-		echo "config.yaml. I found other tables in your database:"
-		echo
-		echo "$HAS_OTHERS"
-		echo
-		echo "You should define database.prefix in your config.local.yaml."
+		>&2 echo "ERROR: Since 2016-11-25, Chassis requires defining database.prefix in your"
+		>&2 echo "config.yaml. I found other tables in your database:"
+		>&2 echo " "
+		>&2 echo "$HAS_OTHERS" | sed s/^/\\t/
+		>&2 echo " "
+		>&2 echo "You MUST define database.prefix in your config.local.yaml."
 		exit 1
 	fi
 fi
