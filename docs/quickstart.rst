@@ -76,10 +76,7 @@ Installing
      You will need to create a content folder::
 
          $ cd <myproject>
-         $ mkdir content
-         $ cd content
-         $ mkdir plugins
-         $ mkdir themes
+         $ mkdir -p content/{themes,plugins}
 
 3. Boot up a Virtual Machine::
 
