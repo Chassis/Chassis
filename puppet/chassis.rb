@@ -102,16 +102,68 @@ module Chassis
 	def self.install_extensions(config)
 		# Install extensions listed in config
 		if config["extensions"]
-			config["extensions"].each do |ext|
-				begin
-					repo = /^(git@|https:)/.match(ext) ? ext : 'https://github.com/' + ext
-					folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
+			self.install_extensions_from_array(config["extensions"])
+		end
 
-					if ! File.exist?( folder )
-						system("git clone %s %s --recursive" % [repo, folder] )
+		# For each of the extensions in our folder, read the extension config and
+		# install dependencies, etc for that extension.
+		Dir.foreach('extensions/') do |ext_folder|
+
+			# Bail out if we aren't a valid folder.
+			next if ext_folder == '.' or ext_folder == '..' or File.file?('extensions/' + ext_folder)
+
+			# If we don't have our config file, don't do anything.
+			next if not File.exists? 'extensions/' + ext_folder + '/chassis.yaml'
+
+			# Grab our config file and load it.
+			ext_config = YAML.load_file('extensions/' + ext_folder + '/chassis.yaml')
+
+			# If we have dependencies, then install them.
+			if ext_config["dependencies"]
+				install_extensions_from_array(ext_config["dependencies"])
+			end
+		end
+	end
+
+	def self.install_extensions_from_array(extensions)
+		extensions.each do |ext|
+			if ext.is_a? String
+				# If it is a string, then it's a normal extension, install it.
+				self.install_extension(ext)
+			else
+				# Otherwise, we have a dependencies for our extension,
+				# which we want to extract out and install as well.
+				ext.keys.each do |ext_need_dep|
+					# Loop through each of the dependencies we need
+					# for the extension and install them.
+					ext.values[0].each do |ext_dep|
+						self.install_extension(ext_dep)
 					end
+
+					# Finally, actually install our extension
+					# that needs dependencies.
+					self.install_extension(ext_need_dep)
 				end
 			end
+		end
+	end
+
+	def self.install_extension(extension)
+		# Perform checks for various forms of extension definition.
+		if extension.include? "git@" # Full git-based url.
+			repo = extension
+		elsif extension.include? 'https:' # GitHub-like https url.
+			repo = extension
+		elsif extension.include? '/' # assume account/repo style.
+			repo = 'https://github.com/' + extension
+		else # Assume a Chassis official extension, like 'nodejs'.
+			repo = 'https://github.com/chassis/' + extension
+		end
+
+		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
+
+		if ! File.exist?( folder )
+			system("git clone %s %s --recursive" % [repo, folder] )
 		end
 	end
 end
