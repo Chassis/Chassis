@@ -151,6 +151,9 @@ values, like so::
    You must include all lines shown above (albeit with your custom
    configuration), even if you're not changing from the default.
 
+   Changing the default admin requires creating the box from scratch, using
+   vagrant destroy before running vagrant up.
+
    Note also that the indentation must be done with **spaces, not tabs** in
    YAML configuration.
 
