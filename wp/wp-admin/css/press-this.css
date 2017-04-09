@@ -81,7 +81,7 @@ abbr[title] {
 
 b,
 strong {
-	font-weight: 700;
+	font-weight: bold;
 }
 
 dfn {
@@ -232,7 +232,7 @@ textarea {
 }
 
 optgroup {
-	font-weight: 700;
+	font-weight: bold;
 }
 
 table {
@@ -243,19 +243,6 @@ table {
 td,
 th {
 	padding: 0;
-}
-
-::-webkit-input-placeholder {
-	color: #72777c;
-}
-
-::-moz-placeholder {
-   color: #72777c;
-   opacity: 1;
-}
-
-:-ms-input-placeholder {
-	color: #72777c;
 }
 
 .clearfix:before,
@@ -294,7 +281,7 @@ input,
 select,
 textarea {
 	color: #404040;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-family: "Open Sans", Helvetica, Arial, sans-serif;
 	font-size: 20px;
 	font-weight: 400;
 	line-height: 1.6;
@@ -325,6 +312,7 @@ strong {
 * Pushing buttons is what I do.
 */
 
+.button-subtle,
 .scan-submit {
 	display: inline-block;
 	margin: 0;
@@ -341,139 +329,67 @@ strong {
 	-webkit-appearance: none;
 }
 
-.split-button {
-	position: relative;
-	display: inline-block;
-	vertical-align: middle;
+.button-subtle {
+	background: none;
+	border: 0;
+	color: #0073aa;
 }
 
-.split-button-body {
-	display: none;
-	position: absolute;
-	bottom: 39px;
-	right: 0;
-	border: 1px solid #ddd;
-	background-color: #fff;
-	min-width: 180px;
-	max-width: 100%;
+.button-subtle:visited {
+	color: #0073aa;
+}
+
+.button-subtle:focus,
+.button-subtle:hover,
+.button-subtle:active,
+.edit-post-link:focus,
+.edit-post-link:hover,
+.edit-post-link:active {
+	color: #00a0d2;
+}
+
+.button-subtle:focus,
+.button-subtle:active,
+.edit-post-link:focus,
+.edit-post-link:active {
+	outline: 0;
+	text-decoration: underline;
+}
+
+.preview-button {
+	margin-right: 5px;
+}
+
+.button-reset {
 	margin: 0;
-	padding: 8px;
-	list-style: none;
-	-webkit-box-shadow: 1px 0 4px rgba( 0, 0, 0, 0.15 );
-	box-shadow: 1px 0 4px rgba( 0, 0, 0, 0.15 );
-}
-
-.split-button-body:before,
-.split-button-body:after {
-	position: absolute;
-	right: 12px;
-	display: block;
-	width: 0;
-	height: 0;
-	border-style: solid;
-	border-color: transparent;
-	content: "";
-}
-
-.split-button-body:before {
-	bottom: -18px;
-	border-top-color: #ccc;
-	border-width: 9px;
-	right: 11px;
-}
-
-.split-button-body:after {
-	bottom: -16px;
-	border-top-color: #fff;
-	border-width: 8px;
-}
-
-.split-button-body .split-button-option {
-	display: block;
-	padding: 5px 15px;
-	margin: 0;
-	width: 100%;
-	text-align: left;
-	line-height: 2;
-}
-
-.is-open .split-button-body {
-	display: block;
-}
-
-.split-button-primary,
-.split-button-toggle {
-	-webkit-border-radius: 0;
-	border-radius: 0;
-	display: block;
-	margin: 0;
-	font-size: 13px;
-	text-decoration: none;
-	white-space: nowrap;
+	padding: 0;
+	border: 0;
+	background: none;
 	cursor: pointer;
 	-webkit-appearance: none;
-	line-height: 2;
-	padding: 0 10px 1px;
-	background: #0085ba;
-	border-color: #0073aa #006799 #006799;
-	border-width: 1px;
-	border-style: solid;
-	-webkit-box-shadow: 0 1px 0 #006799;
- 	box-shadow: 0 1px 0 #006799;
-	color: #fff;
-	text-shadow: 0 -1px 1px #006799,
-		1px 0 1px #006799,
-		0 1px 1px #006799,
-		-1px 0 1px #006799;
 }
 
-.split-button-primary {
-	-webkit-border-top-left-radius: 3px;
-	border-top-left-radius: 3px;
-	-webkit-border-bottom-left-radius: 3px;
-	border-bottom-left-radius: 3px;
-	border-right: 0 none;
-	float: left;
+.button-reset:focus {
+	outline: 0;
 }
 
-.split-button-toggle {
+.button-link {
+	margin: 0;
 	padding: 0;
-	-webkit-border-top-right-radius: 3px;
-	border-top-right-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px;
-	border-bottom-right-radius: 3px;
-	border-left: 1px solid #006799;
-	float: right;
+	border: 0;
+	background: none;
+	color: #0073aa;
+	cursor: pointer;
+	-webkit-appearance: none;
 }
 
-.split-button-toggle i {
-	margin: 4px 20px 3px 0;
-	padding: 0 10px;
+.button-link:hover,
+.button-link:active,
+.button-link:focus {
+	color: #00a0d2;
+	text-decoration: underline;
 }
 
-.split-button-primary:hover,
-.split-button-toggle:hover {
-	outline: none;
-	background: #008ec2;
-	border-color: #006799;
-}
-
-.split-button-primary:focus,
-.split-button-toggle:focus {
-	outline: none;
-	-webkit-box-shadow: 0 1px 0 #0073aa,
-		0 0 2px 1px #33b3db;
-	box-shadow: 0 1px 0 #0073aa,
-		0 0 2px 1px #33b3db;
-}
-
-.split-button-primary:active,
-.split-button-toggle:active {
-	background: #0073aa;
-	border-color: #006799;
-	-webkit-box-shadow: inset 0 2px 10px #006799, 0 1px 0 #0073aa;
- 	box-shadow: inset 0 2px 10px #006799, 0 1px 0 #0073aa;
-}
 
 /**
 * Forms
@@ -770,6 +686,39 @@ dd {
 	margin: 10px 0 6px 16px;
 }
 
+
+/* Tag hint TODO needed? */
+/* Tag suggestions */
+.ac_results {
+	padding: 0;
+	margin: -1px 0 0 -1px;
+	list-style: none;
+	position: absolute;
+	z-index: 10000;
+	display: none;
+	border: 1px solid #d8d8d8;
+	background-color: #fff;
+	font-size: 14px;
+}
+
+.ac_results li {
+	padding: 6px 16px;
+	white-space: nowrap;
+	color: #101010;
+	text-align: left;
+}
+
+.ac_results .ac_over {
+	background-color: #e5e5e5;
+	background-color: #00a0d2;
+	color: #fff;
+	cursor: pointer;
+}
+
+.ac_match {
+	text-decoration: underline;
+}
+
 /* Tags */
 .tagchecklist {
 	padding: 16px 28px 5px;
@@ -785,9 +734,10 @@ dd {
 	clear: both;
 }
 
-.tagchecklist > span {
-	float: left;
+.tagchecklist span {
+	display: block;
 	margin-right: 25px;
+	float: left;
 	font-size: 13px;
 	line-height: 1.8;
 	white-space: nowrap;
@@ -795,7 +745,7 @@ dd {
 }
 
 @media (max-width: 600px) {
-	.tagchecklist > span {
+	.tagchecklist span {
 		margin-bottom: 15px;
 		font-size: 16px;
 		line-height: 1.3;
@@ -803,61 +753,45 @@ dd {
 }
 
 .tagchecklist .ntdelbutton {
-	position: absolute;
-	width: 24px;
-	height: 24px;
-	border: none;
-	margin: 0 0 0 -19px;
-	padding: 0;
-	background: none;
+	margin: 1px 0 0 -17px;
 	cursor: pointer;
-	text-indent: 0;;
-	position: absolute;
-}
-
-.tagchecklist .ntdelbutton .remove-tag-icon:before {
-	content: "\f153";
-	display: block;
-	margin-left: 2px;
-	height: 20px;
 	width: 20px;
-	-webkit-border-radius: 50%;
-	border-radius: 50%;
-	background: transparent;
-	color: #0073aa;
-	/* line-height tweak to vertically center the icon cross browsers */
-	font: 400 16px/1.28 dashicons;
-	text-align: center;
-	-webkit-font-smoothing: antialiased;
-}
-
-.tagchecklist .ntdelbutton:focus {
+	height: 20px;
+	display: block;
+	float: left;
+	text-indent: 0;
+	overflow: hidden;
+	position: absolute;
 	outline: 0;
 }
 
-.tagchecklist .ntdelbutton:hover .remove-tag-icon:before,
-.tagchecklist .ntdelbutton:focus .remove-tag-icon:before {
-	color: #c00;
+.tagchecklist .ntdelbutton:before {
+	content: '\f153';
+	display: block;
+	margin: 2px 0;
+	height: 20px;
+	width: 20px;
+	background: 0 0;
+	color: #9ea7af;
+	font: 400 16px/1 dashicons;
+	text-align: center;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
 }
 
-.tagchecklist .ntdelbutton:focus .remove-tag-icon:before {
-	-webkit-box-shadow:
-		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
-	box-shadow:
-		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+.tagchecklist .ntdelbutton:focus:before {
+	color: #00a0d2;
 }
+
 
 /* THE TAG CLOUD. */
 .tagsdiv + p {
 	margin: 0;
 }
 
-.press-this .tagcloud-link {
+.tagcloud-link {
 	display: block;
-	margin: 0 16px 5px;
-	padding: 0;
+	padding: 0 16px;
 	text-decoration: none;
 	outline: 0;
 }
@@ -924,24 +858,23 @@ input[type="search"].categories-search,
 	}
 }
 
-.press-this .add-cat-toggle {
+.add-cat-toggle {
 	float: right;
 	margin-top: -45px;
 	line-height: 20px;
 	padding: 12px 10px 8px;
-	color: #0073aa;
 }
 
-.press-this .add-cat-toggle:focus {
+.add-cat-toggle:focus {
 	text-decoration: none;
 	color: #00a0d2;
 }
 
-.press-this .add-cat-toggle.is-toggled {
+.add-cat-toggle.is-toggled {
 	padding: 10px;
 }
 
-.press-this .add-cat-toggle.is-toggled .dashicons:before {
+.add-cat-toggle.is-toggled .dashicons:before {
 	content: "\f179";
 }
 
@@ -1192,16 +1125,14 @@ html {
 }
 
 .adminbar .dashicons {
-	color: #a0a5aa; /* same as WP admin bar icons */
+	color: #999;
 }
 
-.press-this .adminbar button {
+.adminbar button {
 	position: absolute;
 	top: 50%;
 	right: 6px;
 	margin-top: -13px;
-	padding: 0 10px 1px;
-	font-size: 13px;
 }
 
 @media (max-width: 320px) {
@@ -1300,7 +1231,7 @@ html {
 }
 
 .alert:before {
-	content: "";
+	content: '';
 	position: absolute;
 	top: 50%;
 	left: 30px;
@@ -1362,7 +1293,7 @@ html {
 	bottom: 0;
 	padding: 0 1.07143em;
 	background: #f7f7f7;
-	border-color: #ddd;
+	border-color: #dedede;
 	border: 0;
 	border-left: 1px solid #f1f1f1;
 	-webkit-border-radius: 0;
@@ -1374,15 +1305,15 @@ html {
 
 .scan-submit:hover,
 .scan-submit:focus {
-	background: #008ec2;
-	border-color: #006799;
+	background: #2991b7;
+	border-color: #20708e;
 	color: #fff;
 	outline: 0;
 }
 
 .scan-submit:active {
-	background: #0073aa;
-	border-color: #006799;
+	background: #2581a2;
+	border-color: #20708e;
 	color: #fff;
 }
 
@@ -1532,7 +1463,7 @@ html {
 
 .post-title:before {
 	/* Keeps empty container from collapsing */
-	content: "\a0";
+	content: '\a0';
 	display: inline-block;
 	width: 0;
 	speak: none;
@@ -1541,7 +1472,7 @@ html {
 .post-title-placeholder {
 	position: absolute;
 	border: 0;
-	color: #82878c;
+	color: #9ea7af;
 	z-index: -1;
 }
 
@@ -1735,9 +1666,7 @@ html {
 		-ms-transform: translateY(0);
 		transform: translateY(0);
 		-webkit-transition: -webkit-transform .3s ease-in-out;
-		transition: -webkit-transform .3s ease-in-out;
 		transition: transform .3s ease-in-out;
-		transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
 	}
 	.press-this-actions.is-hidden {
 		-webkit-transform: translateY(100%);
@@ -1817,12 +1746,20 @@ html {
 	}
 }
 
-.publish-button .saving-draft,
-.publish-button.is-saving .publish {
+.edit-post-link {
+	font-size: 13px;
+	display: inline-block;
+	text-decoration: none;
+	padding: 0 10px;
+}
+
+.draft-button.is-hidden,
+.draft-button .saving-draft,
+.draft-button.is-saving .save-draft {
 	display: none;
 }
 
-.publish-button.is-saving .saving-draft {
+.draft-button.is-saving .saving-draft {
 	display: inline;
 }
 
@@ -1941,9 +1878,7 @@ html {
 		-ms-transform: translateX(-100%);
 		transform: translateX(-100%);
 		-webkit-transition: -webkit-transform .3s ease-in-out;
-		transition: -webkit-transform .3s ease-in-out;
 		transition: transform .3s ease-in-out;
-		transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
 	}
 
 	.options-panel.is-hidden {
@@ -2021,16 +1956,13 @@ html {
 	white-space: nowrap;
 	overflow: hidden;
 	-webkit-transition: -webkit-transform .3s ease-in-out;
-	transition: -webkit-transform .3s ease-in-out;
 	transition: transform .3s ease-in-out;
-	transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
 }
 
 .post-options .post-option:focus {
 	outline: 0;
 	-webkit-box-shadow: inset 5px 0 0 #00a0d2;
 	box-shadow: inset 5px 0 0 #00a0d2;
-	border-color: #e5e5e5;
 }
 
 .is-off-screen > .post-option {
@@ -2054,7 +1986,7 @@ html {
 	display: inline-block;
 	margin: 0 0 0 8px;
 	font-size: 14px;
-	font-weight: 400;
+	font-weight: normal;
 }
 
 .setting-modal {
@@ -2064,9 +1996,7 @@ html {
 	width: 100%;
 	overflow: hidden;
 	-webkit-transition: -webkit-transform .3s ease-in-out;
-	transition: -webkit-transform .3s ease-in-out;
 	transition: transform .3s ease-in-out;
-	transition: transform .3s ease-in-out, -webkit-transform .3s ease-in-out;
 }
 
 .setting-modal.is-hidden {
@@ -2087,7 +2017,7 @@ html {
 	}
 }
 
-.press-this .modal-close {
+.modal-close {
 	display: block;
 	width: 100%;
 	padding: 13px 14px;
@@ -2097,103 +2027,14 @@ html {
 	text-align: left;
 }
 
-.press-this .modal-close:focus {
+.modal-close:focus {
 	outline: 0;
 	-webkit-box-shadow: inset 5px 0 0 #00a0d2;
 	box-shadow: inset 5px 0 0 #00a0d2;
-	border-color: #e5e5e5;
 }
 
 .setting-title {
 	position: relative;
 	top: -1px;
 	margin-left: 11px;
-}
-
-/* Text editor */
-#pressthis {
-	color: #404040;
-	resize: none;
-	padding-top: 30px;
-	font-size: 16px;
-}
-
-.wp-editor-wrap .quicktags-toolbar {
-	background: transparent;
-	border: none;
-}
-
-/* Switch editor buttons */
-.wp-editor-wrap .wp-editor-tools {
-	z-index: 0;
-}
-
-.wp-editor-wrap .wp-editor-tabs {
-	padding: 2px;
-}
-
-.wp-editor-wrap .wp-switch-editor {
-	top: 0;
-	margin: 3px 0 0 5px;
-	padding: 3px 8px;
-	background: #f5f5f5;
-	color: #555;
-	border-color: #ccc;
-}
-
-.wp-editor-wrap .wp-switch-editor:hover {
-	background: #fafafa;
-	border-color: #999;
-	color: #23282d;
-}
-
-.wp-editor-wrap.tmce-active .switch-tmce,
-.wp-editor-wrap.html-active .switch-html {
-	background: #fff;
-	border-color: #d8d8d8;
-}
-
-/* Inline link dialog */
-.wp-link-input input {
-	border: 1px solid #ddd;
-    -webkit-box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
-    box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
-    background-color: #fff;
-    color: #32373c;
-    outline: none;
-    -webkit-transition: 0.05s border-color ease-in-out;
-    transition: 0.05s border-color ease-in-out;
-}
-
-/* UI Autocomplete (for inline link and wpLink) */
-.ui-autocomplete {
-	padding: 0;
-	margin: 0;
-	list-style: none;
-	position: absolute;
-	z-index: 10000;
-	border: 1px solid #5b9dd9;
-	-webkit-box-shadow: 0 1px 2px rgba( 30, 140, 190, 0.8 );
-	box-shadow: 0 1px 2px rgba( 30, 140, 190, 0.8 );
-	background-color: #fff;
-	font-size: 14px;
-}
-
-.ui-autocomplete li {
-	margin-bottom: 0;
-	padding: 4px 10px;
-	white-space: nowrap;
-	text-align: left;
-	cursor: pointer;
-}
-
-/* Colors for the wplink toolbar autocomplete. */
-.ui-autocomplete .ui-state-focus {
-	background-color: #ddd;
-}
-
-/* Colors for the tags autocomplete. */
-.wp-tags-autocomplete .ui-state-focus {
-	background-color: #0073aa;
-	color: #fff;
 }

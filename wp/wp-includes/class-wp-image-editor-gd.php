@@ -16,12 +16,9 @@
  */
 class WP_Image_Editor_GD extends WP_Image_Editor {
 	/**
-	 * GD Resource.
-	 *
-	 * @access protected
 	 * @var resource
 	 */
-	protected $image;
+	protected $image; // GD Resource
 
 	public function __destruct() {
 		if ( $this->image ) {
@@ -34,12 +31,9 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * Checks to see if current environment supports GD.
 	 *
 	 * @since 3.5.0
-	 *
-	 * @static
 	 * @access public
 	 *
-	 * @param array $args
-	 * @return bool
+	 * @return boolean
 	 */
 	public static function test( $args = array() ) {
 		if ( ! extension_loaded('gd') || ! function_exists('gd_info') )
@@ -60,12 +54,10 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * Checks to see if editor supports the mime-type specified.
 	 *
 	 * @since 3.5.0
-	 *
-	 * @static
 	 * @access public
 	 *
 	 * @param string $mime_type
-	 * @return bool
+	 * @return boolean
 	 */
 	public static function supports_mime_type( $mime_type ) {
 		$image_types = imagetypes();
@@ -87,7 +79,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @since 3.5.0
 	 * @access protected
 	 *
-	 * @return bool|WP_Error True if loaded successfully; WP_Error on failure.
+	 * @return boolean|WP_Error True if loaded successfully; WP_Error on failure.
 	 */
 	public function load() {
 		if ( $this->image )
@@ -96,8 +88,16 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 		if ( ! is_file( $this->file ) && ! preg_match( '|^https?://|', $this->file ) )
 			return new WP_Error( 'error_loading_image', __('File doesn&#8217;t exist?'), $this->file );
 
-		// Set artificially high because GD uses uncompressed images in memory.
-		wp_raise_memory_limit( 'image' );
+		/**
+		 * Filter the memory limit allocated for image manipulation.
+		 *
+		 * @since 3.5.0
+		 *
+		 * @param int|string $limit Maximum memory limit to allocate for images. Default WP_MAX_MEMORY_LIMIT.
+		 *                          Accepts an integer (bytes), or a shorthand string notation, such as '256M'.
+		 */
+		// Set artificially high because GD uses uncompressed images in memory
+		@ini_set( 'memory_limit', apply_filters( 'image_memory_limit', WP_MAX_MEMORY_LIMIT ) );
 
 		$this->image = @imagecreatefromstring( file_get_contents( $this->file ) );
 
@@ -127,7 +127,6 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 *
 	 * @param int $width
 	 * @param int $height
-	 * @return true
 	 */
 	protected function update_size( $width = false, $height = false ) {
 		if ( ! $width )
@@ -152,8 +151,8 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 *
 	 * @param  int|null $max_w Image width.
 	 * @param  int|null $max_h Image height.
-	 * @param  bool     $crop
-	 * @return true|WP_Error
+	 * @param  boolean  $crop
+	 * @return boolean|WP_Error
 	 */
 	public function resize( $max_w, $max_h, $crop = false ) {
 		if ( ( $this->size['width'] == $max_w ) && ( $this->size['height'] == $max_h ) )
@@ -172,13 +171,6 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 		return new WP_Error( 'image_resize_error', __('Image resize failed.'), $this->file );
 	}
 
-	/**
-	 *
-	 * @param int $max_w
-	 * @param int $max_h
-	 * @param bool|array $crop
-	 * @return resource|WP_Error
-	 */
 	protected function _resize( $max_w, $max_h, $crop = false ) {
 		$dims = image_resize_dimensions( $this->size['width'], $this->size['height'], $max_w, $max_h, $crop );
 		if ( ! $dims ) {
@@ -204,18 +196,16 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @access public
 	 *
 	 * @param array $sizes {
-	 *     An array of image size arrays. Default sizes are 'small', 'medium', 'medium_large', 'large'.
+	 *     An array of image size arrays. Default sizes are 'small', 'medium', 'large'.
 	 *
 	 *     Either a height or width must be provided.
 	 *     If one of the two is set to null, the resize will
 	 *     maintain aspect ratio according to the provided dimension.
 	 *
 	 *     @type array $size {
-	 *         Array of height, width values, and whether to crop.
-	 *
-	 *         @type int  $width  Image width. Optional if `$height` is specified.
-	 *         @type int  $height Image height. Optional if `$width` is specified.
-	 *         @type bool $crop   Optional. Whether to crop the image. Default false.
+	 *         @type int  ['width']  Optional. Image width.
+	 *         @type int  ['height'] Optional. Image height.
+	 *         @type bool ['crop']   Optional. Whether to crop the image. Default false.
 	 *     }
 	 * }
 	 * @return array An array of resized images' metadata by size.
@@ -266,14 +256,14 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @since 3.5.0
 	 * @access public
 	 *
-	 * @param int  $src_x   The start x position to crop from.
-	 * @param int  $src_y   The start y position to crop from.
-	 * @param int  $src_w   The width to crop.
-	 * @param int  $src_h   The height to crop.
-	 * @param int  $dst_w   Optional. The destination width.
-	 * @param int  $dst_h   Optional. The destination height.
-	 * @param bool $src_abs Optional. If the source crop points are absolute.
-	 * @return bool|WP_Error
+	 * @param int $src_x The start x position to crop from.
+	 * @param int $src_y The start y position to crop from.
+	 * @param int $src_w The width to crop.
+	 * @param int $src_h The height to crop.
+	 * @param int $dst_w Optional. The destination width.
+	 * @param int $dst_h Optional. The destination height.
+	 * @param boolean $src_abs Optional. If the source crop points are absolute.
+	 * @return boolean|WP_Error
 	 */
 	public function crop( $src_x, $src_y, $src_w, $src_h, $dst_w = null, $dst_h = null, $src_abs = false ) {
 		// If destination width/height isn't specified, use same as
@@ -313,7 +303,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @access public
 	 *
 	 * @param float $angle
-	 * @return true|WP_Error
+	 * @return boolean|WP_Error
 	 */
 	public function rotate( $angle ) {
 		if ( function_exists('imagerotate') ) {
@@ -338,9 +328,9 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @since 3.5.0
 	 * @access public
 	 *
-	 * @param bool $horz Flip along Horizontal Axis
-	 * @param bool $vert Flip along Vertical Axis
-	 * @return true|WP_Error
+	 * @param boolean $horz Flip along Horizontal Axis
+	 * @param boolean $vert Flip along Vertical Axis
+	 * @returns boolean|WP_Error
 	 */
 	public function flip( $horz, $vert ) {
 		$w = $this->size['width'];
@@ -421,7 +411,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 		@ chmod( $filename, $perms );
 
 		/**
-		 * Filters the name of the saved image file.
+		 * Filter the name of the saved image file.
 		 *
 		 * @since 2.6.0
 		 *
@@ -443,7 +433,6 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @access public
 	 *
 	 * @param string $mime_type
-	 * @return bool
 	 */
 	public function stream( $mime_type = null ) {
 		list( $filename, $extension, $mime_type ) = $this->get_output_format( null, $mime_type );
@@ -470,7 +459,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @param string|stream $filename
 	 * @param callable $function
 	 * @param array $arguments
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function make_image( $filename, $function, $arguments ) {
 		if ( wp_is_stream( $filename ) )

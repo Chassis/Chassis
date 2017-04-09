@@ -9,9 +9,6 @@
 if ( ! defined('ABSPATH') )
 	die();
 
-/**
- * @global string $opml
- */
 global $opml;
 
 /**
@@ -72,11 +69,6 @@ function endElement($parser, $tagName) {
 }
 
 // Create an XML parser
-if ( ! function_exists( 'xml_parser_create' ) ) {
-	trigger_error( __( "PHP's XML extension is not available. Please contact your hosting provider to enable PHP's XML extension." ) );
-	wp_die( __( "PHP's XML extension is not available. Please contact your hosting provider to enable PHP's XML extension." ) );
-}
-
 $xml_parser = xml_parser_create();
 
 // Set the functions to handle opening and closing tags

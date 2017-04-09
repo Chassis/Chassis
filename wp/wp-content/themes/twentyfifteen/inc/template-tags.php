@@ -119,8 +119,7 @@ function twentyfifteen_entry_meta() {
 
 	if ( ! is_single() && ! post_password_required() && ( comments_open() || get_comments_number() ) ) {
 		echo '<span class="comments-link">';
-		/* translators: %s: post title */
-		comments_popup_link( sprintf( __( 'Leave a comment<span class="screen-reader-text"> on %s</span>', 'twentyfifteen' ), get_the_title() ) );
+		comments_popup_link( __( 'Leave a comment', 'twentyfifteen' ), __( '1 Comment', 'twentyfifteen' ), __( '% Comments', 'twentyfifteen' ) );
 		echo '</span>';
 	}
 }
@@ -240,19 +239,4 @@ function twentyfifteen_excerpt_more( $more ) {
 	return ' &hellip; ' . $link;
 }
 add_filter( 'excerpt_more', 'twentyfifteen_excerpt_more' );
-endif;
-
-if ( ! function_exists( 'twentyfifteen_the_custom_logo' ) ) :
-/**
- * Displays the optional custom logo.
- *
- * Does nothing if the custom logo is not available.
- *
- * @since Twenty Fifteen 1.5
- */
-function twentyfifteen_the_custom_logo() {
-	if ( function_exists( 'the_custom_logo' ) ) {
-		the_custom_logo();
-	}
-}
 endif;

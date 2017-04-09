@@ -80,10 +80,11 @@ themes.view.Appearance = wp.Backbone.View.extend({
 		// Render and append
 		this.view.render();
 		this.$el.empty().append( this.view.el ).addClass( 'rendered' );
+		this.$el.append( '<br class="clear"/>' );
 	},
 
 	// Defines search element container
-	searchContainer: $( '#wpbody h1:first' ),
+	searchContainer: $( '#wpbody h2:first' ),
 
 	// Search input and view
 	// for current theme collection
@@ -158,8 +159,8 @@ themes.Collection = Backbone.Collection.extend({
 			$( 'body' ).removeClass( 'no-results' );
 		}
 
-		// Trigger a 'themes:update' event
-		this.trigger( 'themes:update' );
+		// Trigger an 'update' event
+		this.trigger( 'update' );
 	},
 
 	// Performs a search within the collection
@@ -185,7 +186,7 @@ themes.Collection = Backbone.Collection.extend({
 			description = data.get( 'description' ).replace( /(<([^>]+)>)/ig, '' );
 			author      = data.get( 'author' ).replace( /(<([^>]+)>)/ig, '' );
 
-			haystack = _.union( [ name, data.get( 'id' ), description, author, data.get( 'tags' ) ] );
+			haystack = _.union( name, data.get( 'id' ), description, author, data.get( 'tags' ) );
 
 			if ( match.test( data.get( 'author' ) ) && term.length > 2 ) {
 				data.set( 'displayAuthor', true );
@@ -264,7 +265,7 @@ themes.Collection = Backbone.Collection.extend({
 
 				// Trigger a collection refresh event
 				// and a `query:success` event with a `count` argument.
-				self.trigger( 'themes:update' );
+				self.trigger( 'update' );
 				self.trigger( 'query:success', count );
 
 				if ( data.themes && data.themes.length === 0 ) {
@@ -308,7 +309,7 @@ themes.Collection = Backbone.Collection.extend({
 				this.count = this.length;
 			}
 
-			this.trigger( 'themes:update' );
+			this.trigger( 'update' );
 			this.trigger( 'query:success', this.count );
 		}
 	},
@@ -375,25 +376,17 @@ themes.view.Theme = wp.Backbone.View.extend({
 		'keydown': themes.isInstall ? 'preview': 'expand',
 		'touchend': themes.isInstall ? 'preview': 'expand',
 		'keyup': 'addFocus',
-		'touchmove': 'preventExpand',
-		'click .theme-install': 'installTheme',
-		'click .update-message': 'updateTheme'
+		'touchmove': 'preventExpand'
 	},
 
 	touchDrag: false,
 
-	initialize: function() {
-		this.model.on( 'change', this.render, this );
-	},
-
 	render: function() {
 		var data = this.model.toJSON();
-
 		// Render themes using the html template
 		this.$el.html( this.html( data ) ).attr({
 			tabindex: 0,
-			'aria-describedby' : data.id + '-action ' + data.id + '-name',
-			'data-slug': data.id
+			'aria-describedby' : data.id + '-action ' + data.id + '-name'
 		});
 
 		// Renders active theme styles
@@ -401,6 +394,10 @@ themes.view.Theme = wp.Backbone.View.extend({
 
 		if ( this.model.get( 'displayAuthor' ) ) {
 			this.$el.addClass( 'display-author' );
+		}
+
+		if ( this.model.get( 'installed' ) ) {
+			this.$el.addClass( 'is-installed' );
 		}
 	},
 
@@ -443,11 +440,6 @@ themes.view.Theme = wp.Backbone.View.extend({
 			return;
 		}
 
-		// Prevent the modal from showing when the user clicks one of the direct action buttons.
-		if ( $( event.target ).is( '.theme-actions a, .update-message, .button-link, .notice-dismiss' ) ) {
-			return;
-		}
-
 		// Set focused theme to current element
 		themes.focusedTheme = this.$el;
 
@@ -462,15 +454,13 @@ themes.view.Theme = wp.Backbone.View.extend({
 		var self = this,
 			current, preview;
 
-		event = event || window.event;
-
 		// Bail if the user scrolled on a touch device
 		if ( this.touchDrag === true ) {
 			return this.touchDrag = false;
 		}
 
 		// Allow direct link path to installing a theme.
-		if ( $( event.target ).not( '.install-theme-preview' ).parents( '.theme-actions' ).length ) {
+		if ( $( event.target ).hasClass( 'button-primary' ) ) {
 			return;
 		}
 
@@ -588,51 +578,6 @@ themes.view.Theme = wp.Backbone.View.extend({
 		if ( _.isUndefined( this.model.collection.at( this.model.collection.indexOf( current ) + 1 ) ) ) {
 			$themeInstaller.find( '.next-theme' ).addClass( 'disabled' );
 		}
-	},
-
-	installTheme: function( event ) {
-		var _this = this;
-
-		event.preventDefault();
-
-		wp.updates.maybeRequestFilesystemCredentials( event );
-
-		$( document ).on( 'wp-theme-install-success', function( event, response ) {
-			if ( _this.model.get( 'id' ) === response.slug ) {
-				_this.model.set( { 'installed': true } );
-			}
-		} );
-
-		wp.updates.installTheme( {
-			slug: $( event.target ).data( 'slug' )
-		} );
-	},
-
-	updateTheme: function( event ) {
-		var _this = this;
-
-		if ( ! this.model.get( 'hasPackage' ) ) {
-			return;
-		}
-
-		event.preventDefault();
-
-		wp.updates.maybeRequestFilesystemCredentials( event );
-
-		$( document ).on( 'wp-theme-update-success', function( event, response ) {
-			_this.model.off( 'change', _this.render, _this );
-			if ( _this.model.get( 'id' ) === response.slug ) {
-				_this.model.set( {
-					hasUpdate: false,
-					version: response.newVersion
-				} );
-			}
-			_this.model.on( 'change', _this.render, _this );
-		} );
-
-		wp.updates.updateTheme( {
-			slug: $( event.target ).parents( 'div.theme' ).first().data( 'slug' )
-		} );
 	}
 });
 
@@ -647,8 +592,7 @@ themes.view.Details = wp.Backbone.View.extend({
 		'click': 'collapse',
 		'click .delete-theme': 'deleteTheme',
 		'click .left': 'previousTheme',
-		'click .right': 'nextTheme',
-		'click #update-theme': 'updateTheme'
+		'click .right': 'nextTheme'
 	},
 
 	// The HTML template for the theme overlay
@@ -674,26 +618,28 @@ themes.view.Details = wp.Backbone.View.extend({
 		this.$el.toggleClass( 'active', this.model.get( 'active' ) );
 	},
 
-	// Set initial focus and constrain tabbing within the theme browser modal.
+	// Keeps :focus within the theme details elements
 	containFocus: function( $el ) {
+		var $target;
 
-		// Set initial focus on the primary action control.
+		// Move focus to the primary action
 		_.delay( function() {
 			$( '.theme-wrap a.button-primary:visible' ).focus();
-		}, 100 );
+		}, 500 );
 
-		// Constrain tabbing within the modal.
 		$el.on( 'keydown.wp-themes', function( event ) {
-			var $firstFocusable = $el.find( '.theme-header button:not(.disabled)' ).first(),
-				$lastFocusable = $el.find( '.theme-actions a:visible' ).last();
 
-			// Check for the Tab key.
-			if ( 9 === event.which ) {
-				if ( $firstFocusable[0] === event.target && event.shiftKey ) {
-					$lastFocusable.focus();
+			// Tab key
+			if ( event.which === 9 ) {
+				$target = $( event.target );
+
+				// Keep focus within the overlay by making the last link on theme actions
+				// switch focus to button.left on tabbing and vice versa
+				if ( $target.is( 'button.left' ) && event.shiftKey ) {
+					$el.find( '.theme-actions a:last-child' ).focus();
 					event.preventDefault();
-				} else if ( $lastFocusable[0] === event.target && ! event.shiftKey ) {
-					$firstFocusable.focus();
+				} else if ( $target.is( '.theme-actions a:last-child' ) ) {
+					$el.find( 'button.left' ).focus();
 					event.preventDefault();
 				}
 			}
@@ -750,14 +696,10 @@ themes.view.Details = wp.Backbone.View.extend({
 
 		// Disable Left/Right when at the start or end of the collection
 		if ( this.model.cid === this.model.collection.at(0).cid ) {
-			this.$el.find( '.left' )
-				.addClass( 'disabled' )
-				.prop( 'disabled', true );
+			this.$el.find( '.left' ).addClass( 'disabled' );
 		}
 		if ( this.model.cid === this.model.collection.at( this.model.collection.length - 1 ).cid ) {
-			this.$el.find( '.right' )
-				.addClass( 'disabled' )
-				.prop( 'disabled', true );
+			this.$el.find( '.right' ).addClass( 'disabled' );
 		}
 	},
 
@@ -770,56 +712,9 @@ themes.view.Details = wp.Backbone.View.extend({
 		this.trigger( 'theme:collapse' );
 	},
 
-	updateTheme: function( event ) {
-		var _this = this;
-		event.preventDefault();
-
-		wp.updates.maybeRequestFilesystemCredentials( event );
-
-		$( document ).on( 'wp-theme-update-success', function( event, response ) {
-			if ( _this.model.get( 'id' ) === response.slug ) {
-				_this.model.set( {
-					hasUpdate: false,
-					version: response.newVersion
-				} );
-			}
-			_this.render();
-		} );
-
-		wp.updates.updateTheme( {
-			slug: $( event.target ).data( 'slug' )
-		} );
-	},
-
-	deleteTheme: function( event ) {
-		var _this = this,
-		    _collection = _this.model.collection,
-		    _themes = themes;
-		event.preventDefault();
-
-		// Confirmation dialog for deleting a theme.
-		if ( ! window.confirm( wp.themes.data.settings.confirmDelete ) ) {
-			return;
-		}
-
-		wp.updates.maybeRequestFilesystemCredentials( event );
-
-		$( document ).one( 'wp-theme-delete-success', function( event, response ) {
-			_this.$el.find( '.close' ).trigger( 'click' );
-			$( '[data-slug="' + response.slug + '"]' ).css( { backgroundColor:'#faafaa' } ).fadeOut( 350, function() {
-				$( this ).remove();
-				_themes.data.themes = _.without( _themes.data.themes, _.findWhere( _themes.data.themes, { id: response.slug } ) );
-
-				$( '.wp-filter-search' ).val( '' );
-				_collection.doSearch( '' );
-				_collection.remove( _this.model );
-				_collection.trigger( 'themes:update' );
-			} );
-		} );
-
-		wp.updates.deleteTheme( {
-			slug: this.model.get( 'id' )
-		} );
+	// Confirmation dialog for deleting a theme
+	deleteTheme: function() {
+		return confirm( themes.data.settings.confirmDelete );
 	},
 
 	nextTheme: function() {
@@ -860,45 +755,25 @@ themes.view.Preview = themes.view.Details.extend({
 	events: {
 		'click .close-full-overlay': 'close',
 		'click .collapse-sidebar': 'collapse',
-		'click .devices button': 'previewDevice',
 		'click .previous-theme': 'previousTheme',
 		'click .next-theme': 'nextTheme',
-		'keyup': 'keyEvent',
-		'click .theme-install': 'installTheme'
+		'keyup': 'keyEvent'
 	},
 
 	// The HTML template for the theme preview
 	html: themes.template( 'theme-preview' ),
 
 	render: function() {
-		var self = this,
-			currentPreviewDevice,
-			data = this.model.toJSON(),
-			$body = $( document.body );
+		var data = this.model.toJSON();
 
-		$body.attr( 'aria-busy', 'true' );
-
-		this.$el.removeClass( 'iframe-ready' ).html( this.html( data ) );
-
-		currentPreviewDevice = this.$el.data( 'current-preview-device' );
-		if ( currentPreviewDevice ) {
-			self.tooglePreviewDeviceButtons( currentPreviewDevice );
-		}
+		this.$el.html( this.html( data ) );
 
 		themes.router.navigate( themes.router.baseUrl( themes.router.themePath + this.model.get( 'id' ) ), { replace: true } );
 
 		this.$el.fadeIn( 200, function() {
-			$body.addClass( 'theme-installer-active full-overlay-active' );
+			$( 'body' ).addClass( 'theme-installer-active full-overlay-active' );
+			$( '.close-full-overlay' ).focus();
 		});
-
-		this.$el.find( 'iframe' ).one( 'load', function() {
-			self.iframeLoaded();
-		});
-	},
-
-	iframeLoaded: function() {
-		this.$el.addClass( 'iframe-ready' );
-		$( document.body ).attr( 'aria-busy', 'false' );
 	},
 
 	close: function() {
@@ -909,7 +784,7 @@ themes.view.Preview = themes.view.Details.extend({
 			if ( themes.focusedTheme ) {
 				themes.focusedTheme.focus();
 			}
-		}).removeClass( 'iframe-ready' );
+		});
 
 		themes.router.navigate( themes.router.baseUrl( '' ) );
 		this.trigger( 'preview:close' );
@@ -918,39 +793,10 @@ themes.view.Preview = themes.view.Details.extend({
 		return false;
 	},
 
-	collapse: function( event ) {
-		var $button = $( event.currentTarget );
-		if ( 'true' === $button.attr( 'aria-expanded' ) ) {
-			$button.attr({ 'aria-expanded': 'false', 'aria-label': l10n.expandSidebar });
-		} else {
-			$button.attr({ 'aria-expanded': 'true', 'aria-label': l10n.collapseSidebar });
-		}
+	collapse: function() {
 
 		this.$el.toggleClass( 'collapsed' ).toggleClass( 'expanded' );
 		return false;
-	},
-
-	previewDevice: function( event ) {
-		var device = $( event.currentTarget ).data( 'device' );
-
-		this.$el
-			.removeClass( 'preview-desktop preview-tablet preview-mobile' )
-			.addClass( 'preview-' + device )
-			.data( 'current-preview-device', device );
-
-		this.tooglePreviewDeviceButtons( device );
-	},
-
-	tooglePreviewDeviceButtons: function( newDevice ) {
-		var $devices = $( '.wp-full-overlay-footer .devices' );
-
-		$devices.find( 'button' )
-			.removeClass( 'active' )
-			.attr( 'aria-pressed', false );
-
-		$devices.find( 'button.preview-' + newDevice )
-			.addClass( 'active' )
-			.attr( 'aria-pressed', true );
 	},
 
 	keyEvent: function( event ) {
@@ -968,26 +814,6 @@ themes.view.Preview = themes.view.Details.extend({
 		if ( event.keyCode === 37 ) {
 			this.previousTheme();
 		}
-	},
-
-	installTheme: function( event ) {
-		var _this   = this,
-		    $target = $( event.target );
-		event.preventDefault();
-
-		if ( $target.hasClass( 'disabled' ) ) {
-			return;
-		}
-
-		wp.updates.maybeRequestFilesystemCredentials( event );
-
-		$( document ).on( 'wp-theme-install-success', function() {
-			_this.model.set( { 'installed': true } );
-		} );
-
-		wp.updates.installTheme( {
-			slug: $target.data( 'slug' )
-		} );
 	}
 });
 
@@ -995,7 +821,7 @@ themes.view.Preview = themes.view.Details.extend({
 // a wrapper that will hold all the theme elements
 themes.view.Themes = wp.Backbone.View.extend({
 
-	className: 'themes wp-clearfix',
+	className: 'themes',
 	$overlay: $( 'div.theme-overlay' ),
 
 	// Number to keep track of scroll position
@@ -1003,7 +829,7 @@ themes.view.Themes = wp.Backbone.View.extend({
 	index: 0,
 
 	// The theme count element
-	count: $( '.wrap .theme-count' ),
+	count: $( '.wp-core-ui .theme-count' ),
 
 	// The live themes count
 	liveThemeCount: 0,
@@ -1021,11 +847,11 @@ themes.view.Themes = wp.Backbone.View.extend({
 		self.currentTheme();
 
 		// When the collection is updated by user input...
-		this.listenTo( self.collection, 'themes:update', function() {
+		this.listenTo( self.collection, 'update', function() {
 			self.parent.page = 0;
 			self.currentTheme();
 			self.render( this );
-		} );
+		});
 
 		// Update theme count to full result set when available.
 		this.listenTo( self.collection, 'query:success', function( count ) {
@@ -1055,11 +881,6 @@ themes.view.Themes = wp.Backbone.View.extend({
 		// Bind keyboard events.
 		$( 'body' ).on( 'keyup', function( event ) {
 			if ( ! self.overlay ) {
-				return;
-			}
-
-			// Bail if the filesystem credentials dialog is shown.
-			if ( $( '#request-filesystem-credentials-dialog' ).is( ':visible' ) ) {
 				return;
 			}
 
@@ -1113,13 +934,7 @@ themes.view.Themes = wp.Backbone.View.extend({
 		this.liveThemeCount = this.collection.count ? this.collection.count : this.collection.length;
 		this.count.text( this.liveThemeCount );
 
-		/*
-		 * In the theme installer the themes count is already announced
-		 * because `announceSearchResults` is called on `query:success`.
-		 */
-		if ( ! themes.isInstall ) {
-			this.announceSearchResults( this.liveThemeCount );
-		}
+		this.announceSearchResults( this.liveThemeCount );
 	},
 
 	// Iterates through each instance of the collection
@@ -1137,7 +952,7 @@ themes.view.Themes = wp.Backbone.View.extend({
 		}
 
 		// Make sure the add-new stays at the end
-		if ( ! themes.isInstall && page >= 1 ) {
+		if ( page >= 1 ) {
 			$( '.add-new-theme' ).remove();
 		}
 
@@ -1159,8 +974,8 @@ themes.view.Themes = wp.Backbone.View.extend({
 		});
 
 		// 'Add new theme' element shown at the end of the grid
-		if ( ! themes.isInstall && themes.data.settings.canInstall ) {
-			this.$el.append( '<div class="theme add-new-theme"><a href="' + themes.data.settings.installURI + '"><div class="theme-screenshot"><span></span></div><h2 class="theme-name">' + l10n.addNew + '</h2></a></div>' );
+		if ( themes.data.settings.canInstall ) {
+			this.$el.append( '<div class="theme add-new-theme"><a href="' + themes.data.settings.installURI + '"><div class="theme-screenshot"><span></span></div><h3 class="theme-name">' + l10n.addNew + '</h3></a></div>' );
 		}
 
 		this.parent.page++;
@@ -1188,7 +1003,7 @@ themes.view.Themes = wp.Backbone.View.extend({
 	// Renders the overlay with the ThemeDetails view
 	// Uses the current model data
 	expand: function( id ) {
-		var self = this, $card, $modal;
+		var self = this;
 
 		// Set the current theme model
 		this.model = self.collection.get( id );
@@ -1206,22 +1021,6 @@ themes.view.Themes = wp.Backbone.View.extend({
 		});
 
 		this.overlay.render();
-
-		if ( this.model.get( 'hasUpdate' ) ) {
-			$card  = $( '[data-slug="' + this.model.id + '"]' );
-			$modal = $( this.overlay.el );
-
-			if ( $card.find( '.updating-message' ).length ) {
-				$modal.find( '.notice-warning h3' ).remove();
-				$modal.find( '.notice-warning' )
-					.removeClass( 'notice-large' )
-					.addClass( 'updating-message' )
-					.find( 'p' ).text( wp.updates.l10n.updating );
-			} else if ( $card.find( '.notice-error' ).length ) {
-				$modal.find( '.notice-warning' ).remove();
-			}
-		}
-
 		this.$overlay.html( this.overlay.el );
 
 		// Bind to theme:next and theme:previous
@@ -1475,8 +1274,6 @@ themes.view.InstallerSearch =  themes.view.Search.extend({
 		'keyup': 'search'
 	},
 
-	terms: '',
-
 	// Handles Ajax request for searching through themes in public repo
 	search: function( event ) {
 
@@ -1497,14 +1294,6 @@ themes.view.InstallerSearch =  themes.view.Search.extend({
 
 	doSearch: _.debounce( function( value ) {
 		var request = {};
-
-		// Don't do anything if the search terms haven't changed.
-		if ( this.terms === value ) {
-			return;
-		}
-
-		// Updates terms with the value passed.
-		this.terms = value;
 
 		request.search = value;
 
@@ -1527,8 +1316,7 @@ themes.view.InstallerSearch =  themes.view.Search.extend({
 		}
 
 		$( '.filter-links li > a.current' ).removeClass( 'current' );
-		$( 'body' ).removeClass( 'show-filters filters-applied show-favorites-form' );
-		$( '.drawer-toggle' ).attr( 'aria-expanded', 'false' );
+		$( 'body' ).removeClass( 'show-filters filters-applied' );
 
 		// Get the themes by sending Ajax POST request to api.wordpress.org/themes
 		// or searching the local cache
@@ -1551,9 +1339,7 @@ themes.view.Installer = themes.view.Appearance.extend({
 		'click .filter-drawer .apply-filters': 'applyFilters',
 		'click .filter-group [type="checkbox"]': 'addFilter',
 		'click .filter-drawer .clear-filters': 'clearFilters',
-		'click .edit-filters': 'backToFilters',
-		'click .favorites-form-submit' : 'saveUsername',
-		'keyup #wporg-username-input': 'saveUsername'
+		'click .filtered-by': 'backToFilters'
 	},
 
 	// Initial render method
@@ -1627,7 +1413,6 @@ themes.view.Installer = themes.view.Appearance.extend({
 		event.preventDefault();
 
 		$( 'body' ).removeClass( 'filters-applied show-filters' );
-		$( '.drawer-toggle' ).attr( 'aria-expanded', 'false' );
 
 		// Bail if this is already active
 		if ( $el.hasClass( this.activeClass ) ) {
@@ -1645,12 +1430,6 @@ themes.view.Installer = themes.view.Appearance.extend({
 
 		$( '.filter-links li > a, .theme-filter' ).removeClass( this.activeClass );
 		$( '[data-sort="' + sort + '"]' ).addClass( this.activeClass );
-
-		if ( 'favorites' === sort ) {
-			$( 'body' ).addClass( 'show-favorites-form' );
-		} else {
-			$( 'body' ).removeClass( 'show-favorites-form' );
-		}
 
 		this.browse( sort );
 	},
@@ -1675,7 +1454,7 @@ themes.view.Installer = themes.view.Appearance.extend({
 
 		// Construct the filter request
 		// using the default values
-		filter = _.union( [ filter, this.filtersChecked() ] );
+		filter = _.union( filter, this.filtersChecked() );
 		request = { tag: [ filter ] };
 
 		// Get the themes by sending Ajax POST request to api.wordpress.org/themes
@@ -1699,11 +1478,6 @@ themes.view.Installer = themes.view.Appearance.extend({
 			event.preventDefault();
 		}
 
-		if ( ! tags ) {
-			wp.a11y.speak( l10n.selectFeatureFilter );
-			return;
-		}
-
 		$( 'body' ).addClass( 'filters-applied' );
 		$( '.filter-links li > a.current' ).removeClass( 'current' );
 		filteringBy.empty();
@@ -1716,35 +1490,6 @@ themes.view.Installer = themes.view.Appearance.extend({
 		// Get the themes by sending Ajax POST request to api.wordpress.org/themes
 		// or searching the local cache
 		this.collection.query( request );
-	},
-
-	// Save the user's WordPress.org username and get his favorite themes.
-	saveUsername: function ( event ) {
-		var username = $( '#wporg-username-input' ).val(),
-			nonce = $( '#wporg-username-nonce' ).val(),
-			request = { browse: 'favorites', user: username },
-			that = this;
-
-		if ( event ) {
-			event.preventDefault();
-		}
-
-		// save username on enter
-		if ( event.type === 'keyup' && event.which !== 13 ) {
-			return;
-		}
-
-		return wp.ajax.send( 'save-wporg-username', {
-			data: {
-				_wpnonce: nonce,
-				username: username
-			},
-			success: function () {
-				// Get the themes by sending Ajax POST request to api.wordpress.org/themes
-				// or searching the local cache
-				that.collection.query( request );
-			}
-		} );
 	},
 
 	// Get the checked filters
@@ -1777,39 +1522,37 @@ themes.view.Installer = themes.view.Appearance.extend({
 	// in new location
 	searchContainer: $( '.wp-filter .search-form' ),
 
-	/*
-	 * When users press the "Upload Theme" button, show the upload form in place.
-	 */
 	uploader: function() {
-		var uploadViewToggle = $( '.upload-view-toggle' ),
-			$body = $( document.body );
-
-		uploadViewToggle.on( 'click', function() {
-			// Toggle the upload view.
-			$body.toggleClass( 'show-upload-view' );
-			// Toggle the `aria-expanded` button attribute.
-			uploadViewToggle.attr( 'aria-expanded', $body.hasClass( 'show-upload-view' ) );
+		$( 'a.upload' ).on( 'click', function( event ) {
+			event.preventDefault();
+			$( 'body' ).addClass( 'show-upload-theme' );
+			themes.router.navigate( themes.router.baseUrl( '?upload' ), { replace: true } );
+		});
+		$( 'a.browse-themes' ).on( 'click', function( event ) {
+			event.preventDefault();
+			$( 'body' ).removeClass( 'show-upload-theme' );
+			themes.router.navigate( themes.router.baseUrl( '' ), { replace: true } );
 		});
 	},
 
 	// Toggle the full filters navigation
 	moreFilters: function( event ) {
-		var $body = $( 'body' ),
-			$toggleButton = $( '.drawer-toggle' );
-
 		event.preventDefault();
 
-		if ( $body.hasClass( 'filters-applied' ) ) {
+		if ( $( 'body' ).hasClass( 'filters-applied' ) ) {
 			return this.backToFilters();
+		}
+
+		// If the filters section is opened and filters are checked
+		// run the relevant query collapsing to filtered-by state
+		if ( $( 'body' ).hasClass( 'show-filters' ) && this.filtersChecked() ) {
+			return this.addFilter();
 		}
 
 		this.clearSearch();
 
 		themes.router.navigate( themes.router.baseUrl( '' ) );
-		// Toggle the feature filters view.
-		$body.toggleClass( 'show-filters' );
-		// Toggle the `aria-expanded` button attribute.
-		$toggleButton.attr( 'aria-expanded', $body.hasClass( 'show-filters' ) );
+		$( 'body' ).toggleClass( 'show-filters' );
 	},
 
 	// Clears all the checked filters
@@ -1843,6 +1586,7 @@ themes.InstallerRouter = Backbone.Router.extend({
 	routes: {
 		'theme-install.php?theme=:slug': 'preview',
 		'theme-install.php?browse=:sort': 'sort',
+		'theme-install.php?upload': 'upload',
 		'theme-install.php?search=:query': 'search',
 		'theme-install.php': 'sort'
 	},
@@ -1908,9 +1652,6 @@ themes.RunInstaller = {
 		themes.router.on( 'route:preview', function( slug ) {
 			request.theme = slug;
 			self.view.collection.query( request );
-			self.view.collection.once( 'update', function() {
-				self.view.view.theme.preview();
-			});
 		});
 
 		// Handles sorting / browsing routes
@@ -1922,6 +1663,11 @@ themes.RunInstaller = {
 			}
 			self.view.sort( sort );
 			self.view.trigger( 'theme:close' );
+		});
+
+		// Support the `upload` route by going straight to upload section
+		themes.router.on( 'route:upload', function() {
+			$( 'a.upload' ).trigger( 'click' );
 		});
 
 		// The `search` route event. The router populates the input field.

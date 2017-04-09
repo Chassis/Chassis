@@ -13,12 +13,6 @@ get_header(); ?>
 
 	<div id="primary" class="content-area">
 		<div id="content" class="site-content" role="main">
-
-			<?php
-				// Start the Loop.
-				while ( have_posts() ) : the_post();
-			?>
-
 			<article id="post-<?php the_ID(); ?>" <?php post_class( 'image-attachment' ); ?>>
 				<header class="entry-header">
 					<h1 class="entry-title"><?php the_title(); ?></h1>
@@ -81,8 +75,6 @@ get_header(); ?>
 			</article><!-- #post -->
 
 			<?php comments_template(); ?>
-
-			<?php endwhile; // End the loop. ?>
 
 		</div><!-- #content -->
 	</div><!-- #primary -->

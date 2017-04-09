@@ -11,7 +11,6 @@
  *
  * @since 2.0.0
  *
- * @global array $wp_importers
  * @return array
  */
 function get_importers() {
@@ -43,12 +42,10 @@ function _usort_by_first_member( $a, $b ) {
  *
  * @since 2.0.0
  *
- * @global array $wp_importers
- *
- * @param string   $id          Importer tag. Used to uniquely identify importer.
- * @param string   $name        Importer name and title.
- * @param string   $description Importer description.
- * @param callable $callback    Callback to run.
+ * @param string $id Importer tag. Used to uniquely identify importer.
+ * @param string $name Importer name and title.
+ * @param string $description Importer description.
+ * @param callback $callback Callback to run.
  * @return WP_Error Returns WP_Error when $callback is WP_Error.
  */
 function register_importer( $id, $name, $description, $callback ) {
@@ -125,24 +122,19 @@ function wp_import_handle_upload() {
 function wp_get_popular_importers() {
 	include( ABSPATH . WPINC . '/version.php' ); // include an unmodified $wp_version
 
-	$locale = get_user_locale();
-	$cache_key = 'popular_importers_' . md5( $locale . $wp_version );
-	$popular_importers = get_site_transient( $cache_key );
+	$locale = get_locale();
+	$popular_importers = get_site_transient( 'popular_importers_' . $locale );
 
 	if ( ! $popular_importers ) {
-		$url = add_query_arg( array(
-			'locale'  => get_user_locale(),
-			'version' => $wp_version,
-		), 'http://api.wordpress.org/core/importers/1.1/' );
+		$url = add_query_arg( 'locale', get_locale(), 'http://api.wordpress.org/core/importers/1.1/' );
 		$options = array( 'user-agent' => 'WordPress/' . $wp_version . '; ' . home_url() );
 		$response = wp_remote_get( $url, $options );
 		$popular_importers = json_decode( wp_remote_retrieve_body( $response ), true );
 
-		if ( is_array( $popular_importers ) ) {
-			set_site_transient( $cache_key, $popular_importers, 2 * DAY_IN_SECONDS );
-		} else {
+		if ( is_array( $popular_importers ) )
+			set_site_transient( 'popular_importers_' . $locale, $popular_importers, 2 * DAY_IN_SECONDS );
+		else
 			$popular_importers = false;
-		}
 	}
 
 	if ( is_array( $popular_importers ) ) {
@@ -162,49 +154,49 @@ function wp_get_popular_importers() {
 		// slug => name, description, plugin slug, and register_importer() slug
 		'blogger' => array(
 			'name' => __( 'Blogger' ),
-			'description' => __( 'Import posts, comments, and users from a Blogger blog.' ),
+			'description' => __( 'Install the Blogger importer to import posts, comments, and users from a Blogger blog.' ),
 			'plugin-slug' => 'blogger-importer',
 			'importer-id' => 'blogger',
 		),
 		'wpcat2tag' => array(
 			'name' => __( 'Categories and Tags Converter' ),
-			'description' => __( 'Convert existing categories to tags or tags to categories, selectively.' ),
+			'description' => __( 'Install the category/tag converter to convert existing categories to tags or tags to categories, selectively.' ),
 			'plugin-slug' => 'wpcat2tag-importer',
 			'importer-id' => 'wp-cat2tag',
 		),
 		'livejournal' => array(
 			'name' => __( 'LiveJournal' ),
-			'description' => __( 'Import posts from LiveJournal using their API.' ),
+			'description' => __( 'Install the LiveJournal importer to import posts from LiveJournal using their API.' ),
 			'plugin-slug' => 'livejournal-importer',
 			'importer-id' => 'livejournal',
 		),
 		'movabletype' => array(
 			'name' => __( 'Movable Type and TypePad' ),
-			'description' => __( 'Import posts and comments from a Movable Type or TypePad blog.' ),
+			'description' => __( 'Install the Movable Type importer to import posts and comments from a Movable Type or TypePad blog.' ),
 			'plugin-slug' => 'movabletype-importer',
 			'importer-id' => 'mt',
 		),
 		'opml' => array(
 			'name' => __( 'Blogroll' ),
-			'description' => __( 'Import links in OPML format.' ),
+			'description' => __( 'Install the blogroll importer to import links in OPML format.' ),
 			'plugin-slug' => 'opml-importer',
 			'importer-id' => 'opml',
 		),
 		'rss' => array(
 			'name' => __( 'RSS' ),
-			'description' => __( 'Import posts from an RSS feed.' ),
+			'description' => __( 'Install the RSS importer to import posts from an RSS feed.' ),
 			'plugin-slug' => 'rss-importer',
 			'importer-id' => 'rss',
 		),
 		'tumblr' => array(
 			'name' => __( 'Tumblr' ),
-			'description' => __( 'Import posts &amp; media from Tumblr using their API.' ),
+			'description' => __( 'Install the Tumblr importer to import posts &amp; media from Tumblr using their API.' ),
 			'plugin-slug' => 'tumblr-importer',
 			'importer-id' => 'tumblr',
 		),
 		'wordpress' => array(
 			'name' => 'WordPress',
-			'description' => __( 'Import posts, pages, comments, custom fields, categories, and tags from a WordPress export file.' ),
+			'description' => __( 'Install the WordPress importer to import posts, pages, comments, custom fields, categories, and tags from a WordPress export file.' ),
 			'plugin-slug' => 'wordpress-importer',
 			'importer-id' => 'wordpress',
 		),

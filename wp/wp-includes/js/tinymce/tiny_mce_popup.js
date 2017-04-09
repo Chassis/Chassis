@@ -1,8 +1,8 @@
 /**
- * tinymce_mce_popup.js
+ * Popup.js
  *
+ * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
- * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -107,7 +107,7 @@ var tinyMCEPopup = {
 	 * Returns a window argument/parameter by name.
 	 *
 	 * @method getWindowArg
-	 * @param {String} name Name of the window argument to retrieve.
+	 * @param {String} name Name of the window argument to retrive.
 	 * @param {String} defaultValue Optional default value to return.
 	 * @return {String} Argument value or default value if it wasn't found.
 	 */
@@ -121,7 +121,7 @@ var tinyMCEPopup = {
 	 * Returns a editor parameter/config option value.
 	 *
 	 * @method getParam
-	 * @param {String} name Name of the editor config option to retrieve.
+	 * @param {String} name Name of the editor config option to retrive.
 	 * @param {String} defaultValue Optional default value to return.
 	 * @return {String} Parameter value or default value if it wasn't found.
 	 */

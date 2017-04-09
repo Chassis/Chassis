@@ -1,63 +1,50 @@
-/* global postboxes, commentL10n */
+/* global postboxes:true, commentL10n:true */
 jQuery(document).ready( function($) {
 
 	postboxes.add_postbox_toggles('comment');
 
-	var $timestampdiv = $('#timestampdiv'),
-		$timestamp = $( '#timestamp' ),
-		stamp = $timestamp.html(),
-		$timestampwrap = $timestampdiv.find( '.timestamp-wrap' ),
-		$edittimestamp = $timestampdiv.siblings( 'a.edit-timestamp' );
-
-	$edittimestamp.click( function( event ) {
-		if ( $timestampdiv.is( ':hidden' ) ) {
-			$timestampdiv.slideDown( 'fast', function() {
-				$( 'input, select', $timestampwrap ).first().focus();
-			} );
-			$(this).hide();
+	var stamp = $('#timestamp').html();
+	$('.edit-timestamp').click(function () {
+		if ($('#timestampdiv').is(':hidden')) {
+			$('#timestampdiv').slideDown('normal');
+			$('.edit-timestamp').hide();
 		}
-		event.preventDefault();
+		return false;
 	});
 
-	$timestampdiv.find('.cancel-timestamp').click( function( event ) {
-		// Move focus back to the Edit link.
-		$edittimestamp.show().focus();
-		$timestampdiv.slideUp( 'fast' );
+	$('.cancel-timestamp').click(function() {
+		$('#timestampdiv').slideUp('normal');
 		$('#mm').val($('#hidden_mm').val());
 		$('#jj').val($('#hidden_jj').val());
 		$('#aa').val($('#hidden_aa').val());
 		$('#hh').val($('#hidden_hh').val());
 		$('#mn').val($('#hidden_mn').val());
-		$timestamp.html( stamp );
-		event.preventDefault();
+		$('#timestamp').html(stamp);
+		$('.edit-timestamp').show();
+		return false;
 	});
 
-	$timestampdiv.find('.save-timestamp').click( function( event ) { // crazyhorse - multiple ok cancels
+	$('.save-timestamp').click(function () { // crazyhorse - multiple ok cancels
 		var aa = $('#aa').val(), mm = $('#mm').val(), jj = $('#jj').val(), hh = $('#hh').val(), mn = $('#mn').val(),
 			newD = new Date( aa, mm - 1, jj, hh, mn );
 
-		event.preventDefault();
-
 		if ( newD.getFullYear() != aa || (1 + newD.getMonth()) != mm || newD.getDate() != jj || newD.getMinutes() != mn ) {
-			$timestampwrap.addClass( 'form-invalid' );
-			return;
+			$('.timestamp-wrap', '#timestampdiv').addClass('form-invalid');
+			return false;
 		} else {
-			$timestampwrap.removeClass( 'form-invalid' );
+			$('.timestamp-wrap', '#timestampdiv').removeClass('form-invalid');
 		}
 
-		$timestamp.html(
+		$('#timestampdiv').slideUp('normal');
+		$('.edit-timestamp').show();
+		$('#timestamp').html(
 			commentL10n.submittedOn + ' <b>' +
-			commentL10n.dateFormat
-				.replace( '%1$s', $( 'option[value="' + mm + '"]', '#mm' ).attr( 'data-text' ) )
-				.replace( '%2$s', parseInt( jj, 10 ) )
-				.replace( '%3$s', aa )
-				.replace( '%4$s', ( '00' + hh ).slice( -2 ) )
-				.replace( '%5$s', ( '00' + mn ).slice( -2 ) ) +
-				'</b> '
+			$( '#mm option[value="' + mm + '"]' ).text() + ' ' +
+			jj + ', ' +
+			aa + ' @ ' +
+			hh + ':' +
+			mn + '</b> '
 		);
-
-		// Move focus back to the Edit link.
-		$edittimestamp.show().focus();
-		$timestampdiv.slideUp( 'fast' );
+		return false;
 	});
 });

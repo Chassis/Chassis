@@ -22,7 +22,7 @@ function the_ID() {
  *
  * @since 2.1.0
  *
- * @return int|false The ID of the current item in the WordPress Loop. False if $post is not set.
+ * @return int|bool The ID of the current item in the WordPress Loop. False if $post is not set.
  */
 function get_the_ID() {
 	$post = get_post();
@@ -30,16 +30,16 @@ function get_the_ID() {
 }
 
 /**
- * Display or retrieve the current post title with optional markup.
+ * Display or retrieve the current post title with optional content.
  *
  * @since 0.71
  *
- * @param string $before Optional. Markup to prepend to the title. Default empty.
- * @param string $after  Optional. Markup to append to the title. Default empty.
- * @param bool   $echo   Optional. Whether to echo or return the title. Default true for echo.
- * @return string|void Current post title if $echo is false.
+ * @param string $before Optional. Content to prepend to the title.
+ * @param string $after Optional. Content to append to the title.
+ * @param bool $echo Optional, default to true.Whether to display or return.
+ * @return null|string Null on no title. String if $echo parameter is false.
  */
-function the_title( $before = '', $after = '', $echo = true ) {
+function the_title($before = '', $after = '', $echo = true) {
 	$title = get_the_title();
 
 	if ( strlen($title) == 0 )
@@ -56,12 +56,12 @@ function the_title( $before = '', $after = '', $echo = true ) {
 /**
  * Sanitize the current title when retrieving or displaying.
  *
- * Works like the_title(), except the parameters can be in a string or
+ * Works like {@link the_title()}, except the parameters can be in a string or
  * an array. See the function for what can be override in the $args parameter.
  *
- * The title before it is displayed will have the tags stripped and esc_attr()
- * before it is passed to the user or displayed. The default as with the_title(),
- * is to display the title.
+ * The title before it is displayed will have the tags stripped and {@link
+ * esc_attr()} before it is passed to the user or displayed. The default
+ * as with {@link the_title()}, is to display the title.
  *
  * @since 2.3.0
  *
@@ -73,7 +73,7 @@ function the_title( $before = '', $after = '', $echo = true ) {
  *     @type bool    $echo   Whether to echo or return the title. Default true for echo.
  *     @type WP_Post $post   Current post object to retrieve the title for.
  * }
- * @return string|void String when echo is false.
+ * @return string|null Null on failure or display. String when echo is false.
  */
 function the_title_attribute( $args = '' ) {
 	$defaults = array( 'before' => '', 'after' =>  '', 'echo' => true, 'post' => get_post() );
@@ -117,7 +117,7 @@ function get_the_title( $post = 0 ) {
 		if ( ! empty( $post->post_password ) ) {
 
 			/**
-			 * Filters the text prepended to the post title for protected posts.
+			 * Filter the text prepended to the post title for protected posts.
 			 *
 			 * The filter is only applied on the front end.
 			 *
@@ -132,7 +132,7 @@ function get_the_title( $post = 0 ) {
 		} elseif ( isset( $post->post_status ) && 'private' == $post->post_status ) {
 
 			/**
-			 * Filters the text prepended to the post title of private posts.
+			 * Filter the text prepended to the post title of private posts.
 			 *
 			 * The filter is only applied on the front end.
 			 *
@@ -148,7 +148,7 @@ function get_the_title( $post = 0 ) {
 	}
 
 	/**
-	 * Filters the post title.
+	 * Filter the post title.
 	 *
 	 * @since 0.71
 	 *
@@ -161,33 +161,27 @@ function get_the_title( $post = 0 ) {
 /**
  * Display the Post Global Unique Identifier (guid).
  *
- * The guid will appear to be a link, but should not be used as a link to the
+ * The guid will appear to be a link, but should not be used as an link to the
  * post. The reason you should not use it as a link, is because of moving the
  * blog across domains.
  *
- * URL is escaped to make it XML-safe.
+ * Url is escaped to make it xml safe
  *
  * @since 1.5.0
  *
- * @param int|WP_Post $post Optional. Post ID or post object. Default is global $post.
+ * @param int|WP_Post $id Optional. Post ID or post object.
  */
-function the_guid( $post = 0 ) {
-	$post = get_post( $post );
-
-	$guid = isset( $post->guid ) ? get_the_guid( $post ) : '';
-	$id   = isset( $post->ID ) ? $post->ID : 0;
-
+function the_guid( $id = 0 ) {
 	/**
-	 * Filters the escaped Global Unique Identifier (guid) of the post.
+	 * Filter the escaped Global Unique Identifier (guid) of the post.
 	 *
 	 * @since 4.2.0
 	 *
 	 * @see get_the_guid()
 	 *
-	 * @param string $guid Escaped Global Unique Identifier (guid) of the post.
-	 * @param int    $id   The post ID.
+	 * @param string $post_guid Escaped Global Unique Identifier (guid) of the post.
 	 */
-	echo apply_filters( 'the_guid', $guid, $id );
+	echo apply_filters( 'the_guid', get_the_guid( $id ) );
 }
 
 /**
@@ -199,24 +193,20 @@ function the_guid( $post = 0 ) {
  *
  * @since 1.5.0
  *
- * @param int|WP_Post $post Optional. Post ID or post object. Default is global $post.
+ * @param int|WP_Post $id Optional. Post ID or post object.
  * @return string
  */
-function get_the_guid( $post = 0 ) {
-	$post = get_post( $post );
-
-	$guid = isset( $post->guid ) ? $post->guid : '';
-	$id   = isset( $post->ID ) ? $post->ID : 0;
+function get_the_guid( $id = 0 ) {
+	$post = get_post($id);
 
 	/**
-	 * Filters the Global Unique Identifier (guid) of the post.
+	 * Filter the Global Unique Identifier (guid) of the post.
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $guid Global Unique Identifier (guid) of the post.
-	 * @param int    $id   The post ID.
+	 * @param string $post_guid Global Unique Identifier (guid) of the post.
 	 */
-	return apply_filters( 'get_the_guid', $guid, $id );
+	return apply_filters( 'get_the_guid', $post->guid );
 }
 
 /**
@@ -231,7 +221,7 @@ function the_content( $more_link_text = null, $strip_teaser = false) {
 	$content = get_the_content( $more_link_text, $strip_teaser );
 
 	/**
-	 * Filters the post content.
+	 * Filter the post content.
 	 *
 	 * @since 0.71
 	 *
@@ -247,14 +237,8 @@ function the_content( $more_link_text = null, $strip_teaser = false) {
  *
  * @since 0.71
  *
- * @global int   $page      Page number of a single post/page.
- * @global int   $more      Boolean indicator for whether single post/page is being viewed.
- * @global bool  $preview   Whether post/page is in preview mode.
- * @global array $pages     Array of all pages in post/page. Each array element contains part of the content separated by the <!--nextpage--> tag.
- * @global int   $multipage Boolean indicator for whether multiple pages are in play.
- *
  * @param string $more_link_text Optional. Content for when there is more text.
- * @param bool   $strip_teaser   Optional. Strip teaser content before the more text. Default is false.
+ * @param bool $strip_teaser Optional. Strip teaser content before the more text. Default is false.
  * @return string
  */
 function get_the_content( $more_link_text = null, $strip_teaser = false ) {
@@ -262,17 +246,8 @@ function get_the_content( $more_link_text = null, $strip_teaser = false ) {
 
 	$post = get_post();
 
-	if ( null === $more_link_text ) {
-		$more_link_text = sprintf(
-			'<span aria-label="%1$s">%2$s</span>',
-			sprintf(
-				/* translators: %s: Name of current post */
-				__( 'Continue reading %s' ),
-				the_title_attribute( array( 'echo' => false ) )
-			),
-			__( '(more&hellip;)' )
-		);
-	}
+	if ( null === $more_link_text )
+		$more_link_text = __( '(more&hellip;)' );
 
 	$output = '';
 	$has_teaser = false;
@@ -312,7 +287,7 @@ function get_the_content( $more_link_text = null, $strip_teaser = false ) {
 			if ( ! empty( $more_link_text ) )
 
 				/**
-				 * Filters the Read More link text.
+				 * Filter the Read More link text.
 				 *
 				 * @since 2.8.0
 				 *
@@ -335,8 +310,7 @@ function get_the_content( $more_link_text = null, $strip_teaser = false ) {
  *
  * @since 3.1.0
  * @access private
- *
- * @param array $match Match array from preg_replace_callback.
+ * @param array $match Match array from preg_replace_callback
  * @return string
  */
 function _convert_urlencoded_to_entities( $match ) {
@@ -351,7 +325,7 @@ function _convert_urlencoded_to_entities( $match ) {
 function the_excerpt() {
 
 	/**
-	 * Filters the displayed post excerpt.
+	 * Filter the displayed post excerpt.
 	 *
 	 * @since 0.71
 	 *
@@ -363,38 +337,34 @@ function the_excerpt() {
 }
 
 /**
- * Retrieves the post excerpt.
+ * Retrieve the post excerpt.
  *
  * @since 0.71
- * @since 4.5.0 Introduced the `$post` parameter.
  *
- * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global $post.
- * @return string Post excerpt.
+ * @param mixed $deprecated Not used.
+ * @return string
  */
-function get_the_excerpt( $post = null ) {
-	if ( is_bool( $post ) ) {
-		_deprecated_argument( __FUNCTION__, '2.3.0' );
-	}
+function get_the_excerpt( $deprecated = '' ) {
+	if ( !empty( $deprecated ) )
+		_deprecated_argument( __FUNCTION__, '2.3' );
 
-	$post = get_post( $post );
+	$post = get_post();
 	if ( empty( $post ) ) {
 		return '';
 	}
 
-	if ( post_password_required( $post ) ) {
+	if ( post_password_required() ) {
 		return __( 'There is no excerpt because this is a protected post.' );
 	}
 
 	/**
-	 * Filters the retrieved post excerpt.
+	 * Filter the retrieved post excerpt.
 	 *
 	 * @since 1.2.0
-	 * @since 4.5.0 Introduced the `$post` parameter.
 	 *
 	 * @param string $post_excerpt The post excerpt.
-	 * @param WP_Post $post Post object.
 	 */
-	return apply_filters( 'get_the_excerpt', $post->post_excerpt, $post );
+	return apply_filters( 'get_the_excerpt', $post->post_excerpt );
 }
 
 /**
@@ -415,8 +385,8 @@ function has_excerpt( $id = 0 ) {
  *
  * @since 2.7.0
  *
- * @param string|array $class   One or more classes to add to the class list.
- * @param int|WP_Post  $post_id Optional. Post ID or post object. Defaults to the global `$post`.
+ * @param string|array $class One or more classes to add to the class list.
+ * @param int|WP_Post $post_id Optional. Post ID or post object.
  */
 function post_class( $class = '', $post_id = null ) {
 	// Separates classes with a single space, collates classes for post DIV
@@ -424,17 +394,15 @@ function post_class( $class = '', $post_id = null ) {
 }
 
 /**
- * Retrieves the classes for the post div as an array.
+ * Retrieve the classes for the post div as an array.
  *
  * The class names are many. If the post is a sticky, then the 'sticky'
  * class name. The class 'hentry' is always added to each post. If the post has a
  * post thumbnail, 'has-post-thumbnail' is added as a class. For each taxonomy that
  * the post belongs to, a class will be added of the format '{$taxonomy}-{$slug}' -
- * eg 'category-foo' or 'my_custom_taxonomy-bar'.
- *
- * The 'post_tag' taxonomy is a special
+ * eg 'category-foo' or 'my_custom_taxonomy-bar'. The 'post_tag' taxonomy is a special
  * case; the class has the 'tag-' prefix instead of 'post_tag-'. All classes are
- * passed through the filter, {@see 'post_class'}, with the list of classes, followed by
+ * passed through the filter, 'post_class' with the list of classes, followed by
  * $class parameter value, with the post ID as the last parameter.
  *
  * @since 2.7.0
@@ -454,9 +422,6 @@ function get_post_class( $class = '', $post_id = null ) {
 			$class = preg_split( '#\s+#', $class );
 		}
 		$classes = array_map( 'esc_attr', $class );
-	} else {
-		// Ensure that we always coerce class to being an array.
-		$class = array();
 	}
 
 	if ( ! $post ) {
@@ -479,17 +444,11 @@ function get_post_class( $class = '', $post_id = null ) {
 			$classes[] = 'format-standard';
 	}
 
-	$post_password_required = post_password_required( $post->ID );
-
-	// Post requires password.
-	if ( $post_password_required ) {
+	// Post requires password
+	if ( post_password_required( $post->ID ) ) {
 		$classes[] = 'post-password-required';
-	} elseif ( ! empty( $post->post_password ) ) {
-		$classes[] = 'post-password-protected';
-	}
-
-	// Post thumbnails.
-	if ( current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail( $post->ID ) && ! is_attachment( $post ) && ! $post_password_required ) {
+	// Post thumbnails
+	} elseif ( ! is_attachment( $post ) && current_theme_supports( 'post-thumbnails' ) && has_post_thumbnail( $post->ID ) ) {
 		$classes[] = 'has-post-thumbnail';
 	}
 
@@ -532,13 +491,13 @@ function get_post_class( $class = '', $post_id = null ) {
 	$classes = array_map( 'esc_attr', $classes );
 
 	/**
-	 * Filters the list of CSS classes for the current post.
+	 * Filter the list of CSS classes for the current post.
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param array $classes An array of post classes.
-	 * @param array $class   An array of additional classes added to the post.
-	 * @param int   $post_id The post ID.
+	 * @param array  $classes An array of post classes.
+	 * @param string $class   A comma-separated list of additional classes added to the post.
+	 * @param int    $post_id The post ID.
 	 */
 	$classes = apply_filters( 'post_class', $classes, $class, $post->ID );
 
@@ -562,13 +521,11 @@ function body_class( $class = '' ) {
  *
  * @since 2.8.0
  *
- * @global WP_Query $wp_query
- *
  * @param string|array $class One or more classes to add to the class list.
  * @return array Array of classes.
  */
 function get_body_class( $class = '' ) {
-	global $wp_query;
+	global $wp_query, $wpdb;
 
 	$classes = array();
 
@@ -594,40 +551,23 @@ function get_body_class( $class = '' ) {
 	if ( is_404() )
 		$classes[] = 'error404';
 
-	if ( is_singular() ) {
+	if ( is_single() ) {
 		$post_id = $wp_query->get_queried_object_id();
 		$post = $wp_query->get_queried_object();
-		$post_type = $post->post_type;
 
-		if ( is_page_template() ) {
-			$classes[] = "{$post_type}-template";
+		$classes[] = 'single';
+		if ( isset( $post->post_type ) ) {
+			$classes[] = 'single-' . sanitize_html_class($post->post_type, $post_id);
+			$classes[] = 'postid-' . $post_id;
 
-			$template_slug  = get_page_template_slug( $post_id );
-			$template_parts = explode( '/', $template_slug );
+			// Post Format
+			if ( post_type_supports( $post->post_type, 'post-formats' ) ) {
+				$post_format = get_post_format( $post->ID );
 
-			foreach ( $template_parts as $part ) {
-				$classes[] = "{$post_type}-template-" . sanitize_html_class( str_replace( array( '.', '/' ), '-', basename( $part, '.php' ) ) );
-			}
-			$classes[] = "{$post_type}-template-" . sanitize_html_class( str_replace( '.', '-', $template_slug ) );
-		} else {
-			$classes[] = "{$post_type}-template-default";
-		}
-
-		if ( is_single() ) {
-			$classes[] = 'single';
-			if ( isset( $post->post_type ) ) {
-				$classes[] = 'single-' . sanitize_html_class( $post->post_type, $post_id );
-				$classes[] = 'postid-' . $post_id;
-
-				// Post Format
-				if ( post_type_supports( $post->post_type, 'post-formats' ) ) {
-					$post_format = get_post_format( $post->ID );
-
-					if ( $post_format && !is_wp_error($post_format) )
-						$classes[] = 'single-format-' . sanitize_html_class( $post_format );
-					else
-						$classes[] = 'single-format-standard';
-				}
+				if ( $post_format && !is_wp_error($post_format) )
+					$classes[] = 'single-format-' . sanitize_html_class( $post_format );
+				else
+					$classes[] = 'single-format-standard';
 			}
 		}
 
@@ -636,23 +576,6 @@ function get_body_class( $class = '' ) {
 			$mime_prefix = array( 'application/', 'image/', 'text/', 'audio/', 'video/', 'music/' );
 			$classes[] = 'attachmentid-' . $post_id;
 			$classes[] = 'attachment-' . str_replace( $mime_prefix, '', $mime_type );
-		} elseif ( is_page() ) {
-			$classes[] = 'page';
-
-			$page_id = $wp_query->get_queried_object_id();
-
-			$post = get_post($page_id);
-
-			$classes[] = 'page-id-' . $page_id;
-
-			if ( get_pages( array( 'parent' => $page_id, 'number' => 1 ) ) ) {
-				$classes[] = 'page-parent';
-			}
-
-			if ( $post->post_parent ) {
-				$classes[] = 'page-child';
-				$classes[] = 'parent-pageid-' . $post->post_parent;
-			}
 		}
 	} elseif ( is_archive() ) {
 		if ( is_post_type_archive() ) {
@@ -705,6 +628,36 @@ function get_body_class( $class = '' ) {
 				$classes[] = 'term-' . $term->term_id;
 			}
 		}
+	} elseif ( is_page() ) {
+		$classes[] = 'page';
+
+		$page_id = $wp_query->get_queried_object_id();
+
+		$post = get_post($page_id);
+
+		$classes[] = 'page-id-' . $page_id;
+
+		if ( get_pages( array( 'parent' => $page_id, 'number' => 1 ) ) ) {
+			$classes[] = 'page-parent';
+		}
+
+		if ( $post->post_parent ) {
+			$classes[] = 'page-child';
+			$classes[] = 'parent-pageid-' . $post->post_parent;
+		}
+		if ( is_page_template() ) {
+			$classes[] = 'page-template';
+
+			$template_slug  = get_page_template_slug( $page_id );
+			$template_parts = explode( '/', $template_slug );
+
+			foreach ( $template_parts as $part ) {
+				$classes[] = 'page-template-' . sanitize_html_class( str_replace( array( '.', '/' ), '-', basename( $part, '.php' ) ) );
+			}
+			$classes[] = 'page-template-' . sanitize_html_class( str_replace( '.', '-', $template_slug ) );
+		} else {
+			$classes[] = 'page-template-default';
+		}
 	}
 
 	if ( is_user_logged_in() )
@@ -717,10 +670,6 @@ function get_body_class( $class = '' ) {
 
 	if ( get_background_color() !== get_theme_support( 'custom-background', 'default-color' ) || get_background_image() )
 		$classes[] = 'custom-background';
-
-	if ( has_custom_logo() ) {
-		$classes[] = 'wp-custom-logo';
-	}
 
 	$page = $wp_query->get( 'page' );
 
@@ -760,12 +709,12 @@ function get_body_class( $class = '' ) {
 	$classes = array_map( 'esc_attr', $classes );
 
 	/**
-	 * Filters the list of CSS body classes for the current post or page.
+	 * Filter the list of CSS body classes for the current post or page.
 	 *
 	 * @since 2.8.0
 	 *
-	 * @param array $classes An array of body classes.
-	 * @param array $class   An array of additional classes added to the body.
+	 * @param array  $classes An array of body classes.
+	 * @param string $class   A comma-separated list of additional classes added to the body.
 	 */
 	$classes = apply_filters( 'body_class', $classes, $class );
 
@@ -777,41 +726,26 @@ function get_body_class( $class = '' ) {
  *
  * @since 2.7.0
  *
- * @param int|WP_Post|null $post An optional post. Global $post used if not provided.
+ * @param int|WP_Post $post An optional post. Global $post used if not provided.
  * @return bool false if a password is not required or the correct password cookie is present, true otherwise.
  */
 function post_password_required( $post = null ) {
 	$post = get_post($post);
 
-	if ( empty( $post->post_password ) ) {
-		/** This filter is documented in wp-includes/post.php */
-		return apply_filters( 'post_password_required', false, $post );
-	}
+	if ( empty( $post->post_password ) )
+		return false;
 
-	if ( ! isset( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] ) ) {
-		/** This filter is documented in wp-includes/post.php */
-		return apply_filters( 'post_password_required', true, $post );
-	}
+	if ( ! isset( $_COOKIE['wp-postpass_' . COOKIEHASH] ) )
+		return true;
 
+	require_once ABSPATH . WPINC . '/class-phpass.php';
 	$hasher = new PasswordHash( 8, true );
 
 	$hash = wp_unslash( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] );
-	if ( 0 !== strpos( $hash, '$P$B' ) ) {
-		$required = true;
-	} else {
-		$required = ! $hasher->CheckPassword( $post->post_password, $hash );
-	}
+	if ( 0 !== strpos( $hash, '$P$B' ) )
+		return true;
 
-	/**
-	 * Filters whether a post requires the user to supply a password.
-	 *
-	 * @since 4.7.0
-	 *
-	 * @param bool    $required Whether the user needs to supply a password. True if password has not been
-	 *                          provided or is incorrect, false if password has been supplied or is not required.
-	 * @param WP_Post $post     Post data.
-	 */
-	return apply_filters( 'post_password_required', $required, $post );
+	return ! $hasher->CheckPassword( $post->post_password, $hash );
 }
 
 //
@@ -825,11 +759,6 @@ function post_password_required( $post = null ) {
  * Quicktag one or more times). This tag must be within The Loop.
  *
  * @since 1.2.0
- *
- * @global int $page
- * @global int $numpages
- * @global int $multipage
- * @global int $more
  *
  * @param string|array $args {
  *     Optional. Array or string of default arguments.
@@ -853,8 +782,6 @@ function post_password_required( $post = null ) {
  * @return string Formatted output in HTML.
  */
 function wp_link_pages( $args = '' ) {
-	global $page, $numpages, $multipage, $more;
-
 	$defaults = array(
 		'before'           => '<p>' . __( 'Pages:' ),
 		'after'            => '</p>',
@@ -871,13 +798,15 @@ function wp_link_pages( $args = '' ) {
 	$params = wp_parse_args( $args, $defaults );
 
 	/**
-	 * Filters the arguments used in retrieving page links for paginated posts.
+	 * Filter the arguments used in retrieving page links for paginated posts.
 	 *
 	 * @since 3.0.0
 	 *
 	 * @param array $params An array of arguments for page links for paginated posts.
 	 */
 	$r = apply_filters( 'wp_link_pages_args', $params );
+
+	global $page, $numpages, $multipage, $more;
 
 	$output = '';
 	if ( $multipage ) {
@@ -889,7 +818,7 @@ function wp_link_pages( $args = '' ) {
 					$link = _wp_link_page( $i ) . $link . '</a>';
 				}
 				/**
-				 * Filters the HTML output of individual page number links.
+				 * Filter the HTML output of individual page number links.
 				 *
 				 * @since 3.6.0
 				 *
@@ -906,7 +835,7 @@ function wp_link_pages( $args = '' ) {
 		} elseif ( $more ) {
 			$output .= $r['before'];
 			$prev = $page - 1;
-			if ( $prev > 0 ) {
+			if ( $prev ) {
 				$link = _wp_link_page( $prev ) . $r['link_before'] . $r['previouspagelink'] . $r['link_after'] . '</a>';
 
 				/** This filter is documented in wp-includes/post-template.php */
@@ -927,7 +856,7 @@ function wp_link_pages( $args = '' ) {
 	}
 
 	/**
-	 * Filters the HTML output of page links for paginated posts.
+	 * Filter the HTML output of page links for paginated posts.
 	 *
 	 * @since 3.6.0
 	 *
@@ -948,15 +877,12 @@ function wp_link_pages( $args = '' ) {
  * @since 3.1.0
  * @access private
  *
- * @global WP_Rewrite $wp_rewrite
- *
  * @param int $i Page number.
  * @return string Link.
  */
 function _wp_link_page( $i ) {
 	global $wp_rewrite;
 	$post = get_post();
-	$query_args = array();
 
 	if ( 1 == $i ) {
 		$url = get_permalink();
@@ -970,13 +896,16 @@ function _wp_link_page( $i ) {
 	}
 
 	if ( is_preview() ) {
+		$url = add_query_arg( array(
+			'preview' => 'true'
+		), $url );
 
 		if ( ( 'draft' !== $post->post_status ) && isset( $_GET['preview_id'], $_GET['preview_nonce'] ) ) {
-			$query_args['preview_id'] = wp_unslash( $_GET['preview_id'] );
-			$query_args['preview_nonce'] = wp_unslash( $_GET['preview_nonce'] );
+			$url = add_query_arg( array(
+				'preview_id'    => wp_unslash( $_GET['preview_id'] ),
+				'preview_nonce' => wp_unslash( $_GET['preview_nonce'] )
+			), $url );
 		}
-
-		$url = get_preview_post_link( $post, $query_args, $url );
 	}
 
 	return '<a href="' . esc_url( $url ) . '">';
@@ -992,7 +921,7 @@ function _wp_link_page( $i ) {
  * @since 1.5.0
  *
  * @param string $key Meta data key name.
- * @return false|string|array Array of values or single value, if only one element exists. False will be returned if key does not exist.
+ * @return bool|string|array Array of values or single value, if only one element exists. False will be returned if key does not exist.
  */
 function post_custom( $key = '' ) {
 	$custom = get_post_custom();
@@ -1008,10 +937,8 @@ function post_custom( $key = '' ) {
 /**
  * Display list of post custom fields.
  *
- * @since 1.2.0
- *
  * @internal This will probably change at some point...
- *
+ * @since 1.2.0
  */
 function the_meta() {
 	if ( $keys = get_post_custom_keys() ) {
@@ -1024,7 +951,7 @@ function the_meta() {
 			$value = implode($values,', ');
 
 			/**
-			 * Filters the HTML output of the li element in the post custom fields list.
+			 * Filter the HTML output of the li element in the post custom fields list.
 			 *
 			 * @since 2.2.0
 			 *
@@ -1047,7 +974,6 @@ function the_meta() {
  *
  * @since 2.1.0
  * @since 4.2.0 The `$value_field` argument was added.
- * @since 4.3.0 The `$class` argument was added.
  *
  * @param array|string $args {
  *     Optional. Array or string of arguments to generate a pages drop-down element.
@@ -1060,7 +986,6 @@ function the_meta() {
  *     @type string       $name                  Value for the 'name' attribute of the select element.
  *                                               Default 'page_id'.
  *     @type string       $id                    Value for the 'id' attribute of the select element.
- *     @type string       $class                 Value for the 'class' attribute of the select element. Default: none.
  *                                               Defaults to the value of `$name`.
  *     @type string       $show_option_none      Text to display for showing no pages. Default empty (does not display).
  *     @type string       $show_option_no_change Text to display for "no change" option. Default empty (does not display).
@@ -1075,7 +1000,6 @@ function wp_dropdown_pages( $args = '' ) {
 		'depth' => 0, 'child_of' => 0,
 		'selected' => 0, 'echo' => 1,
 		'name' => 'page_id', 'id' => '',
-		'class' => '',
 		'show_option_none' => '', 'show_option_no_change' => '',
 		'option_none_value' => '',
 		'value_field' => 'ID',
@@ -1091,12 +1015,7 @@ function wp_dropdown_pages( $args = '' ) {
 	}
 
 	if ( ! empty( $pages ) ) {
-		$class = '';
-		if ( ! empty( $r['class'] ) ) {
-			$class = " class='" . esc_attr( $r['class'] ) . "'";
-		}
-
-		$output = "<select name='" . esc_attr( $r['name'] ) . "'" . $class . " id='" . esc_attr( $r['id'] ) . "'>\n";
+		$output = "<select name='" . esc_attr( $r['name'] ) . "' id='" . esc_attr( $r['id'] ) . "'>\n";
 		if ( $r['show_option_no_change'] ) {
 			$output .= "\t<option value=\"-1\">" . $r['show_option_no_change'] . "</option>\n";
 		}
@@ -1108,16 +1027,13 @@ function wp_dropdown_pages( $args = '' ) {
 	}
 
 	/**
-	 * Filters the HTML output of a list of pages as a drop down.
+	 * Filter the HTML output of a list of pages as a drop down.
 	 *
 	 * @since 2.1.0
-	 * @since 4.4.0 `$r` and `$pages` added as arguments.
 	 *
 	 * @param string $output HTML output for drop down list of pages.
-	 * @param array  $r      The parsed arguments array.
-	 * @param array  $pages  List of WP_Post objects returned by `get_pages()`
- 	 */
-	$html = apply_filters( 'wp_dropdown_pages', $output, $r, $pages );
+	 */
+	$html = apply_filters( 'wp_dropdown_pages', $output );
 
 	if ( $r['echo'] ) {
 		echo $html;
@@ -1129,65 +1045,48 @@ function wp_dropdown_pages( $args = '' ) {
  * Retrieve or display list of pages in list (li) format.
  *
  * @since 1.5.0
- * @since 4.7.0 Added the `item_spacing` argument.
  *
  * @see get_pages()
- *
- * @global WP_Query $wp_query
  *
  * @param array|string $args {
  *     Array or string of arguments. Optional.
  *
- *     @type int          $child_of     Display only the sub-pages of a single page by ID. Default 0 (all pages).
- *     @type string       $authors      Comma-separated list of author IDs. Default empty (all authors).
- *     @type string       $date_format  PHP date format to use for the listed pages. Relies on the 'show_date' parameter.
- *                                      Default is the value of 'date_format' option.
- *     @type int          $depth        Number of levels in the hierarchy of pages to include in the generated list.
- *                                      Accepts -1 (any depth), 0 (all pages), 1 (top-level pages only), and n (pages to
- *                                      the given n depth). Default 0.
- *     @type bool         $echo         Whether or not to echo the list of pages. Default true.
- *     @type string       $exclude      Comma-separated list of page IDs to exclude. Default empty.
- *     @type array        $include      Comma-separated list of page IDs to include. Default empty.
- *     @type string       $link_after   Text or HTML to follow the page link label. Default null.
- *     @type string       $link_before  Text or HTML to precede the page link label. Default null.
- *     @type string       $post_type    Post type to query for. Default 'page'.
- *     @type string|array $post_status  Comma-separated list or array of post statuses to include. Default 'publish'.
- *     @type string       $show_date    Whether to display the page publish or modified date for each page. Accepts
- *                                      'modified' or any other value. An empty value hides the date. Default empty.
- *     @type string       $sort_column  Comma-separated list of column names to sort the pages by. Accepts 'post_author',
- *                                      'post_date', 'post_title', 'post_name', 'post_modified', 'post_modified_gmt',
- *                                      'menu_order', 'post_parent', 'ID', 'rand', or 'comment_count'. Default 'post_title'.
- *     @type string       $title_li     List heading. Passing a null or empty value will result in no heading, and the list
- *                                      will not be wrapped with unordered list `<ul>` tags. Default 'Pages'.
- *     @type string       $item_spacing Whether to preserve whitespace within the menu's HTML. Accepts 'preserve' or 'discard'.
- *                                      Default 'preserve'.
- *     @type Walker       $walker       Walker instance to use for listing pages. Default empty (Walker_Page).
+ *     @type int    $child_of     Display only the sub-pages of a single page by ID. Default 0 (all pages).
+ *     @type string $authors      Comma-separated list of author IDs. Default empty (all authors).
+ *     @type string $date_format  PHP date format to use for the listed pages. Relies on the 'show_date' parameter.
+ *                                Default is the value of 'date_format' option.
+ *     @type int    $depth        Number of levels in the hierarchy of pages to include in the generated list.
+ *                                Accepts -1 (any depth), 0 (all pages), 1 (top-level pages only), and n (pages to
+ *                                the given n depth). Default 0.
+ *     @type bool   $echo         Whether or not to echo the list of pages. Default true.
+ *     @type string $exclude      Comma-separated list of page IDs to exclude. Default empty.
+ *     @type array  $include      Comma-separated list of page IDs to include. Default empty.
+ *     @type string $link_after   Text or HTML to follow the page link label. Default null.
+ *     @type string $link_before  Text or HTML to precede the page link label. Default null.
+ *     @type string $post_type    Post type to query for. Default 'page'.
+ *     @type string $post_status  Comma-separated list of post statuses to include. Default 'publish'.
+ *     @type string $show_date	  Whether to display the page publish or modified date for each page. Accepts
+ *                                'modified' or any other value. An empty value hides the date. Default empty.
+ *     @type string $sort_column  Comma-separated list of column names to sort the pages by. Accepts 'post_author',
+ *                                'post_date', 'post_title', 'post_name', 'post_modified', 'post_modified_gmt',
+ *                                'menu_order', 'post_parent', 'ID', 'rand', or 'comment_count'. Default 'post_title'.
+ *     @type string $title_li     List heading. Passing a null or empty value will result in no heading, and the list
+ *                                will not be wrapped with unordered list `<ul>` tags. Default 'Pages'.
+ *     @type Walker $walker       Walker instance to use for listing pages. Default empty (Walker_Page).
  * }
- * @return string|void HTML list of pages.
+ * @return string HTML list of pages.
  */
 function wp_list_pages( $args = '' ) {
 	$defaults = array(
-		'depth'        => 0,
-		'show_date'    => '',
-		'date_format'  => get_option( 'date_format' ),
-		'child_of'     => 0,
-		'exclude'      => '',
-		'title_li'     => __( 'Pages' ),
-		'echo'         => 1,
-		'authors'      => '',
-		'sort_column'  => 'menu_order, post_title',
-		'link_before'  => '',
-		'link_after'   => '',
-		'item_spacing' => 'preserve',
-		'walker'       => '',
+		'depth' => 0, 'show_date' => '',
+		'date_format' => get_option( 'date_format' ),
+		'child_of' => 0, 'exclude' => '',
+		'title_li' => __( 'Pages' ), 'echo' => 1,
+		'authors' => '', 'sort_column' => 'menu_order, post_title',
+		'link_before' => '', 'link_after' => '', 'walker' => '',
 	);
 
 	$r = wp_parse_args( $args, $defaults );
-
-	if ( ! in_array( $r['item_spacing'], array( 'preserve', 'discard' ), true ) ) {
-		// invalid value, fall back to default.
-		$r['item_spacing'] = $defaults['item_spacing'];
-	}
 
 	$output = '';
 	$current_page = 0;
@@ -1199,7 +1098,7 @@ function wp_list_pages( $args = '' ) {
 	$exclude_array = ( $r['exclude'] ) ? explode( ',', $r['exclude'] ) : array();
 
 	/**
-	 * Filters the array of pages to exclude from the pages list.
+	 * Filter the array of pages to exclude from the pages list.
 	 *
 	 * @since 2.1.0
 	 *
@@ -1233,18 +1132,16 @@ function wp_list_pages( $args = '' ) {
 	}
 
 	/**
-	 * Filters the HTML output of the pages to list.
+	 * Filter the HTML output of the pages to list.
 	 *
 	 * @since 1.5.1
-	 * @since 4.4.0 `$pages` added as arguments.
 	 *
 	 * @see wp_list_pages()
 	 *
 	 * @param string $output HTML output of the pages list.
 	 * @param array  $r      An array of page-listing arguments.
-	 * @param array  $pages  List of WP_Post objects returned by `get_pages()`
 	 */
-	$html = apply_filters( 'wp_list_pages', $output, $r, $pages );
+	$html = apply_filters( 'wp_list_pages', $output, $r );
 
 	if ( $r['echo'] ) {
 		echo $html;
@@ -1254,67 +1151,35 @@ function wp_list_pages( $args = '' ) {
 }
 
 /**
- * Displays or retrieves a list of pages with an optional home link.
+ * Display or retrieve list of pages with optional home link.
  *
- * The arguments are listed below and part of the arguments are for wp_list_pages()} function.
- * Check that function for more info on those arguments.
+ * The arguments are listed below and part of the arguments are for {@link
+ * wp_list_pages()} function. Check that function for more info on those
+ * arguments.
  *
  * @since 2.7.0
- * @since 4.4.0 Added `menu_id`, `container`, `before`, `after`, and `walker` arguments.
- * @since 4.7.0 Added the `item_spacing` argument.
  *
  * @param array|string $args {
  *     Optional. Arguments to generate a page menu. See wp_list_pages() for additional arguments.
  *
- *     @type string          $sort_column  How to short the list of pages. Accepts post column names.
- *                                         Default 'menu_order, post_title'.
- *     @type string          $menu_id      ID for the div containing the page list. Default is empty string.
- *     @type string          $menu_class   Class to use for the element containing the page list. Default 'menu'.
- *     @type string          $container    Element to use for the element containing the page list. Default 'div'.
- *     @type bool            $echo         Whether to echo the list or return it. Accepts true (echo) or false (return).
- *                                         Default true.
- *     @type int|bool|string $show_home    Whether to display the link to the home page. Can just enter the text
- *                                         you'd like shown for the home link. 1|true defaults to 'Home'.
- *     @type string          $link_before  The HTML or text to prepend to $show_home text. Default empty.
- *     @type string          $link_after   The HTML or text to append to $show_home text. Default empty.
- *     @type string          $before       The HTML or text to prepend to the menu. Default is '<ul>'.
- *     @type string          $after        The HTML or text to append to the menu. Default is '</ul>'.
- *     @type string          $item_spacing Whether to preserve whitespace within the menu's HTML. Accepts 'preserve' or 'discard'. Default 'discard'.
- *     @type Walker          $walker       Walker instance to use for listing pages. Default empty (Walker_Page).
+ *     @type string          $sort_column How to short the list of pages. Accepts post column names.
+ *                                        Default 'menu_order, post_title'.
+ *     @type string          $menu_class  Class to use for the div ID containing the page list. Default 'menu'.
+ *     @type bool            $echo        Whether to echo the list or return it. Accepts true (echo) or false (return).
+ *                                        Default true.
+ *     @type string          $link_before The HTML or text to prepend to $show_home text. Default empty.
+ *     @type string          $link_after  The HTML or text to append to $show_home text. Default empty.
+ *     @type int|bool|string $show_home   Whether to display the link to the home page. Can just enter the text
+ *                                        you'd like shown for the home link. 1|true defaults to 'Home'.
  * }
- * @return string|void HTML menu
+ * @return string html menu
  */
 function wp_page_menu( $args = array() ) {
-	$defaults = array(
-		'sort_column'  => 'menu_order, post_title',
-		'menu_id'      => '',
-		'menu_class'   => 'menu',
-		'container'    => 'div',
-		'echo'         => true,
-		'link_before'  => '',
-		'link_after'   => '',
-		'before'       => '<ul>',
-		'after'        => '</ul>',
-		'item_spacing' => 'discard',
-		'walker'       => '',
-	);
+	$defaults = array('sort_column' => 'menu_order, post_title', 'menu_class' => 'menu', 'echo' => true, 'link_before' => '', 'link_after' => '');
 	$args = wp_parse_args( $args, $defaults );
 
-	if ( ! in_array( $args['item_spacing'], array( 'preserve', 'discard' ) ) ) {
-		// invalid value, fall back to default.
-		$args['item_spacing'] = $defaults['item_spacing'];
-	}
-
-	if ( 'preserve' === $args['item_spacing'] ) {
-		$t = "\t";
-		$n = "\n";
-	} else {
-		$t = '';
-		$n = '';
-	}
-
 	/**
-	 * Filters the arguments used to generate a page-based menu.
+	 * Filter the arguments used to generate a page-based menu.
 	 *
 	 * @since 2.7.0
 	 *
@@ -1351,41 +1216,15 @@ function wp_page_menu( $args = array() ) {
 
 	$list_args['echo'] = false;
 	$list_args['title_li'] = '';
-	$menu .= wp_list_pages( $list_args );
+	$menu .= str_replace( array( "\r", "\n", "\t" ), '', wp_list_pages($list_args) );
 
-	$container = sanitize_text_field( $args['container'] );
+	if ( $menu )
+		$menu = '<ul>' . $menu . '</ul>';
 
-	// Fallback in case `wp_nav_menu()` was called without a container.
-	if ( empty( $container ) ) {
-		$container = 'div';
-	}
-
-	if ( $menu ) {
-
-		// wp_nav_menu doesn't set before and after
-		if ( isset( $args['fallback_cb'] ) &&
-			'wp_page_menu' === $args['fallback_cb'] &&
-			'ul' !== $container ) {
-			$args['before'] = "<ul>{$n}";
-			$args['after'] = '</ul>';
-		}
-
-		$menu = $args['before'] . $menu . $args['after'];
-	}
-
-	$attrs = '';
-	if ( ! empty( $args['menu_id'] ) ) {
-		$attrs .= ' id="' . esc_attr( $args['menu_id'] ) . '"';
-	}
-
-	if ( ! empty( $args['menu_class'] ) ) {
-		$attrs .= ' class="' . esc_attr( $args['menu_class'] ) . '"';
-	}
-
-	$menu = "<{$container}{$attrs}>" . $menu . "</{$container}>{$n}";
+	$menu = '<div class="' . esc_attr($args['menu_class']) . '">' . $menu . "</div>\n";
 
 	/**
-	 * Filters the HTML output of a page-based menu.
+	 * Filter the HTML output of a page-based menu.
 	 *
 	 * @since 2.7.0
 	 *
@@ -1410,14 +1249,9 @@ function wp_page_menu( $args = array() ) {
  *
  * @uses Walker_Page to create HTML list content.
  * @since 2.1.0
- *
- * @param array $pages
- * @param int   $depth
- * @param int   $current_page
- * @param array $r
- * @return string
+ * @see Walker_Page::walk() for parameters and return description.
  */
-function walk_page_tree( $pages, $depth, $current_page, $r ) {
+function walk_page_tree($pages, $depth, $current_page, $r) {
 	if ( empty($r['walker']) )
 		$walker = new Walker_Page;
 	else
@@ -1438,8 +1272,6 @@ function walk_page_tree( $pages, $depth, $current_page, $r ) {
  * @uses Walker_PageDropdown to create HTML dropdown content.
  * @since 2.1.0
  * @see Walker_PageDropdown::walk() for parameters and return description.
- *
- * @return string
  */
 function walk_page_dropdown_tree() {
 	$args = func_get_args();
@@ -1449,6 +1281,215 @@ function walk_page_dropdown_tree() {
 		$walker = $args[2]['walker'];
 
 	return call_user_func_array(array($walker, 'walk'), $args);
+}
+
+/**
+ * Create HTML list of pages.
+ *
+ * @since 2.1.0
+ * @uses Walker
+ */
+class Walker_Page extends Walker {
+	/**
+	 * @see Walker::$tree_type
+	 * @since 2.1.0
+	 * @var string
+	 */
+	public $tree_type = 'page';
+
+	/**
+	 * @see Walker::$db_fields
+	 * @since 2.1.0
+	 * @todo Decouple this.
+	 * @var array
+	 */
+	public $db_fields = array ('parent' => 'post_parent', 'id' => 'ID');
+
+	/**
+	 * @see Walker::start_lvl()
+	 * @since 2.1.0
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param int $depth Depth of page. Used for padding.
+	 * @param array $args
+	 */
+	public function start_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat("\t", $depth);
+		$output .= "\n$indent<ul class='children'>\n";
+	}
+
+	/**
+	 * @see Walker::end_lvl()
+	 * @since 2.1.0
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param int $depth Depth of page. Used for padding.
+	 * @param array $args
+	 */
+	public function end_lvl( &$output, $depth = 0, $args = array() ) {
+		$indent = str_repeat("\t", $depth);
+		$output .= "$indent</ul>\n";
+	}
+
+	/**
+	 * @see Walker::start_el()
+	 * @since 2.1.0
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param object $page Page data object.
+	 * @param int $depth Depth of page. Used for padding.
+	 * @param int $current_page Page ID.
+	 * @param array $args
+	 */
+	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		if ( $depth ) {
+			$indent = str_repeat( "\t", $depth );
+		} else {
+			$indent = '';
+		}
+
+		$css_class = array( 'page_item', 'page-item-' . $page->ID );
+
+		if ( isset( $args['pages_with_children'][ $page->ID ] ) ) {
+			$css_class[] = 'page_item_has_children';
+		}
+
+		if ( ! empty( $current_page ) ) {
+			$_current_page = get_post( $current_page );
+			if ( $_current_page && in_array( $page->ID, $_current_page->ancestors ) ) {
+				$css_class[] = 'current_page_ancestor';
+			}
+			if ( $page->ID == $current_page ) {
+				$css_class[] = 'current_page_item';
+			} elseif ( $_current_page && $page->ID == $_current_page->post_parent ) {
+				$css_class[] = 'current_page_parent';
+			}
+		} elseif ( $page->ID == get_option('page_for_posts') ) {
+			$css_class[] = 'current_page_parent';
+		}
+
+		/**
+		 * Filter the list of CSS classes to include with each page item in the list.
+		 *
+		 * @since 2.8.0
+		 *
+		 * @see wp_list_pages()
+		 *
+		 * @param array   $css_class    An array of CSS classes to be applied
+		 *                             to each list item.
+		 * @param WP_Post $page         Page data object.
+		 * @param int     $depth        Depth of page, used for padding.
+		 * @param array   $args         An array of arguments.
+		 * @param int     $current_page ID of the current page.
+		 */
+		$css_classes = implode( ' ', apply_filters( 'page_css_class', $css_class, $page, $depth, $args, $current_page ) );
+
+		if ( '' === $page->post_title ) {
+			$page->post_title = sprintf( __( '#%d (no title)' ), $page->ID );
+		}
+
+		$args['link_before'] = empty( $args['link_before'] ) ? '' : $args['link_before'];
+		$args['link_after'] = empty( $args['link_after'] ) ? '' : $args['link_after'];
+
+		/** This filter is documented in wp-includes/post-template.php */
+		$output .= $indent . sprintf(
+			'<li class="%s"><a href="%s">%s%s%s</a>',
+			$css_classes,
+			get_permalink( $page->ID ),
+			$args['link_before'],
+			apply_filters( 'the_title', $page->post_title, $page->ID ),
+			$args['link_after']
+		);
+
+		if ( ! empty( $args['show_date'] ) ) {
+			if ( 'modified' == $args['show_date'] ) {
+				$time = $page->post_modified;
+			} else {
+				$time = $page->post_date;
+			}
+
+			$date_format = empty( $args['date_format'] ) ? '' : $args['date_format'];
+			$output .= " " . mysql2date( $date_format, $time );
+		}
+	}
+
+	/**
+	 * @see Walker::end_el()
+	 * @since 2.1.0
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param object $page Page data object. Not used.
+	 * @param int $depth Depth of page. Not Used.
+	 * @param array $args
+	 */
+	public function end_el( &$output, $page, $depth = 0, $args = array() ) {
+		$output .= "</li>\n";
+	}
+
+}
+
+/**
+ * Create HTML dropdown list of pages.
+ *
+ * @since 2.1.0
+ * @uses Walker
+ */
+class Walker_PageDropdown extends Walker {
+	/**
+	 * @see Walker::$tree_type
+	 * @since 2.1.0
+	 * @var string
+	 */
+	public $tree_type = 'page';
+
+	/**
+	 * @see Walker::$db_fields
+	 * @since 2.1.0
+	 * @todo Decouple this
+	 * @var array
+	 */
+	public $db_fields = array ('parent' => 'post_parent', 'id' => 'ID');
+
+	/**
+	 * @see Walker::start_el()
+	 * @since 2.1.0
+	 *
+	 * @param string $output Passed by reference. Used to append additional content.
+	 * @param object $page   Page data object.
+	 * @param int    $depth  Depth of page in reference to parent pages. Used for padding.
+	 * @param array  $args   Uses 'selected' argument for selected page to set selected HTML attribute for option
+	 *              element. Uses 'value_field' argument to fill "value" attribute. See {@see wp_dropdown_pages()}.
+	 * @param int $id
+	 */
+	public function start_el( &$output, $page, $depth = 0, $args = array(), $id = 0 ) {
+		$pad = str_repeat('&nbsp;', $depth * 3);
+
+		if ( ! isset( $args['value_field'] ) || ! isset( $page->{$args['value_field']} ) ) {
+			$args['value_field'] = 'ID';
+		}
+
+		$output .= "\t<option class=\"level-$depth\" value=\"" . esc_attr( $page->{$args['value_field']} ) . "\"";
+		if ( $page->ID == $args['selected'] )
+			$output .= ' selected="selected"';
+		$output .= '>';
+
+		$title = $page->post_title;
+		if ( '' === $title ) {
+			$title = sprintf( __( '#%d (no title)' ), $page->ID );
+		}
+
+		/**
+		 * Filter the page title when creating an HTML drop-down list of pages.
+		 *
+		 * @since 3.1.0
+		 *
+		 * @param string $title Page title.
+		 * @param object $page  Page data object.
+		 */
+		$title = apply_filters( 'list_pages', $title, $page );
+		$output .= $pad . esc_html( $title );
+		$output .= "</option>\n";
+	}
 }
 
 //
@@ -1467,7 +1508,7 @@ function walk_page_dropdown_tree() {
  */
 function the_attachment_link( $id = 0, $fullsize = false, $deprecated = false, $permalink = false ) {
 	if ( !empty( $deprecated ) )
-		_deprecated_argument( __FUNCTION__, '2.5.0' );
+		_deprecated_argument( __FUNCTION__, '2.5' );
 
 	if ( $fullsize )
 		echo wp_get_attachment_link($id, 'full', $permalink);
@@ -1479,59 +1520,49 @@ function the_attachment_link( $id = 0, $fullsize = false, $deprecated = false, $
  * Retrieve an attachment page link using an image or icon, if possible.
  *
  * @since 2.5.0
- * @since 4.4.0 The `$id` parameter can now accept either a post ID or `WP_Post` object.
  *
  * @param int|WP_Post  $id        Optional. Post ID or post object.
- * @param string|array $size      Optional. Image size. Accepts any valid image size, or an array
- *                                of width and height values in pixels (in that order).
- *                                Default 'thumbnail'.
- * @param bool         $permalink Optional, Whether to add permalink to image. Default false.
- * @param bool         $icon      Optional. Whether the attachment is an icon. Default false.
- * @param string|false $text      Optional. Link text to use. Activated by passing a string, false otherwise.
- *                                Default false.
- * @param array|string $attr      Optional. Array or string of attributes. Default empty.
+ * @param string       $size      Optional, default is 'thumbnail'. Size of image, either array or string.
+ * @param bool         $permalink Optional, default is false. Whether to add permalink to image.
+ * @param bool         $icon      Optional, default is false. Whether to include icon.
+ * @param string|bool  $text      Optional, default is false. If string, then will be link text.
+ * @param array|string $attr      Optional. Array or string of attributes.
  * @return string HTML content.
  */
 function wp_get_attachment_link( $id = 0, $size = 'thumbnail', $permalink = false, $icon = false, $text = false, $attr = '' ) {
+	$id = intval( $id );
 	$_post = get_post( $id );
 
-	if ( empty( $_post ) || ( 'attachment' !== $_post->post_type ) || ! $url = wp_get_attachment_url( $_post->ID ) ) {
+	if ( empty( $_post ) || ( 'attachment' != $_post->post_type ) || ! $url = wp_get_attachment_url( $_post->ID ) )
 		return __( 'Missing Attachment' );
-	}
 
-	if ( $permalink ) {
+	if ( $permalink )
 		$url = get_attachment_link( $_post->ID );
-	}
 
 	if ( $text ) {
 		$link_text = $text;
 	} elseif ( $size && 'none' != $size ) {
-		$link_text = wp_get_attachment_image( $_post->ID, $size, $icon, $attr );
+		$link_text = wp_get_attachment_image( $id, $size, $icon, $attr );
 	} else {
 		$link_text = '';
 	}
 
-	if ( '' === trim( $link_text ) ) {
+	if ( trim( $link_text ) == '' )
 		$link_text = $_post->post_title;
-	}
 
-	if ( '' === trim( $link_text ) ) {
-		$link_text = esc_html( pathinfo( get_attached_file( $_post->ID ), PATHINFO_FILENAME ) );
-	}
 	/**
-	 * Filters a retrieved attachment page link.
+	 * Filter a retrieved attachment page link.
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param string       $link_html The page link HTML output.
-	 * @param int          $id        Post ID.
-	 * @param string|array $size      Size of the image. Image size or array of width and height values (in that order).
-	 *                                Default 'thumbnail'.
-	 * @param bool         $permalink Whether to add permalink to image. Default false.
-	 * @param bool         $icon      Whether to include an icon. Default false.
-	 * @param string|bool  $text      If string, will be link text. Default false.
+	 * @param string      $link_html The page link HTML output.
+	 * @param int         $id        Post ID.
+	 * @param string      $size      Image size. Default 'thumbnail'.
+	 * @param bool        $permalink Whether to add permalink to image. Default false.
+	 * @param bool        $icon      Whether to include an icon. Default false.
+	 * @param string|bool $text      If string, will be link text. Default false.
 	 */
-	return apply_filters( 'wp_get_attachment_link', "<a href='" . esc_url( $url ) . "'>$link_text</a>", $id, $size, $permalink, $icon, $text );
+	return apply_filters( 'wp_get_attachment_link', "<a href='$url'>$link_text</a>", $id, $size, $permalink, $icon, $text );
 }
 
 /**
@@ -1569,7 +1600,7 @@ function prepend_attachment($content) {
 	}
 
 	/**
-	 * Filters the attachment markup to be prepended to the post content.
+	 * Filter the attachment markup to be prepended to the post content.
 	 *
 	 * @since 2.0.0
 	 *
@@ -1599,11 +1630,11 @@ function get_the_password_form( $post = 0 ) {
 	$label = 'pwbox-' . ( empty($post->ID) ? rand() : $post->ID );
 	$output = '<form action="' . esc_url( site_url( 'wp-login.php?action=postpass', 'login_post' ) ) . '" class="post-password-form" method="post">
 	<p>' . __( 'This content is password protected. To view it please enter your password below:' ) . '</p>
-	<p><label for="' . $label . '">' . __( 'Password:' ) . ' <input name="post_password" id="' . $label . '" type="password" size="20" /></label> <input type="submit" name="Submit" value="' . esc_attr_x( 'Enter', 'post password form' ) . '" /></p></form>
+	<p><label for="' . $label . '">' . __( 'Password:' ) . ' <input name="post_password" id="' . $label . '" type="password" size="20" /></label> <input type="submit" name="Submit" value="' . esc_attr__( 'Submit' ) . '" /></p></form>
 	';
 
 	/**
-	 * Filters the HTML output for the protected post password form.
+	 * Filter the HTML output for the protected post password form.
 	 *
 	 * If modifying the password field, please note that the core database schema
 	 * limits the password field to 20 characters regardless of the value of the
@@ -1625,15 +1656,13 @@ function get_the_password_form( $post = 0 ) {
  *
  * @since 2.5.0
  * @since 4.2.0 The `$template` parameter was changed to also accept an array of page templates.
- * @since 4.7.0 Now works with any post type, not just pages.
  *
  * @param string|array $template The specific template name or array of templates to match.
  * @return bool True on success, false on failure.
  */
 function is_page_template( $template = '' ) {
-	if ( ! is_singular() ) {
+	if ( ! is_page() )
 		return false;
-	}
 
 	$page_template = get_page_template_slug( get_queried_object_id() );
 
@@ -1651,32 +1680,28 @@ function is_page_template( $template = '' ) {
 		}
 	}
 
-	return ( 'default' === $template && ! $page_template );
+	if ( 'default' == $template && ! $page_template )
+		return true;
+
+	return false;
 }
 
 /**
- * Get the specific template name for a given post.
+ * Get the specific template name for a page.
  *
  * @since 3.4.0
- * @since 4.7.0 Now works with any post type, not just pages.
  *
- * @param int|WP_Post $post Optional. Post ID or WP_Post object. Default is global $post.
- * @return string|false Page template filename. Returns an empty string when the default page template
- * 	is in use. Returns false if the post does not exist.
+ * @param int $post_id Optional. The page ID to check. Defaults to the current post, when used in the loop.
+ * @return string|bool Page template filename. Returns an empty string when the default page template
+ * 	is in use. Returns false if the post is not a page.
  */
-function get_page_template_slug( $post = null ) {
-	$post = get_post( $post );
-
-	if ( ! $post ) {
+function get_page_template_slug( $post_id = null ) {
+	$post = get_post( $post_id );
+	if ( ! $post || 'page' != $post->post_type )
 		return false;
-	}
-
 	$template = get_post_meta( $post->ID, '_wp_page_template', true );
-
-	if ( ! $template || 'default' == $template ) {
+	if ( ! $template || 'default' == $template )
 		return '';
-	}
-
 	return $template;
 }
 
@@ -1686,8 +1711,8 @@ function get_page_template_slug( $post = null ) {
  * @since 2.6.0
  *
  * @param int|object $revision Revision ID or revision object.
- * @param bool       $link     Optional, default is true. Link to revisions's page?
- * @return string|false i18n formatted datetimestamp or localized 'Current Revision'.
+ * @param bool $link Optional, default is true. Link to revisions's page?
+ * @return string i18n formatted datetimestamp or localized 'Current Revision'.
  */
 function wp_post_revision_title( $revision, $link = true ) {
 	if ( !$revision = get_post( $revision ) )
@@ -1696,12 +1721,12 @@ function wp_post_revision_title( $revision, $link = true ) {
 	if ( !in_array( $revision->post_type, array( 'post', 'page', 'revision' ) ) )
 		return false;
 
-	/* translators: revision date format, see https://secure.php.net/date */
+	/* translators: revision date format, see http://php.net/date */
 	$datef = _x( 'F j, Y @ H:i:s', 'revision date format' );
-	/* translators: %s: revision date */
-	$autosavef = __( '%s [Autosave]' );
-	/* translators: %s: revision date */
-	$currentf  = __( '%s [Current Revision]' );
+	/* translators: 1: date */
+	$autosavef = _x( '%1$s [Autosave]', 'post revision title extra' );
+	/* translators: 1: date */
+	$currentf  = _x( '%1$s [Current Revision]', 'post revision title extra' );
 
 	$date = date_i18n( $datef, strtotime( $revision->post_modified ) );
 	if ( $link && current_user_can( 'edit_post', $revision->ID ) && $link = get_edit_post_link( $revision->ID ) )
@@ -1721,8 +1746,8 @@ function wp_post_revision_title( $revision, $link = true ) {
  * @since 3.6.0
  *
  * @param int|object $revision Revision ID or revision object.
- * @param bool       $link     Optional, default is true. Link to revisions's page?
- * @return string|false gravatar, user, i18n formatted datetimestamp or localized 'Current Revision'.
+ * @param bool $link Optional, default is true. Link to revisions's page?
+ * @return string gravatar, user, i18n formatted datetimestamp or localized 'Current Revision'.
  */
 function wp_post_revision_title_expanded( $revision, $link = true ) {
 	if ( !$revision = get_post( $revision ) )
@@ -1732,7 +1757,7 @@ function wp_post_revision_title_expanded( $revision, $link = true ) {
 		return false;
 
 	$author = get_the_author_meta( 'display_name', $revision->post_author );
-	/* translators: revision date format, see https://secure.php.net/date */
+	/* translators: revision date format, see http://php.net/date */
 	$datef = _x( 'F j, Y @ H:i:s', 'revision date format' );
 
 	$gravatar = get_avatar( $revision->post_author, 24 );
@@ -1743,34 +1768,22 @@ function wp_post_revision_title_expanded( $revision, $link = true ) {
 
 	$revision_date_author = sprintf(
 		/* translators: post revision title: 1: author avatar, 2: author name, 3: time ago, 4: date */
-		__( '%1$s %2$s, %3$s ago (%4$s)' ),
+		_x( '%1$s %2$s, %3$s ago (%4$s)', 'post revision title' ),
 		$gravatar,
 		$author,
 		human_time_diff( strtotime( $revision->post_modified ), current_time( 'timestamp' ) ),
 		$date
 	);
 
-	/* translators: %s: revision date with author avatar */
-	$autosavef = __( '%s [Autosave]' );
-	/* translators: %s: revision date with author avatar */
-	$currentf  = __( '%s [Current Revision]' );
+	$autosavef = __( '%1$s [Autosave]' );
+	$currentf  = __( '%1$s [Current Revision]' );
 
 	if ( !wp_is_post_revision( $revision ) )
 		$revision_date_author = sprintf( $currentf, $revision_date_author );
 	elseif ( wp_is_post_autosave( $revision ) )
 		$revision_date_author = sprintf( $autosavef, $revision_date_author );
 
-	/**
-	 * Filters the formatted author and date for a revision.
-	 *
-	 * @since 4.4.0
-	 *
-	 * @param string  $revision_date_author The formatted string.
-	 * @param WP_Post $revision             The revision object.
-	 * @param bool    $link                 Whether to link to the revisions page, as passed into
-	 *                                      wp_post_revision_title_expanded().
-	 */
-	return apply_filters( 'wp_post_revision_title_expanded', $revision_date_author, $revision, $link );
+	return $revision_date_author;
 }
 
 /**
@@ -1783,6 +1796,7 @@ function wp_post_revision_title_expanded( $revision, $link = true ) {
  *
  * @param int|WP_Post $post_id Optional. Post ID or WP_Post object. Default is global $post.
  * @param string      $type    'all' (default), 'revision' or 'autosave'
+ * @return null
  */
 function wp_list_post_revisions( $post_id = 0, $type = 'all' ) {
 	if ( ! $post = get_post( $post_id ) )
@@ -1791,7 +1805,7 @@ function wp_list_post_revisions( $post_id = 0, $type = 'all' ) {
 	// $args array with (parent, format, right, left, type) deprecated since 3.6
 	if ( is_array( $type ) ) {
 		$type = ! empty( $type['type'] ) ? $type['type']  : $type;
-		_deprecated_argument( __FUNCTION__, '3.6.0' );
+		_deprecated_argument( __FUNCTION__, '3.6' );
 	}
 
 	if ( ! $revisions = wp_get_post_revisions( $post->ID ) )

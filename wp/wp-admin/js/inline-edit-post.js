@@ -1,8 +1,7 @@
 /* global inlineEditL10n, ajaxurl, typenow */
-window.wp = window.wp || {};
 
 var inlineEditPost;
-( function( $, wp ) {
+(function($) {
 inlineEditPost = {
 
 	init : function(){
@@ -23,10 +22,10 @@ inlineEditPost = {
 			}
 		});
 
-		$( '.cancel', qeRow ).click( function() {
+		$('a.cancel', qeRow).click(function(){
 			return inlineEditPost.revert();
 		});
-		$( '.save', qeRow ).click( function() {
+		$('a.save', qeRow).click(function(){
 			return inlineEditPost.save(this);
 		});
 		$('td', qeRow).keydown(function(e){
@@ -35,7 +34,7 @@ inlineEditPost = {
 			}
 		});
 
-		$( '.cancel', bulkRow ).click( function() {
+		$('a.cancel', bulkRow).click(function(){
 			return inlineEditPost.revert();
 		});
 
@@ -49,9 +48,9 @@ inlineEditPost = {
 		});
 
 		// add events
-		$('#the-list').on( 'click', 'a.editinline', function( e ) {
-			e.preventDefault();
+		$('#the-list').on('click', 'a.editinline', function(){
 			inlineEditPost.edit(this);
+			return false;
 		});
 
 		$('#bulk-edit').find('fieldset:first').after(
@@ -63,11 +62,7 @@ inlineEditPost = {
 		$('select[name="_status"] option[value="future"]', bulkRow).remove();
 
 		$('#doaction, #doaction2').click(function(e){
-			var n;
-
-			t.whichBulkButtonId = $( this ).attr( 'id' );
-			n = t.whichBulkButtonId.substr( 2 );
-
+			var n = $(this).attr('id').substr(2);
 			if ( 'edit' === $( 'select[name="' + n + '"]' ).val() ) {
 				e.preventDefault();
 				t.setBulk();
@@ -83,10 +78,10 @@ inlineEditPost = {
 	},
 
 	setBulk : function(){
-		var te = '', type = this.type, c = true;
+		var te = '', type = this.type, tax, c = true;
 		this.revert();
 
-		$( '#bulk-edit td' ).attr( 'colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length );
+		$('#bulk-edit td').attr('colspan', $('.widefat:first thead th:visible').length);
 		// Insert the editor at the top of the table with an empty row above to maintain zebra striping.
 		$('table.widefat tbody').prepend( $('#bulk-edit') ).prepend('<tr class="hidden"></tr>');
 		$('#bulk-edit').addClass('inline-editor').show();
@@ -114,31 +109,31 @@ inlineEditPost = {
 
 		// enable autocomplete for tags
 		if ( 'post' === type ) {
-			$( 'tr.inline-editor textarea[data-wp-taxonomy]' ).each( function ( i, element ) {
-				$( element ).wpTagsSuggest();
-			} );
+			// support multi taxonomies?
+			tax = 'post_tag';
+			$('tr.inline-editor textarea[name="tax_input['+tax+']"]').suggest( ajaxurl + '?action=ajax-tag-search&tax=' + tax, { delay: 500, minchars: 2, multiple: true, multipleSep: inlineEditL10n.comma } );
 		}
 		$('html, body').animate( { scrollTop: 0 }, 'fast' );
 	},
 
 	edit : function(id) {
-		var t = this, fields, editRow, rowData, status, pageOpt, pageLevel, nextPage, pageLoop = true, nextLevel, f, val, pw;
+		var t = this, fields, editRow, rowData, status, pageOpt, pageLevel, nextPage, pageLoop = true, nextLevel, cur_format, f, val;
 		t.revert();
 
 		if ( typeof(id) === 'object' ) {
 			id = t.getId(id);
 		}
 
-		fields = ['post_title', 'post_name', 'post_author', '_status', 'jj', 'mm', 'aa', 'hh', 'mn', 'ss', 'post_password', 'post_format', 'menu_order', 'page_template'];
+		fields = ['post_title', 'post_name', 'post_author', '_status', 'jj', 'mm', 'aa', 'hh', 'mn', 'ss', 'post_password', 'post_format', 'menu_order'];
 		if ( t.type === 'page' ) {
-			fields.push('post_parent');
+			fields.push('post_parent', 'page_template');
 		}
 
 		// add the new edit row with an extra blank row underneath to maintain zebra striping.
 		editRow = $('#inline-edit').clone(true);
-		$( 'td', editRow ).attr( 'colspan', $( 'th:visible, td:visible', '.widefat:first thead' ).length );
+		$('td', editRow).attr('colspan', $('.widefat:first thead th:visible').length);
 
-		$(t.what+id).removeClass('is-expanded').hide().after(editRow).after('<tr class="hidden"></tr>');
+		$(t.what+id).hide().after(editRow).after('<tr class="hidden"></tr>');
 
 		// populate the data
 		rowData = $('#inline_'+id);
@@ -149,6 +144,15 @@ inlineEditPost = {
 		if ( $( ':input[name="post_author"] option', editRow ).length === 1 ) {
 			$('label.inline-edit-author', editRow).hide();
 		}
+
+		// hide unsupported formats, but leave the current format alone
+		cur_format = $('.post_format', rowData).text();
+		$('option.unsupported', editRow).each(function() {
+			var $this = $(this);
+			if ( $this.val() !== cur_format ) {
+				$this.remove();
+			}
+		});
 
 		for ( f = 0; f < fields.length; f++ ) {
 			val = $('.'+fields[f], rowData);
@@ -196,7 +200,7 @@ inlineEditPost = {
 				textarea.val(terms);
 			}
 
-			textarea.wpTagsSuggest();
+			textarea.suggest( ajaxurl + '?action=ajax-tag-search&tax=' + taxname, { delay: 500, minchars: 2, multiple: true, multipleSep: inlineEditL10n.comma } );
 		});
 
 		// handle the post status
@@ -205,10 +209,9 @@ inlineEditPost = {
 			$('select[name="_status"] option[value="future"]', editRow).remove();
 		}
 
-		pw = $( '.inline-edit-password-input' ).prop( 'disabled', false );
 		if ( 'private' === status ) {
 			$('input[name="keep_private"]', editRow).prop('checked', true);
-			pw.val( '' ).prop( 'disabled', true );
+			$('input.inline-edit-password-input').val('').prop('disabled', true);
 		}
 
 		// remove the current page and children from the parent dropdown
@@ -240,7 +243,6 @@ inlineEditPost = {
 		return false;
 	},
 
-	// Ajax saving is only for Quick Edit.
 	save : function(id) {
 		var params, fields, page = $('.post_status_page').val() || '';
 
@@ -264,55 +266,39 @@ inlineEditPost = {
 		// make ajax request
 		$.post( ajaxurl, params,
 			function(r) {
-				var $errorSpan = $( '#edit-' + id + ' .inline-edit-save .error' );
-
 				$( 'table.widefat .spinner' ).removeClass( 'is-active' );
-				$( '.ac_results' ).hide();
 
 				if (r) {
 					if ( -1 !== r.indexOf( '<tr' ) ) {
 						$(inlineEditPost.what+id).siblings('tr.hidden').addBack().remove();
 						$('#edit-'+id).before(r).remove();
-						$( inlineEditPost.what + id ).hide().fadeIn( 400, function() {
-							// Move focus back to the Quick Edit link. $( this ) is the row being animated.
-							$( this ).find( '.editinline' ).focus();
-							wp.a11y.speak( inlineEditL10n.saved );
-						});
+						$(inlineEditPost.what+id).hide().fadeIn();
 					} else {
 						r = r.replace( /<.[^<>]*?>/g, '' );
-						$errorSpan.html( r ).show();
-						wp.a11y.speak( $errorSpan.text() );
+						$('#edit-'+id+' .inline-edit-save .error').html(r).show();
 					}
 				} else {
-					$errorSpan.html( inlineEditL10n.error ).show();
-					wp.a11y.speak( inlineEditL10n.error );
+					$('#edit-'+id+' .inline-edit-save .error').html(inlineEditL10n.error).show();
 				}
 			},
 		'html');
-		// Prevent submitting the form when pressing Enter on a focused field.
 		return false;
 	},
 
-	// Revert is for both Quick Edit and Bulk Edit.
 	revert : function(){
-		var $tableWideFat = $( '.widefat' ),
-			id = $( '.inline-editor', $tableWideFat ).attr( 'id' );
+		var id = $('table.widefat tr.inline-editor').attr('id');
 
 		if ( id ) {
-			$( '.spinner', $tableWideFat ).removeClass( 'is-active' );
-			$( '.ac_results' ).hide();
+			$( 'table.widefat .spinner' ).removeClass( 'is-active' );
 
 			if ( 'bulk-edit' === id ) {
-				$( '#bulk-edit', $tableWideFat ).removeClass( 'inline-editor' ).hide().siblings( '.hidden' ).remove();
+				$('table.widefat #bulk-edit').removeClass('inline-editor').hide().siblings('tr.hidden').remove();
 				$('#bulk-titles').empty();
 				$('#inlineedit').append( $('#bulk-edit') );
-				// Move focus back to the Bulk Action button that was activated.
-				$( '#' + inlineEditPost.whichBulkButtonId ).focus();
 			} else {
 				$('#'+id).siblings('tr.hidden').addBack().remove();
 				id = id.substr( id.lastIndexOf('-') + 1 );
-				// Show the post row and move focus back to the Quick Edit link.
-				$( this.what + id ).show().find( '.editinline' ).focus();
+				$(this.what+id).show();
 			}
 		}
 
@@ -342,7 +328,7 @@ $( document ).on( 'heartbeat-tick.wp-check-locked-posts', function( e, data ) {
 				row.find('.check-column checkbox').prop('checked', false);
 
 				if ( lock_data.avatar_src ) {
-					avatar = $( '<img class="avatar avatar-18 photo" width="18" height="18" alt="" />' ).attr( 'src', lock_data.avatar_src.replace( /&amp;/g, '&' ) );
+					avatar = $('<img class="avatar avatar-18 photo" width="18" height="18" />').attr( 'src', lock_data.avatar_src.replace(/&amp;/g, '&') );
 					row.find('.column-title .locked-avatar').empty().append( avatar );
 				}
 				row.addClass('wp-locked');
@@ -371,4 +357,4 @@ $( document ).on( 'heartbeat-tick.wp-check-locked-posts', function( e, data ) {
 	}
 });
 
-})( jQuery, window.wp );
+}(jQuery));

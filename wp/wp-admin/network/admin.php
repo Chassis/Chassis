@@ -12,15 +12,13 @@ define( 'WP_NETWORK_ADMIN', true );
 /** Load WordPress Administration Bootstrap */
 require_once( dirname( dirname( __FILE__ ) ) . '/admin.php' );
 
-// Do not remove this check. It is required by individual network admin pages.
-if ( ! is_multisite() ) {
+if ( ! is_multisite() )
 	wp_die( __( 'Multisite support is not enabled.' ) );
-}
 
 $redirect_network_admin_request = 0 !== strcasecmp( $current_blog->domain, $current_site->domain ) || 0 !== strcasecmp( $current_blog->path, $current_site->path );
 
 /**
- * Filters whether to redirect the request to the Network Admin.
+ * Filter whether to redirect the request to the Network Admin.
  *
  * @since 3.2.0
  *

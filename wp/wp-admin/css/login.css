@@ -8,11 +8,15 @@ body {
 	padding: 0;
 }
 
+html {
+	background: #f1f1f1;
+}
+
 body {
 	background: #f1f1f1;
 	min-width: 0;
 	color: #444;
-	font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen-Sans, Ubuntu, Cantarell, "Helvetica Neue", sans-serif;
+	font-family: "Open Sans", sans-serif;
 	font-size: 13px;
 	line-height: 1.4em;
 }
@@ -38,34 +42,30 @@ a:active {
 
 a:focus {
 	color: #124964;
-	-webkit-box-shadow:
-		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
-	box-shadow:
-		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
 }
 
-.ie8 a:focus {
-	outline: #5b9dd9 solid 1px;
+a:focus,
+a:active {
+	outline: thin dotted;
 }
 
 p {
 	line-height: 1.5;
 }
 
-.login .message,
-.login #login_error {
+.login .message {
 	border-left: 4px solid #00a0d2;
-	padding: 12px;
-	margin-left: 0;
+	padding: 1px 12px;
 	background-color: #fff;
 	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
 	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
 }
 
 .login #login_error {
-	border-left-color: #dc3232;
+	border-left: 4px solid #dd3d36;
+	background: #fff;
+	-webkit-box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
 }
 
 #loginform p.submit,
@@ -83,7 +83,7 @@ p {
 	margin-top: 20px;
 	margin-left: 0;
 	padding: 26px 24px 46px;
-	font-weight: 400;
+	font-weight: normal;
 	overflow: hidden;
 	background: #fff;
 	-webkit-box-shadow: 0 1px 3px rgba(0,0,0,0.13);
@@ -91,7 +91,7 @@ p {
 }
 
 .login form .forgetmenot {
-	font-weight: 400;
+	font-weight: normal;
 	float: left;
 	margin-bottom: 0;
 }
@@ -110,7 +110,7 @@ p {
 }
 
 .login label {
-	color: #72777c;
+	color: #777;
 	font-size: 14px;
 }
 
@@ -130,10 +130,10 @@ p {
 	background-size: 84px;
 	background-position: center top;
 	background-repeat: no-repeat;
-	color: #444;
+	color: #999;
 	height: 84px;
 	font-size: 20px;
-	font-weight: 400;
+	font-weight: normal;
 	line-height: 1.3em;
 	margin: 0 auto 25px;
 	padding: 0;
@@ -151,6 +151,12 @@ p {
 	margin: auto;
 }
 
+#login_error,
+.login .message {
+	margin-left: 0;
+	padding: 12px;
+}
+
 .login #nav,
 .login #backtoblog {
 	font-size: 13px;
@@ -162,25 +168,19 @@ p {
 }
 
 #backtoblog {
-	margin: 16px 0;
+	margin: 16px 0 0 0;
 }
 
 .login #nav a,
 .login #backtoblog a {
 	text-decoration: none;
-	color: #555d66;
+	color: #999;
 }
 
 .login #nav a:hover,
 .login #backtoblog a:hover,
 .login h1 a:hover {
 	color: #00a0d2;
-}
-
-.login #nav a:focus,
-.login #backtoblog a:focus,
-.login h1 a:focus {
-	color: #124964;
 }
 
 .login form .input,
@@ -202,18 +202,27 @@ p {
 	font-family: sans-serif;
 }
 
-.login-action-rp input[type="text"] {
-	-webkit-box-shadow: none;
-	box-shadow: none;
-	margin: 0;
-}
-
 .login #pass-strength-result {
+	width: 250px;
 	font-weight: 600;
-	margin: -1px 5px 16px 0;
+	margin: 12px 0 6px;
 	padding: 6px 5px;
 	text-align: center;
-	width: 100%;
+}
+
+.mobile #login {
+	padding: 20px 0;
+}
+
+.mobile #login form,
+.mobile #login .message,
+.mobile #login_error {
+	margin-left: 0;
+}
+
+.mobile #login #nav,
+.mobile #login #backtoblog {
+	margin-left: 8px;
 }
 
 body.interim-login {
@@ -242,12 +251,6 @@ body.interim-login {
 	width: device-width;
 }
 
-@media screen and ( max-height: 550px ) {
-	#login {
-		padding: 20px 0;
-	}
-}
-
 @media screen and ( max-width: 782px ) {
 	.interim-login input[type=checkbox] {
 		height: 16px;
@@ -256,7 +259,7 @@ body.interim-login {
 
 	.interim-login input[type=checkbox]:checked:before {
 		width: 16px;
-		font: normal 21px/1 dashicons;
+		font: normal 21px/1 'dashicons';
 		margin: -3px 0 0 -4px;
 	}
 }

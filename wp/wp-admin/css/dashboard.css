@@ -56,6 +56,10 @@
 	min-height: 0;
 }
 
+/*------------------------------------------------------------------------------
+  9.0 - Dashboard
+------------------------------------------------------------------------------*/
+
 #dashboard-widgets-wrap {
 	overflow: hidden;
 	margin: 0 -8px;
@@ -111,14 +115,14 @@
 	line-height: 2.1em;
 }
 
-.welcome-panel h2 {
+.welcome-panel h3 {
 	margin: 0;
 	font-size: 21px;
-	font-weight: 400;
+	font-weight: normal;
 	line-height: 1.2;
 }
 
-.welcome-panel h3 {
+.welcome-panel h4 {
 	margin: 1.33em 0 0;
 	font-size: 16px;
 }
@@ -128,7 +132,7 @@
 }
 
 .welcome-panel p {
-	color: #72777c;
+	color: #777;
 }
 
 .welcome-panel a {
@@ -142,18 +146,18 @@
 
 .welcome-panel .welcome-panel-close {
 	position: absolute;
-	top: 10px;
+	top: 5px;
 	right: 10px;
-	padding: 10px 15px 10px 21px;
+	padding: 20px 15px 0 3px;
 	font-size: 13px;
-	line-height: 1.23076923; /* Chrome rounding, needs to be 16px equivalent */
 	text-decoration: none;
+	line-height: 1;
 }
 
-.welcome-panel .welcome-panel-close:before {
+#welcome-panel.welcome-panel .welcome-panel-close:before {
 	position: absolute;
-	top: 8px;
-	left: 0;
+	left: -18px;
+	margin-top: -2px;
 	-webkit-transition: all .1s ease-in-out;
 	transition: all .1s ease-in-out;
 }
@@ -173,6 +177,7 @@
 
 .welcome-panel .welcome-panel-column-container {
 	clear: both;
+	overflow: hidden;
 	position: relative;
 }
 
@@ -196,7 +201,57 @@
 
 .welcome-panel-column p {
 	margin-top: 7px;
-	color: #444;
+	color: #464646;
+}
+
+.welcome-panel .welcome-icon {
+	display: block;
+	padding: 0 0 8px;
+	background: transparent !important;
+}
+
+.welcome-panel .welcome-icon:before {
+	color: #82878c;
+	font: normal 20px/1 'dashicons';
+	speak: none;
+	display: inline-block;
+	padding: 0 10px 0 0;
+	top: -1px;
+	position: relative;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	text-decoration: none !important;
+	vertical-align: top;
+}
+
+.welcome-panel .welcome-write-blog:before,
+.welcome-panel .welcome-edit-page:before {
+	content:'\f119';
+	top: -3px;
+}
+
+.welcome-panel .welcome-add-page:before {
+	content:'\f132';
+}
+
+.welcome-panel .welcome-view-site:before {
+	content:'\f115';
+	top: -2px;
+}
+
+.welcome-panel .welcome-widgets-menus:before {
+	content:'\f116';
+	top: -2px;
+}
+
+.welcome-panel .welcome-comments:before {
+	content:'\f117';
+	top: -1px;
+}
+
+.welcome-panel .welcome-learn-more:before {
+	content:'\f118';
+	top: -1px;
 }
 
 .welcome-panel .welcome-widgets-menus {
@@ -210,95 +265,6 @@
 .welcome-panel .welcome-panel-column li {
 	line-height: 16px;
 	list-style-type: none;
-	padding: 0 0 8px;
-}
-
-.welcome-panel .welcome-icon {
-	background: transparent !important;
-}
-
-/* Welcome Panel and Right Now common Icons style */
-
-.welcome-panel .welcome-icon:before,
-#dashboard_right_now li a:before,
-#dashboard_right_now li span:before {
-	color: #82878c;
-	font: normal 20px/1 dashicons;
-	speak: none;
-	display: inline-block;
-	padding: 0 10px 0 0;
-	position: relative;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
-	text-decoration: none !important;
-	vertical-align: top;
-}
-
-/* Welcome Panel specific Icons styles */
-
-.welcome-panel .welcome-write-blog:before,
-.welcome-panel .welcome-edit-page:before {
-	content: "\f119";
-	top: -3px;
-}
-
-.welcome-panel .welcome-add-page:before {
-	content: "\f132";
-	top: -1px;
-}
-
-.welcome-panel .welcome-view-site:before {
-	content: "\f115";
-	top: -2px;
-}
-
-.welcome-panel .welcome-widgets-menus:before {
-	content: "\f116";
-	top: -2px;
-}
-
-.welcome-panel .welcome-comments:before {
-	content: "\f117";
-	top: -1px;
-}
-
-.welcome-panel .welcome-learn-more:before {
-	content: "\f118";
-	top: -1px;
-}
-
-/* Right Now specific Icons styles */
-
-#dashboard_right_now li a:before,
-#dashboard_right_now li > span:before { /* get only the first level span to exclude screen-reader-text in mu-storage */
-	content: "\f159"; /* generic icon for items added by CPTs ? */
-	padding: 0 5px 0 0;
-}
-
-#dashboard_right_now .page-count a:before,
-#dashboard_right_now .page-count span:before {
-	content: "\f105";
-}
-
-#dashboard_right_now .post-count a:before,
-#dashboard_right_now .post-count span:before {
-	content: "\f109";
-}
-
-#dashboard_right_now .comment-count a:before {
-	content: "\f101";
-}
-
-#dashboard_right_now .comment-mod-count a:before {
-	content: "\f125";
-}
-
-#dashboard_right_now .storage-count a:before {
-	content: "\f104";
-}
-
-#dashboard_right_now .storage-count.warning a:before {
-	content: "\f153";
 }
 
 /* Dashboard WordPress news */
@@ -326,7 +292,7 @@ body #dashboard-widgets .postbox form .submit {
 }
 
 .rssSummary {
-	color: #72777c;
+	color: #777;
 	margin-top: 4px;
 }
 
@@ -342,12 +308,12 @@ body #dashboard-widgets .postbox form .submit {
 }
 
 #dashboard_primary .rss-widget a {
-	font-weight: 400;
+	font-weight: normal;
 }
 
 #dashboard_primary .rss-widget span,
 #dashboard_primary .rss-widget span.rss-date {
-	color: #72777c;
+	color: #777;
 }
 
 #dashboard_primary .rss-widget span.rss-date {
@@ -362,9 +328,7 @@ body #dashboard-widgets .postbox form .submit {
 
 #dashboard_right_now ul {
 	margin: 0;
-	/* contain floats but don't use overflow: hidden */
-	display: inline-block;
-	width: 100%;
+	overflow: hidden;
 }
 
 #dashboard_right_now li {
@@ -374,10 +338,12 @@ body #dashboard-widgets .postbox form .submit {
 }
 
 #dashboard_right_now .inside {
+	overflow: hidden;
 	padding: 0;
 }
 
 #dashboard_right_now .main {
+	overflow: hidden;
 	padding: 0 12px 11px;
 }
 
@@ -396,23 +362,25 @@ body #dashboard-widgets .postbox form .submit {
 	overflow: hidden;
 }
 
-#dashboard-widgets h3.mu-storage {
-	margin: 0 0 10px;
-	padding: 0;
-	font-size: 14px;
-	font-weight: 400;
+#dashboard-widgets h4.mu-storage {
+	margin-bottom: 10px;
 }
 
 /* Dashboard right now - Colors */
 
+#dashboard_right_now li a:before,
+#dashboard_right_now li span:before {
+	color: #82878c;
+}
+
 #dashboard_right_now .sub {
-	color: #555d66;
+	color: #777;
 	background: #f5f5f5;
 	border-top: 1px solid #eee;
 	padding: 10px 12px 6px 12px;
 }
 
-#dashboard_right_now .sub h3 {
+#dashboard_right_now .sub h4 {
 	color: #555;
 }
 
@@ -423,6 +391,49 @@ body #dashboard-widgets .postbox form .submit {
 #dashboard_right_now .warning a:before,
 #dashboard_right_now .warning span:before {
 	color: #d54e21;
+}
+
+/* Dashboard right now - Icons */
+#dashboard_right_now li a:before,
+#dashboard_right_now li span:before {
+	content: '\f159';
+	font: normal 20px/1 'dashicons';
+	speak: none;
+	display: block;
+	float: left;
+	margin: 0 5px 0 0;
+	padding: 0;
+	text-indent: 0;
+	text-align: center;
+	position: relative;
+	-webkit-font-smoothing: antialiased;
+	text-decoration: none !important;
+}
+
+#dashboard_right_now .page-count a:before,
+#dashboard_right_now .page-count span:before {
+	content: '\f105';
+}
+
+#dashboard_right_now .post-count a:before,
+#dashboard_right_now .post-count span:before {
+	content: '\f109';
+}
+
+#dashboard_right_now .comment-count a:before {
+	content: '\f101';
+}
+
+#dashboard_right_now .comment-mod-count a:before {
+	content: '\f125';
+}
+
+#dashboard_right_now .storage-count a:before {
+	content: '\f104';
+}
+
+#dashboard_right_now .storage-count.warning a:before {
+	content: '\f153';
 }
 
 /* Dashboard Quick Draft */
@@ -439,6 +450,7 @@ body #dashboard-widgets .postbox form .submit {
 }
 
 #dashboard_quick_press form {
+	overflow: hidden;
 	margin: 12px;
 }
 
@@ -484,7 +496,7 @@ form.initial-form.quickpress-open input#title {
 
 #title-wrap #title-prompt-text,
 .textarea-wrap #content-prompt-text {
-	color: #72777c;
+	color: #777;
 }
 
 #title-wrap #title-prompt-text {
@@ -528,13 +540,18 @@ form.initial-form.quickpress-open input#title {
 	border: none;
 }
 
+#dashboard_quick_press .drafts h4 {
+	margin: 0 12px 8px;
+	font-weight: normal;
+}
+
 #dashboard_quick_press .drafts .view-all {
 	float: right;
 	margin: 0 12px 0 0;
 }
 
 #dashboard_primary a.rsswidget {
-	font-weight: 400;
+	font-weight: normal;
 }
 
 #dashboard_quick_press .drafts ul {
@@ -545,7 +562,7 @@ form.initial-form.quickpress-open input#title {
 	margin-bottom: 1em;
 }
 #dashboard_quick_press .drafts li time {
-	color: #72777c;
+	color: #777;
 }
 
 #dashboard_quick_press .drafts p {
@@ -554,42 +571,38 @@ form.initial-form.quickpress-open input#title {
 }
 
 #dashboard_quick_press .draft-title {
-	word-wrap: break-word;
+	overflow: hidden;
 }
 
 #dashboard_quick_press .draft-title a,
 #dashboard_quick_press .draft-title time {
+	float: left;
 	margin: 0 5px 0 0;
-}
-
-/* Dashboard common styles */
-
-#dashboard-widgets h4, /* Back-compat for pre-4.4 */
-#dashboard-widgets h3,
-#dashboard_quick_press .drafts h2 {
-	margin: 0 12px 8px;
-	padding: 0;
-	font-size: 14px;
-	font-weight: 400;
-	color: #23282d;
-}
-
-#dashboard_quick_press .drafts h2 {
-	line-height: inherit;
-}
-
-#dashboard-widgets .inside h4, /* Back-compat for pre-4.4 */
-#dashboard-widgets .inside h3 {
-	margin-left: 0;
-	margin-right: 0;
 }
 
 /* Dashboard activity widget */
 
+#dashboard-widgets #dashboard_activity h4 {
+	margin: 0 0 8px 12px;
+	font-weight: normal;
+}
+
+#dashboard-widgets #dashboard_activity h4.comment-meta {
+	margin: 0;
+}
+
+#dashboard_activity h4.comment-meta {
+	margin-bottom: 4px;
+}
+
+#dashboard_activity ul {
+	padding: 0 12px;
+}
+
 #dashboard_activity .comment-meta span.approve:before {
-	content: "\f227";
-	font: 20px/.5 dashicons;
-	margin-left: 5px;
+	content: '\f227';
+	font: 20px/.5 "dashicons";
+	margin-left: 12px;
 	vertical-align: middle;
 	position: relative;
 	top: -1px;
@@ -597,18 +610,18 @@ form.initial-form.quickpress-open input#title {
 }
 
 #dashboard_activity .inside {
+	padding: 0;
 	margin: 0;
-	padding-bottom: 0;
 }
 
 #dashboard_activity .no-activity {
 	overflow: hidden;
-	padding: 0 0 12px;
+	padding: 0 12px 12px;
 	text-align: center;
 }
 
 #dashboard_activity .no-activity p {
-	color: #72777c;
+	color: #999;
 	font-size: 16px;
 }
 
@@ -617,8 +630,8 @@ form.initial-form.quickpress-open input#title {
 }
 
 #dashboard_activity .no-activity .smiley:before {
-	content: "\f328";
-	font: normal 120px/1 dashicons;
+	content: '\f328';
+	font: normal 120px/1 'dashicons';
 	speak: none;
 	display: block;
 	margin: 0 5px 0 0;
@@ -632,14 +645,9 @@ form.initial-form.quickpress-open input#title {
 
 #dashboard_activity .subsubsub {
 	float: none;
-	border-top: 1px solid #eee;
-	margin: 0 -12px;
+	border-top: 1px solid #eeeeee;
+	margin-top: 0;
 	padding: 8px 12px 4px;
-}
-
-#dashboard_activity .subsubsub a .count,
-#dashboard_activity .subsubsub a.current .count {
-	color: #72777c; /* white background on the dashboard but #f1f1f1 on list tables */
 }
 
 #future-posts ul,
@@ -650,21 +658,22 @@ form.initial-form.quickpress-open input#title {
 
 #future-posts li,
 #published-posts li {
+	overflow: hidden;
 	margin-bottom: 8px;
 }
 
 #future-posts ul span,
 #published-posts ul span {
-	display: inline-block;
-	margin-right: 5px;
+	color: #777;
+	float: left;
+	margin-right: 8px;
 	min-width: 150px;
-	color: #72777c;
 }
 
 .activity-block {
 	border-bottom: 1px solid #eee;
-	margin: 0 -12px;
-	padding: 8px 12px 4px;
+	overflow: hidden;
+	padding: 8px 0 4px;
 }
 
 .activity-block:last-child {
@@ -693,7 +702,7 @@ form.initial-form.quickpress-open input#title {
 
 #activity-widget #the-comment-list .avatar {
 	position: absolute;
-	top: 12px;
+	top: 13px;
 }
 
 #activity-widget #the-comment-list .dashboard-comment-wrap {
@@ -702,6 +711,11 @@ form.initial-form.quickpress-open input#title {
 
 #activity-widget #the-comment-list .dashboard-comment-wrap blockquote {
 	margin: 1em 0;
+}
+
+#activity-widget #the-comment-list .comment-item h4 {
+	font-size: 13px;
+	color: #999;
 }
 
 #activity-widget #the-comment-list .comment-item p.row-actions {
@@ -739,17 +753,12 @@ form.initial-form.quickpress-open input#title {
 	margin: 10px;
 }
 
-.postbox .button-link .edit-box {
+.edit-box {
 	display: none;
 }
 
-.edit-box {
-	opacity: 0;
-}
-
-.hndle:hover .edit-box,
-.edit-box:focus {
-	opacity: 1;
+h3:hover .edit-box {
+	display: inline;
 }
 
 #dashboard-widgets form .input-text-wrap input {
@@ -775,13 +784,27 @@ form.initial-form.quickpress-open input#title {
 	text-decoration: none;
 }
 
-#dashboard-widgets h2 a {
+#dashboard-widgets h3 a {
 	text-decoration: underline;
 }
 
-#dashboard-widgets .hndle .postbox-title-action {
-	float: right;
-	line-height: 1.2;
+#dashboard-widgets h3 .postbox-title-action {
+	position: absolute;
+	right: 10px;
+	padding: 0;
+	top: 5px;
+}
+
+.js #dashboard-widgets h3 .postbox-title-action {
+	right: 33px;
+}
+
+#dashboard-widgets h4 {
+	color: #23282d;
+	font-weight: normal;
+	font-size: 14px;
+	margin: 0 0 .2em;
+	padding: 0;
 }
 
 #dashboard_plugins h5 {
@@ -792,7 +815,6 @@ form.initial-form.quickpress-open input#title {
 
 #latest-comments #the-comment-list {
 	position: relative;
-	margin: 0 -12px;
 }
 
 #activity-widget #the-comment-list .comment,
@@ -806,11 +828,7 @@ form.initial-form.quickpress-open input#title {
 }
 
 #activity-widget #latest-comments #the-comment-list .comment-item {
-	/* the row-actions paragraph is output only for users with 'edit_comment' capabilities,
-	   for other users this needs a min height equal to the gravatar image */
-	min-height: 50px;
-	margin: 0;
-	padding: 12px;
+	padding: 1em 12px;
 }
 
 #latest-comments #the-comment-list .pingback {
@@ -821,15 +839,15 @@ form.initial-form.quickpress-open input#title {
 	border-top: none;
 }
 
-#latest-comments #the-comment-list .comment-meta {
+#latest-comments #the-comment-list .comment-item h4 {
 	line-height: 1.5em;
-	margin: 0;
+	margin-top: 0;
 	color: #666;
 }
 
-#latest-comments #the-comment-list .comment-meta cite {
+#latest-comments #the-comment-list .comment-item h4 cite {
 	font-style: normal;
-	font-weight: 400;
+	font-weight: normal;
 }
 
 #latest-comments #the-comment-list .comment-item blockquote,
@@ -882,7 +900,7 @@ a.rsswidget {
 }
 
 .rss-widget span.rss-date {
-	color: #72777c;
+	color: #999;
 	font-size: 13px;
 	margin-left: 3px;
 }
@@ -895,10 +913,11 @@ a.rsswidget {
 }
 
 .rss-widget cite:before {
-	content: "\2014";
+	content: '\2014';
 }
 
 .dashboard-comment-wrap {
+	overflow: hidden;
 	word-wrap: break-word;
 }
 
@@ -934,12 +953,12 @@ a.rsswidget {
 	box-shadow: none;
 }
 
-#dashboard_browser_nag.postbox.browser-insecure h2 {
+#dashboard_browser_nag.postbox.browser-insecure h3 {
 	border-bottom-color: #cd5a5a;
 	color: #fff;
 }
 
-#dashboard_browser_nag.postbox h2 {
+#dashboard_browser_nag.postbox h3 {
 	border-bottom-color: #f6e2ac;
 	background: transparent none;
 	color: #fff;
@@ -951,7 +970,9 @@ a.rsswidget {
 	color: #fff;
 }
 
-#dashboard_browser_nag h2.hndle {
+/* Make the browser nags easier to read with Open Sans */
+
+#dashboard_browser_nag h3.hndle {
 	border: none;
 	font-weight: 600;
 	font-size: 20px;
@@ -998,11 +1019,6 @@ a.rsswidget {
 		min-height: 0;
 	}
 
-	#dashboard-widgets #postbox-container-3 .empty-container:after,
-	#dashboard-widgets #postbox-container-4 .empty-container:after {
-		display: none;
-	}
-
 	#wpbody #wpbody-content #dashboard-widgets.columns-1 .postbox-container {
 		width: 100%;
 	}
@@ -1022,10 +1038,6 @@ a.rsswidget {
 	.columns-prefs .columns-prefs-3,
 	.columns-prefs .columns-prefs-4 {
 		display: none;
-	}
-
-	.metabox-holder .postbox-container .empty-container:after {
-		display: block;
 	}
 }
 
@@ -1048,14 +1060,6 @@ a.rsswidget {
 		border: 0 none;
 		height: 0;
 		min-height: 0;
-	}
-
-	#dashboard-widgets #postbox-container-4 .empty-container:after {
-		display: none;
-	}
-
-	.metabox-holder .postbox-container .empty-container:after {
-		display: block;
 	}
 }
 
@@ -1091,19 +1095,17 @@ a.rsswidget {
 	/* Keep the close icon from overlapping the Welcome text. */
 	.welcome-panel .welcome-panel-close {
 		overflow: hidden;
-		text-indent: 40px;
+		text-indent: 100%;
 		white-space: nowrap;
 		width: 20px;
 		height: 20px;
+		right: 0;
 		padding: 5px;
-		top: 5px;
-		right: 5px;
 	}
 
 	/* Make the close icon larger for tappability. */
-	.welcome-panel .welcome-panel-close:before {
+	#welcome-panel.welcome-panel .welcome-panel-close:before {
 		font-size: 20px;
-		top: 5px;
-		left: -35px;
+		margin: 0;
 	}
 }

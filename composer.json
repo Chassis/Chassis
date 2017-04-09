@@ -1,0 +1,39 @@
+{
+    "name": "wordpress-shared-hosting-starter",
+    "description": "A starter kit for Wordpress shared hosting",
+    "authors": [
+        {
+            "name": "David",
+            "email": "getdavemail@gmail.com"
+        },
+        {
+            "name": "Mic Funk",
+            "email": "micfunk@gmail.com"
+        }
+    ],
+    "require": {
+        "composer/installers": "~1.0.21",
+        "johnpbloch/wordpress": "4.2.3",
+        "wpackagist-plugin/theme-check": "dev-trunk",
+        "fancyguy/webroot-installer": "1.0.0",
+        "wpackagist-plugin/custom-post-type-ui": "dev-trunk",
+        "wpackagist-plugin/query-monitor": "2.7.4",
+        "wpackagist-plugin/advanced-custom-fields": "4.4.*",
+        "wpackagist-plugin/debug-bar": "0.8.*"
+    },
+    "repositories":[
+        {
+            "type":"composer",
+            "url":"http://wpackagist.org"
+        }
+    ],
+    "extra": {
+        "installer-paths": {
+            "content/plugins/{$name}/": ["type:wordpress-plugin"],
+            "web/app/mu-plugins/{$name}/": ["type:wordpress-muplugin"]
+        },
+        "webroot-dir": "wp",
+        "webroot-package": "johnpbloch/wordpress",
+        "wordpress-install-dir": "wp"
+    }
+}

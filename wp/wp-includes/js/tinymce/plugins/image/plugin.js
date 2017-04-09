@@ -1,8 +1,8 @@
 /**
  * plugin.js
  *
+ * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
- * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -23,7 +23,7 @@ tinymce.PluginManager.add('image', function(editor) {
 		}
 
 		img.onload = function() {
-			done(Math.max(img.width, img.clientWidth), Math.max(img.height, img.clientHeight));
+			done(img.clientWidth, img.clientHeight);
 		};
 
 		img.onerror = function() {
@@ -83,7 +83,7 @@ tinymce.PluginManager.add('image', function(editor) {
 	}
 
 	function showDialog(imageList) {
-		var win, data = {}, dom = editor.dom, imgElm, figureElm;
+		var win, data = {}, dom = editor.dom, imgElm = editor.selection.getNode();
 		var width, height, imageListCtrl, classListCtrl, imageDimensions = editor.settings.image_dimensions !== false;
 
 		function recalcSize() {
@@ -120,8 +120,6 @@ tinymce.PluginManager.add('image', function(editor) {
 		}
 
 		function onSubmitForm() {
-			var figureElm, oldImg;
-
 			function waitLoad(imgElm) {
 				function selectImage() {
 					imgElm.onload = imgElm.onerror = null;
@@ -152,7 +150,7 @@ tinymce.PluginManager.add('image', function(editor) {
 			recalcSize();
 
 			data = tinymce.extend(data, win.toJSON());
-			var wpcaption = data.wpcaption; // WP
+			var caption = data.caption; // WP
 
 			if (!data.alt) {
 				data.alt = '';
@@ -183,13 +181,12 @@ tinymce.PluginManager.add('image', function(editor) {
 				width: data.width,
 				height: data.height,
 				style: data.style,
-				caption: data.caption,
 				"class": data["class"]
 			};
 
 			editor.undoManager.transact(function() {
 				// WP
-				var eventData = { node: imgElm, data: data, wpcaption: wpcaption };
+				var eventData = { node: imgElm, data: data, caption: caption };
 
 				editor.fire( 'wpImageFormSubmit', { imgData: eventData } );
 
@@ -221,42 +218,6 @@ tinymce.PluginManager.add('image', function(editor) {
 					dom.setAttrib(imgElm, 'id', null);
 				} else {
 					dom.setAttribs(imgElm, data);
-				}
-
-				editor.editorUpload.uploadImagesAuto();
-
-				if (data.caption === false) {
-					if (dom.is(imgElm.parentNode, 'figure.image')) {
-						figureElm = imgElm.parentNode;
-						dom.insertAfter(imgElm, figureElm);
-						dom.remove(figureElm);
-					}
-				}
-
-				function isTextBlock(node) {
-					return editor.schema.getTextBlockElements()[node.nodeName];
-				}
-
-				if (data.caption === true) {
-					if (!dom.is(imgElm.parentNode, 'figure.image')) {
-						oldImg = imgElm;
-						imgElm = imgElm.cloneNode(true);
-						figureElm = dom.create('figure', {'class': 'image'});
-						figureElm.appendChild(imgElm);
-						figureElm.appendChild(dom.create('figcaption', {contentEditable: true}, 'Caption'));
-						figureElm.contentEditable = false;
-
-						var textBlock = dom.getParent(oldImg, isTextBlock);
-						if (textBlock) {
-							dom.split(textBlock, oldImg, figureElm);
-						} else {
-							dom.replace(figureElm, oldImg);
-						}
-
-						editor.selection.select(figureElm);
-					}
-
-					return;
 				}
 
 				waitLoad(imgElm);
@@ -306,32 +267,23 @@ tinymce.PluginManager.add('image', function(editor) {
 			}
 		}
 
-		imgElm = editor.selection.getNode();
-		figureElm = dom.getParent(imgElm, 'figure.image');
-		if (figureElm) {
-			imgElm = dom.select('img', figureElm)[0];
-		}
+		width = dom.getAttrib(imgElm, 'width');
+		height = dom.getAttrib(imgElm, 'height');
 
-		if (imgElm && (imgElm.nodeName != 'IMG' || imgElm.getAttribute('data-mce-object') || imgElm.getAttribute('data-mce-placeholder'))) {
-			imgElm = null;
-		}
-
-		if (imgElm) {
-			width = dom.getAttrib(imgElm, 'width');
-			height = dom.getAttrib(imgElm, 'height');
-
+		if (imgElm.nodeName == 'IMG' && !imgElm.getAttribute('data-mce-object') && !imgElm.getAttribute('data-mce-placeholder')) {
 			data = {
 				src: dom.getAttrib(imgElm, 'src'),
 				alt: dom.getAttrib(imgElm, 'alt'),
 				title: dom.getAttrib(imgElm, 'title'),
 				"class": dom.getAttrib(imgElm, 'class'),
 				width: width,
-				height: height,
-				caption: !!figureElm
+				height: height
 			};
 
 			// WP
 			editor.fire( 'wpLoadImageData', { imgData: { data: data, node: imgElm } } );
+		} else {
+			imgElm = null;
 		}
 
 		if (imageList) {
@@ -356,7 +308,6 @@ tinymce.PluginManager.add('image', function(editor) {
 					win.find('#src').value(e.control.value()).fire('change');
 				},
 				onPostRender: function() {
-					/*eslint consistent-this: 0*/
 					imageListCtrl = this;
 				}
 			};
@@ -419,10 +370,6 @@ tinymce.PluginManager.add('image', function(editor) {
 		}
 
 		generalFormItems.push(classListCtrl);
-
-		if (editor.settings.image_caption && tinymce.Env.ceFalse) {
-			generalFormItems.push({name: 'caption', type: 'checkbox', label: 'Caption'});
-		}
 
 		// WP
 		editor.fire( 'wpLoadImageForm', { data: generalFormItems } );
@@ -602,40 +549,11 @@ tinymce.PluginManager.add('image', function(editor) {
 		}
 	}
 
-	editor.on('preInit', function() {
-		function hasImageClass(node) {
-			var className = node.attr('class');
-			return className && /\bimage\b/.test(className);
-		}
-
-		function toggleContentEditableState(state) {
-			return function(nodes) {
-				var i = nodes.length, node;
-
-				function toggleContentEditable(node) {
-					node.attr('contenteditable', state ? 'true' : null);
-				}
-
-				while (i--) {
-					node = nodes[i];
-
-					if (hasImageClass(node)) {
-						node.attr('contenteditable', state ? 'false' : null);
-						tinymce.each(node.getAll('figcaption'), toggleContentEditable);
-					}
-				}
-			};
-		}
-
-		editor.parser.addNodeFilter('figure', toggleContentEditableState(true));
-		editor.serializer.addNodeFilter('figure', toggleContentEditableState(false));
-	});
-
 	editor.addButton('image', {
 		icon: 'image',
 		tooltip: 'Insert/edit image',
 		onclick: createImageList(showDialog),
-		stateSelector: 'img:not([data-mce-object],[data-mce-placeholder]),figure.image'
+		stateSelector: 'img:not([data-mce-object],[data-mce-placeholder])'
 	});
 
 	editor.addMenuItem('image', {

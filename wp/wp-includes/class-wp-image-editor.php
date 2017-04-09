@@ -17,12 +17,10 @@ abstract class WP_Image_Editor {
 	protected $mime_type = null;
 	protected $default_mime_type = 'image/jpeg';
 	protected $quality = false;
-	protected $default_quality = 82;
+	protected $default_quality = 90;
 
 	/**
 	 * Each instance handles a single file.
-	 *
-	 * @param string $file Path to the file to load.
 	 */
 	public function __construct( $file ) {
 		$this->file = $file;
@@ -33,13 +31,11 @@ abstract class WP_Image_Editor {
 	 * Must be overridden in a sub-class.
 	 *
 	 * @since 3.5.0
-	 *
-	 * @static
 	 * @access public
 	 * @abstract
 	 *
 	 * @param array $args
-	 * @return bool
+	 * @return boolean
 	 */
 	public static function test( $args = array() ) {
 		return false;
@@ -50,13 +46,11 @@ abstract class WP_Image_Editor {
 	 * Must be overridden in a sub-class.
 	 *
 	 * @since 3.5.0
-	 *
-	 * @static
 	 * @access public
 	 * @abstract
 	 *
 	 * @param string $mime_type
-	 * @return bool
+	 * @return boolean
 	 */
 	public static function supports_mime_type( $mime_type ) {
 		return false;
@@ -69,7 +63,7 @@ abstract class WP_Image_Editor {
 	 * @access protected
 	 * @abstract
 	 *
-	 * @return bool|WP_Error True if loaded; WP_Error on failure.
+	 * @return boolean|WP_Error True if loaded; WP_Error on failure.
 	 */
 	abstract public function load();
 
@@ -99,8 +93,8 @@ abstract class WP_Image_Editor {
 	 *
 	 * @param  int|null $max_w Image width.
 	 * @param  int|null $max_h Image height.
-	 * @param  bool     $crop
-	 * @return bool|WP_Error
+	 * @param  boolean  $crop
+	 * @return boolean|WP_Error
 	 */
 	abstract public function resize( $max_w, $max_h, $crop = false );
 
@@ -137,8 +131,8 @@ abstract class WP_Image_Editor {
 	 * @param int $src_h The height to crop.
 	 * @param int $dst_w Optional. The destination width.
 	 * @param int $dst_h Optional. The destination height.
-	 * @param bool $src_abs Optional. If the source crop points are absolute.
-	 * @return bool|WP_Error
+	 * @param boolean $src_abs Optional. If the source crop points are absolute.
+	 * @return boolean|WP_Error
 	 */
 	abstract public function crop( $src_x, $src_y, $src_w, $src_h, $dst_w = null, $dst_h = null, $src_abs = false );
 
@@ -150,7 +144,7 @@ abstract class WP_Image_Editor {
 	 * @abstract
 	 *
 	 * @param float $angle
-	 * @return bool|WP_Error
+	 * @return boolean|WP_Error
 	 */
 	abstract public function rotate( $angle );
 
@@ -161,9 +155,9 @@ abstract class WP_Image_Editor {
 	 * @access public
 	 * @abstract
 	 *
-	 * @param bool $horz Flip along Horizontal Axis
-	 * @param bool $vert Flip along Vertical Axis
-	 * @return bool|WP_Error
+	 * @param boolean $horz Flip along Horizontal Axis
+	 * @param boolean $vert Flip along Vertical Axis
+	 * @return boolean|WP_Error
 	 */
 	abstract public function flip( $horz, $vert );
 
@@ -175,7 +169,7 @@ abstract class WP_Image_Editor {
 	 * @abstract
 	 *
 	 * @param string $mime_type
-	 * @return bool|WP_Error
+	 * @return boolean|WP_Error
 	 */
 	abstract public function stream( $mime_type = null );
 
@@ -232,12 +226,12 @@ abstract class WP_Image_Editor {
 	 * @access public
 	 *
 	 * @param int $quality Compression Quality. Range: [1,100]
-	 * @return true|WP_Error True if set successfully; WP_Error on failure.
+	 * @return boolean|WP_Error True if set successfully; WP_Error on failure.
 	 */
 	public function set_quality( $quality = null ) {
 		if ( null === $quality ) {
 			/**
-			 * Filters the default image compression quality setting.
+			 * Filter the default image compression quality setting.
 			 *
 			 * Applies only during initial editor instantiation, or when set_quality() is run
 			 * manually without the `$quality` argument.
@@ -253,7 +247,7 @@ abstract class WP_Image_Editor {
 
 			if ( 'image/jpeg' == $this->mime_type ) {
 				/**
-				 * Filters the JPEG compression quality for backward-compatibility.
+				 * Filter the JPEG compression quality for backward-compatibility.
 				 *
 				 * Applies only during initial editor instantiation, or when set_quality() is run
 				 * manually without the `$quality` argument.
@@ -276,7 +270,7 @@ abstract class WP_Image_Editor {
 			}
 		}
 
-		// Allow 0, but squash to 1 due to identical images in GD, and for backward compatibility.
+		// Allow 0, but squash to 1 due to identical images in GD, and for backwards compatibility.
 		if ( 0 === $quality ) {
 			$quality = 1;
 		}
@@ -333,7 +327,7 @@ abstract class WP_Image_Editor {
 		// If not, choose a default instead.
 		if ( ! $this->supports_mime_type( $mime_type ) ) {
 			/**
-			 * Filters default mime type prior to getting the file extension.
+			 * Filter default mime type prior to getting the file extension.
 			 *
 			 * @see wp_get_mime_types()
 			 *
@@ -346,8 +340,12 @@ abstract class WP_Image_Editor {
 		}
 
 		if ( $filename ) {
-			$dir = pathinfo( $filename, PATHINFO_DIRNAME );
-			$ext = pathinfo( $filename, PATHINFO_EXTENSION );
+			$ext = '';
+			$info = pathinfo( $filename );
+			$dir  = $info['dirname'];
+
+			if( isset( $info['extension'] ) )
+				$ext = $info['extension'];
 
 			$filename = trailingslashit( $dir ) . wp_basename( $filename, ".$ext" ) . ".{$new_ext}";
 		}
@@ -371,8 +369,9 @@ abstract class WP_Image_Editor {
 		if ( ! $suffix )
 			$suffix = $this->get_suffix();
 
-		$dir  = pathinfo( $this->file, PATHINFO_DIRNAME );
-		$ext  = pathinfo( $this->file, PATHINFO_EXTENSION );
+		$info = pathinfo( $this->file );
+		$dir  = $info['dirname'];
+		$ext  = $info['extension'];
 
 		$name = wp_basename( $this->file, ".$ext" );
 		$new_ext = strtolower( $extension ? $extension : $ext );
@@ -407,7 +406,7 @@ abstract class WP_Image_Editor {
 	 * @param string|stream $filename
 	 * @param callable $function
 	 * @param array $arguments
-	 * @return bool
+	 * @return boolean
 	 */
 	protected function make_image( $filename, $function, $arguments ) {
 		if ( $stream = wp_is_stream( $filename ) ) {
@@ -443,12 +442,10 @@ abstract class WP_Image_Editor {
 	 * as mapped from wp_get_mime_types()
 	 *
 	 * @since 3.5.0
-	 *
-	 * @static
 	 * @access protected
 	 *
 	 * @param string $extension
-	 * @return string|false
+	 * @return string|boolean
 	 */
 	protected static function get_mime_type( $extension = null ) {
 		if ( ! $extension )
@@ -457,7 +454,7 @@ abstract class WP_Image_Editor {
 		$mime_types = wp_get_mime_types();
 		$extensions = array_keys( $mime_types );
 
-		foreach ( $extensions as $_extension ) {
+		foreach( $extensions as $_extension ) {
 			if ( preg_match( "/{$extension}/i", $_extension ) ) {
 				return $mime_types[$_extension];
 			}
@@ -471,12 +468,10 @@ abstract class WP_Image_Editor {
 	 * as mapped from wp_get_mime_types()
 	 *
 	 * @since 3.5.0
-	 *
-	 * @static
 	 * @access protected
 	 *
 	 * @param string $mime_type
-	 * @return string|false
+	 * @return string|boolean
 	 */
 	protected static function get_extension( $mime_type = null ) {
 		$extensions = explode( '|', array_search( $mime_type, wp_get_mime_types() ) );

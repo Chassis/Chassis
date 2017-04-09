@@ -1,4 +1,6 @@
 (function e(t,n,r){function s(o,u){if(!n[o]){if(!t[o]){var a=typeof require=="function"&&require;if(!u&&a)return a(o,!0);if(i)return i(o,!0);var f=new Error("Cannot find module '"+o+"'");throw f.code="MODULE_NOT_FOUND",f}var l=n[o]={exports:{}};t[o][0].call(l.exports,function(e){var n=t[o][1][e];return s(n?n:e)},l,l.exports,e,t,n,r)}return n[o].exports}var i=typeof require=="function"&&require;for(var o=0;o<r.length;o++)s(r[o]);return s})({1:[function(require,module,exports){
+/*globals wp */
+
 /**
  * wp.media.controller.EditAttachmentMetadata
  *
@@ -27,6 +29,8 @@ EditAttachmentMetadata = wp.media.controller.State.extend({
 module.exports = EditAttachmentMetadata;
 
 },{}],2:[function(require,module,exports){
+/*globals wp */
+
 var media = wp.media;
 
 media.controller.EditAttachmentMetadata = require( './controllers/edit-attachment-metadata.js' );
@@ -40,6 +44,8 @@ media.view.DeleteSelectedButton = require( './views/button/delete-selected.js' )
 media.view.DeleteSelectedPermanentlyButton = require( './views/button/delete-selected-permanently.js' );
 
 },{"./controllers/edit-attachment-metadata.js":1,"./routers/manage.js":3,"./views/attachment/details-two-column.js":4,"./views/button/delete-selected-permanently.js":5,"./views/button/delete-selected.js":6,"./views/button/select-mode-toggle.js":7,"./views/edit-image-details.js":8,"./views/frame/edit-attachments.js":9,"./views/frame/manage.js":10}],3:[function(require,module,exports){
+/*globals wp, Backbone */
+
 /**
  * wp.media.view.MediaFrame.Manage.Router
  *
@@ -88,6 +94,8 @@ var Router = Backbone.Router.extend({
 module.exports = Router;
 
 },{}],4:[function(require,module,exports){
+/*globals wp */
+
 /**
  * wp.media.view.Attachment.Details.TwoColumn
  *
@@ -131,6 +139,8 @@ TwoColumn = Details.extend({
 module.exports = TwoColumn;
 
 },{}],5:[function(require,module,exports){
+/*globals wp */
+
 /**
  * wp.media.view.DeleteSelectedPermanentlyButton
  *
@@ -150,8 +160,8 @@ var Button = wp.media.view.Button,
 DeleteSelectedPermanently = DeleteSelected.extend({
 	initialize: function() {
 		DeleteSelected.prototype.initialize.apply( this, arguments );
-		this.controller.on( 'select:activate', this.selectActivate, this );
-		this.controller.on( 'select:deactivate', this.selectDeactivate, this );
+		this.listenTo( this.controller, 'select:activate', this.selectActivate );
+		this.listenTo( this.controller, 'select:deactivate', this.selectDeactivate );
 	},
 
 	filterChange: function( model ) {
@@ -178,6 +188,8 @@ DeleteSelectedPermanently = DeleteSelected.extend({
 module.exports = DeleteSelectedPermanently;
 
 },{}],6:[function(require,module,exports){
+/*globals wp */
+
 /**
  * wp.media.view.DeleteSelectedButton
  *
@@ -197,9 +209,9 @@ DeleteSelected = Button.extend({
 	initialize: function() {
 		Button.prototype.initialize.apply( this, arguments );
 		if ( this.options.filters ) {
-			this.options.filters.model.on( 'change', this.filterChange, this );
+			this.listenTo( this.options.filters.model, 'change', this.filterChange );
 		}
-		this.controller.on( 'selection:toggle', this.toggleDisabled, this );
+		this.listenTo( this.controller, 'selection:toggle', this.toggleDisabled );
 	},
 
 	filterChange: function( model ) {
@@ -231,6 +243,8 @@ DeleteSelected = Button.extend({
 module.exports = DeleteSelected;
 
 },{}],7:[function(require,module,exports){
+/*globals wp */
+
 /**
  * wp.media.view.SelectModeToggleButton
  *
@@ -246,13 +260,9 @@ var Button = wp.media.view.Button,
 
 SelectModeToggle = Button.extend({
 	initialize: function() {
-		_.defaults( this.options, {
-			size : ''
-		} );
-
 		Button.prototype.initialize.apply( this, arguments );
-		this.controller.on( 'select:activate select:deactivate', this.toggleBulkEditHandler, this );
-		this.controller.on( 'selection:action:done', this.back, this );
+		this.listenTo( this.controller, 'select:activate select:deactivate', this.toggleBulkEditHandler );
+		this.listenTo( this.controller, 'selection:action:done', this.back );
 	},
 
 	back: function () {
@@ -281,22 +291,16 @@ SelectModeToggle = Button.extend({
 
 		// TODO: the Frame should be doing all of this.
 		if ( this.controller.isModeActive( 'select' ) ) {
-			this.model.set( {
-				size: 'large',
-				text: l10n.cancelSelection
-			} );
-			children.not( '.spinner, .media-button' ).hide();
+			this.model.set( 'text', l10n.cancelSelection );
+			children.not( '.media-button' ).hide();
 			this.$el.show();
 			toolbar.$( '.delete-selected-button' ).removeClass( 'hidden' );
 		} else {
-			this.model.set( {
-				size: '',
-				text: l10n.bulkSelect
-			} );
+			this.model.set( 'text', l10n.bulkSelect );
 			this.controller.content.get().$el.removeClass( 'fixed' );
 			toolbar.$el.css( 'width', '' );
 			toolbar.$( '.delete-selected-button' ).addClass( 'hidden' );
-			children.not( '.media-button' ).show();
+			children.not( '.spinner, .media-button' ).show();
 			this.controller.state().get( 'selection' ).reset();
 		}
 	}
@@ -305,6 +309,8 @@ SelectModeToggle = Button.extend({
 module.exports = SelectModeToggle;
 
 },{}],8:[function(require,module,exports){
+/*globals wp, _ */
+
 /**
  * wp.media.view.EditImage.Details
  *
@@ -340,6 +346,8 @@ Details = EditImage.extend({
 module.exports = Details;
 
 },{}],9:[function(require,module,exports){
+/*globals wp, _, jQuery */
+
 /**
  * wp.media.view.MediaFrame.EditAttachments
  *
@@ -583,6 +591,8 @@ EditAttachments = MediaFrame.extend({
 module.exports = EditAttachments;
 
 },{}],10:[function(require,module,exports){
+/*globals wp, _, Backbone */
+
 /**
  * wp.media.view.MediaFrame.Manage
  *
@@ -624,7 +634,7 @@ Manage = MediaFrame.extend({
 		this.$window = $( window );
 		this.$adminBar = $( '#wpadminbar' );
 		this.$window.on( 'scroll resize', _.debounce( _.bind( this.fixPosition, this ), 15 ) );
-		$( document ).on( 'click', '.page-title-action', _.bind( this.addNewClickHandler, this ) );
+		$( document ).on( 'click', '.add-new-h2', _.bind( this.addNewClickHandler, this ) );
 
 		// Ensure core and media grid view UI is enabled.
 		this.$el.addClass('wp-core-ui');
@@ -774,10 +784,6 @@ Manage = MediaFrame.extend({
 	addNewClickHandler: function( event ) {
 		event.preventDefault();
 		this.trigger( 'toggle:upload:attachment' );
-
-		if ( this.uploader ) {
-			this.uploader.refresh();
-		}
 	},
 
 	/**

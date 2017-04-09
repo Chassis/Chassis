@@ -1,8 +1,8 @@
 /**
  * plugin.js
  *
+ * Copyright, Moxiecode Systems AB
  * Released under LGPL License.
- * Copyright (c) 1999-2015 Ephox Corp. All rights reserved
  *
  * License: http://www.tinymce.com/license
  * Contributing: http://www.tinymce.com/contributing
@@ -14,14 +14,8 @@
 tinymce.PluginManager.add('textcolor', function(editor) {
 	var cols, rows;
 
-	rows = {
-		forecolor: editor.settings.forecolor_rows || editor.settings.textcolor_rows || 5,
-		backcolor: editor.settings.backcolor_rows || editor.settings.textcolor_rows || 5
-	};
-	cols = {
-		forecolor: editor.settings.forecolor_cols || editor.settings.textcolor_cols || 8,
-		backcolor: editor.settings.backcolor_cols || editor.settings.textcolor_cols || 8
-	};
+	rows = editor.settings.textcolor_rows || 5;
+	cols = editor.settings.textcolor_cols || 8;
 
 	function getCurrentColor(format) {
 		var color;
@@ -37,10 +31,10 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 		return color;
 	}
 
-	function mapColors(type) {
+	function mapColors() {
 		var i, colors = [], colorMap;
 
-		colorMap = [
+		colorMap = editor.settings.textcolor_map || [
 			"000000", "Black",
 			"993300", "Burnt orange",
 			"333300", "Dark olive",
@@ -82,9 +76,6 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 			"CC99FF", "Plum"
 		];
 
-		colorMap = editor.settings.textcolor_map || colorMap;
-		colorMap = editor.settings[type + '_map'] || colorMap;
-
 		for (i = 0; i < colorMap.length; i += 2) {
 			colors.push({
 				text: colorMap[i + 1],
@@ -96,9 +87,7 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 	}
 
 	function renderColorPicker() {
-		var ctrl = this, colors, color, html, last, x, y, i, id = ctrl._id, count = 0, type;
-
-		type = ctrl.settings.origin;
+		var ctrl = this, colors, color, html, last, x, y, i, id = ctrl._id, count = 0;
 
 		function getColorCellHtml(color, title) {
 			var isNoColor = color == 'transparent';
@@ -117,7 +106,7 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 			);
 		}
 
-		colors = mapColors(type);
+		colors = mapColors();
 		colors.push({
 			text: tinymce.translate("No color"),
 			color: "transparent"
@@ -126,11 +115,11 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 		html = '<table class="mce-grid mce-grid-border mce-colorbutton-grid" role="list" cellspacing="0"><tbody>';
 		last = colors.length - 1;
 
-		for (y = 0; y < rows[type]; y++) {
+		for (y = 0; y < rows; y++) {
 			html += '<tr>';
 
-			for (x = 0; x < cols[type]; x++) {
-				i = y * cols[type] + x;
+			for (x = 0; x < cols; x++) {
+				i = y * cols + x;
 
 				if (i > last) {
 					html += '<td></td>';
@@ -146,7 +135,7 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 		if (editor.settings.color_picker_callback) {
 			html += (
 				'<tr>' +
-					'<td colspan="' + cols[type] + '" class="mce-custom-color-btn">' +
+					'<td colspan="' + cols + '" class="mce-custom-color-btn">' +
 						'<div id="' + id + '-c" class="mce-widget mce-btn mce-btn-small mce-btn-flat" ' +
 							'role="button" tabindex="-1" aria-labelledby="' + id + '-c" style="width: 100%">' +
 							'<button type="button" role="presentation" tabindex="-1">' + tinymce.translate('Custom...') + '</button>' +
@@ -157,7 +146,7 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 
 			html += '<tr>';
 
-			for (x = 0; x < cols[type]; x++) {
+			for (x = 0; x < cols; x++) {
 				html += getColorCellHtml('', 'Custom color');
 			}
 
@@ -186,9 +175,7 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 	}
 
 	function onPanelClick(e) {
-		var buttonCtrl = this.parent(), value, type;
-
-		type = buttonCtrl.settings.origin;
+		var buttonCtrl = this.parent(), value;
 
 		function selectColor(value) {
 			buttonCtrl.hidePanel();
@@ -227,8 +214,8 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 
 				// Shift colors to the right
 				// TODO: Might need to be the left on RTL
-				if (i == cols[type]) {
-					for (i = 0; i < cols[type] - 1; i++) {
+				if (i == cols) {
+					for (i = 0; i < cols - 1; i++) {
 						setDivColor(customColorCells[i], customColorCells[i + 1].getAttribute('data-mce-color'));
 					}
 				}
@@ -272,7 +259,6 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 		tooltip: 'Text color',
 		format: 'forecolor',
 		panel: {
-			origin: 'forecolor',
 			role: 'application',
 			ariaRemember: true,
 			html: renderColorPicker,
@@ -286,7 +272,6 @@ tinymce.PluginManager.add('textcolor', function(editor) {
 		tooltip: 'Background color',
 		format: 'hilitecolor',
 		panel: {
-			origin: 'backcolor',
 			role: 'application',
 			ariaRemember: true,
 			html: renderColorPicker,

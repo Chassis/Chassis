@@ -13,48 +13,27 @@ define( 'IFRAME_REQUEST', true );
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
 if ( ! current_user_can( 'customize' ) ) {
-	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'Sorry, you are not allowed to customize this site.' ) . '</p>',
-		403
-	);
+	wp_die( __( 'Cheatin&#8217; uh?' ), 403 );
 }
 
-/**
- * @global WP_Scripts           $wp_scripts
- * @global WP_Customize_Manager $wp_customize
- */
+wp_reset_vars( array( 'url', 'return' ) );
+$url = wp_unslash( $url );
+$url = wp_validate_redirect( $url, home_url( '/' ) );
+if ( $return ) {
+	$return = wp_unslash( $return );
+	$return = wp_validate_redirect( $return );
+}
+if ( ! $return ) {
+	if ( $url ) {
+		$return = $url;
+	} elseif ( current_user_can( 'edit_theme_options' ) || current_user_can( 'switch_themes' ) ) {
+		$return = admin_url( 'themes.php' );
+	} else {
+		$return = admin_url();
+	}
+}
+
 global $wp_scripts, $wp_customize;
-
-if ( $wp_customize->changeset_post_id() ) {
-	if ( ! current_user_can( get_post_type_object( 'customize_changeset' )->cap->edit_post, $wp_customize->changeset_post_id() ) ) {
-		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-			'<p>' . __( 'Sorry, you are not allowed to edit this changeset.' ) . '</p>',
-			403
-		);
-	}
-	if ( in_array( get_post_status( $wp_customize->changeset_post_id() ), array( 'publish', 'trash' ), true ) ) {
-		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-			'<p>' . __( 'This changeset has already been published and cannot be further modified.' ) . '</p>' .
-			'<p><a href="' . esc_url( remove_query_arg( 'changeset_uuid' ) ) . '">' . __( 'Customize New Changes' ) . '</a></p>',
-			403
-		);
-	}
-}
-
-
-wp_reset_vars( array( 'url', 'return', 'autofocus' ) );
-if ( ! empty( $url ) ) {
-	$wp_customize->set_preview_url( wp_unslash( $url ) );
-}
-if ( ! empty( $return ) ) {
-	$wp_customize->set_return_url( wp_unslash( $return ) );
-}
-if ( ! empty( $autofocus ) && is_array( $autofocus ) ) {
-	$wp_customize->set_autofocus( wp_unslash( $autofocus ) );
-}
 
 $registered = $wp_scripts->registered;
 $wp_scripts = new WP_Scripts;
@@ -95,7 +74,9 @@ if ( wp_is_mobile() ) :
 	?><meta name="viewport" id="viewport-meta" content="width=device-width, initial-scale=1.0, minimum-scale=0.5, maximum-scale=1.2" /><?php
 endif;
 
-if ( $wp_customize->is_ios() ) {
+$is_ios = wp_is_mobile() && preg_match( '/iPad|iPod|iPhone/', $_SERVER['HTTP_USER_AGENT'] );
+
+if ( $is_ios ) {
 	$body_class .= ' ios';
 }
 
@@ -104,12 +85,18 @@ if ( is_rtl() ) {
 }
 $body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
 
-$admin_title = sprintf( $wp_customize->get_document_title_template(), __( 'Loading&hellip;' ) );
+if ( $wp_customize->is_theme_active() ) {
+	$document_title_tmpl = _x( 'Customize: %s', 'Placeholder is the document title from the preview' );
+} else {
+	$document_title_tmpl = _x( 'Live Preview: %s', 'Placeholder is the document title from the preview' );
+}
+$document_title_tmpl = html_entity_decode( $document_title_tmpl, ENT_QUOTES, 'UTF-8' ); // because exported to JS and assigned to document.title
+$admin_title = sprintf( $document_title_tmpl, __( 'Loading&hellip;' ) );
 
 ?><title><?php echo $admin_title; ?></title>
 
 <script type="text/javascript">
-var ajaxurl = <?php echo wp_json_encode( admin_url( 'admin-ajax.php', 'relative' ) ); ?>;
+var ajaxurl = '<?php echo admin_url( 'admin-ajax.php', 'relative' ); ?>';
 </script>
 
 <?php
@@ -132,81 +119,182 @@ do_action( 'customize_controls_print_scripts' );
 <div class="wp-full-overlay expanded">
 	<form id="customize-controls" class="wrap wp-full-overlay-sidebar">
 		<div id="customize-header-actions" class="wp-full-overlay-header">
-			<?php
-			$save_text = $wp_customize->is_theme_active() ? __( 'Save &amp; Publish' ) : __( 'Save &amp; Activate' );
-			$save_attrs = array();
-			if ( ! current_user_can( get_post_type_object( 'customize_changeset' )->cap->publish_posts ) ) {
-				$save_attrs['style'] = 'display: none';
-			}
-			submit_button( $save_text, 'primary save', 'save', false, $save_attrs );
-			?>
-			<span class="spinner"></span>
-			<button type="button" class="customize-controls-preview-toggle">
-				<span class="controls"><?php _e( 'Customize' ); ?></span>
-				<span class="preview"><?php _e( 'Preview' ); ?></span>
-			</button>
-			<a class="customize-controls-close" href="<?php echo esc_url( $wp_customize->get_return_url() ); ?>">
-				<span class="screen-reader-text"><?php _e( 'Close the Customizer and go back to the previous page' ); ?></span>
-			</a>
+			<div class="primary-actions">
+				<?php
+					$save_text = $wp_customize->is_theme_active() ? __( 'Save &amp; Publish' ) : __( 'Save &amp; Activate' );
+					submit_button( $save_text, 'primary save', 'save', false );
+				?>
+				<span class="spinner"></span>
+				<a class="customize-controls-preview-toggle" href="#">
+					<span class="controls"><?php _e( 'Customize' ); ?></span>
+					<span class="preview"><?php _e( 'Preview' ); ?></span>
+				</a>
+				<a class="customize-controls-close" href="<?php echo esc_url( $return ); ?>">
+					<span class="screen-reader-text"><?php _e( 'Cancel' ); ?></span>
+				</a>
+				<span class="control-panel-back" tabindex="-1"><span class="screen-reader-text"><?php _e( 'Back' ); ?></span></span>
+			</div>
+			<div class="secondary-actions">
+				<button type="button" class="customize-overlay-close">
+					<span class="screen-reader-text"><?php _e( 'Close overlay' ); ?></span>
+				</button>
+			</div>
 		</div>
 
-		<div id="widgets-right" class="wp-clearfix"><!-- For Widget Customizer, many widgets try to look for instances under div#widgets-right, so we have to add that ID to a container div in the Customizer for compat -->
+		<div id="widgets-right"><!-- For Widget Customizer, many widgets try to look for instances under div#widgets-right, so we have to add that ID to a container div in the Customizer for compat -->
 		<div class="wp-full-overlay-sidebar-content" tabindex="-1">
-			<div id="customize-info" class="accordion-section customize-info">
-				<div class="accordion-section-title">
+			<div id="customize-info" class="accordion-section">
+				<div class="accordion-section-title" aria-label="<?php esc_attr_e( 'Customizer Options' ); ?>" tabindex="0">
 					<span class="preview-notice"><?php
-						echo sprintf( __( 'You are customizing %s' ), '<strong class="panel-title site-title">' . get_bloginfo( 'name' ) . '</strong>' );
+						echo sprintf( __( 'You are customizing %s' ), '<strong class="theme-name site-title">' . get_bloginfo( 'name' ) . '</strong>' );
 					?></span>
-					<button type="button" class="customize-help-toggle dashicons dashicons-editor-help" aria-expanded="false"><span class="screen-reader-text"><?php _e( 'Help' ); ?></span></button>
 				</div>
-				<div class="customize-panel-description"><?php
-					_e( 'The Customizer allows you to preview changes to your site before publishing them. You can navigate to different pages on your site within the preview. Edit shortcuts are shown for some editable elements.' );
+				<div class="accordion-section-content"><?php
+					echo __( 'The Customizer allows you to preview changes to your site before publishing them. You can also navigate to different pages on your site to preview them.' );
 				?></div>
 			</div>
 
 			<div id="customize-theme-controls">
-				<ul class="customize-pane-parent"><?php // Panels and sections are managed here via JavaScript ?></ul>
+				<ul><?php // Panels and sections are managed here via JavaScript ?></ul>
 			</div>
 		</div>
 		</div>
 
 		<div id="customize-footer-actions" class="wp-full-overlay-footer">
-			<?php $previewable_devices = $wp_customize->get_previewable_devices(); ?>
-			<?php if ( ! empty( $previewable_devices ) ) : ?>
-			<div class="devices">
-				<?php foreach ( (array) $previewable_devices as $device => $settings ) : ?>
-					<?php
-					if ( empty( $settings['label'] ) ) {
-						continue;
-					}
-					$active = ! empty( $settings['default'] );
-					$class = 'preview-' . $device;
-					if ( $active ) {
-						$class .= ' active';
-					}
-					?>
-					<button type="button" class="<?php echo esc_attr( $class ); ?>" aria-pressed="<?php echo esc_attr( $active ) ?>" data-device="<?php echo esc_attr( $device ); ?>">
-						<span class="screen-reader-text"><?php echo esc_html( $settings['label'] ); ?></span>
-					</button>
-				<?php endforeach; ?>
-			</div>
-			<?php endif; ?>
-			<button type="button" class="collapse-sidebar button" aria-expanded="true" aria-label="<?php echo esc_attr( _x( 'Hide Controls', 'label for hide controls button without length constraints' ) ); ?>">
+			<a href="#" class="collapse-sidebar button-secondary" title="<?php esc_attr_e('Collapse Sidebar'); ?>">
 				<span class="collapse-sidebar-arrow"></span>
-				<span class="collapse-sidebar-label"><?php _ex( 'Hide Controls', 'short (~12 characters) label for hide controls button' ); ?></span>
-			</button>
+				<span class="collapse-sidebar-label"><?php _e('Collapse'); ?></span>
+			</a>
 		</div>
 	</form>
 	<div id="customize-preview" class="wp-full-overlay-main"></div>
 	<?php
 
+	// Render control templates.
+	$wp_customize->render_control_templates();
+
 	/**
-	 * Prints templates, control scripts, and settings in the footer.
+	 * Print Customizer control scripts in the footer.
 	 *
 	 * @since 3.4.0
 	 */
 	do_action( 'customize_controls_print_footer_scripts' );
+
+	/*
+	 * If the frontend and the admin are served from the same domain, load the
+	 * preview over ssl if the Customizer is being loaded over ssl. This avoids
+	 * insecure content warnings. This is not attempted if the admin and frontend
+	 * are on different domains to avoid the case where the frontend doesn't have
+	 * ssl certs. Domain mapping plugins can allow other urls in these conditions
+	 * using the customize_allowed_urls filter.
+	 */
+
+	$allowed_urls = array( home_url('/') );
+	$admin_origin = parse_url( admin_url() );
+	$home_origin  = parse_url( home_url() );
+	$cross_domain = ( strtolower( $admin_origin[ 'host' ] ) != strtolower( $home_origin[ 'host' ] ) );
+
+	if ( is_ssl() && ! $cross_domain )
+		$allowed_urls[] = home_url( '/', 'https' );
+
+	/**
+	 * Filter the list of URLs allowed to be clicked and followed in the Customizer preview.
+	 *
+	 * @since 3.4.0
+	 *
+	 * @param array $allowed_urls An array of allowed URLs.
+	 */
+	$allowed_urls = array_unique( apply_filters( 'customize_allowed_urls', $allowed_urls ) );
+
+	$fallback_url = add_query_arg( array(
+		'preview'        => 1,
+		'template'       => $wp_customize->get_template(),
+		'stylesheet'     => $wp_customize->get_stylesheet(),
+		'preview_iframe' => true,
+		'TB_iframe'      => 'true'
+	), home_url( '/' ) );
+
+	$login_url = add_query_arg( array(
+		'interim-login' => 1,
+		'customize-login' => 1
+	), wp_login_url() );
+
+	// Prepare Customizer settings to pass to JavaScript.
+	$settings = array(
+		'theme'    => array(
+			'stylesheet' => $wp_customize->get_stylesheet(),
+			'active'     => $wp_customize->is_theme_active(),
+		),
+		'url'      => array(
+			'preview'       => esc_url_raw( $url ? $url : home_url( '/' ) ),
+			'parent'        => esc_url_raw( admin_url() ),
+			'activated'     => esc_url_raw( home_url( '/' ) ),
+			'ajax'          => esc_url_raw( admin_url( 'admin-ajax.php', 'relative' ) ),
+			'allowed'       => array_map( 'esc_url_raw', $allowed_urls ),
+			'isCrossDomain' => $cross_domain,
+			'fallback'      => esc_url_raw( $fallback_url ),
+			'home'          => esc_url_raw( home_url( '/' ) ),
+			'login'         => esc_url_raw( $login_url ),
+		),
+		'browser'  => array(
+			'mobile' => wp_is_mobile(),
+			'ios'    => $is_ios,
+		),
+		'settings' => array(),
+		'controls' => array(),
+		'panels'   => array(),
+		'sections' => array(),
+		'nonce'    => array(
+			'save'    => wp_create_nonce( 'save-customize_' . $wp_customize->get_stylesheet() ),
+			'preview' => wp_create_nonce( 'preview-customize_' . $wp_customize->get_stylesheet() )
+		),
+		'autofocus' => array(),
+		'documentTitleTmpl' => $document_title_tmpl,
+	);
+
+	// Prepare Customize Setting objects to pass to JavaScript.
+	foreach ( $wp_customize->settings() as $id => $setting ) {
+		$settings['settings'][ $id ] = array(
+			'value'     => $setting->js_value(),
+			'transport' => $setting->transport,
+			'dirty'     => $setting->dirty,
+		);
+	}
+
+	// Prepare Customize Control objects to pass to JavaScript.
+	foreach ( $wp_customize->controls() as $id => $control ) {
+		$settings['controls'][ $id ] = $control->json();
+	}
+
+	// Prepare Customize Section objects to pass to JavaScript.
+	foreach ( $wp_customize->sections() as $id => $section ) {
+		$settings['sections'][ $id ] = $section->json();
+	}
+
+	// Prepare Customize Panel objects to pass to JavaScript.
+	foreach ( $wp_customize->panels() as $id => $panel ) {
+		$settings['panels'][ $id ] = $panel->json();
+		foreach ( $panel->sections as $section_id => $section ) {
+			$settings['sections'][ $section_id ] = $section->json();
+		}
+	}
+
+	// Pass to frontend the Customizer construct being deeplinked
+	if ( isset( $_GET['autofocus'] ) ) {
+		$autofocus = wp_unslash( $_GET['autofocus'] );
+		if ( is_array( $autofocus ) ) {
+			foreach ( $autofocus as $type => $id ) {
+				if ( isset( $settings[ $type . 's' ][ $id ] ) ) {
+					$settings['autofocus'][ $type ] = $id;
+				}
+			}
+		}
+	}
+
 	?>
+	<script type="text/javascript">
+		var _wpCustomizeSettings = <?php echo wp_json_encode( $settings ); ?>;
+	</script>
 </div>
 </body>
 </html>

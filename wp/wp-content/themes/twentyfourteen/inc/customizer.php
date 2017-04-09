@@ -16,22 +16,9 @@
  */
 function twentyfourteen_customize_register( $wp_customize ) {
 	// Add postMessage support for site title and description.
-	$wp_customize->get_setting( 'blogname' )->transport          = 'postMessage';
-	$wp_customize->get_setting( 'blogdescription' )->transport   = 'postMessage';
-	$wp_customize->get_setting( 'header_textcolor' )->transport  = 'postMessage';
-
-	if ( isset( $wp_customize->selective_refresh ) ) {
-		$wp_customize->selective_refresh->add_partial( 'blogname', array(
-			'selector' => '.site-title a',
-			'container_inclusive' => false,
-			'render_callback' => 'twentyfourteen_customize_partial_blogname',
-		) );
-		$wp_customize->selective_refresh->add_partial( 'blogdescription', array(
-			'selector' => '.site-description',
-			'container_inclusive' => false,
-			'render_callback' => 'twentyfourteen_customize_partial_blogdescription',
-		) );
-	}
+	$wp_customize->get_setting( 'blogname' )->transport         = 'postMessage';
+	$wp_customize->get_setting( 'blogdescription' )->transport  = 'postMessage';
+	$wp_customize->get_setting( 'header_textcolor' )->transport = 'postMessage';
 
 	// Rename the label to "Site Title Color" because this only affects the site title in this theme.
 	$wp_customize->get_control( 'header_textcolor' )->label = __( 'Site Title Color', 'twentyfourteen' );
@@ -76,30 +63,6 @@ function twentyfourteen_customize_register( $wp_customize ) {
 	) );
 }
 add_action( 'customize_register', 'twentyfourteen_customize_register' );
-
-/**
- * Render the site title for the selective refresh partial.
- *
- * @since Twenty Fourteen 1.7
- * @see twentyfourteen_customize_register()
- *
- * @return void
- */
-function twentyfourteen_customize_partial_blogname() {
-	bloginfo( 'name' );
-}
-
-/**
- * Render the site tagline for the selective refresh partial.
- *
- * @since Twenty Fourteen 1.7
- * @see twentyfourteen_customize_register()
- *
- * @return void
- */
-function twentyfourteen_customize_partial_blogdescription() {
-	bloginfo( 'description' );
-}
 
 /**
  * Sanitize the Featured Content layout value.

@@ -1,4 +1,4 @@
-/* global _wpCustomizeHeader */
+/* globals _wpCustomizeHeader, _ */
 (function( $, wp ) {
 	var api = wp.customize;
 	api.HeaderTool = {};

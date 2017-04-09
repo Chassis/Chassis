@@ -1,4 +1,4 @@
-/* global ajaxurl, attachMediaBoxL10n, _wpMediaGridSettings, showNotice */
+/* global ajaxurl, attachMediaBoxL10n, _wpMediaGridSettings */
 
 var findPosts;
 ( function( $ ){
@@ -99,15 +99,9 @@ var findPosts;
 		$( '#find-posts-close' ).click( findPosts.close );
 		$( '#doaction, #doaction2' ).click( function( event ) {
 			$( 'select[name^="action"]' ).each( function() {
-				var optionValue = $( this ).val();
-
-				if ( 'attach' === optionValue ) {
+				if ( $(this).val() === 'attach' ) {
 					event.preventDefault();
 					findPosts.open();
-				} else if ( 'delete' === optionValue ) {
-					if ( ! showNotice.warn() ) {
-						event.preventDefault();
-					}
 				}
 			});
 		});

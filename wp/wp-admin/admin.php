@@ -48,7 +48,7 @@ if ( get_option('db_upgraded') ) {
 		exit;
 
 	/**
-	 * Filters whether to attempt to perform the multisite DB upgrade routine.
+	 * Filter whether to attempt to perform the multisite DB upgrade routine.
 	 *
 	 * In single site, the user would be redirected to wp-admin/upgrade.php.
 	 * In multisite, the DB upgrade routine is automatically fired, but only
@@ -59,7 +59,7 @@ if ( get_option('db_upgraded') ) {
 	 *
 	 * @since 3.0.0
 	 *
-	 * @param bool $do_mu_upgrade Whether to perform the Multisite upgrade routine. Default true.
+	 * @param bool true Whether to perform the Multisite upgrade routine. Default true.
 	 */
 	} elseif ( apply_filters( 'do_mu_upgrade', true ) ) {
 		$c = get_blog_count();
@@ -84,31 +84,21 @@ require_once(ABSPATH . 'wp-admin/includes/admin.php');
 auth_redirect();
 
 // Schedule trash collection
-if ( ! wp_next_scheduled( 'wp_scheduled_delete' ) && ! wp_installing() )
+if ( !wp_next_scheduled('wp_scheduled_delete') && !defined('WP_INSTALLING') )
 	wp_schedule_event(time(), 'daily', 'wp_scheduled_delete');
 
 set_screen_options();
 
-$date_format = __( 'F j, Y' );
-$time_format = __( 'g:i a' );
+$date_format = get_option('date_format');
+$time_format = get_option('time_format');
 
 wp_enqueue_script( 'common' );
 
-
-
-
-/**
- * $pagenow is set in vars.php
- * $wp_importers is sometimes set in wp-admin/includes/import.php
- * The remaining variables are imported as globals elsewhere, declared as globals here
- *
- * @global string $pagenow
- * @global array  $wp_importers
- * @global string $hook_suffix
- * @global string $plugin_page
- * @global string $typenow
- * @global string $taxnow
- */
+// $pagenow is set in vars.php
+// $wp_importers is sometimes set in wp-admin/includes/import.php
+//
+// The remaining variables are imported as globals elsewhere,
+//     declared as globals here
 global $pagenow, $wp_importers, $hook_suffix, $plugin_page, $typenow, $taxnow;
 
 $page_hook = null;
@@ -138,7 +128,21 @@ else
 	require(ABSPATH . 'wp-admin/menu.php');
 
 if ( current_user_can( 'manage_options' ) ) {
-	wp_raise_memory_limit( 'admin' );
+	/**
+	 * Filter the maximum memory limit available for administration screens.
+	 *
+	 * This only applies to administrators, who may require more memory for tasks like updates.
+	 * Memory limits when processing images (uploaded or edited by users of any role) are
+	 * handled separately.
+	 *
+	 * The WP_MAX_MEMORY_LIMIT constant specifically defines the maximum memory limit available
+	 * when in the administration back-end. The default is 256M, or 256 megabytes of memory.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string 'WP_MAX_MEMORY_LIMIT' The maximum WordPress memory limit. Default 256M.
+	 */
+	@ini_set( 'memory_limit', apply_filters( 'admin_memory_limit', WP_MAX_MEMORY_LIMIT ) );
 }
 
 /**
@@ -147,7 +151,7 @@ if ( current_user_can( 'manage_options' ) ) {
  * Note, this does not just run on user-facing admin screens.
  * It runs on admin-ajax.php and admin-post.php as well.
  *
- * This is roughly analogous to the more general {@see 'init'} hook, which fires earlier.
+ * This is roughly analgous to the more general 'init' hook, which fires earlier.
  *
  * @since 2.5.0
  */
@@ -161,7 +165,7 @@ if ( isset($plugin_page) ) {
 	if ( ! $page_hook = get_plugin_page_hook($plugin_page, $the_parent) ) {
 		$page_hook = get_plugin_page_hook($plugin_page, $plugin_page);
 
-		// Back-compat for plugins using add_management_page().
+		// Backwards compatibility for plugins using add_management_page().
 		if ( empty( $page_hook ) && 'edit.php' == $pagenow && '' != get_plugin_page_hook($plugin_page, 'tools.php') ) {
 			// There could be plugin specific params on the URL, so we need the whole query string
 			if ( !empty($_SERVER[ 'QUERY_STRING' ]) )
@@ -209,7 +213,7 @@ if ( isset($plugin_page) ) {
 		 *
 		 * @since 2.1.0
 		 */
-		do_action( "load-{$page_hook}" );
+		do_action( 'load-' . $page_hook );
 		if (! isset($_GET['noheader']))
 			require_once(ABSPATH . 'wp-admin/admin-header.php');
 
@@ -239,7 +243,7 @@ if ( isset($plugin_page) ) {
 		 *
 		 * @since 1.5.0
 		 */
-		do_action( "load-{$plugin_page}" );
+		do_action( 'load-' . $plugin_page );
 
 		if ( !isset($_GET['noheader']))
 			require_once(ABSPATH . 'wp-admin/admin-header.php');
@@ -257,9 +261,8 @@ if ( isset($plugin_page) ) {
 
 	$importer = $_GET['import'];
 
-	if ( ! current_user_can( 'import' ) ) {
-		wp_die( __( 'Sorry, you are not allowed to import content.' ) );
-	}
+	if ( ! current_user_can('import') )
+		wp_die(__('You are not allowed to import.'));
 
 	if ( validate_file($importer) ) {
 		wp_redirect( admin_url( 'import.php?invalid=' . $importer ) );
@@ -278,7 +281,7 @@ if ( isset($plugin_page) ) {
 	 *
 	 * @since 3.5.0
 	 */
-	do_action( "load-importer-{$importer}" );
+	do_action( 'load-importer-' . $importer );
 
 	$parent_file = 'tools.php';
 	$submenu_file = 'import.php';
@@ -299,7 +302,7 @@ if ( isset($plugin_page) ) {
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param bool $force Whether to force data to be filtered through kses. Default false.
+	 * @param bool false Whether to force data to be filtered through kses. Default false.
 	 */
 	if ( apply_filters( 'force_filtered_html_on_import', false ) ) {
 		kses_init_filters();  // Always filter imported data with kses on multisite.
@@ -326,7 +329,7 @@ if ( isset($plugin_page) ) {
 	 *
 	 * @since 2.1.0
 	 */
-	do_action( "load-{$pagenow}" );
+	do_action( 'load-' . $pagenow );
 
 	/*
 	 * The following hooks are fired to ensure backward compatibility.
@@ -342,8 +345,6 @@ if ( isset($plugin_page) ) {
 			do_action( 'load-categories.php' );
 		elseif ( $taxnow == 'link_category' )
 			do_action( 'load-edit-link-categories.php' );
-	} elseif( 'term.php' === $pagenow ) {
-		do_action( 'load-edit-tags.php' );
 	}
 }
 

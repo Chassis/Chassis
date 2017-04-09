@@ -47,7 +47,7 @@
 	border-radius: 3px;
 	box-shadow: 0 0 2px 2px rgba(0, 0, 0, 0.6);
 	clip: auto;
-	color: #0073aa;
+	color: #21759b;
 	display: block;
 	font-size: 14px;
 	font-weight: bold;
@@ -106,14 +106,10 @@
 }
 
 .media-embed-details .setting p,
-.media-embed-details .setting .remove-setting {
+.media-embed-details .setting a {
 	color: #a00;
 	font-size: 10px;
 	text-transform: uppercase;
-}
-
-.media-embed-details .setting .remove-setting {
-	padding: 0;
 }
 
 .media-embed-details .setting a:hover {
@@ -261,7 +257,7 @@ video.wp-video-shortcode,
 }
 
 .wp-playlist-dark .wp-playlist-caption {
-	color: #ddd;
+	color: #dedede;
 }
 
 .wp-playlist-playing {

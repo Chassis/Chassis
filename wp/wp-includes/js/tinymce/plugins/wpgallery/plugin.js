@@ -10,7 +10,7 @@ tinymce.PluginManager.add('wpgallery', function( editor ) {
 	function html( cls, data ) {
 		data = window.encodeURIComponent( data );
 		return '<img src="' + tinymce.Env.transparentSrc + '" class="wp-media mceItem ' + cls + '" ' +
-			'data-wp-media="' + data + '" data-mce-resize="false" data-mce-placeholder="1" alt="" />';
+			'data-wp-media="' + data + '" data-mce-resize="false" data-mce-placeholder="1" />';
 	}
 
 	function restoreMediaShortcodes( content ) {

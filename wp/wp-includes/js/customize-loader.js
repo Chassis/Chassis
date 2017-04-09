@@ -1,8 +1,4 @@
 /* global _wpCustomizeLoaderSettings, confirm */
-/*
- * Expose a public API that allows the customizer to be
- * loaded on any page.
- */
 window.wp = window.wp || {};
 
 (function( exports, $ ){
@@ -115,11 +111,7 @@ window.wp = window.wp || {};
 			this.active = true;
 			this.body.addClass('customize-loading');
 
-			/*
-			 * Track the dirtiness state (whether the drafted changes have been published)
-			 * of the Customizer in the iframe. This is used to decide whether to display
-			 * an AYS alert if the user tries to close the window before saving changes.
-			 */
+			// Dirty state of Customizer in iframe
 			this.saved = new api.Value( true );
 
 			this.iframe = $( '<iframe />', { 'src': src, 'title': Loader.settings.l10n.mainIframeTitle } ).appendTo( this.element );
@@ -131,19 +123,6 @@ window.wp = window.wp || {};
 				channel: 'loader',
 				targetWindow: this.iframe[0].contentWindow
 			});
-
-			// Expose the changeset UUID on the parent window's URL so that the customized state can survive a refresh.
-			if ( history.replaceState ) {
-				this.messenger.bind( 'changeset-uuid', function( changesetUuid ) {
-					var urlParser = document.createElement( 'a' );
-					urlParser.href = location.href;
-					urlParser.search = $.param( _.extend(
-						api.utils.parseQueryString( urlParser.search.substr( 1 ) ),
-						{ changeset_uuid: changesetUuid }
-					) );
-					history.replaceState( { customize: urlParser.href }, '', urlParser.href );
-				} );
-			}
 
 			// Wait for the connection from the iframe before sending any postMessage events.
 			this.messenger.bind( 'ready', function() {
@@ -162,6 +141,12 @@ window.wp = window.wp || {};
 
 			// Prompt AYS dialog when navigating away
 			$( window ).on( 'beforeunload', this.beforeunload );
+
+			this.messenger.bind( 'activated', function( location ) {
+				if ( location ) {
+					window.location = location;
+				}
+			});
 
 			this.messenger.bind( 'saved', function () {
 				Loader.saved( true );
@@ -196,11 +181,11 @@ window.wp = window.wp || {};
 		 * Callback after the Customizer has been opened.
 		 */
 		opened: function() {
-			Loader.body.addClass( 'customize-active full-overlay-active' ).attr( 'aria-busy', 'true' );
+			Loader.body.addClass( 'customize-active full-overlay-active' );
 		},
 
 		/**
-		 * Close the Customizer overlay.
+		 * Close the Customizer overlay and return focus to the link that opened it.
 		 */
 		close: function() {
 			if ( ! this.active ) {
@@ -222,6 +207,11 @@ window.wp = window.wp || {};
 			if ( this.originalDocumentTitle ) {
 				document.title = this.originalDocumentTitle;
 			}
+
+			// Return focus to link that was originally clicked.
+			if ( this.link ) {
+				this.link.focus();
+			}
 		},
 
 		/**
@@ -235,20 +225,13 @@ window.wp = window.wp || {};
 			Loader.saved     = null;
 			Loader.body.removeClass( 'customize-active full-overlay-active' ).removeClass( 'customize-loading' );
 			$( window ).off( 'beforeunload', Loader.beforeunload );
-			/*
-			 * Return focus to the link that opened the Customizer overlay after
-			 * the body element visibility is restored.
-			 */
-			if ( Loader.link ) {
-				Loader.link.focus();
-			}
 		},
 
 		/**
 		 * Callback for the `load` event on the Customizer iframe.
 		 */
 		loaded: function() {
-			Loader.body.removeClass( 'customize-loading' ).attr( 'aria-busy', 'false' );
+			Loader.body.removeClass('customize-loading');
 		},
 
 		/**

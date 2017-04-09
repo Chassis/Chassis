@@ -10,24 +10,18 @@
  * The current page.
  *
  * @global string $self
+ * @name $self
+ * @var string
  */
 $self = preg_replace('|^.*/wp-admin/network/|i', '', $_SERVER['PHP_SELF']);
 $self = preg_replace('|^.*/wp-admin/|i', '', $self);
 $self = preg_replace('|^.*/plugins/|i', '', $self);
 $self = preg_replace('|^.*/mu-plugins/|i', '', $self);
 
-/**
- * For when admin-header is included from within a function.
- *
- * @global array  $menu
- * @global array  $submenu
- * @global string $parent_file
- * @global string $submenu_file
- */
-global $menu, $submenu, $parent_file, $submenu_file;
+global $menu, $submenu, $parent_file; //For when admin-header is included from within a function.
 
 /**
- * Filters the parent file of an admin menu sub-menu item.
+ * Filter the parent file of an admin menu sub-menu item.
  *
  * Allows plugins to move sub-menu items around.
  *
@@ -37,16 +31,6 @@ global $menu, $submenu, $parent_file, $submenu_file;
  */
 $parent_file = apply_filters( 'parent_file', $parent_file );
 
-/**
- * Filters the file of an admin menu sub-menu item.
- *
- * @since 4.4.0
- *
- * @param string $submenu_file The submenu file.
- * @param string $parent_file  The submenu item's parent file.
- */
-$submenu_file = apply_filters( 'submenu_file', $submenu_file, $parent_file );
-
 get_admin_page_parent();
 
 /**
@@ -55,15 +39,9 @@ get_admin_page_parent();
  * @access private
  * @since 2.7.0
  *
- * @global string $self
- * @global string $parent_file
- * @global string $submenu_file
- * @global string $plugin_page
- * @global string $typenow
- *
  * @param array $menu
  * @param array $submenu
- * @param bool  $submenu_as_parent
+ * @param bool $submenu_as_parent
  */
 function _wp_menu_output( $menu, $submenu, $submenu_as_parent = true ) {
 	global $self, $parent_file, $submenu_file, $plugin_page, $typenow;
@@ -109,7 +87,7 @@ function _wp_menu_output( $menu, $submenu, $submenu_as_parent = true ) {
 		}
 
 		/*
-		 * If the string 'none' (previously 'div') is passed instead of a URL, don't output
+		 * If the string 'none' (previously 'div') is passed instead of an URL, don't output
 		 * the default menu image so an icon can be added to div.wp-menu-image as background
 		 * with CSS. Dashicons and base64-encoded data:image/svg_xml URIs are also handled
 		 * as special cases.
@@ -168,7 +146,7 @@ function _wp_menu_output( $menu, $submenu, $submenu_as_parent = true ) {
 
 		if ( ! empty( $submenu_items ) ) {
 			echo "\n\t<ul class='wp-submenu wp-submenu-wrap'>";
-			echo "<li class='wp-submenu-head' aria-hidden='true'>{$item[0]}</li>";
+			echo "<li class='wp-submenu-head'>{$item[0]}</li>";
 
 			$first = true;
 
@@ -234,11 +212,9 @@ function _wp_menu_output( $menu, $submenu, $submenu_as_parent = true ) {
 		echo "</li>";
 	}
 
-	echo '<li id="collapse-menu" class="hide-if-no-js">' .
-		'<button type="button" id="collapse-button" aria-label="' . esc_attr__( 'Collapse Main menu' ) . '" aria-expanded="true">' .
-		'<span class="collapse-button-icon" aria-hidden="true"></span>' .
-		'<span class="collapse-button-label">' . __( 'Collapse menu' ) . '</span>' .
-		'</button></li>';
+	echo '<li id="collapse-menu" class="hide-if-no-js"><div id="collapse-button"><div></div></div>';
+	echo '<span>' . esc_html__( 'Collapse menu' ) . '</span>';
+	echo '</li>';
 }
 
 ?>

@@ -26,10 +26,7 @@ echo '<?xml version="1.0"?'.">\n";
 ?>
 <opml version="1.0">
 	<head>
-		<title><?php
-			/* translators: 1: Site name */
-			printf( __('Links for %s'), esc_attr(get_bloginfo('name', 'display')) );
-		?></title>
+		<title><?php printf( __('Links for %s'), esc_attr(get_bloginfo('name', 'display')) ); ?></title>
 		<dateCreated><?php echo gmdate("D, d M Y H:i:s"); ?> GMT</dateCreated>
 		<?php
 		/**
@@ -49,7 +46,7 @@ else
 
 foreach ( (array)$cats as $cat ) :
 	/**
-	 * Filters the OPML outline link category name.
+	 * Filter the OPML outline link category name.
 	 *
 	 * @since 2.2.0
 	 *
@@ -63,7 +60,7 @@ foreach ( (array)$cats as $cat ) :
 	$bookmarks = get_bookmarks(array("category" => $cat->term_id));
 	foreach ( (array)$bookmarks as $bookmark ) :
 		/**
-		 * Filters the OPML outline link title text.
+		 * Filter the OPML outline link title text.
 		 *
 		 * @since 2.2.0
 		 *

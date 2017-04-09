@@ -38,33 +38,33 @@ jQuery(document).ready(function($) {
 		});
 	};
 
-	$('#asc').click( function( e ) {
-		e.preventDefault();
+	$('#asc').click( function() {
 		desc = false;
 		sortIt();
+		return false;
 	});
-	$('#desc').click( function( e ) {
-		e.preventDefault();
+	$('#desc').click( function() {
 		desc = true;
 		sortIt();
+		return false;
 	});
-	$('#clear').click( function( e ) {
-		e.preventDefault();
+	$('#clear').click( function() {
 		clearAll(1);
+		return false;
 	});
-	$('#showall').click( function( e ) {
-		e.preventDefault();
+	$('#showall').click( function() {
 		$('#sort-buttons span a').toggle();
 		$('a.describe-toggle-on').hide();
 		$('a.describe-toggle-off, table.slidetoggle').show();
 		$('img.pinkynail').toggle(false);
+		return false;
 	});
-	$('#hideall').click( function( e ) {
-		e.preventDefault();
+	$('#hideall').click( function() {
 		$('#sort-buttons span a').toggle();
 		$('a.describe-toggle-on').show();
 		$('a.describe-toggle-off, table.slidetoggle').hide();
 		$('img.pinkynail').toggle(true);
+		return false;
 	});
 
 	// initialize sortable
