@@ -15,9 +15,11 @@ class chassis::php (
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
 		$package_version = "${version}.*"
+		$short_ver = $version
 	}
 	else {
 		$package_version = "${version}*"
+		$short_ver = regsubst($version, '^(\d+\.\d+)\.\d+$', '\1')
 	}
 
 	if versioncmp( "${version}", '5.4') <= 0 {
@@ -25,8 +27,8 @@ class chassis::php (
 		$php_dir = 'php5'
 	}
 	else {
-		$php_package = "php${version}"
-		$php_dir = "php/${version}"
+		$php_package = "php${short_ver}"
+		$php_dir = "php/${short_ver}"
 	}
 
 	if versioncmp( "${version}", '5.5') < 0 {
@@ -129,7 +131,7 @@ class chassis::php (
 		}
 	}
 
-	case $version {
+	case $short_ver {
 		"5.3": {
 			remove_php_fpm { [ "5.5", "5.6", "7.0", "7.1" ]:
 				notify => Service["${php_package}-fpm"],
