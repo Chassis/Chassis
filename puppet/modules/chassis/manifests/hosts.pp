@@ -17,6 +17,7 @@ class chassis::hosts(
 			ensure => "file",
 			mode => "0644",
 			source => "puppet:///modules/chassis/chassis-hosts.service",
+			notify => Exec['systemctl-daemon-reload'],
 		}
 
 		file { [ '/etc/chassis-hosts', '/etc/chassis-hosts/conf.d' ]:
