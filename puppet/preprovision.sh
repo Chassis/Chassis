@@ -32,7 +32,7 @@ if [[ ! -f /etc/chassis-updated ]]; then
 
 	# Allow Puppet to be upgraded
 	# (Note that preicse's package is 2.7, so we need the custom deb)
-	wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
+	wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb
 	dpkg -i puppetlabs-release-precise.deb
 
 	# Update apt
