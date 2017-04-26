@@ -2,8 +2,16 @@ class chassis::php (
 	$extensions = [],
 	$version = "5.6",
 ) {
-	apt::ppa { "ppa:ondrej/php5-oldstable": }
-	apt::ppa { "ppa:ondrej/php": }
+	# Ensure add-apt-repository is actually available.
+	if !defined(Package[$::apt::ppa_package]) {
+		package { $::apt::ppa_package:
+			ensure => latest,
+		}
+	}
+
+	apt::ppa { "ppa:ondrej/php":
+		require => [ Package[ $::apt::ppa_package ] ],
+	}
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
 		$package_version = "${version}.*"
@@ -65,11 +73,15 @@ class chassis::php (
 	$prefixed_extensions = prefix($extensions, "${php_package}-")
 
 	# Hold the packages at the necessary version
-	apt::hold { $packages:
-		version => $package_version
+	apt::pin { $packages:
+		packages => $packages,
+		version => $package_version,
+		priority => 1001,
 	}
-	apt::hold { $prefixed_extensions:
-		version => $package_version
+	apt::pin { $prefixed_extensions:
+		packages => $prefixed_extensions,
+		version => $package_version,
+		priority => 1001,
 	}
 
 	# Grab the packages at the given versions
@@ -80,8 +92,7 @@ class chassis::php (
 
 		notify => Service["${php_package}-fpm"],
 		require => [
-			Apt::Hold[$packages],
-			Apt::Ppa["ppa:ondrej/php5-oldstable"],
+			Apt::Pin[$packages],
 			Apt::Ppa["ppa:ondrej/php"],
 		],
 	}
@@ -166,7 +177,7 @@ class chassis::php (
 
 		require => [
 			Package[ $packages ],
-			Apt::Hold[ $prefixed_extensions ]
+			Apt::Pin[ $prefixed_extensions ]
 		]
 	}
 
