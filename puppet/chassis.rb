@@ -158,8 +158,6 @@ module Chassis
 
 		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
 
-		if ! File.exist?( folder )
-			system("git clone %s %s --recursive" % [repo, folder] )
-		end
+		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
 	end
 end
