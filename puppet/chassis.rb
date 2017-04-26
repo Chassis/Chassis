@@ -129,7 +129,7 @@ module Chassis
 	def self.install_extensions(config)
 		# Install extensions listed in config
 		if config["extensions"]
-			self.install_extensions_from_array(config["extensions"])
+			config["extensions"].each { |ext| self.install_extension(ext) }
 		end
 
 		# For each of the extensions in our folder, read the extension config and
@@ -139,30 +139,7 @@ module Chassis
 
 			# If we have dependencies, then install them.
 			if ext_config["dependencies"]
-				install_extensions_from_array(ext_config["dependencies"])
-			end
-		end
-	end
-
-	def self.install_extensions_from_array(extensions)
-		extensions.each do |ext|
-			if ext.is_a? String
-				# If it is a string, then it's a normal extension, install it.
-				self.install_extension(ext)
-			else
-				# Otherwise, we have a dependencies for our extension,
-				# which we want to extract out and install as well.
-				ext.keys.each do |ext_need_dep|
-					# Loop through each of the dependencies we need
-					# for the extension and install them.
-					ext.values[0].each do |ext_dep|
-						self.install_extension(ext_dep)
-					end
-
-					# Finally, actually install our extension
-					# that needs dependencies.
-					self.install_extension(ext_need_dep)
-				end
+				ext_config["dependencies"].each { |ext| self.install_extension(ext) }
 			end
 		end
 	end
