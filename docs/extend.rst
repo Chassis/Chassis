@@ -92,7 +92,8 @@ Extensions **must** specify the following options:
 
 Extensions may also specify the following options:
 
-- ``dependencies``: Extensions that the extension depends on. List of strings, where each string is an extension name.
+- ``dependencies``: Extensions that the extension depends on. List of strings,
+  where each string is an extension name (see :ref:`extension-format-ref`).
 
 
 Puppet Class
