@@ -134,16 +134,8 @@ module Chassis
 
 		# For each of the extensions in our folder, read the extension config and
 		# install dependencies, etc for that extension.
-		Dir.foreach('extensions/') do |ext_folder|
-
-			# Bail out if we aren't a valid folder.
-			next if ext_folder == '.' or ext_folder == '..' or File.file?('extensions/' + ext_folder)
-
-			# If we don't have our config file, don't do anything.
-			next if not File.exists? 'extensions/' + ext_folder + '/chassis.yaml'
-
-			# Grab our config file and load it.
-			ext_config = YAML.load_file('extensions/' + ext_folder + '/chassis.yaml')
+		self.get_extensions(2).each do |extension|
+			ext_config = self.get_extension_config(extension)
 
 			# If we have dependencies, then install them.
 			if ext_config["dependencies"]
