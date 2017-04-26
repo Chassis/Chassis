@@ -3,23 +3,31 @@ import "/vagrant/extensions/*/chassis.pp"
 
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
+$loadable_extensions = sz_extensions('/vagrant/extensions', 2)
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
+
+if $loadable_extensions {
+	class { $loadable_extensions:
+		config => $config,
+	}
+}
+
+class { 'apt': }
 
 class { 'chassis::php':
 	extensions => $php_extensions,
-	version => $config[php]
+	version => $config[php],
+	require => [
+		Class['apt'],
+	],
 }
 
 package { 'git-core':
 	ensure => installed
 }
 
-class { 'apt':
- 	update_timeout       => undef
-}
-
 class { 'mysql::server':
-	config_hash => { 'root_password' => 'password' }
+	root_password => 'password',
 }
 
 class { 'chassis':

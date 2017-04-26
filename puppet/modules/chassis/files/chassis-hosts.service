@@ -1,0 +1,8 @@
+[Unit]
+Description=Chassis subdomain hosts updater
+
+[Service]
+TimeoutStartSec=0
+TimeoutStopSec=600
+Restart=always
+ExecStart=/usr/bin/python /vagrant/puppet/chassis-hosts.py

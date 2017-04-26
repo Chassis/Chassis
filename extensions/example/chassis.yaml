@@ -1,0 +1,7 @@
+# Extension version.
+#
+# All modern extensions should use 2 here. Version 1 uses a chassis.pp
+# instead, which requires a deprecated feature of Puppet.
+#
+# Values: 2
+version: 2

@@ -528,10 +528,11 @@
 		 *
 		 * @since 4.1.0
 		 *
-		 * @param {Boolean} active
-		 * @param {Object}  args
-		 * @param {Object}  args.duration
-		 * @param {Object}  args.completeCallback
+		 * @param {boolean}  active - The active state to transiution to.
+		 * @param {Object}   [args] - Args.
+		 * @param {Object}   [args.duration] - The duration for the slideUp/slideDown animation.
+		 * @param {boolean}  [args.unchanged] - Whether the state is already known to not be changed, and so short-circuit with calling completeCallback early.
+		 * @param {Function} [args.completeCallback] - Function to call when the slideUp/slideDown has completed.
 		 */
 		onChangeActive: function( active, args ) {
 			var construct = this,
@@ -564,24 +565,24 @@
 				}
 			}
 
-			if ( ! $.contains( document, headContainer ) ) {
-				// jQuery.fn.slideUp is not hiding an element if it is not in the DOM
+			if ( ! $.contains( document, headContainer.get( 0 ) ) ) {
+				// If the element is not in the DOM, then jQuery.fn.slideUp() does nothing. In this case, a hard toggle is required instead.
 				headContainer.toggle( active );
 				if ( args.completeCallback ) {
 					args.completeCallback();
 				}
 			} else if ( active ) {
-				headContainer.stop( true, true ).slideDown( duration, args.completeCallback );
+				headContainer.slideDown( duration, args.completeCallback );
 			} else {
 				if ( construct.expanded() ) {
 					construct.collapse({
 						duration: duration,
 						completeCallback: function() {
-							headContainer.stop( true, true ).slideUp( duration, args.completeCallback );
+							headContainer.slideUp( duration, args.completeCallback );
 						}
 					});
 				} else {
-					headContainer.stop( true, true ).slideUp( duration, args.completeCallback );
+					headContainer.slideUp( duration, args.completeCallback );
 				}
 			}
 		},
@@ -710,11 +711,19 @@
 			var construct = this,
 				content = construct.contentContainer,
 				overlay = content.closest( '.wp-full-overlay' ),
-				elements, transitionEndCallback;
+				elements, transitionEndCallback, transitionParentPane;
 
 			// Determine set of elements that are affected by the animation.
 			elements = overlay.add( content );
-			if ( _.isUndefined( construct.panel ) || '' === construct.panel() ) {
+
+			if ( ! construct.panel || '' === construct.panel() ) {
+				transitionParentPane = true;
+			} else if ( api.panel( construct.panel() ).contentContainer.hasClass( 'skip-transition' ) ) {
+				transitionParentPane = true;
+			} else {
+				transitionParentPane = false;
+			}
+			if ( transitionParentPane ) {
 				elements = elements.add( '#customize-info, .customize-pane-parent' );
 			}
 
@@ -995,7 +1004,7 @@
 				overlay = section.headContainer.closest( '.wp-full-overlay' ),
 				backBtn = content.find( '.customize-section-back' ),
 				sectionTitle = section.headContainer.find( '.accordion-section-title' ).first(),
-				expand;
+				expand, panel;
 
 			if ( expanded && ! content.hasClass( 'open' ) ) {
 
@@ -1043,6 +1052,12 @@
 				}
 
 			} else if ( ! expanded && content.hasClass( 'open' ) ) {
+				if ( section.panel() ) {
+					panel = api.panel( section.panel() );
+					if ( panel.contentContainer.hasClass( 'skip-transition' ) ) {
+						panel.collapse();
+					}
+				}
 				section._animateChangeExpanded( function() {
 					backBtn.attr( 'tabindex', '-1' );
 					sectionTitle.attr( 'tabindex', '0' );
@@ -1721,7 +1736,9 @@
 				overlay = accordionSection.closest( '.wp-full-overlay' ),
 				container = accordionSection.closest( '.wp-full-overlay-sidebar-content' ),
 				topPanel = panel.headContainer.find( '.accordion-section-title' ),
-				backBtn = accordionSection.find( '.customize-panel-back' );
+				backBtn = accordionSection.find( '.customize-panel-back' ),
+				childSections = panel.sections(),
+				skipTransition;
 
 			if ( expanded && ! accordionSection.hasClass( 'current-panel' ) ) {
 				// Collapse any sibling sections/panels
@@ -1736,35 +1753,50 @@
 					}
 				});
 
-				panel._animateChangeExpanded( function() {
-					topPanel.attr( 'tabindex', '-1' );
-					backBtn.attr( 'tabindex', '0' );
+				if ( panel.params.autoExpandSoleSection && 1 === childSections.length && childSections[0].active.get() ) {
+					accordionSection.addClass( 'current-panel skip-transition' );
+					overlay.addClass( 'in-sub-panel' );
 
-					backBtn.focus();
-					accordionSection.css( 'top', '' );
-					container.scrollTop( 0 );
+					childSections[0].expand( {
+						completeCallback: args.completeCallback
+					} );
+				} else {
+					panel._animateChangeExpanded( function() {
+						topPanel.attr( 'tabindex', '-1' );
+						backBtn.attr( 'tabindex', '0' );
 
-					if ( args.completeCallback ) {
-						args.completeCallback();
-					}
-				} );
+						backBtn.focus();
+						accordionSection.css( 'top', '' );
+						container.scrollTop( 0 );
 
-				overlay.addClass( 'in-sub-panel' );
-				accordionSection.addClass( 'current-panel' );
+						if ( args.completeCallback ) {
+							args.completeCallback();
+						}
+					} );
+
+					accordionSection.addClass( 'current-panel' );
+					overlay.addClass( 'in-sub-panel' );
+				}
+
 				api.state( 'expandedPanel' ).set( panel );
 
 			} else if ( ! expanded && accordionSection.hasClass( 'current-panel' ) ) {
-				panel._animateChangeExpanded( function() {
-					topPanel.attr( 'tabindex', '0' );
-					backBtn.attr( 'tabindex', '-1' );
+				skipTransition = accordionSection.hasClass( 'skip-transition' );
+				if ( ! skipTransition ) {
+					panel._animateChangeExpanded( function() {
+						topPanel.attr( 'tabindex', '0' );
+						backBtn.attr( 'tabindex', '-1' );
 
-					topPanel.focus();
-					accordionSection.css( 'top', '' );
+						topPanel.focus();
+						accordionSection.css( 'top', '' );
 
-					if ( args.completeCallback ) {
-						args.completeCallback();
-					}
-				} );
+						if ( args.completeCallback ) {
+							args.completeCallback();
+						}
+					} );
+				} else {
+					accordionSection.removeClass( 'skip-transition' );
+				}
 
 				overlay.removeClass( 'in-sub-panel' );
 				accordionSection.removeClass( 'current-panel' );
@@ -2266,9 +2298,9 @@
 				availableItem = new api.Menus.AvailableItemModel( {
 					'id': 'post-' + data.post_id, // Used for available menu item Backbone models.
 					'title': title,
-					'type': 'page',
+					'type': 'post_type',
 					'type_label': api.Menus.data.l10n.page_label,
-					'object': 'post_type',
+					'object': 'page',
 					'object_id': data.post_id,
 					'url': data.url
 				} );
@@ -4122,7 +4154,7 @@
 
 				// Remove notification errors that are no longer valid.
 				setting.notifications.each( function( notification ) {
-					if ( 'error' === notification.type && ( true === validity || ! validity[ notification.code ] ) ) {
+					if ( notification.fromServer && 'error' === notification.type && ( true === validity || ! validity[ notification.code ] ) ) {
 						setting.notifications.remove( notification.code );
 					}
 				} );
@@ -4730,6 +4762,12 @@
 			 */
 			populateChangesetUuidParam = function( isIncluded ) {
 				var urlParser, queryParams;
+
+				// Abort on IE9 which doesn't support history management.
+				if ( ! history.replaceState ) {
+					return;
+				}
+
 				urlParser = document.createElement( 'a' );
 				urlParser.href = location.href;
 				queryParams = api.utils.parseQueryString( urlParser.search.substr( 1 ) );
@@ -4748,11 +4786,9 @@
 				history.replaceState( {}, document.title, urlParser.href );
 			};
 
-			if ( history.replaceState ) {
-				changesetStatus.bind( function( newStatus ) {
-					populateChangesetUuidParam( '' !== newStatus && 'publish' !== newStatus );
-				} );
-			}
+			changesetStatus.bind( function( newStatus ) {
+				populateChangesetUuidParam( '' !== newStatus && 'publish' !== newStatus );
+			} );
 
 			// Expose states to the API.
 			api.state = state;

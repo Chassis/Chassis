@@ -13,9 +13,11 @@ class chassis::hosts(
 			require => Package['python-pip'],
 		}
 
-		file { '/etc/init/chassis-hosts.conf':
-			source => "puppet:///modules/chassis/hosts.init",
+		file { "/lib/systemd/system/chassis-hosts.service":
+			ensure => "file",
 			mode => "0644",
+			source => "puppet:///modules/chassis/chassis-hosts.service",
+			notify => Exec['systemctl-daemon-reload'],
 		}
 
 		file { [ '/etc/chassis-hosts', '/etc/chassis-hosts/conf.d' ]:
@@ -42,7 +44,7 @@ class chassis::hosts(
 				Package[ 'avahi-daemon' ],
 				Package[ 'python-avahi' ],
 				Package[ 'watchdog' ],
-				File[ '/etc/init/chassis-hosts.conf' ],
+				File[ '/lib/systemd/system/chassis-hosts.service' ],
 				File[ '/etc/chassis-hosts/conf.d/aliases' ],
 				File[ '/etc/chassis-hosts/conf.d/subdomains' ],
 			]
