@@ -146,14 +146,12 @@ module Chassis
 
 	def self.install_extension(extension)
 		# Perform checks for various forms of extension definition.
-		if extension.include? "git@" # Full git-based url.
-			repo = extension
-		elsif extension.include? 'https:' # GitHub-like https url.
-			repo = extension
-		elsif extension.include? '/' # assume account/repo style.
-			repo = 'https://github.com/' + extension
-		else # Assume a Chassis official extension, like 'nodejs'.
+		if extension =~ /^[\w-]+$/ # Chassis official extension, like 'nodejs'.
 			repo = 'https://github.com/chassis/' + extension
+		elsif extension =~ /^[\w-]+\/[\w-]+$/ # account/repo style.
+			repo = 'https://github.com/' + extension
+		else
+			repo = extension
 		end
 
 		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
