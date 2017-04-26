@@ -567,12 +567,12 @@ function metadata_exists( $meta_type, $object_id, $meta_key ) {
 function get_metadata_by_mid( $meta_type, $meta_id ) {
 	global $wpdb;
 
-	if ( ! $meta_type || ! is_numeric( $meta_id ) ) {
+	if ( ! $meta_type || ! is_numeric( $meta_id ) || floor( $meta_id ) != $meta_id ) {
 		return false;
 	}
 
-	$meta_id = absint( $meta_id );
-	if ( ! $meta_id ) {
+	$meta_id = intval( $meta_id );
+	if ( $meta_id <= 0 ) {
 		return false;
 	}
 
@@ -611,12 +611,12 @@ function update_metadata_by_mid( $meta_type, $meta_id, $meta_value, $meta_key = 
 	global $wpdb;
 
 	// Make sure everything is valid.
-	if ( ! $meta_type || ! is_numeric( $meta_id ) ) {
+	if ( ! $meta_type || ! is_numeric( $meta_id ) || floor( $meta_id ) != $meta_id ) {
 		return false;
 	}
 
-	$meta_id = absint( $meta_id );
-	if ( ! $meta_id ) {
+	$meta_id = intval( $meta_id );
+	if ( $meta_id <= 0 ) {
 		return false;
 	}
 
@@ -702,12 +702,12 @@ function delete_metadata_by_mid( $meta_type, $meta_id ) {
 	global $wpdb;
 
 	// Make sure everything is valid.
-	if ( ! $meta_type || ! is_numeric( $meta_id ) ) {
+	if ( ! $meta_type || ! is_numeric( $meta_id ) || floor( $meta_id ) != $meta_id ) {
 		return false;
 	}
 
-	$meta_id = absint( $meta_id );
-	if ( ! $meta_id ) {
+	$meta_id = intval( $meta_id );
+	if ( $meta_id <= 0 ) {
 		return false;
 	}
 
@@ -964,7 +964,7 @@ function sanitize_meta( $meta_key, $meta_value, $object_type ) {
  * Registers a meta key.
  *
  * @since 3.3.0
- * @since 4.6.0 {@link https://make.wordpress.org/core/2016/07/08/enhancing-register_meta-in-4-6/ Modified
+ * @since 4.6.0 {@link https://core.trac.wordpress.org/ticket/35658 Modified
  *              to support an array of data to attach to registered meta keys}. Previous arguments for
  *              `$sanitize_callback` and `$auth_callback` have been folded into this array.
  *

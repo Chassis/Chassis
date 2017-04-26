@@ -46,6 +46,13 @@ function register_rest_route( $namespace, $route, $args = array(), $override = f
 		return false;
 	}
 
+	if ( isset( $args['args'] ) ) {
+		$common_args = $args['args'];
+		unset( $args['args'] );
+	} else {
+		$common_args = array();
+	}
+
 	if ( isset( $args['callback'] ) ) {
 		// Upgrade a single set to multiple.
 		$args = array( $args );
@@ -57,17 +64,60 @@ function register_rest_route( $namespace, $route, $args = array(), $override = f
 		'args'            => array(),
 	);
 	foreach ( $args as $key => &$arg_group ) {
-		if ( ! is_numeric( $arg_group ) ) {
+		if ( ! is_numeric( $key ) ) {
 			// Route option, skip here.
 			continue;
 		}
 
 		$arg_group = array_merge( $defaults, $arg_group );
+		$arg_group['args'] = array_merge( $common_args, $arg_group['args'] );
 	}
 
 	$full_route = '/' . trim( $namespace, '/' ) . '/' . trim( $route, '/' );
 	$wp_rest_server->register_route( $namespace, $full_route, $args, $override );
 	return true;
+}
+
+/**
+ * Registers a new field on an existing WordPress object type.
+ *
+ * @since 4.7.0
+ *
+ * @global array $wp_rest_additional_fields Holds registered fields, organized
+ *                                          by object type.
+ *
+ * @param string|array $object_type Object(s) the field is being registered
+ *                                  to, "post"|"term"|"comment" etc.
+ * @param string $attribute         The attribute name.
+ * @param array  $args {
+ *     Optional. An array of arguments used to handle the registered field.
+ *
+ *     @type string|array|null $get_callback    Optional. The callback function used to retrieve the field
+ *                                              value. Default is 'null', the field will not be returned in
+ *                                              the response.
+ *     @type string|array|null $update_callback Optional. The callback function used to set and update the
+ *                                              field value. Default is 'null', the value cannot be set or
+ *                                              updated.
+ *     @type string|array|null $schema          Optional. The callback function used to create the schema for
+ *                                              this field. Default is 'null', no schema entry will be returned.
+ * }
+ */
+function register_rest_field( $object_type, $attribute, $args = array() ) {
+	$defaults = array(
+		'get_callback'    => null,
+		'update_callback' => null,
+		'schema'          => null,
+	);
+
+	$args = wp_parse_args( $args, $defaults );
+
+	global $wp_rest_additional_fields;
+
+	$object_types = (array) $object_type;
+
+	foreach ( $object_types as $object_type ) {
+		$wp_rest_additional_fields[ $object_type ][ $attribute ] = $args;
+	}
 }
 
 /**
@@ -91,10 +141,15 @@ function rest_api_init() {
  * @since 4.4.0
  *
  * @see add_rewrite_rule()
+ * @global WP_Rewrite $wp_rewrite
  */
 function rest_api_register_rewrites() {
+	global $wp_rewrite;
+
 	add_rewrite_rule( '^' . rest_get_url_prefix() . '/?$','index.php?rest_route=/','top' );
 	add_rewrite_rule( '^' . rest_get_url_prefix() . '/(.*)?','index.php?rest_route=/$matches[1]','top' );
+	add_rewrite_rule( '^' . $wp_rewrite->index . '/' . rest_get_url_prefix() . '/?$','index.php?rest_route=/','top' );
+	add_rewrite_rule( '^' . $wp_rewrite->index . '/' . rest_get_url_prefix() . '/(.*)?','index.php?rest_route=/$matches[1]','top' );
 }
 
 /**
@@ -117,6 +172,71 @@ function rest_api_default_filters() {
 	add_filter( 'rest_post_dispatch', 'rest_send_allow_header', 10, 3 );
 
 	add_filter( 'rest_pre_dispatch', 'rest_handle_options_request', 10, 3 );
+}
+
+/**
+ * Registers default REST API routes.
+ *
+ * @since 4.7.0
+ */
+function create_initial_rest_routes() {
+	foreach ( get_post_types( array( 'show_in_rest' => true ), 'objects' ) as $post_type ) {
+		$class = ! empty( $post_type->rest_controller_class ) ? $post_type->rest_controller_class : 'WP_REST_Posts_Controller';
+
+		if ( ! class_exists( $class ) ) {
+			continue;
+		}
+		$controller = new $class( $post_type->name );
+		if ( ! is_subclass_of( $controller, 'WP_REST_Controller' ) ) {
+			continue;
+		}
+
+		$controller->register_routes();
+
+		if ( post_type_supports( $post_type->name, 'revisions' ) ) {
+			$revisions_controller = new WP_REST_Revisions_Controller( $post_type->name );
+			$revisions_controller->register_routes();
+		}
+	}
+
+	// Post types.
+	$controller = new WP_REST_Post_Types_Controller;
+	$controller->register_routes();
+
+	// Post statuses.
+	$controller = new WP_REST_Post_Statuses_Controller;
+	$controller->register_routes();
+
+	// Taxonomies.
+	$controller = new WP_REST_Taxonomies_Controller;
+	$controller->register_routes();
+
+	// Terms.
+	foreach ( get_taxonomies( array( 'show_in_rest' => true ), 'object' ) as $taxonomy ) {
+		$class = ! empty( $taxonomy->rest_controller_class ) ? $taxonomy->rest_controller_class : 'WP_REST_Terms_Controller';
+
+		if ( ! class_exists( $class ) ) {
+			continue;
+		}
+		$controller = new $class( $taxonomy->name );
+		if ( ! is_subclass_of( $controller, 'WP_REST_Controller' ) ) {
+			continue;
+		}
+
+		$controller->register_routes();
+	}
+
+	// Users.
+	$controller = new WP_REST_Users_Controller;
+	$controller->register_routes();
+
+	// Comments.
+	$controller = new WP_REST_Comments_Controller;
+	$controller->register_routes();
+
+	// Settings.
+	$controller = new WP_REST_Settings_Controller;
+	$controller->register_routes();
 }
 
 /**
@@ -144,7 +264,11 @@ function rest_api_loaded() {
 	$server = rest_get_server();
 
 	// Fire off the request.
-	$server->serve_request( $GLOBALS['wp']->query_vars['rest_route'] );
+	$route = untrailingslashit( $GLOBALS['wp']->query_vars['rest_route'] );
+	if ( empty( $route ) ) {
+		$route = '/';
+	}
+	$server->serve_request( $route );
 
 	// We're done.
 	die();
@@ -176,6 +300,7 @@ function rest_get_url_prefix() {
  * @since 4.4.0
  *
  * @todo Check if this is even necessary
+ * @global WP_Rewrite $wp_rewrite
  *
  * @param int    $blog_id Optional. Blog ID. Default of null returns URL for current blog.
  * @param string $path    Optional. REST route. Default '/'.
@@ -188,7 +313,14 @@ function get_rest_url( $blog_id = null, $path = '/', $scheme = 'rest' ) {
 	}
 
 	if ( is_multisite() && get_blog_option( $blog_id, 'permalink_structure' ) || get_option( 'permalink_structure' ) ) {
-		$url = get_home_url( $blog_id, rest_get_url_prefix(), $scheme );
+		global $wp_rewrite;
+
+		if ( $wp_rewrite->using_index_permalinks() ) {
+			$url = get_home_url( $blog_id, $wp_rewrite->index . '/' . rest_get_url_prefix(), $scheme );
+		} else {
+			$url = get_home_url( $blog_id, rest_get_url_prefix(), $scheme );
+		}
+
 		$url .= '/' . ltrim( $path, '/' );
 	} else {
 		$url = trailingslashit( get_home_url( $blog_id, '', $scheme ) );
@@ -323,8 +455,9 @@ function rest_ensure_request( $request ) {
  * @since 4.4.0
  *
  * @param WP_Error|WP_HTTP_Response|mixed $response Response to check.
- * @return mixed WP_Error if response generated an error, WP_HTTP_Response if response
- *               is a already an instance, otherwise returns a new WP_REST_Response instance.
+ * @return WP_REST_Response|mixed If response generated an error, WP_Error, if response
+ *                                is already an instance, WP_HTTP_Response, otherwise
+ *                                returns a new WP_REST_Response instance.
  */
 function rest_ensure_response( $response ) {
 	if ( is_wp_error( $response ) ) {
@@ -393,8 +526,9 @@ function rest_send_cors_headers( $value ) {
 
 	if ( $origin ) {
 		header( 'Access-Control-Allow-Origin: ' . esc_url_raw( $origin ) );
-		header( 'Access-Control-Allow-Methods: POST, GET, OPTIONS, PUT, DELETE' );
+		header( 'Access-Control-Allow-Methods: OPTIONS, GET, POST, PUT, PATCH, DELETE' );
 		header( 'Access-Control-Allow-Credentials: true' );
+		header( 'Vary: Origin' );
 	}
 
 	return $value;
@@ -421,10 +555,8 @@ function rest_handle_options_request( $response, $handler, $request ) {
 	$response = new WP_REST_Response();
 	$data = array();
 
-	$accept = array();
-
 	foreach ( $handler->get_routes() as $route => $endpoints ) {
-		$match = preg_match( '@^' . $route . '$@i', $request->get_route(), $args );
+		$match = preg_match( '@^' . $route . '$@i', $request->get_route() );
 
 		if ( ! $match ) {
 			continue;
@@ -648,26 +780,416 @@ function rest_parse_date( $date, $force_utc = false ) {
 }
 
 /**
- * Retrieves a local date with its GMT equivalent, in MySQL datetime format.
+ * Parses a date into both its local and UTC equivalent, in MySQL datetime format.
  *
  * @since 4.4.0
  *
  * @see rest_parse_date()
  *
- * @param string $date      RFC3339 timestamp.
- * @param bool   $force_utc Whether a UTC timestamp should be forced. Default false.
+ * @param string $date   RFC3339 timestamp.
+ * @param bool   $is_utc Whether the provided date should be interpreted as UTC. Default false.
  * @return array|null Local and UTC datetime strings, in MySQL datetime format (Y-m-d H:i:s),
  *                    null on failure.
  */
-function rest_get_date_with_gmt( $date, $force_utc = false ) {
-	$date = rest_parse_date( $date, $force_utc );
+function rest_get_date_with_gmt( $date, $is_utc = false ) {
+	// Whether or not the original date actually has a timezone string
+	// changes the way we need to do timezone conversion.  Store this info
+	// before parsing the date, and use it later.
+	$has_timezone = preg_match( '#(Z|[+-]\d{2}(:\d{2})?)$#', $date );
+
+	$date = rest_parse_date( $date );
 
 	if ( empty( $date ) ) {
 		return null;
 	}
 
-	$utc = date( 'Y-m-d H:i:s', $date );
-	$local = get_date_from_gmt( $utc );
+	// At this point $date could either be a local date (if we were passed a
+	// *local* date without a timezone offset) or a UTC date (otherwise).
+	// Timezone conversion needs to be handled differently between these two
+	// cases.
+	if ( ! $is_utc && ! $has_timezone ) {
+		$local = date( 'Y-m-d H:i:s', $date );
+		$utc = get_gmt_from_date( $local );
+	} else {
+		$utc = date( 'Y-m-d H:i:s', $date );
+		$local = get_date_from_gmt( $utc );
+	}
 
 	return array( $local, $utc );
+}
+
+/**
+ * Returns a contextual HTTP error code for authorization failure.
+ *
+ * @since 4.7.0
+ *
+ * @return integer 401 if the user is not logged in, 403 if the user is logged in.
+ */
+function rest_authorization_required_code() {
+	return is_user_logged_in() ? 403 : 401;
+}
+
+/**
+ * Validate a request argument based on details registered to the route.
+ *
+ * @since 4.7.0
+ *
+ * @param  mixed            $value
+ * @param  WP_REST_Request  $request
+ * @param  string           $param
+ * @return WP_Error|boolean
+ */
+function rest_validate_request_arg( $value, $request, $param ) {
+	$attributes = $request->get_attributes();
+	if ( ! isset( $attributes['args'][ $param ] ) || ! is_array( $attributes['args'][ $param ] ) ) {
+		return true;
+	}
+	$args = $attributes['args'][ $param ];
+
+	return rest_validate_value_from_schema( $value, $args, $param );
+}
+
+/**
+ * Sanitize a request argument based on details registered to the route.
+ *
+ * @since 4.7.0
+ *
+ * @param  mixed            $value
+ * @param  WP_REST_Request  $request
+ * @param  string           $param
+ * @return mixed
+ */
+function rest_sanitize_request_arg( $value, $request, $param ) {
+	$attributes = $request->get_attributes();
+	if ( ! isset( $attributes['args'][ $param ] ) || ! is_array( $attributes['args'][ $param ] ) ) {
+		return $value;
+	}
+	$args = $attributes['args'][ $param ];
+
+	return rest_sanitize_value_from_schema( $value, $args );
+}
+
+/**
+ * Parse a request argument based on details registered to the route.
+ *
+ * Runs a validation check and sanitizes the value, primarily to be used via
+ * the `sanitize_callback` arguments in the endpoint args registration.
+ *
+ * @since 4.7.0
+ *
+ * @param  mixed            $value
+ * @param  WP_REST_Request  $request
+ * @param  string           $param
+ * @return mixed
+ */
+function rest_parse_request_arg( $value, $request, $param ) {
+	$is_valid = rest_validate_request_arg( $value, $request, $param );
+
+	if ( is_wp_error( $is_valid ) ) {
+		return $is_valid;
+	}
+
+	$value = rest_sanitize_request_arg( $value, $request, $param );
+
+	return $value;
+}
+
+/**
+ * Determines if an IP address is valid.
+ *
+ * Handles both IPv4 and IPv6 addresses.
+ *
+ * @since 4.7.0
+ *
+ * @param  string $ip IP address.
+ * @return string|false The valid IP address, otherwise false.
+ */
+function rest_is_ip_address( $ip ) {
+	$ipv4_pattern = '/^(?:(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)\.){3}(?:25[0-5]|2[0-4][0-9]|[01]?[0-9][0-9]?)$/';
+
+	if ( ! preg_match( $ipv4_pattern, $ip ) && ! Requests_IPv6::check_ipv6( $ip ) ) {
+		return false;
+	}
+
+	return $ip;
+}
+
+/**
+ * Changes a boolean-like value into the proper boolean value.
+ *
+ * @since 4.7.0
+ *
+ * @param bool|string|int $value The value being evaluated.
+ * @return boolean Returns the proper associated boolean value.
+ */
+function rest_sanitize_boolean( $value ) {
+	// String values are translated to `true`; make sure 'false' is false.
+	if ( is_string( $value )  ) {
+		$value = strtolower( $value );
+		if ( in_array( $value, array( 'false', '0' ), true ) ) {
+			$value = false;
+		}
+	}
+
+	// Everything else will map nicely to boolean.
+	return (boolean) $value;
+}
+
+/**
+ * Determines if a given value is boolean-like.
+ *
+ * @since 4.7.0
+ *
+ * @param bool|string $maybe_bool The value being evaluated.
+ * @return boolean True if a boolean, otherwise false.
+ */
+function rest_is_boolean( $maybe_bool ) {
+	if ( is_bool( $maybe_bool ) ) {
+		return true;
+	}
+
+	if ( is_string( $maybe_bool ) ) {
+		$maybe_bool = strtolower( $maybe_bool );
+
+		$valid_boolean_values = array(
+			'false',
+			'true',
+			'0',
+			'1',
+		);
+
+		return in_array( $maybe_bool, $valid_boolean_values, true );
+	}
+
+	if ( is_int( $maybe_bool ) ) {
+		return in_array( $maybe_bool, array( 0, 1 ), true );
+	}
+
+	return false;
+}
+
+/**
+ * Retrieves the avatar urls in various sizes based on a given email address.
+ *
+ * @since 4.7.0
+ *
+ * @see get_avatar_url()
+ *
+ * @param string $email Email address.
+ * @return array $urls Gravatar url for each size.
+ */
+function rest_get_avatar_urls( $email ) {
+	$avatar_sizes = rest_get_avatar_sizes();
+
+	$urls = array();
+	foreach ( $avatar_sizes as $size ) {
+		$urls[ $size ] = get_avatar_url( $email, array( 'size' => $size ) );
+	}
+
+	return $urls;
+}
+
+/**
+ * Retrieves the pixel sizes for avatars.
+ *
+ * @since 4.7.0
+ *
+ * @return array List of pixel sizes for avatars. Default `[ 24, 48, 96 ]`.
+ */
+function rest_get_avatar_sizes() {
+	/**
+	 * Filter the REST avatar sizes.
+	 *
+	 * Use this filter to adjust the array of sizes returned by the
+	 * `rest_get_avatar_sizes` function.
+	 *
+	 * @since 4.4.0
+	 *
+	 * @param array $sizes An array of int values that are the pixel sizes for avatars.
+	 *                     Default `[ 24, 48, 96 ]`.
+	 */
+	return apply_filters( 'rest_avatar_sizes', array( 24, 48, 96 ) );
+}
+
+/**
+ * Validate a value based on a schema.
+ *
+ * @param mixed  $value The value to validate.
+ * @param array  $args  Schema array to use for validation.
+ * @param string $param The parameter name, used in error messages.
+ * @return true|WP_Error
+ */
+function rest_validate_value_from_schema( $value, $args, $param = '' ) {
+	if ( 'array' === $args['type'] ) {
+		if ( ! is_array( $value ) ) {
+			$value = preg_split( '/[\s,]+/', $value );
+		}
+		if ( ! wp_is_numeric_array( $value ) ) {
+			/* translators: 1: parameter, 2: type name */
+			return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not of type %2$s.' ), $param, 'array' ) );
+		}
+		foreach ( $value as $index => $v ) {
+			$is_valid = rest_validate_value_from_schema( $v, $args['items'], $param . '[' . $index . ']' );
+			if ( is_wp_error( $is_valid ) ) {
+				return $is_valid;
+			}
+		}
+	}
+	if ( ! empty( $args['enum'] ) ) {
+		if ( ! in_array( $value, $args['enum'], true ) ) {
+			/* translators: 1: parameter, 2: list of valid values */
+			return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not one of %2$s.' ), $param, implode( ', ', $args['enum'] ) ) );
+		}
+	}
+
+	if ( in_array( $args['type'], array( 'integer', 'number' ) ) && ! is_numeric( $value ) ) {
+		/* translators: 1: parameter, 2: type name */
+		return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not of type %2$s.' ), $param, $args['type'] ) );
+	}
+
+	if ( 'integer' === $args['type'] && round( floatval( $value ) ) !== floatval( $value ) ) {
+		/* translators: 1: parameter, 2: type name */
+		return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not of type %2$s.' ), $param, 'integer' ) );
+	}
+
+	if ( 'boolean' === $args['type'] && ! rest_is_boolean( $value ) ) {
+		/* translators: 1: parameter, 2: type name */
+		return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not of type %2$s.' ), $value, 'boolean' ) );
+	}
+
+	if ( 'string' === $args['type'] && ! is_string( $value ) ) {
+		/* translators: 1: parameter, 2: type name */
+		return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not of type %2$s.' ), $param, 'string' ) );
+	}
+
+	if ( isset( $args['format'] ) ) {
+		switch ( $args['format'] ) {
+			case 'date-time' :
+				if ( ! rest_parse_date( $value ) ) {
+					return new WP_Error( 'rest_invalid_date', __( 'Invalid date.' ) );
+				}
+				break;
+
+			case 'email' :
+				// is_email() checks for 3 characters (a@b), but
+				// wp_handle_comment_submission() requires 6 characters (a@b.co)
+				//
+				// https://core.trac.wordpress.org/ticket/38506
+				if ( ! is_email( $value ) || strlen( $value ) < 6 ) {
+					return new WP_Error( 'rest_invalid_email', __( 'Invalid email address.' ) );
+				}
+				break;
+			case 'ip' :
+				if ( ! rest_is_ip_address( $value ) ) {
+					/* translators: %s: IP address */
+					return new WP_Error( 'rest_invalid_param', sprintf( __( '%s is not a valid IP address.' ), $value ) );
+				}
+				break;
+		}
+	}
+
+	if ( in_array( $args['type'], array( 'number', 'integer' ), true ) && ( isset( $args['minimum'] ) || isset( $args['maximum'] ) ) ) {
+		if ( isset( $args['minimum'] ) && ! isset( $args['maximum'] ) ) {
+			if ( ! empty( $args['exclusiveMinimum'] ) && $value <= $args['minimum'] ) {
+				/* translators: 1: parameter, 2: minimum number */
+				return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be greater than %2$d (exclusive)' ), $param, $args['minimum'] ) );
+			} elseif ( empty( $args['exclusiveMinimum'] ) && $value < $args['minimum'] ) {
+				/* translators: 1: parameter, 2: minimum number */
+				return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be greater than %2$d (inclusive)' ), $param, $args['minimum'] ) );
+			}
+		} elseif ( isset( $args['maximum'] ) && ! isset( $args['minimum'] ) ) {
+			if ( ! empty( $args['exclusiveMaximum'] ) && $value >= $args['maximum'] ) {
+				/* translators: 1: parameter, 2: maximum number */
+				return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be less than %2$d (exclusive)' ), $param, $args['maximum'] ) );
+			} elseif ( empty( $args['exclusiveMaximum'] ) && $value > $args['maximum'] ) {
+				/* translators: 1: parameter, 2: maximum number */
+				return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be less than %2$d (inclusive)' ), $param, $args['maximum'] ) );
+			}
+		} elseif ( isset( $args['maximum'] ) && isset( $args['minimum'] ) ) {
+			if ( ! empty( $args['exclusiveMinimum'] ) && ! empty( $args['exclusiveMaximum'] ) ) {
+				if ( $value >= $args['maximum'] || $value <= $args['minimum'] ) {
+					/* translators: 1: parameter, 2: minimum number, 3: maximum number */
+					return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be between %2$d (exclusive) and %3$d (exclusive)' ), $param, $args['minimum'], $args['maximum'] ) );
+				}
+			} elseif ( empty( $args['exclusiveMinimum'] ) && ! empty( $args['exclusiveMaximum'] ) ) {
+				if ( $value >= $args['maximum'] || $value < $args['minimum'] ) {
+					/* translators: 1: parameter, 2: minimum number, 3: maximum number */
+					return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be between %2$d (inclusive) and %3$d (exclusive)' ), $param, $args['minimum'], $args['maximum'] ) );
+				}
+			} elseif ( ! empty( $args['exclusiveMinimum'] ) && empty( $args['exclusiveMaximum'] ) ) {
+				if ( $value > $args['maximum'] || $value <= $args['minimum'] ) {
+					/* translators: 1: parameter, 2: minimum number, 3: maximum number */
+					return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be between %2$d (exclusive) and %3$d (inclusive)' ), $param, $args['minimum'], $args['maximum'] ) );
+				}
+			} elseif ( empty( $args['exclusiveMinimum'] ) && empty( $args['exclusiveMaximum'] ) ) {
+				if ( $value > $args['maximum'] || $value < $args['minimum'] ) {
+					/* translators: 1: parameter, 2: minimum number, 3: maximum number */
+					return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s must be between %2$d (inclusive) and %3$d (inclusive)' ), $param, $args['minimum'], $args['maximum'] ) );
+				}
+			}
+		}
+	}
+
+	return true;
+}
+
+/**
+ * Sanitize a value based on a schema.
+ *
+ * @param mixed $value The value to sanitize.
+ * @param array $args  Schema array to use for sanitization.
+ * @return true|WP_Error
+ */
+function rest_sanitize_value_from_schema( $value, $args ) {
+	if ( 'array' === $args['type'] ) {
+		if ( empty( $args['items'] ) ) {
+			return (array) $value;
+		}
+		if ( ! is_array( $value ) ) {
+			$value = preg_split( '/[\s,]+/', $value );
+		}
+		foreach ( $value as $index => $v ) {
+			$value[ $index ] = rest_sanitize_value_from_schema( $v, $args['items'] );
+		}
+		// Normalize to numeric array so nothing unexpected
+		// is in the keys.
+		$value = array_values( $value );
+		return $value;
+	}
+	if ( 'integer' === $args['type'] ) {
+		return (int) $value;
+	}
+
+	if ( 'number' === $args['type'] ) {
+		return (float) $value;
+	}
+
+	if ( 'boolean' === $args['type'] ) {
+		return rest_sanitize_boolean( $value );
+	}
+
+	if ( isset( $args['format'] ) ) {
+		switch ( $args['format'] ) {
+			case 'date-time' :
+				return sanitize_text_field( $value );
+
+			case 'email' :
+				/*
+				 * sanitize_email() validates, which would be unexpected.
+				 */
+				return sanitize_text_field( $value );
+
+			case 'uri' :
+				return esc_url_raw( $value );
+
+			case 'ip' :
+				return sanitize_text_field( $value );
+		}
+	}
+
+	if ( 'string' === $args['type'] ) {
+		return strval( $value );
+	}
+
+	return $value;
 }

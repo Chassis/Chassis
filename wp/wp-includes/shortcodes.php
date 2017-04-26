@@ -244,10 +244,11 @@ function do_shortcode( $content, $ignore_html = false ) {
  * 6 - An extra ] to allow for escaping shortcodes with double [[]]
  *
  * @since 2.5.0
+ * @since 4.4.0 Added the `$tagnames` parameter.
  *
  * @global array $shortcode_tags
  *
- * @param array $tagnames List of shortcodes to find. Optional. Defaults to all registered shortcodes.
+ * @param array $tagnames Optional. List of shortcodes to find. Defaults to all registered shortcodes.
  * @return string The shortcode search regular expression
  */
 function get_shortcode_regex( $tagnames = null ) {
@@ -321,13 +322,39 @@ function do_shortcode_tag( $m ) {
 		return $m[0];
 	}
 
-	if ( isset( $m[5] ) ) {
-		// enclosing tag - extra parameter
-		return $m[1] . call_user_func( $shortcode_tags[$tag], $attr, $m[5], $tag ) . $m[6];
-	} else {
-		// self-closing tag
-		return $m[1] . call_user_func( $shortcode_tags[$tag], $attr, null,  $tag ) . $m[6];
+	/**
+	 * Filters whether to call a shortcode callback.
+	 *
+	 * Passing a truthy value to the filter will effectively short-circuit the
+	 * shortcode generation process, returning that value instead.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param bool|string $return      Short-circuit return value. Either false or the value to replace the shortcode with.
+	 * @param string      $tag         Shortcode name.
+	 * @param array       $attr        Shortcode attributes array,
+	 * @param array       $m           Regular expression match array.
+	 */
+	$return = apply_filters( 'pre_do_shortcode_tag', false, $tag, $attr, $m );
+	if ( false !== $return ) {
+		return $return;
 	}
+
+	$content = isset( $m[5] ) ? $m[5] : null;
+
+	$output = $m[1] . call_user_func( $shortcode_tags[ $tag ], $attr, $content, $tag ) . $m[6];
+
+	/**
+	 * Filters the output created by a shortcode callback.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param string $output Shortcode output.
+	 * @param string $tag    Shortcode name.
+	 * @param array  $attr   Shortcode attributes array,
+	 * @param array  $m      Regular expression match array.
+	 */
+	return apply_filters( 'do_shortcode_tag', $output, $tag, $attr, $m );
 }
 
 /**
@@ -579,7 +606,20 @@ function strip_shortcodes( $content ) {
 
 	// Find all registered tag names in $content.
 	preg_match_all( '@\[([^<>&/\[\]\x00-\x20=]++)@', $content, $matches );
-	$tagnames = array_intersect( array_keys( $shortcode_tags ), $matches[1] );
+
+	$tags_to_remove = array_keys( $shortcode_tags );
+
+	/**
+	 * Filters the list of shortcode tags to remove from the content.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param array  $tag_array Array of shortcode tags to remove.
+	 * @param string $content   Content shortcodes are being removed from.
+	 */
+	$tags_to_remove = apply_filters( 'strip_shortcodes_tagnames', $tags_to_remove, $content );
+
+	$tagnames = array_intersect( $tags_to_remove, $matches[1] );
 
 	if ( empty( $tagnames ) ) {
 		return $content;

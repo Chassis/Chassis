@@ -105,11 +105,11 @@ class WP_Roles {
 	 * @since 2.1.0
 	 * @access protected
 	 *
-	 * @global wpdb  $wpdb          WordPress database abstraction object.
 	 * @global array $wp_user_roles Used to set the 'roles' property value.
 	 */
 	protected function _init() {
-		global $wpdb, $wp_user_roles;
+		global $wp_user_roles, $wpdb;
+
 		$this->role_key = $wpdb->get_blog_prefix() . 'user_roles';
 		if ( ! empty( $wp_user_roles ) ) {
 			$this->roles = $wp_user_roles;
@@ -127,6 +127,15 @@ class WP_Roles {
 			$this->role_objects[$role] = new WP_Role( $role, $this->roles[$role]['capabilities'] );
 			$this->role_names[$role] = $this->roles[$role]['name'];
 		}
+
+		/**
+		 * After the roles have been initialized, allow plugins to add their own roles.
+		 *
+		 * @since 4.7.0
+		 *
+		 * @param WP_Roles $this A reference to the WP_Roles object.
+		 */
+		do_action( 'wp_roles_init', $this );
 	}
 
 	/**
@@ -136,29 +145,12 @@ class WP_Roles {
 	 * after switching wpdb to a new site ID.
 	 *
 	 * @since 3.5.0
+	 * @deprecated 4.7.0 Use new WP_Roles()
 	 * @access public
-	 *
-	 * @global wpdb $wpdb WordPress database abstraction object.
 	 */
 	public function reinit() {
-		// There is no need to reinit if using the wp_user_roles global.
-		if ( ! $this->use_db )
-			return;
-
-		global $wpdb;
-
-		// Duplicated from _init() to avoid an extra function call.
-		$this->role_key = $wpdb->get_blog_prefix() . 'user_roles';
-		$this->roles = get_option( $this->role_key );
-		if ( empty( $this->roles ) )
-			return;
-
-		$this->role_objects = array();
-		$this->role_names =  array();
-		foreach ( array_keys( $this->roles ) as $role ) {
-			$this->role_objects[$role] = new WP_Role( $role, $this->roles[$role]['capabilities'] );
-			$this->role_names[$role] = $this->roles[$role]['name'];
-		}
+		_deprecated_function( __METHOD__, '4.7.0', 'new WP_Roles()' );
+		$this->_init();
 	}
 
 	/**

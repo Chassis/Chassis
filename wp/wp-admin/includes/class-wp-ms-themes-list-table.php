@@ -150,7 +150,8 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 		$total_this_page = $totals[ $status ];
 
 		wp_localize_script( 'updates', '_wpUpdatesItemCounts', array(
-			'totals' => $totals,
+			'themes' => $totals,
+			'totals' => wp_get_update_data(),
 		) );
 
 		if ( $orderby ) {
@@ -518,7 +519,7 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 		 * @param WP_Theme $theme   The current WP_Theme object.
 		 * @param string   $context Status of the theme.
 		 */
-		$actions = apply_filters( "theme_action_links_$stylesheet", $actions, $theme, $context );
+		$actions = apply_filters( "theme_action_links_{$stylesheet}", $actions, $theme, $context );
 
 		echo $this->row_actions( $actions, true );
 	}
@@ -726,6 +727,6 @@ class WP_MS_Themes_List_Table extends WP_List_Table {
 		 * @param WP_Theme $theme      Current WP_Theme object.
 		 * @param string   $status     Status of the theme.
 		 */
-		do_action( "after_theme_row_$stylesheet", $stylesheet, $theme, $status );
+		do_action( "after_theme_row_{$stylesheet}", $stylesheet, $theme, $status );
 	}
 }

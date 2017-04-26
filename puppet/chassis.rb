@@ -52,9 +52,10 @@ module Chassis
 				end
 			rescue Errno::ENOENT
 				# No overriden YAML found -- that's OK; just use the defaults.
-			rescue Psych::Error => e
+			rescue Psych::SyntaxError => e
 				# Syntax error of some sort, probably
 				puts "ERROR: Could not load config:\n    #{e.message}"
+				exit 1
 			end
 		end
 

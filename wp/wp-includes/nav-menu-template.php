@@ -14,32 +14,34 @@ require_once ABSPATH . WPINC . '/class-walker-nav-menu.php';
  * Displays a navigation menu.
  *
  * @since 3.0.0
+ * @since 4.7.0 Added the `item_spacing` argument.
  *
  * @staticvar array $menu_id_slugs
  *
  * @param array $args {
  *     Optional. Array of nav menu arguments.
  *
- *     @type string        $menu            Desired menu. Accepts (matching in order) id, slug, name. Default empty.
- *     @type string        $menu_class      CSS class to use for the ul element which forms the menu. Default 'menu'.
- *     @type string        $menu_id         The ID that is applied to the ul element which forms the menu.
- *                                          Default is the menu slug, incremented.
- *     @type string        $container       Whether to wrap the ul, and what to wrap it with. Default 'div'.
- *     @type string        $container_class Class that is applied to the container. Default 'menu-{menu slug}-container'.
- *     @type string        $container_id    The ID that is applied to the container. Default empty.
- *     @type callable|bool $fallback_cb     If the menu doesn't exists, a callback function will fire.
- *                                          Default is 'wp_page_menu'. Set to false for no fallback.
- *     @type string        $before          Text before the link markup. Default empty.
- *     @type string        $after           Text after the link markup. Default empty.
- *     @type string        $link_before     Text before the link text. Default empty.
- *     @type string        $link_after      Text after the link text. Default empty.
- *     @type bool          $echo            Whether to echo the menu or return it. Default true.
- *     @type int           $depth           How many levels of the hierarchy are to be included. 0 means all. Default 0.
- *     @type object        $walker          Instance of a custom walker class. Default empty.
- *     @type string        $theme_location  Theme location to be used. Must be registered with register_nav_menu()
- *                                          in order to be selectable by the user.
- *     @type string        $items_wrap      How the list items should be wrapped. Default is a ul with an id and class.
- *                                          Uses printf() format with numbered placeholders.
+ *     @type int|string|WP_Term $menu            Desired menu. Accepts (matching in order) id, slug, name, menu object. Default empty.
+ *     @type string             $menu_class      CSS class to use for the ul element which forms the menu. Default 'menu'.
+ *     @type string             $menu_id         The ID that is applied to the ul element which forms the menu.
+ *                                               Default is the menu slug, incremented.
+ *     @type string             $container       Whether to wrap the ul, and what to wrap it with. Default 'div'.
+ *     @type string             $container_class Class that is applied to the container. Default 'menu-{menu slug}-container'.
+ *     @type string             $container_id    The ID that is applied to the container. Default empty.
+ *     @type callable|bool      $fallback_cb     If the menu doesn't exists, a callback function will fire.
+ *                                               Default is 'wp_page_menu'. Set to false for no fallback.
+ *     @type string             $before          Text before the link markup. Default empty.
+ *     @type string             $after           Text after the link markup. Default empty.
+ *     @type string             $link_before     Text before the link text. Default empty.
+ *     @type string             $link_after      Text after the link text. Default empty.
+ *     @type bool               $echo            Whether to echo the menu or return it. Default true.
+ *     @type int                $depth           How many levels of the hierarchy are to be included. 0 means all. Default 0.
+ *     @type object             $walker          Instance of a custom walker class. Default empty.
+ *     @type string             $theme_location  Theme location to be used. Must be registered with register_nav_menu()
+ *                                               in order to be selectable by the user.
+ *     @type string             $items_wrap      How the list items should be wrapped. Default is a ul with an id and class.
+ *                                               Uses printf() format with numbered placeholders.
+ *     @type string             $item_spacing    Whether to preserve whitespace within the menu's HTML. Accepts 'preserve' or 'discard'. Default 'preserve'.
  * }
  * @return object|false|void Menu output if $echo is false, false if there are no items or no menu was found.
  */
@@ -47,10 +49,16 @@ function wp_nav_menu( $args = array() ) {
 	static $menu_id_slugs = array();
 
 	$defaults = array( 'menu' => '', 'container' => 'div', 'container_class' => '', 'container_id' => '', 'menu_class' => 'menu', 'menu_id' => '',
-	'echo' => true, 'fallback_cb' => 'wp_page_menu', 'before' => '', 'after' => '', 'link_before' => '', 'link_after' => '', 'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>',
+	'echo' => true, 'fallback_cb' => 'wp_page_menu', 'before' => '', 'after' => '', 'link_before' => '', 'link_after' => '', 'items_wrap' => '<ul id="%1$s" class="%2$s">%3$s</ul>', 'item_spacing' => 'preserve',
 	'depth' => 0, 'walker' => '', 'theme_location' => '' );
 
 	$args = wp_parse_args( $args, $defaults );
+
+	if ( ! in_array( $args['item_spacing'], array( 'preserve', 'discard' ), true ) ) {
+		// invalid value, fall back to default.
+		$args['item_spacing'] = $defaults['item_spacing'];
+	}
+
 	/**
 	 * Filters the arguments used to display a navigation menu.
 	 *
@@ -75,7 +83,7 @@ function wp_nav_menu( $args = array() ) {
 	 * @see wp_nav_menu()
 	 *
 	 * @param string|null $output Nav menu output to short-circuit with. Default null.
-	 * @param object      $args   An object containing wp_nav_menu() arguments.
+	 * @param stdClass    $args   An object containing wp_nav_menu() arguments.
 	 */
 	$nav_menu = apply_filters( 'pre_wp_nav_menu', null, $args );
 
@@ -175,8 +183,8 @@ function wp_nav_menu( $args = array() ) {
 	 *
 	 * @since 3.1.0
 	 *
-	 * @param array  $sorted_menu_items The menu items, sorted by each menu item's menu order.
-	 * @param object $args              An object containing wp_nav_menu() arguments.
+	 * @param array    $sorted_menu_items The menu items, sorted by each menu item's menu order.
+	 * @param stdClass $args              An object containing wp_nav_menu() arguments.
 	 */
 	$sorted_menu_items = apply_filters( 'wp_nav_menu_objects', $sorted_menu_items, $args );
 
@@ -206,8 +214,8 @@ function wp_nav_menu( $args = array() ) {
 	 *
 	 * @see wp_nav_menu()
 	 *
-	 * @param string $items The HTML list content for the menu items.
-	 * @param object $args  An object containing wp_nav_menu() arguments.
+	 * @param string   $items The HTML list content for the menu items.
+	 * @param stdClass $args  An object containing wp_nav_menu() arguments.
 	 */
 	$items = apply_filters( 'wp_nav_menu_items', $items, $args );
 	/**
@@ -217,8 +225,8 @@ function wp_nav_menu( $args = array() ) {
 	 *
 	 * @see wp_nav_menu()
 	 *
-	 * @param string $items The HTML list content for the menu items.
-	 * @param object $args  An object containing wp_nav_menu() arguments.
+	 * @param string   $items The HTML list content for the menu items.
+	 * @param stdClass $args  An object containing wp_nav_menu() arguments.
 	 */
 	$items = apply_filters( "wp_nav_menu_{$menu->slug}_items", $items, $args );
 
@@ -239,8 +247,8 @@ function wp_nav_menu( $args = array() ) {
 	 *
 	 * @see wp_nav_menu()
 	 *
-	 * @param string $nav_menu The HTML content for the navigation menu.
-	 * @param object $args     An object containing wp_nav_menu() arguments.
+	 * @param string   $nav_menu The HTML content for the navigation menu.
+	 * @param stdClass $args     An object containing wp_nav_menu() arguments.
 	 */
 	$nav_menu = apply_filters( 'wp_nav_menu', $nav_menu, $args );
 
@@ -326,6 +334,7 @@ function _wp_menu_item_classes_by_context( &$menu_items ) {
 	$possible_object_parents = array_filter( $possible_object_parents );
 
 	$front_page_url = home_url();
+	$front_page_id  = (int) get_option( 'page_on_front' );
 
 	foreach ( (array) $menu_items as $key => $menu_item ) {
 
@@ -335,6 +344,11 @@ function _wp_menu_item_classes_by_context( &$menu_items ) {
 		$classes[] = 'menu-item';
 		$classes[] = 'menu-item-type-' . $menu_item->type;
 		$classes[] = 'menu-item-object-' . $menu_item->object;
+
+		// This menu item is set as the 'Front Page'.
+		if ( 'post_type' === $menu_item->type && $front_page_id === (int) $menu_item->object_id ) {
+			$classes[] = 'menu-item-home';
+		}
 
 		// if the menu item corresponds to a taxonomy term for the currently-queried non-hierarchical post object
 		if ( $wp_query->is_singular && 'taxonomy' == $menu_item->type && in_array( $menu_item->object_id, $possible_object_parents ) ) {
@@ -368,6 +382,7 @@ function _wp_menu_item_classes_by_context( &$menu_items ) {
 				$classes[] = 'page-item-' . $menu_item->object_id;
 				$classes[] = 'current_page_item';
 			}
+
 			$active_parent_item_ids[] = (int) $menu_item->menu_item_parent;
 			$active_parent_object_ids[] = (int) $menu_item->post_parent;
 			$active_object = $menu_item->object;
@@ -488,10 +503,10 @@ function _wp_menu_item_classes_by_context( &$menu_items ) {
  * @uses Walker_Nav_Menu to create HTML list content.
  * @since 3.0.0
  *
- * @param array  $items
- * @param int    $depth
- * @param object $r
- * @return string
+ * @param array    $items The menu items, sorted by each menu item's menu order.
+ * @param int      $depth Depth of the item in reference to parents.
+ * @param stdClass $r     An object containing wp_nav_menu() arguments.
+ * @return string The HTML list content for the menu items.
  */
 function walk_nav_menu_tree( $items, $depth, $r ) {
 	$walker = ( empty($r->walker) ) ? new Walker_Nav_Menu : $r->walker;

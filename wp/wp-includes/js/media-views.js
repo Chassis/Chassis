@@ -3588,7 +3588,7 @@ Attachments = View.extend({
 	initSortable: function() {
 		var collection = this.collection;
 
-		if ( wp.media.isTouchDevice || ! this.options.sortable || ! $.fn.sortable ) {
+		if ( ! this.options.sortable || ! $.fn.sortable ) {
 			return;
 		}
 
@@ -3647,7 +3647,7 @@ Attachments = View.extend({
 	},
 
 	refreshSortable: function() {
-		if ( wp.media.isTouchDevice || ! this.options.sortable || ! $.fn.sortable ) {
+		if ( ! this.options.sortable || ! $.fn.sortable ) {
 			return;
 		}
 
@@ -3772,9 +3772,14 @@ AttachmentsBrowser = View.extend({
 		this.controller.on( 'toggle:upload:attachment', this.toggleUploader, this );
 		this.controller.on( 'edit:selection', this.editSelection );
 		this.createToolbar();
+		// In the Media Library, the sidebar is used to display errors before the attachments grid.
+		if ( this.options.sidebar && 'errors' === this.options.sidebar ) {
+			this.createSidebar();
+		}
 		this.createUploader();
 		this.createAttachments();
-		if ( this.options.sidebar ) {
+		// For accessibility reasons, place the normal sidebar after the attachments, see ticket #36909.
+		if ( this.options.sidebar && 'errors' !== this.options.sidebar ) {
 			this.createSidebar();
 		}
 		this.updateContent();
@@ -6698,6 +6703,8 @@ Modal = wp.media.View.extend({
 		'keydown': 'keydown'
 	},
 
+	clickedOpenerEl: null,
+
 	initialize: function() {
 		_.defaults( this.options, {
 			container: document.body,
@@ -6765,6 +6772,8 @@ Modal = wp.media.View.extend({
 			return this;
 		}
 
+		this.clickedOpenerEl = document.activeElement;
+
 		if ( ! this.views.attached ) {
 			this.attach();
 		}
@@ -6815,8 +6824,12 @@ Modal = wp.media.View.extend({
 		// Hide modal and remove restricted media modal tab focus once it's closed
 		this.$el.hide().undelegate( 'keydown' );
 
-		// Put focus back in useful location once modal is closed
-		$('#wpbody-content').focus();
+		// Put focus back in useful location once modal is closed.
+		if ( null !== this.clickedOpenerEl ) {
+			this.clickedOpenerEl.focus();
+		} else {
+			$( '#wpbody-content' ).focus();
+		}
 
 		this.propagate('close');
 
@@ -7061,7 +7074,7 @@ Search = wp.media.View.extend({
 
 	attributes: {
 		type:        'search',
-		placeholder: l10n.search
+		placeholder: l10n.searchMediaPlaceholder
 	},
 
 	events: {

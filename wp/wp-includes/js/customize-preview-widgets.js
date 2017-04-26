@@ -357,7 +357,6 @@ wp.customize.widgetsPreview = wp.customize.WidgetCustomizerPreview = (function( 
 				widgetPartial = new self.WidgetPartial( partialId, {
 					params: {}
 				} );
-				api.selectiveRefresh.partial.add( widgetPartial.id, widgetPartial );
 			}
 
 			// Make sure that there is a container element for the widget in the sidebar, if at least a placeholder.
@@ -399,6 +398,8 @@ wp.customize.widgetsPreview = wp.customize.WidgetCustomizerPreview = (function( 
 				sidebarPlacement.endNode.parentNode.insertBefore( widgetContainerElement[0], sidebarPlacement.endNode );
 				wasInserted = true;
 			} );
+
+			api.selectiveRefresh.partial.add( widgetPartial.id, widgetPartial );
 
 			if ( wasInserted ) {
 				sidebarPartial.reflowWidgets();
@@ -537,7 +538,9 @@ wp.customize.widgetsPreview = wp.customize.WidgetCustomizerPreview = (function( 
 			// Remove class names that incorporate the string formatting placeholders %1$s and %2$s.
 			widgetClasses = widgetClasses.replace( /\S*%[12]\$s\S*/g, '' );
 			widgetClasses = widgetClasses.replace( /^\s+|\s+$/g, '' );
-			widgetSelector += '.' + widgetClasses.split( /\s+/ ).join( '.' );
+			if ( widgetClasses ) {
+				widgetSelector += '.' + widgetClasses.split( /\s+/ ).join( '.' );
+			}
 			self.widgetSelectors.push( widgetSelector );
 		});
 	};
@@ -569,6 +572,11 @@ wp.customize.widgetsPreview = wp.customize.WidgetCustomizerPreview = (function( 
 	self.highlightControls = function() {
 		var self = this,
 			selector = this.widgetSelectors.join( ',' );
+
+		// Skip adding highlights if not in the customizer preview iframe.
+		if ( ! api.settings.channel ) {
+			return;
+		}
 
 		$( selector ).attr( 'title', this.l10n.widgetTooltip );
 

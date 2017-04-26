@@ -204,6 +204,7 @@ textarea {
 
 .wp-admin input[type="file"] {
 	padding: 3px 0;
+	cursor: pointer;
 }
 
 label {
@@ -297,6 +298,7 @@ input[type="range"].disabled {
 	background: none;
 	-webkit-box-shadow: none;
 	box-shadow: none;
+	cursor: default;
 }
 
 input[type="checkbox"]:disabled,
@@ -384,7 +386,7 @@ textarea.large-text {
 	width: 99%;
 }
 
-input.regular-text {
+.regular-text {
 	width: 25em;
 }
 
@@ -454,21 +456,6 @@ fieldset label,
 .options-media-php label[for*="_size_"],
 #misc-publishing-actions label {
 	vertical-align: baseline;
-}
-
-#misc-publishing-actions label[for="post_status"]:before {
-	content: "\f173";
-	display: inline-block;
-	font: normal 20px/1 dashicons;
-	speak: none;
-	right: -1px;
-	padding: 0 0 0 5px;
-	position: relative;
-	top: 0;
-	text-decoration: none !important;
-	vertical-align: top;
-	-webkit-font-smoothing: antialiased;
-	-moz-osx-font-smoothing: grayscale;
 }
 
 #pass-strength-result {
@@ -607,11 +594,18 @@ ul#add-to-blog-users {
 	padding: 4px 10px;
 	white-space: nowrap;
 	text-align: right;
+	cursor: pointer;
 }
 
-.ui-autocomplete li.ui-state-focus {
+/* Colors for the wplink toolbar autocomplete. */
+.ui-autocomplete .ui-state-focus {
 	background-color: #ddd;
-	cursor: pointer;
+}
+
+/* Colors for the tags autocomplete. */
+.wp-tags-autocomplete .ui-state-focus {
+	background-color: #0073aa;
+	color: #fff;
 }
 
 /*------------------------------------------------------------------------------

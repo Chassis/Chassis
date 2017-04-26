@@ -113,7 +113,7 @@ class WP_Site_Query {
 	 *     @type string       $fields            Site fields to return. Accepts 'ids' (returns an array of site IDs)
 	 *                                           or empty (returns an array of complete site objects). Default empty.
 	 *     @type int          $ID                A site ID to only return that site. Default empty.
-	 *     @type int          $number            Maximum number of sites to retrieve. Default null (no limit).
+	 *     @type int          $number            Maximum number of sites to retrieve. Default 100.
 	 *     @type int          $offset            Number of sites to offset the query. Used to build LIMIT clause.
 	 *                                           Default 0.
 	 *     @type bool         $no_found_rows     Whether to disable the `SQL_CALC_FOUND_ROWS` query. Default true.
@@ -127,12 +127,10 @@ class WP_Site_Query {
 	 *                                           include all networks. Default 0.
 	 *     @type array        $network__in       Array of network IDs to include affiliated sites for. Default empty.
 	 *     @type array        $network__not_in   Array of network IDs to exclude affiliated sites for. Default empty.
-	 *     @type string       $domain            Limit results to those affiliated with a given domain.
-	 *                                           Default empty.
+	 *     @type string       $domain            Limit results to those affiliated with a given domain. Default empty.
 	 *     @type array        $domain__in        Array of domains to include affiliated sites for. Default empty.
 	 *     @type array        $domain__not_in    Array of domains to exclude affiliated sites for. Default empty.
-	 *     @type string       $path              Limit results to those affiliated with a given path.
-	 *                                           Default empty.
+	 *     @type string       $path              Limit results to those affiliated with a given path. Default empty.
 	 *     @type array        $path__in          Array of paths to include affiliated sites for. Default empty.
 	 *     @type array        $path__not_in      Array of paths to exclude affiliated sites for. Default empty.
 	 *     @type int          $public            Limit results to public sites. Accepts '1' or '0'. Default empty.
@@ -247,11 +245,7 @@ class WP_Site_Query {
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$key = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
-		$last_changed = wp_cache_get( 'last_changed', 'sites' );
-		if ( ! $last_changed ) {
-			$last_changed = microtime();
-			wp_cache_set( 'last_changed', $last_changed, 'sites' );
-		}
+		$last_changed = wp_cache_get_last_changed( 'sites' );
 
 		$cache_key = "get_sites:$key:$last_changed";
 		$cache_value = wp_cache_get( $cache_key, 'sites' );
@@ -510,6 +504,8 @@ class WP_Site_Query {
 			$this->date_query = new WP_Date_Query( $date_query, 'registered' );
 			$this->sql_clauses['where']['date_query'] = preg_replace( '/^\s*AND\s*/', '', $this->date_query->get_sql() );
 		}
+
+		$join = '';
 
 		$where = implode( ' AND ', $this->sql_clauses['where'] );
 

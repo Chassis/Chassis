@@ -12,21 +12,22 @@ if $loadable_extensions {
 	}
 }
 
+class { 'apt': }
+
 class { 'chassis::php':
 	extensions => $php_extensions,
-	version => $config[php]
+	version => $config[php],
+	require => [
+		Class['apt'],
+	],
 }
 
 package { 'git-core':
 	ensure => installed
 }
 
-class { 'apt':
- 	update_timeout       => undef
-}
-
 class { 'mysql::server':
-	config_hash => { 'root_password' => 'password' }
+	root_password => 'password',
 }
 
 class { 'chassis':

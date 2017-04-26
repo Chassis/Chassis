@@ -48,8 +48,8 @@ case 'editcomment' :
 
 	get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
-	'<p>' . __( '<a href="https://codex.wordpress.org/Administration_Screens#Comments" target="_blank">Documentation on Comments</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>' ) . '</p>'
+	'<p>' . __( '<a href="https://codex.wordpress.org/Administration_Screens#Comments">Documentation on Comments</a>' ) . '</p>' .
+	'<p>' . __( '<a href="https://wordpress.org/support/">Support Forums</a>' ) . '</p>'
 	);
 
 	wp_enqueue_script('comment');
@@ -213,7 +213,7 @@ if ( $comment->comment_approved != '0' ) { // if not unapproved
 <th scope="row"><?php /* translators: field name in comment form */ _ex('Comment', 'noun'); ?></th>
 <td class="comment-content">
 	<?php comment_text( $comment ); ?>
-	<p class="edit-comment"><a href="<?php echo admin_url( "comment.php?action=editcomment&amp;c={$comment->comment_ID}" ); ?>"><?php esc_attr_e( 'Edit' ); ?></a></p>
+	<p class="edit-comment"><a href="<?php echo admin_url( "comment.php?action=editcomment&amp;c={$comment->comment_ID}" ); ?>"><?php esc_html_e( 'Edit' ); ?></a></p>
 </td>
 </tr>
 </table>
@@ -222,7 +222,7 @@ if ( $comment->comment_approved != '0' ) { // if not unapproved
 
 <p>
 	<?php submit_button( $button, 'primary', 'submit', false ); ?>
-	<a href="<?php echo admin_url('edit-comments.php'); ?>" class="button-cancel"><?php esc_attr_e( 'Cancel' ); ?></a>
+	<a href="<?php echo admin_url('edit-comments.php'); ?>" class="button-cancel"><?php esc_html_e( 'Cancel' ); ?></a>
 </p>
 
 <?php wp_nonce_field( $nonce_action ); ?>

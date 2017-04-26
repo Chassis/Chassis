@@ -64,7 +64,7 @@ wp_enqueue_script( 'updates' );
  *
  * @since 2.7.0
  */
-do_action( "install_plugins_pre_$tab" );
+do_action( "install_plugins_pre_{$tab}" );
 
 /*
  * Call the pre upload action on every non-upload plugin install screen
@@ -79,7 +79,7 @@ get_current_screen()->add_help_tab( array(
 'id'		=> 'overview',
 'title'		=> __('Overview'),
 'content'	=>
-	'<p>' . sprintf( __('Plugins hook into WordPress to extend its functionality with custom features. Plugins are developed independently from the core WordPress application by thousands of developers all over the world. All plugins in the official <a href="%s" target="_blank">WordPress Plugin Directory</a> are compatible with the license WordPress uses.' ), 'https://wordpress.org/plugins/' ) . '</p>' .
+	'<p>' . sprintf( __('Plugins hook into WordPress to extend its functionality with custom features. Plugins are developed independently from the core WordPress application by thousands of developers all over the world. All plugins in the official <a href="%s">WordPress Plugin Directory</a> are compatible with the license WordPress uses.' ), __( 'https://wordpress.org/plugins/' ) ) . '</p>' .
 	'<p>' . __( 'You can find new plugins to install by searching or browsing the directory right here in your own Plugins section.' ) . ' <span id="live-search-desc" class="hide-if-no-js">' . __( 'The search results will be updated as you type.' ) . '</span></p>'
 
 ) );
@@ -95,8 +95,8 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Plugins_Add_New_Screen" target="_blank">Documentation on Installing Plugins</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Plugins_Add_New_Screen">Documentation on Installing Plugins</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/">Support Forums</a>') . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(
@@ -129,7 +129,7 @@ include(ABSPATH . 'wp-admin/admin-header.php');
  * Output the upload plugin form on every non-upload plugin install screen, so it can be
  * displayed via JavaScript rather then opening up the devoted upload plugin page.
  */
-if ( $tab !== 'upload' ) {
+if ( 'upload' !== $tab ) {
 	?>
 	<div class="upload-plugin-wrap">
 		<?php
@@ -138,9 +138,6 @@ if ( $tab !== 'upload' ) {
 		?>
 	</div>
 	<?php
-}
-
-if ( $tab !== 'upload' ) {
 	$wp_list_table->views();
 	echo '<br class="clear" />';
 }
@@ -155,7 +152,7 @@ if ( $tab !== 'upload' ) {
  *
  * @param int $paged The current page number of the plugins list table.
  */
-do_action( "install_plugins_$tab", $paged ); ?>
+do_action( "install_plugins_{$tab}", $paged ); ?>
 
 	<span class="spinner"></span>
 </div>

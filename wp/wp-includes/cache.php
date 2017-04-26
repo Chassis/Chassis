@@ -254,7 +254,7 @@ function wp_cache_add_non_persistent_groups( $groups ) {
  * This function is deprecated. Use wp_cache_switch_to_blog() instead of this
  * function when preparing the cache for a blog switch. For clearing the cache
  * during unit tests, consider using wp_cache_init(). wp_cache_init() is not
- * recommended outside of unit tests as the performance penality for using it is
+ * recommended outside of unit tests as the performance penalty for using it is
  * high.
  *
  * @since 2.6.0
@@ -302,10 +302,10 @@ class WP_Object_Cache {
 	 * The amount of times the cache data was already stored in the cache.
 	 *
 	 * @since 2.5.0
-	 * @access private
+	 * @access public
 	 * @var int
 	 */
-	private $cache_hits = 0;
+	public $cache_hits = 0;
 
 	/**
 	 * Amount of times the cache did not have the request in cache.
@@ -729,14 +729,10 @@ class WP_Object_Cache {
 	 * Sets up object properties; PHP 5 style constructor.
 	 *
 	 * @since 2.0.8
-	 *
-     * @global int $blog_id Global blog ID.
 	 */
 	public function __construct() {
-		global $blog_id;
-
 		$this->multisite = is_multisite();
-		$this->blog_prefix =  $this->multisite ? $blog_id . ':' : '';
+		$this->blog_prefix =  $this->multisite ? get_current_blog_id() . ':' : '';
 
 
 		/**

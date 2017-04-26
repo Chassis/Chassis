@@ -151,7 +151,6 @@ class WP_Date_Query {
 	 *                              'comment_date', 'comment_date_gmt'.
 	 */
 	public function __construct( $date_query, $default_column = 'post_date' ) {
-
 		if ( isset( $date_query['relation'] ) && 'OR' === strtoupper( $date_query['relation'] ) ) {
 			$this->relation = 'OR';
 		} else {
@@ -740,12 +739,12 @@ class WP_Date_Query {
 		}
 
 		// Range queries.
-		if ( ! empty( $query['after'] ) )
+		if ( ! empty( $query['after'] ) ) {
 			$where_parts[] = $wpdb->prepare( "$column $gt %s", $this->build_mysql_datetime( $query['after'], ! $inclusive ) );
-
-		if ( ! empty( $query['before'] ) )
+		}
+		if ( ! empty( $query['before'] ) ) {
 			$where_parts[] = $wpdb->prepare( "$column $lt %s", $this->build_mysql_datetime( $query['before'], $inclusive ) );
-
+		}
 		// Specific value queries.
 
 		if ( isset( $query['year'] ) && $value = $this->build_value( $compare, $query['year'] ) )

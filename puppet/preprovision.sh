@@ -14,10 +14,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		REPOS="main restricted universe multiverse"
 
 		touch /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise $REPOS"           >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise-updates $REPOS"   >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise-backports $REPOS" >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise-security $REPOS"  >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial $REPOS"           >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial-updates $REPOS"   >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial-backports $REPOS" >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial-security $REPOS"  >> /tmp/mirrors-sources.list
 
 		# Add mirrors to the start
 		cat /tmp/mirrors-sources.list /etc/apt/sources.list > /tmp/apt-sources.list
@@ -29,11 +29,6 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		# Remove temp files
 		rm /tmp/mirrors-sources.list /tmp/apt-sources.list
 	fi
-
-	# Allow Puppet to be upgraded
-	# (Note that preicse's package is 2.7, so we need the custom deb)
-	wget https://apt.puppetlabs.com/puppetlabs-release-precise.deb
-	dpkg -i puppetlabs-release-precise.deb
 
 	# Update apt
 	sudo apt-get update
@@ -49,14 +44,14 @@ CHECK_PREFIX=$2
 if [[ ! -z $CHECK_PREFIX ]] && hash mysql 2>/dev/null; then
 	# MySQL is installed, so we probably already have an install here.
 	# Check for tables starting with anything that isn't `wp_`
-	HAS_OTHERS=$(HOME=/root/ mysql wordpress -e 'SHOW TABLES' -s | grep -v -e '^wp_')
+	HAS_OTHERS=$(HOME=/root/ mysql wordpress -e 'SHOW TABLES' -s 2>/dev/null | grep -v -e '^wp_')
 	if [[ ! -z $HAS_OTHERS ]]; then
-		echo "Warning: Since 2016-11-25, Chassis requires defining database.prefix in your"
-		echo "config.yaml. I found other tables in your database:"
-		echo
-		echo "$HAS_OTHERS"
-		echo
-		echo "You should define database.prefix in your config.local.yaml."
+		>&2 echo "ERROR: Since 2016-11-25, Chassis requires defining database.prefix in your"
+		>&2 echo "config.yaml. I found other tables in your database:"
+		>&2 echo " "
+		>&2 echo "$HAS_OTHERS" | sed s/^/\\t/
+		>&2 echo " "
+		>&2 echo "You MUST define database.prefix in your config.local.yaml."
 		exit 1
 	fi
 fi
