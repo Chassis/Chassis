@@ -90,6 +90,10 @@ Extensions **must** specify the following options:
 
 - ``version``: Extension API version. Currently ``2``.
 
+Extensions may also specify the following options:
+
+- ``dependencies``: Extensions that the extension depends on. List of strings, where each string is an extension name.
+
 
 Puppet Class
 ~~~~~~~~~~~~
@@ -139,28 +143,3 @@ contains::
 
   <?php
   $memcached_servers = array( '127.0.0.1:11211' );
-
-Dependencies in extensions
---------------------------
-
-If your extension has dependencies of other extensions, you can define them in
-your local config or in a `chassis.yaml` file in the root of your
-extension. To define dependencies in the config file, simply add your dependency
-like so:
-```
-# Extensions
-extensions:
-  - gulp: ['nodejs']
-```
-In this case, we want the `Gulp` extension, and it has a dependency of `nodejs`.
-You don't need to specifically define `nodejs` in the list of extensions, if using
-this method.
-
-If you are creating an extension that has dependencies, you can map those out in
-the `chassis.yaml` config file in the root of your extension. For example, adding
-the following will define `nodejs` as a dependency of our extension.
-```
-# Dependencies
-dependencies:
-  - 'nodejs'
-```
