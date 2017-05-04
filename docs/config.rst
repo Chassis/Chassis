@@ -46,7 +46,7 @@ PHP Version
 
 **Key**: ``php``
 
-PHP 5.6 is included with Chassis by default, plus we register the additional
+PHP 7.0 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
