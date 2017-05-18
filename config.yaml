@@ -104,7 +104,7 @@ php: 7.0
 
 # VirtualBox-specific customisations.
 virtualbox:
-    # Memory, in bytes.
+    # Memory, in megabytes.
     #
     # (e.g. 1024)
     memory: null
