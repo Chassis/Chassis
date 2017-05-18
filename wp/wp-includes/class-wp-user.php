@@ -27,9 +27,11 @@
  * @property string $user_registered
  * @property string $user_activation_key
  * @property string $user_status
+ * @property int    $user_level
  * @property string $display_name
  * @property string $spam
  * @property string $deleted
+ * @property string $locale
  */
 class WP_User {
 	/**

@@ -1413,7 +1413,7 @@ class WP_Rewrite {
 			 *
 			 * @param array $rules The rewrite rules generated for the current permastruct.
 			 */
-			$rules = apply_filters( $permastructname . '_rewrite_rules', $rules );
+			$rules = apply_filters( "{$permastructname}_rewrite_rules", $rules );
 			if ( 'post_tag' == $permastructname ) {
 
 				/**
@@ -1475,6 +1475,10 @@ class WP_Rewrite {
 		if ( empty($this->rules) ) {
 			$this->matches = 'matches';
 			$this->rewrite_rules();
+			if ( ! did_action( 'wp_loaded' ) ) {
+				add_action( 'wp_loaded', array( $this, 'flush_rules' ) );
+				return $this->rules;
+			}
 			update_option('rewrite_rules', $this->rules);
 		}
 

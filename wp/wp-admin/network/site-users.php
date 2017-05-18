@@ -10,9 +10,6 @@
 /** Load WordPress Administration Bootstrap */
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
-if ( ! is_multisite() )
-	wp_die( __( 'Multisite support is not enabled.' ) );
-
 if ( ! current_user_can('manage_sites') )
 	wp_die(__('Sorry, you are not allowed to edit this site.'));
 
@@ -32,8 +29,8 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Sites_Screen" target="_blank">Documentation on Site Management</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Sites_Screen">Documentation on Site Management</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/">Support Forums</a>') . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(
@@ -54,7 +51,7 @@ $id = isset( $_REQUEST['id'] ) ? intval( $_REQUEST['id'] ) : 0;
 if ( ! $id )
 	wp_die( __('Invalid site ID.') );
 
-$details = get_blog_details( $id );
+$details = get_site( $id );
 if ( ! $details ) {
 	wp_die( __( 'The requested site does not exist.' ) );
 }
@@ -117,8 +114,10 @@ if ( $action ) {
 			break;
 
 		case 'remove':
-			if ( ! current_user_can( 'remove_users' )  )
-				die(__('You can&#8217;t remove users.'));
+			if ( ! current_user_can( 'remove_users' ) ) {
+				wp_die( __( 'Sorry, you are not allowed to remove users.' ) );
+			}
+
 			check_admin_referer( 'bulk-users' );
 
 			$update = 'remove';
@@ -139,8 +138,9 @@ if ( $action ) {
 		case 'promote':
 			check_admin_referer( 'bulk-users' );
 			$editable_roles = get_editable_roles();
-			if ( empty( $editable_roles[$_REQUEST['new_role']] ) )
-				wp_die(__('You can&#8217;t give users that role.'));
+			if ( empty( $editable_roles[ $_REQUEST['new_role'] ] ) ) {
+				wp_die( __( 'Sorry, you are not allowed to give users that role.' ) );
+			}
 
 			if ( isset( $_REQUEST['users'] ) ) {
 				$userids = $_REQUEST['users'];
@@ -164,6 +164,16 @@ if ( $action ) {
 				$update = 'err_promote';
 			}
 			break;
+		default:
+			if ( ! isset( $_REQUEST['users'] ) ) {
+				break;
+			}
+			check_admin_referer( 'bulk-users' );
+			$userids = $_REQUEST['users'];
+			/** This action is documented in wp-admin/network/site-themes.php */
+			$referer = apply_filters( 'handle_network_bulk_actions-' . get_current_screen()->id, $referer, $action, $userids, $id );
+			$update = $action;
+			break;
 	}
 
 	wp_safe_redirect( add_query_arg( 'update', $update, $referer ) );
@@ -179,6 +189,7 @@ if ( isset( $_GET['action'] ) && 'update-site' == $_GET['action'] ) {
 
 add_screen_option( 'per_page' );
 
+/* translators: %s: site name */
 $title = sprintf( __( 'Edit Site: %s' ), esc_html( $details->blogname ) );
 
 $parent_file = 'sites.php';

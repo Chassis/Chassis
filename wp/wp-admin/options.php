@@ -47,7 +47,7 @@ if ( empty($option_page) ) {
 if ( ! current_user_can( $capability ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'Sorry, you are not allowed to manage these items.' ) . '</p>',
+		'<p>' . __( 'Sorry, you are not allowed to manage these options.' ) . '</p>',
 		403
 	);
 }
@@ -194,6 +194,8 @@ if ( 'update' == $action ) {
 	}
 
 	if ( $options ) {
+		$user_language_old = get_user_locale();
+
 		foreach ( $options as $option ) {
 			if ( $unregistered ) {
 				_deprecated_argument( 'options.php', '2.7.0',
@@ -209,19 +211,23 @@ if ( 'update' == $action ) {
 			$value = null;
 			if ( isset( $_POST[ $option ] ) ) {
 				$value = $_POST[ $option ];
-				if ( ! is_array( $value ) )
+				if ( ! is_array( $value ) ) {
 					$value = trim( $value );
+				}
 				$value = wp_unslash( $value );
 			}
 			update_option( $option, $value );
 		}
 
-		// Switch translation in case WPLANG was changed.
-		$language = get_option( 'WPLANG' );
-		if ( $language ) {
-			load_default_textdomain( $language );
-		} else {
-			unload_textdomain( 'default' );
+		/*
+		 * Switch translation in case WPLANG was changed.
+		 * The global $locale is used in get_locale() which is
+		 * used as a fallback in get_user_locale().
+		 */
+		unset( $GLOBALS['locale'] );
+		$user_language_new = get_user_locale();
+		if ( $user_language_old !== $user_language_new  ) {
+			load_default_textdomain( $user_language_new );
 		}
 	}
 

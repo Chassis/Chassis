@@ -103,7 +103,7 @@ class WP_Network_Query {
  	 *                                              Default false.
  	 *     @type string       $fields               Network fields to return. Accepts 'ids' (returns an array of network IDs)
  	 *                                              or empty (returns an array of complete network objects). Default empty.
- 	 *     @type int          $number               Maximum number of networks to retrieve. Default null (no limit).
+ 	 *     @type int          $number               Maximum number of networks to retrieve. Default empty (no limit).
  	 *     @type int          $offset               Number of networks to offset the query. Used to build LIMIT clause.
  	 *                                              Default 0.
  	 *     @type bool         $no_found_rows        Whether to disable the `SQL_CALC_FOUND_ROWS` query. Default true.
@@ -111,12 +111,10 @@ class WP_Network_Query {
  	 *                                              'domain_length', 'path_length' and 'network__in'. Also accepts false,
  	 *                                              an empty array, or 'none' to disable `ORDER BY` clause. Default 'id'.
  	 *     @type string       $order                How to order retrieved networks. Accepts 'ASC', 'DESC'. Default 'ASC'.
- 	 *     @type string       $domain               Limit results to those affiliated with a given network ID.
- 	 *                                              Default current network ID.
+ 	 *     @type string       $domain               Limit results to those affiliated with a given domain. Default empty.
  	 *     @type array        $domain__in           Array of domains to include affiliated networks for. Default empty.
  	 *     @type array        $domain__not_in       Array of domains to exclude affiliated networks for. Default empty.
- 	 *     @type string       $path                 Limit results to those affiliated with a given network ID.
- 	 *                                              Default current network ID.
+ 	 *     @type string       $path                 Limit results to those affiliated with a given path. Default empty.
  	 *     @type array        $path__in             Array of paths to include affiliated networks for. Default empty.
  	 *     @type array        $path__not_in         Array of paths to exclude affiliated networks for. Default empty.
  	 *     @type string       $search               Search term(s) to retrieve matching networks for. Default empty.
@@ -211,11 +209,7 @@ class WP_Network_Query {
 
 		// $args can include anything. Only use the args defined in the query_var_defaults to compute the key.
 		$key = md5( serialize( wp_array_slice_assoc( $this->query_vars, array_keys( $this->query_var_defaults ) ) ) );
-		$last_changed = wp_cache_get( 'last_changed', 'networks' );
-		if ( ! $last_changed ) {
-			$last_changed = microtime();
-			wp_cache_set( 'last_changed', $last_changed, 'networks' );
-		}
+		$last_changed = wp_cache_get_last_changed( 'networks' );
 
 		$cache_key = "get_network_ids:$key:$last_changed";
 		$cache_value = wp_cache_get( $cache_key, 'networks' );

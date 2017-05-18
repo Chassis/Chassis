@@ -559,24 +559,25 @@ function get_users( $args = array() ) {
 }
 
 /**
- * Get the blogs a user belongs to.
+ * Get the sites a user belongs to.
  *
  * @since 3.0.0
+ * @since 4.7.0 Converted to use get_sites().
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param int  $user_id User ID
- * @param bool $all     Whether to retrieve all blogs, or only blogs that are not
+ * @param bool $all     Whether to retrieve all sites, or only sites that are not
  *                      marked as deleted, archived, or spam.
- * @return array A list of the user's blogs. An empty array if the user doesn't exist
- *               or belongs to no blogs.
+ * @return array A list of the user's sites. An empty array if the user doesn't exist
+ *               or belongs to no sites.
  */
 function get_blogs_of_user( $user_id, $all = false ) {
 	global $wpdb;
 
 	$user_id = (int) $user_id;
 
-	// Logged out users can't have blogs
+	// Logged out users can't have sites
 	if ( empty( $user_id ) )
 		return array();
 
@@ -588,15 +589,15 @@ function get_blogs_of_user( $user_id, $all = false ) {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @param null|array $blogs   An array of WP_Site objects of which the user is a member.
+	 * @param null|array $sites   An array of site objects of which the user is a member.
 	 * @param int        $user_id User ID.
 	 * @param bool       $all     Whether the returned array should contain all sites, including
 	 *                            those marked 'deleted', 'archived', or 'spam'. Default false.
 	 */
-	$blogs = apply_filters( 'pre_get_blogs_of_user', null, $user_id, $all );
+	$sites = apply_filters( 'pre_get_blogs_of_user', null, $user_id, $all );
 
-	if ( null !== $blogs ) {
-		return $blogs;
+	if ( null !== $sites ) {
+		return $sites;
 	}
 
 	$keys = get_user_meta( $user_id );
@@ -604,38 +605,24 @@ function get_blogs_of_user( $user_id, $all = false ) {
 		return array();
 
 	if ( ! is_multisite() ) {
-		$blog_id = get_current_blog_id();
-		$blogs = array( $blog_id => new stdClass );
-		$blogs[ $blog_id ]->userblog_id = $blog_id;
-		$blogs[ $blog_id ]->blogname = get_option('blogname');
-		$blogs[ $blog_id ]->domain = '';
-		$blogs[ $blog_id ]->path = '';
-		$blogs[ $blog_id ]->site_id = 1;
-		$blogs[ $blog_id ]->siteurl = get_option('siteurl');
-		$blogs[ $blog_id ]->archived = 0;
-		$blogs[ $blog_id ]->spam = 0;
-		$blogs[ $blog_id ]->deleted = 0;
-		return $blogs;
+		$site_id = get_current_blog_id();
+		$sites = array( $site_id => new stdClass );
+		$sites[ $site_id ]->userblog_id = $site_id;
+		$sites[ $site_id ]->blogname = get_option('blogname');
+		$sites[ $site_id ]->domain = '';
+		$sites[ $site_id ]->path = '';
+		$sites[ $site_id ]->site_id = 1;
+		$sites[ $site_id ]->siteurl = get_option('siteurl');
+		$sites[ $site_id ]->archived = 0;
+		$sites[ $site_id ]->spam = 0;
+		$sites[ $site_id ]->deleted = 0;
+		return $sites;
 	}
 
-	$blogs = array();
+	$site_ids = array();
 
 	if ( isset( $keys[ $wpdb->base_prefix . 'capabilities' ] ) && defined( 'MULTISITE' ) ) {
-		$blog = get_blog_details( 1 );
-		if ( $blog && isset( $blog->domain ) && ( $all || ( ! $blog->archived && ! $blog->spam && ! $blog->deleted ) ) ) {
-			$blogs[ 1 ] = (object) array(
-				'userblog_id' => 1,
-				'blogname'    => $blog->blogname,
-				'domain'      => $blog->domain,
-				'path'        => $blog->path,
-				'site_id'     => $blog->site_id,
-				'siteurl'     => $blog->siteurl,
-				'archived'    => $blog->archived,
-				'mature'      => $blog->mature,
-				'spam'        => $blog->spam,
-				'deleted'     => $blog->deleted,
-			);
-		}
+		$site_ids[] = 1;
 		unset( $keys[ $wpdb->base_prefix . 'capabilities' ] );
 	}
 
@@ -646,39 +633,55 @@ function get_blogs_of_user( $user_id, $all = false ) {
 			continue;
 		if ( $wpdb->base_prefix && 0 !== strpos( $key, $wpdb->base_prefix ) )
 			continue;
-		$blog_id = str_replace( array( $wpdb->base_prefix, '_capabilities' ), '', $key );
-		if ( ! is_numeric( $blog_id ) )
+		$site_id = str_replace( array( $wpdb->base_prefix, '_capabilities' ), '', $key );
+		if ( ! is_numeric( $site_id ) )
 			continue;
 
-		$blog_id = (int) $blog_id;
-		$blog = get_blog_details( $blog_id );
-		if ( $blog && isset( $blog->domain ) && ( $all || ( ! $blog->archived && ! $blog->spam && ! $blog->deleted ) ) ) {
-			$blogs[ $blog_id ] = (object) array(
-				'userblog_id' => $blog_id,
-				'blogname'    => $blog->blogname,
-				'domain'      => $blog->domain,
-				'path'        => $blog->path,
-				'site_id'     => $blog->site_id,
-				'siteurl'     => $blog->siteurl,
-				'archived'    => $blog->archived,
-				'mature'      => $blog->mature,
-				'spam'        => $blog->spam,
-				'deleted'     => $blog->deleted,
+		$site_ids[] = (int) $site_id;
+	}
+
+	$sites = array();
+
+	if ( ! empty( $site_ids ) ) {
+		$args = array(
+			'number'   => '',
+			'site__in' => $site_ids,
+		);
+		if ( ! $all ) {
+			$args['archived'] = 0;
+			$args['spam']     = 0;
+			$args['deleted']  = 0;
+		}
+
+		$_sites = get_sites( $args );
+
+		foreach ( $_sites as $site ) {
+			$sites[ $site->id ] = (object) array(
+				'userblog_id' => $site->id,
+				'blogname'    => $site->blogname,
+				'domain'      => $site->domain,
+				'path'        => $site->path,
+				'site_id'     => $site->network_id,
+				'siteurl'     => $site->siteurl,
+				'archived'    => $site->archived,
+				'mature'      => $site->mature,
+				'spam'        => $site->spam,
+				'deleted'     => $site->deleted,
 			);
 		}
 	}
 
 	/**
-	 * Filters the list of blogs a user belongs to.
+	 * Filters the list of sites a user belongs to.
 	 *
 	 * @since MU
 	 *
-	 * @param array $blogs   An array of blog objects belonging to the user.
+	 * @param array $sites   An array of site objects belonging to the user.
 	 * @param int   $user_id User ID.
-	 * @param bool  $all     Whether the returned blogs array should contain all blogs, including
+	 * @param bool  $all     Whether the returned sites array should contain all sites, including
 	 *                       those marked 'deleted', 'archived', or 'spam'. Default false.
 	 */
-	return apply_filters( 'get_blogs_of_user', $blogs, $user_id, $all );
+	return apply_filters( 'get_blogs_of_user', $sites, $user_id, $all );
 }
 
 /**
@@ -700,7 +703,7 @@ function is_user_member_of_blog( $user_id = 0, $blog_id = 0 ) {
 		$user_id = get_current_user_id();
 	}
 
-	// Technically not needed, but does save calls to get_blog_details and get_user_meta
+	// Technically not needed, but does save calls to get_site and get_user_meta
 	// in the event that the function is called when a user isn't logged in
 	if ( empty( $user_id ) ) {
 		return false;
@@ -719,7 +722,7 @@ function is_user_member_of_blog( $user_id = 0, $blog_id = 0 ) {
 		$blog_id = get_current_blog_id();
 	}
 
-	$blog = get_blog_details( $blog_id );
+	$blog = get_site( $blog_id );
 
 	if ( ! $blog || ! isset( $blog->domain ) || $blog->archived || $blog->spam || $blog->deleted ) {
 		return false;
@@ -964,8 +967,7 @@ function setup_userdata($for_user_id = '') {
  *
  * @since 2.3.0
  * @since 4.5.0 Added the 'display_name_with_login' value for 'show'.
- *
- * @global int  $blog_id
+ * @since 4.7.0 Added the `$role`, `$role__in`, and `$role__not_in` parameters.
  *
  * @param array|string $args {
  *     Optional. Array or string of arguments to generate a drop-down of users.
@@ -1006,6 +1008,13 @@ function setup_userdata($for_user_id = '') {
  *     @type int          $blog_id                 ID of blog (Multisite only). Default is ID of the current blog.
  *     @type string       $who                     Which type of users to query. Accepts only an empty string or
  *                                                 'authors'. Default empty.
+ *     @type string|array $role                    An array or a comma-separated list of role names that users must
+ *                                                 match to be included in results. Note that this is an inclusive
+ *                                                 list: users must match *each* role. Default empty.
+ *     @type array        $role__in                An array of role names. Matched users must have at least one of
+ *                                                 these roles. Default empty array.
+ *     @type array        $role__not_in            An array of role names to exclude. Users matching one or more of
+ *                                                 these roles will not be included in results. Default empty array.
  * }
  * @return string String of HTML content.
  */
@@ -1016,15 +1025,18 @@ function wp_dropdown_users( $args = '' ) {
 		'include' => '', 'exclude' => '', 'multi' => 0,
 		'show' => 'display_name', 'echo' => 1,
 		'selected' => 0, 'name' => 'user', 'class' => '', 'id' => '',
-		'blog_id' => $GLOBALS['blog_id'], 'who' => '', 'include_selected' => false,
-		'option_none_value' => -1
+		'blog_id' => get_current_blog_id(), 'who' => '', 'include_selected' => false,
+		'option_none_value' => -1,
+		'role' => '',
+		'role__in' => array(),
+		'role__not_in' => array(),
 	);
 
 	$defaults['selected'] = is_author() ? get_query_var( 'author' ) : 0;
 
 	$r = wp_parse_args( $args, $defaults );
 
-	$query_args = wp_array_slice_assoc( $r, array( 'blog_id', 'include', 'exclude', 'orderby', 'order', 'who' ) );
+	$query_args = wp_array_slice_assoc( $r, array( 'blog_id', 'include', 'exclude', 'orderby', 'order', 'who', 'role', 'role__in', 'role__not_in' ) );
 
 	$fields = array( 'ID', 'user_login' );
 
@@ -1042,12 +1054,12 @@ function wp_dropdown_users( $args = '' ) {
 	$option_none_value = $r['option_none_value'];
 
 	/**
-	 * Filters the query arguments for the user drop-down.
+	 * Filters the query arguments for the list of users in the dropdown.
 	 *
 	 * @since 4.4.0
 	 *
-	 * @param array $query_args The query arguments for wp_dropdown_users().
-	 * @param array $r          The default arguments for wp_dropdown_users().
+	 * @param array $query_args The query arguments for get_users().
+	 * @param array $r          The arguments passed to wp_dropdown_users() combined with the defaults.
 	 */
 	$query_args = apply_filters( 'wp_dropdown_users_args', $query_args, $r );
 
@@ -1346,6 +1358,7 @@ function validate_username( $username ) {
  * @since 2.0.0
  * @since 3.6.0 The `aim`, `jabber`, and `yim` fields were removed as default user contact
  *              methods for new installs. See wp_get_user_contact_methods().
+ * @since 4.7.0 The user's locale can be passed to `$userdata`.
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
@@ -1380,6 +1393,7 @@ function validate_username( $username ) {
  *     @type string|bool $show_admin_bar_front Whether to display the Admin Bar for the user on the
  *                                             site's front end. Default true.
  *     @type string      $role                 User's role.
+ *     @type string      $locale               User's locale. Default empty.
  * }
  * @return int|WP_Error The newly created user's ID or a WP_Error object if the user could not
  *                      be created.
@@ -1594,6 +1608,8 @@ function wp_insert_user( $userdata ) {
 
 	$meta['show_admin_bar_front'] = empty( $userdata['show_admin_bar_front'] ) ? 'true' : $userdata['show_admin_bar_front'];
 
+	$meta['locale'] = isset( $userdata['locale'] ) ? $userdata['locale'] : '';
+
 	$user_nicename_check = $wpdb->get_var( $wpdb->prepare("SELECT ID FROM $wpdb->users WHERE user_nicename = %s AND user_login != %s LIMIT 1" , $user_nicename, $user_login));
 
 	if ( $user_nicename_check ) {
@@ -1785,8 +1801,12 @@ function wp_update_user($userdata) {
 
 		$blog_name = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
 
-		if ( ! empty( $send_password_change_email ) ) {
+		$switched_locale = false;
+		if ( ! empty( $send_password_change_email ) || ! empty( $send_email_change_email ) ) {
+			$switched_locale = switch_to_locale( get_user_locale( $user_id ) );
+		}
 
+		if ( ! empty( $send_password_change_email ) ) {
 			/* translators: Do not translate USERNAME, ADMIN_EMAIL, EMAIL, SITENAME, SITEURL: those are placeholders. */
 			$pass_change_text = __( 'Hi ###USERNAME###,
 
@@ -1803,6 +1823,7 @@ All at ###SITENAME###
 
 			$pass_change_email = array(
 				'to'      => $user['user_email'],
+				/* translators: User password change notification email subject. 1: Site name */
 				'subject' => __( '[%s] Notice of Password Change' ),
 				'message' => $pass_change_text,
 				'headers' => '',
@@ -1858,6 +1879,7 @@ All at ###SITENAME###
 
 			$email_change_email = array(
 				'to'      => $user['user_email'],
+				/* translators: User email change notification email subject. 1: Site name */
 				'subject' => __( '[%s] Notice of Email Change' ),
 				'message' => $email_change_text,
 				'headers' => '',
@@ -1893,6 +1915,10 @@ All at ###SITENAME###
 			$email_change_email['message'] = str_replace( '###SITEURL###', home_url(), $email_change_email['message'] );
 
 			wp_mail( $email_change_email['to'], sprintf( $email_change_email['subject'], $blog_name ), $email_change_email['message'], $email_change_email['headers'] );
+		}
+
+		if ( $switched_locale ) {
+			restore_previous_locale();
 		}
 	}
 
@@ -1953,7 +1979,7 @@ function wp_create_user($username, $password, $email = '') {
  * @return array List of user keys to be populated in wp_update_user().
  */
 function _get_additional_user_keys( $user ) {
-	$keys = array( 'first_name', 'last_name', 'nickname', 'description', 'rich_editing', 'comment_shortcuts', 'admin_color', 'use_ssl', 'show_admin_bar_front' );
+	$keys = array( 'first_name', 'last_name', 'nickname', 'description', 'rich_editing', 'comment_shortcuts', 'admin_color', 'use_ssl', 'show_admin_bar_front', 'locale' );
 	return array_merge( $keys, array_keys( wp_get_user_contact_methods( $user ) ) );
 }
 
@@ -2095,7 +2121,6 @@ function get_password_reset_key( $user ) {
 
 	// Now insert the key, hashed, into the DB.
 	if ( empty( $wp_hasher ) ) {
-		require_once ABSPATH . WPINC . '/class-phpass.php';
 		$wp_hasher = new PasswordHash( 8, true );
 	}
 	$hashed = time() . ':' . $wp_hasher->HashPassword( $key );
@@ -2140,7 +2165,6 @@ function check_password_reset_key($key, $login) {
 		return new WP_Error('invalid_key', __('Invalid key'));
 
 	if ( empty( $wp_hasher ) ) {
-		require_once ABSPATH . WPINC . '/class-phpass.php';
 		$wp_hasher = new PasswordHash( 8, true );
 	}
 
@@ -2426,7 +2450,7 @@ function wp_get_users_with_no_role() {
 	}
 
 	$prefix = $wpdb->get_blog_prefix();
-	$regex  = implode( '|', wp_roles()->get_names() );
+	$regex  = implode( '|', array_keys( wp_roles()->get_names() ) );
 	$regex  = preg_replace( '/[^a-zA-Z_\|-]/', '', $regex );
 	$users  = $wpdb->get_col( $wpdb->prepare( "
 		SELECT user_id

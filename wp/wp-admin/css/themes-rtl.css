@@ -114,7 +114,7 @@
 	margin-left: 3px;
 }
 
-.theme-browser .theme .theme-actions .button-secondary {
+.theme-browser .theme .theme-actions .button {
 	float: none;
 	margin-right: 3px;
 }
@@ -1017,7 +1017,7 @@ body.folded .theme-browser ~ .theme-overlay .theme-wrap {
 }
 
 .theme-install-php .wp-filter {
-	padding: 0 20px;
+	padding-right: 20px;
 }
 
 .theme-install-php a.upload,
@@ -1176,12 +1176,143 @@ div#custom-background-image img {
 	max-height: 300px;
 }
 
+.background-position-control input[type="radio"]:checked ~ .button {
+	background: #eee;
+	border-color: #999;
+	-webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, .5 );
+	box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, .5 );
+	z-index: 1;
+}
+
+.background-position-control input[type="radio"]:focus ~ .button {
+	border-color: #5b9dd9;
+	-webkit-box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, .5 ), 0 0 3px rgba( 0, 115, 170, .8 );
+	box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, .5 ), 0 0 3px rgba( 0, 115, 170, .8 );
+	color: #23282d;
+}
+
+.background-position-control .background-position-center-icon,
+.background-position-control .background-position-center-icon:before {
+	display: inline-block;
+	line-height: 1;
+	text-align: center;
+	-webkit-transition: background-color .1s ease-in 0;
+	transition: background-color .1s ease-in 0;
+}
+
+.background-position-control .background-position-center-icon {
+	height: 20px;
+	margin-top: 13px;
+	vertical-align: top;
+	width: 20px;
+}
+
+.background-position-control .background-position-center-icon:before {
+	background-color: #555;
+	-webkit-border-radius: 50%;
+	border-radius: 50%;
+	content: "";
+	height: 12px;
+	width: 12px;
+}
+
+.background-position-control .button:hover .background-position-center-icon:before,
+.background-position-control input[type="radio"]:focus ~ .button .background-position-center-icon:before {
+	background-color: #23282d;
+}
+
+.background-position-control .button-group {
+	display: block;
+}
+
+.background-position-control .button-group .button {
+	-webkit-border-radius: 0;
+	border-radius: 0;
+	-webkit-box-shadow: none;
+	box-shadow: none;
+	/* Following properties are overridden by buttons responsive styles (see: wp-includes/css/buttons.css). */
+	height: 40px !important;
+	line-height: 37px !important;
+	margin: 0 0 0 -1px !important;
+	padding: 0 10px 1px !important;
+	position: relative;
+}
+
+.background-position-control .button-group .button:active,
+.background-position-control .button-group .button:hover,
+.background-position-control .button-group .button:focus {
+	z-index: 1;
+}
+
+.background-position-control .button-group:last-child .button {
+	-webkit-box-shadow: 0 1px 0 #ccc;
+	box-shadow: 0 1px 0 #ccc;
+}
+
+.background-position-control .button-group > label {
+	margin: 0 !important;
+}
+
+.background-position-control .button-group:first-child > label:first-child .button {
+	-webkit-border-radius: 0 3px 0 0;
+	border-radius: 0 3px 0 0;
+}
+
+.background-position-control .button-group:first-child > label:first-child .dashicons {
+	-webkit-transform: rotate( -45deg );
+	-ms-transform: rotate( -45deg );
+	transform: rotate( -45deg );
+}
+
+.background-position-control .button-group:first-child > label:last-child .button {
+	-webkit-border-radius: 3px 0 0 0;
+	border-radius: 3px 0 0 0;
+}
+
+.background-position-control .button-group:first-child > label:last-child .dashicons {
+	-webkit-transform: rotate( 45deg );
+	-ms-transform: rotate( 45deg );
+	transform: rotate( 45deg );
+}
+
+.background-position-control .button-group:last-child > label:first-child .button {
+	-webkit-border-radius: 0 0 3px 0;
+	border-radius: 0 0 3px 0;
+}
+
+.background-position-control .button-group:last-child > label:first-child .dashicons {
+	-webkit-transform: rotate( 45deg );
+	-ms-transform: rotate( 45deg );
+	transform: rotate( 45deg );
+}
+
+.background-position-control .button-group:last-child > label:last-child .button {
+	-webkit-border-radius: 0 0 0 3px;
+	border-radius: 0 0 0 3px;
+}
+
+.background-position-control .button-group:last-child > label:last-child .dashicons {
+	-webkit-transform: rotate( -45deg );
+	-ms-transform: rotate( -45deg );
+	transform: rotate( -45deg );
+}
+
+.background-position-control .button-group .dashicons {
+	margin-top: 9px;
+}
+
+.background-position-control .button-group + .button-group {
+	margin-top: -1px;
+}
+
 /*------------------------------------------------------------------------------
   23.0 - Full Overlay w/ Sidebar
 ------------------------------------------------------------------------------*/
 
 body.full-overlay-active {
 	overflow: hidden;
+	/* Hide all the content, the Customizer overlay is then made visible to be the only available content. */
+	visibility: hidden;
 }
 
 .wp-full-overlay {
@@ -1390,6 +1521,7 @@ body.full-overlay-active {
 	box-shadow: none !important;
 	-webkit-border-radius: 0 !important;
 	border-radius: 0 !important;
+	z-index: -1; /* Below device buttons */
 }
 
 .wp-core-ui .wp-full-overlay .collapse-sidebar:hover,
@@ -1485,7 +1617,7 @@ body.full-overlay-active {
 	position: fixed;
 	bottom: 0;
 	right: 0;
-	width: 300px;
+	width: 299px;
 	height: 45px;
 	border-top: 1px solid #ddd;
 	background: #eee;
@@ -1493,6 +1625,9 @@ body.full-overlay-active {
 
 .wp-full-overlay-footer .devices {
 	float: left;
+	background: #eee;
+	-webkit-box-shadow: 20px 0 10px -5px #eee;
+	box-shadow: 20px 0 10px -5px #eee;
 }
 
 .wp-full-overlay-footer .devices button {
@@ -1506,8 +1641,12 @@ body.full-overlay-active {
 	box-shadow: none;
 	border-top: 1px solid transparent;
 	border-bottom: 4px solid transparent;
-	-webkit-transition: background .1s ease-in-out;
-	transition: background .1s ease-in-out;
+	-webkit-transition: .15s color ease-in-out,
+	            .15s background-color ease-in-out,
+	            .15s border-color ease-in-out;
+	transition: .15s color ease-in-out,
+	            .15s background-color ease-in-out,
+	            .15s border-color ease-in-out;
 }
 
 .wp-full-overlay-footer .devices button:focus {
@@ -1535,15 +1674,18 @@ body.full-overlay-active {
 	background-color: #fff;
 }
 
-.wp-full-overlay-footer .devices button:focus {
-	background-color: #fff;
+.wp-full-overlay-footer .devices button:focus,
+.wp-full-overlay-footer .devices button.active:hover {
 	border-bottom-color: #0073aa;
 }
 
-.wp-full-overlay-footer .devices button.active:before,
+.wp-full-overlay-footer .devices button.active:before {
+	color: #191e23;
+}
+
 .wp-full-overlay-footer .devices button:hover:before,
 .wp-full-overlay-footer .devices button:focus:before {
-	color: #191e23;
+	color: #0073aa;
 }
 
 .wp-full-overlay-footer .devices .preview-desktop:before {
@@ -1613,8 +1755,10 @@ body.full-overlay-active {
 	height: 100%;
 }
 
-.customize-active #customize-container {
-	display: block;
+/* Make the Customizer and Theme installer overlays the only available content. */
+#customize-container,
+.theme-install-overlay {
+	visibility: visible;
 }
 
 .customize-loading #customize-container iframe {

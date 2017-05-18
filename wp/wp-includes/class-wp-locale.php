@@ -60,6 +60,14 @@ class WP_Locale {
 	public $month;
 
 	/**
+	 * Stores the translated strings for the month names in genitive case, if the locale specifies.
+	 *
+	 * @since 4.4.0
+	 * @var array
+	 */
+	public $month_genitive;
+
+	/**
 	 * Stores the translated strings for the abbreviated month names.
 	 *
 	 * @since 2.1.0
@@ -117,7 +125,6 @@ class WP_Locale {
 	 * @access private
 	 *
 	 * @global string $text_direction
-	 * @global string $wp_version
 	 */
 	public function init() {
 		// The Weekdays
@@ -223,7 +230,7 @@ class WP_Locale {
 		elseif ( 'rtl' == _x( 'ltr', 'text direction' ) )
 			$this->text_direction = 'rtl';
 
-		if ( 'rtl' === $this->text_direction && strpos( $GLOBALS['wp_version'], '-src' ) ) {
+		if ( 'rtl' === $this->text_direction && strpos( get_bloginfo( 'version' ), '-src' ) ) {
 			$this->text_direction = 'ltr';
 			add_action( 'all_admin_notices', array( $this, 'rtl_src_admin_notice' ) );
 		}

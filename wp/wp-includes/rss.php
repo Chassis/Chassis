@@ -60,15 +60,13 @@ class MagpieRSS {
 	 */
 	function __construct( $source ) {
 
-		# if PHP xml isn't compiled in, die
+		# Check if PHP xml isn't compiled
 		#
-		if ( !function_exists('xml_parser_create') )
-			trigger_error( "Failed to load PHP's XML Extension. https://secure.php.net/manual/en/ref.xml.php" );
+		if ( ! function_exists('xml_parser_create') ) {
+			return trigger_error( "PHP's XML extension is not available. Please contact your hosting provider to enable PHP's XML extension." );
+		}
 
-		$parser = @xml_parser_create();
-
-		if ( !is_resource($parser) )
-			trigger_error( "Failed to create an instance of PHP's XML parser. https://secure.php.net/manual/en/ref.xml.php");
+		$parser = xml_parser_create();
 
 		$this->parser = $parser;
 
@@ -743,7 +741,7 @@ class RSSCache {
 /*=======================================================================*\
 	Function:	set
 	Purpose:	add an item to the cache, keyed on url
-	Input:		url from wich the rss file was fetched
+	Input:		url from which the rss file was fetched
 	Output:		true on success
 \*=======================================================================*/
 	function set ($url, $rss) {
@@ -757,7 +755,7 @@ class RSSCache {
 /*=======================================================================*\
 	Function:	get
 	Purpose:	fetch an item from the cache
-	Input:		url from wich the rss file was fetched
+	Input:		url from which the rss file was fetched
 	Output:		cached object on HIT, false on MISS
 \*=======================================================================*/
 	function get ($url) {
@@ -778,7 +776,7 @@ class RSSCache {
 	Function:	check_cache
 	Purpose:	check a url for membership in the cache
 				and whether the object is older then MAX_AGE (ie. STALE)
-	Input:		url from wich the rss file was fetched
+	Input:		url from which the rss file was fetched
 	Output:		cached object on HIT, false on MISS
 \*=======================================================================*/
 	function check_cache ( $url ) {
@@ -811,7 +809,7 @@ class RSSCache {
 /*=======================================================================*\
 	Function:	file_name
 	Purpose:	map url to location in cache
-	Input:		url from wich the rss file was fetched
+	Input:		url from which the rss file was fetched
 	Output:		a file name
 \*=======================================================================*/
 	function file_name ($url) {

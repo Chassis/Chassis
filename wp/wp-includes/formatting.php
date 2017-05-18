@@ -468,8 +468,8 @@ function wpautop( $pee, $br = true ) {
 
 	$allblocks = '(?:table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|form|map|area|blockquote|address|math|style|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|menu|summary)';
 
-	// Add a single line break above block-level opening tags.
-	$pee = preg_replace('!(<' . $allblocks . '[\s/>])!', "\n$1", $pee);
+	// Add a double line break above block-level opening tags.
+	$pee = preg_replace('!(<' . $allblocks . '[\s/>])!', "\n\n$1", $pee);
 
 	// Add a double line break below block-level closing tags.
 	$pee = preg_replace('!(</' . $allblocks . '>)!', "$1\n\n", $pee);
@@ -504,6 +504,12 @@ function wpautop( $pee, $br = true ) {
 		$pee = preg_replace( '%([<\[](?:audio|video)[^>\]]*[>\]])\s*%', '$1', $pee );
 		$pee = preg_replace( '%\s*([<\[]/(?:audio|video)[>\]])%', '$1', $pee );
 		$pee = preg_replace( '%\s*(<(?:source|track)[^>]*>)\s*%', '$1', $pee );
+	}
+
+	// Collapse line breaks before and after <figcaption> elements.
+	if ( strpos( $pee, '<figcaption' ) !== false ) {
+		$pee = preg_replace( '|\s*(<figcaption[^>]*>)|', '$1', $pee );
+		$pee = preg_replace( '|</figcaption>\s*|', '</figcaption>', $pee );
 	}
 
 	// Remove more than two contiguous line breaks.
@@ -1279,9 +1285,9 @@ function utf8_uri_encode( $utf8_string, $length = 0 ) {
  * | U+0146  | ņ     | n           | Latin small letter n with cedilla                 |
  * | U+0147  | Ň     | N           | Latin capital letter N with caron                 |
  * | U+0148  | ň     | n           | Latin small letter n with caron                   |
- * | U+0149  | ŉ     | N           | Latin small letter n preceded by apostrophe       |
- * | U+014A  | Ŋ     | n           | Latin capital letter Eng                          |
- * | U+014B  | ŋ     | N           | Latin small letter Eng                            |
+ * | U+0149  | ŉ     | n           | Latin small letter n preceded by apostrophe       |
+ * | U+014A  | Ŋ     | N           | Latin capital letter Eng                          |
+ * | U+014B  | ŋ     | n           | Latin small letter Eng                            |
  * | U+014C  | Ō     | O           | Latin capital letter O with macron                |
  * | U+014D  | ō     | o           | Latin small letter o with macron                  |
  * | U+014E  | Ŏ     | O           | Latin capital letter O with breve                 |
@@ -1490,8 +1496,16 @@ function utf8_uri_encode( $utf8_string, $length = 0 ) {
  * | -------- | ----- | ----------- | --------------------------------------- |
  * | U+00B7   | l·l   | ll          | Flown dot (between two Ls)              |
  *
+ * Serbian (`sr_RS`) locale:
+ *
+ * |   Code   | Glyph | Replacement |               Description               |
+ * | -------- | ----- | ----------- | --------------------------------------- |
+ * | U+0110   | Đ     | DJ          | Latin capital letter D with stroke      |
+ * | U+0111   | đ     | dj          | Latin small letter d with stroke        |
+ *
  * @since 1.2.1
  * @since 4.6.0 Added locale support for `de_CH`, `de_CH_informal`, and `ca`.
+ * @since 4.7.0 Added locale support for `sr_RS`.
  *
  * @param string $string Text that might have accent characters
  * @return string Filtered string with replaced "nice" characters.
@@ -1503,222 +1517,225 @@ function remove_accents( $string ) {
 	if (seems_utf8($string)) {
 		$chars = array(
 		// Decompositions for Latin-1 Supplement
-		chr(194).chr(170) => 'a', chr(194).chr(186) => 'o',
-		chr(195).chr(128) => 'A', chr(195).chr(129) => 'A',
-		chr(195).chr(130) => 'A', chr(195).chr(131) => 'A',
-		chr(195).chr(132) => 'A', chr(195).chr(133) => 'A',
-		chr(195).chr(134) => 'AE',chr(195).chr(135) => 'C',
-		chr(195).chr(136) => 'E', chr(195).chr(137) => 'E',
-		chr(195).chr(138) => 'E', chr(195).chr(139) => 'E',
-		chr(195).chr(140) => 'I', chr(195).chr(141) => 'I',
-		chr(195).chr(142) => 'I', chr(195).chr(143) => 'I',
-		chr(195).chr(144) => 'D', chr(195).chr(145) => 'N',
-		chr(195).chr(146) => 'O', chr(195).chr(147) => 'O',
-		chr(195).chr(148) => 'O', chr(195).chr(149) => 'O',
-		chr(195).chr(150) => 'O', chr(195).chr(153) => 'U',
-		chr(195).chr(154) => 'U', chr(195).chr(155) => 'U',
-		chr(195).chr(156) => 'U', chr(195).chr(157) => 'Y',
-		chr(195).chr(158) => 'TH',chr(195).chr(159) => 's',
-		chr(195).chr(160) => 'a', chr(195).chr(161) => 'a',
-		chr(195).chr(162) => 'a', chr(195).chr(163) => 'a',
-		chr(195).chr(164) => 'a', chr(195).chr(165) => 'a',
-		chr(195).chr(166) => 'ae',chr(195).chr(167) => 'c',
-		chr(195).chr(168) => 'e', chr(195).chr(169) => 'e',
-		chr(195).chr(170) => 'e', chr(195).chr(171) => 'e',
-		chr(195).chr(172) => 'i', chr(195).chr(173) => 'i',
-		chr(195).chr(174) => 'i', chr(195).chr(175) => 'i',
-		chr(195).chr(176) => 'd', chr(195).chr(177) => 'n',
-		chr(195).chr(178) => 'o', chr(195).chr(179) => 'o',
-		chr(195).chr(180) => 'o', chr(195).chr(181) => 'o',
-		chr(195).chr(182) => 'o', chr(195).chr(184) => 'o',
-		chr(195).chr(185) => 'u', chr(195).chr(186) => 'u',
-		chr(195).chr(187) => 'u', chr(195).chr(188) => 'u',
-		chr(195).chr(189) => 'y', chr(195).chr(190) => 'th',
-		chr(195).chr(191) => 'y', chr(195).chr(152) => 'O',
+		'ª' => 'a', 'º' => 'o',
+		'À' => 'A', 'Á' => 'A',
+		'Â' => 'A', 'Ã' => 'A',
+		'Ä' => 'A', 'Å' => 'A',
+		'Æ' => 'AE','Ç' => 'C',
+		'È' => 'E', 'É' => 'E',
+		'Ê' => 'E', 'Ë' => 'E',
+		'Ì' => 'I', 'Í' => 'I',
+		'Î' => 'I', 'Ï' => 'I',
+		'Ð' => 'D', 'Ñ' => 'N',
+		'Ò' => 'O', 'Ó' => 'O',
+		'Ô' => 'O', 'Õ' => 'O',
+		'Ö' => 'O', 'Ù' => 'U',
+		'Ú' => 'U', 'Û' => 'U',
+		'Ü' => 'U', 'Ý' => 'Y',
+		'Þ' => 'TH','ß' => 's',
+		'à' => 'a', 'á' => 'a',
+		'â' => 'a', 'ã' => 'a',
+		'ä' => 'a', 'å' => 'a',
+		'æ' => 'ae','ç' => 'c',
+		'è' => 'e', 'é' => 'e',
+		'ê' => 'e', 'ë' => 'e',
+		'ì' => 'i', 'í' => 'i',
+		'î' => 'i', 'ï' => 'i',
+		'ð' => 'd', 'ñ' => 'n',
+		'ò' => 'o', 'ó' => 'o',
+		'ô' => 'o', 'õ' => 'o',
+		'ö' => 'o', 'ø' => 'o',
+		'ù' => 'u', 'ú' => 'u',
+		'û' => 'u', 'ü' => 'u',
+		'ý' => 'y', 'þ' => 'th',
+		'ÿ' => 'y', 'Ø' => 'O',
 		// Decompositions for Latin Extended-A
-		chr(196).chr(128) => 'A', chr(196).chr(129) => 'a',
-		chr(196).chr(130) => 'A', chr(196).chr(131) => 'a',
-		chr(196).chr(132) => 'A', chr(196).chr(133) => 'a',
-		chr(196).chr(134) => 'C', chr(196).chr(135) => 'c',
-		chr(196).chr(136) => 'C', chr(196).chr(137) => 'c',
-		chr(196).chr(138) => 'C', chr(196).chr(139) => 'c',
-		chr(196).chr(140) => 'C', chr(196).chr(141) => 'c',
-		chr(196).chr(142) => 'D', chr(196).chr(143) => 'd',
-		chr(196).chr(144) => 'D', chr(196).chr(145) => 'd',
-		chr(196).chr(146) => 'E', chr(196).chr(147) => 'e',
-		chr(196).chr(148) => 'E', chr(196).chr(149) => 'e',
-		chr(196).chr(150) => 'E', chr(196).chr(151) => 'e',
-		chr(196).chr(152) => 'E', chr(196).chr(153) => 'e',
-		chr(196).chr(154) => 'E', chr(196).chr(155) => 'e',
-		chr(196).chr(156) => 'G', chr(196).chr(157) => 'g',
-		chr(196).chr(158) => 'G', chr(196).chr(159) => 'g',
-		chr(196).chr(160) => 'G', chr(196).chr(161) => 'g',
-		chr(196).chr(162) => 'G', chr(196).chr(163) => 'g',
-		chr(196).chr(164) => 'H', chr(196).chr(165) => 'h',
-		chr(196).chr(166) => 'H', chr(196).chr(167) => 'h',
-		chr(196).chr(168) => 'I', chr(196).chr(169) => 'i',
-		chr(196).chr(170) => 'I', chr(196).chr(171) => 'i',
-		chr(196).chr(172) => 'I', chr(196).chr(173) => 'i',
-		chr(196).chr(174) => 'I', chr(196).chr(175) => 'i',
-		chr(196).chr(176) => 'I', chr(196).chr(177) => 'i',
-		chr(196).chr(178) => 'IJ',chr(196).chr(179) => 'ij',
-		chr(196).chr(180) => 'J', chr(196).chr(181) => 'j',
-		chr(196).chr(182) => 'K', chr(196).chr(183) => 'k',
-		chr(196).chr(184) => 'k', chr(196).chr(185) => 'L',
-		chr(196).chr(186) => 'l', chr(196).chr(187) => 'L',
-		chr(196).chr(188) => 'l', chr(196).chr(189) => 'L',
-		chr(196).chr(190) => 'l', chr(196).chr(191) => 'L',
-		chr(197).chr(128) => 'l', chr(197).chr(129) => 'L',
-		chr(197).chr(130) => 'l', chr(197).chr(131) => 'N',
-		chr(197).chr(132) => 'n', chr(197).chr(133) => 'N',
-		chr(197).chr(134) => 'n', chr(197).chr(135) => 'N',
-		chr(197).chr(136) => 'n', chr(197).chr(137) => 'N',
-		chr(197).chr(138) => 'n', chr(197).chr(139) => 'N',
-		chr(197).chr(140) => 'O', chr(197).chr(141) => 'o',
-		chr(197).chr(142) => 'O', chr(197).chr(143) => 'o',
-		chr(197).chr(144) => 'O', chr(197).chr(145) => 'o',
-		chr(197).chr(146) => 'OE',chr(197).chr(147) => 'oe',
-		chr(197).chr(148) => 'R',chr(197).chr(149) => 'r',
-		chr(197).chr(150) => 'R',chr(197).chr(151) => 'r',
-		chr(197).chr(152) => 'R',chr(197).chr(153) => 'r',
-		chr(197).chr(154) => 'S',chr(197).chr(155) => 's',
-		chr(197).chr(156) => 'S',chr(197).chr(157) => 's',
-		chr(197).chr(158) => 'S',chr(197).chr(159) => 's',
-		chr(197).chr(160) => 'S', chr(197).chr(161) => 's',
-		chr(197).chr(162) => 'T', chr(197).chr(163) => 't',
-		chr(197).chr(164) => 'T', chr(197).chr(165) => 't',
-		chr(197).chr(166) => 'T', chr(197).chr(167) => 't',
-		chr(197).chr(168) => 'U', chr(197).chr(169) => 'u',
-		chr(197).chr(170) => 'U', chr(197).chr(171) => 'u',
-		chr(197).chr(172) => 'U', chr(197).chr(173) => 'u',
-		chr(197).chr(174) => 'U', chr(197).chr(175) => 'u',
-		chr(197).chr(176) => 'U', chr(197).chr(177) => 'u',
-		chr(197).chr(178) => 'U', chr(197).chr(179) => 'u',
-		chr(197).chr(180) => 'W', chr(197).chr(181) => 'w',
-		chr(197).chr(182) => 'Y', chr(197).chr(183) => 'y',
-		chr(197).chr(184) => 'Y', chr(197).chr(185) => 'Z',
-		chr(197).chr(186) => 'z', chr(197).chr(187) => 'Z',
-		chr(197).chr(188) => 'z', chr(197).chr(189) => 'Z',
-		chr(197).chr(190) => 'z', chr(197).chr(191) => 's',
+		'Ā' => 'A', 'ā' => 'a',
+		'Ă' => 'A', 'ă' => 'a',
+		'Ą' => 'A', 'ą' => 'a',
+		'Ć' => 'C', 'ć' => 'c',
+		'Ĉ' => 'C', 'ĉ' => 'c',
+		'Ċ' => 'C', 'ċ' => 'c',
+		'Č' => 'C', 'č' => 'c',
+		'Ď' => 'D', 'ď' => 'd',
+		'Đ' => 'D', 'đ' => 'd',
+		'Ē' => 'E', 'ē' => 'e',
+		'Ĕ' => 'E', 'ĕ' => 'e',
+		'Ė' => 'E', 'ė' => 'e',
+		'Ę' => 'E', 'ę' => 'e',
+		'Ě' => 'E', 'ě' => 'e',
+		'Ĝ' => 'G', 'ĝ' => 'g',
+		'Ğ' => 'G', 'ğ' => 'g',
+		'Ġ' => 'G', 'ġ' => 'g',
+		'Ģ' => 'G', 'ģ' => 'g',
+		'Ĥ' => 'H', 'ĥ' => 'h',
+		'Ħ' => 'H', 'ħ' => 'h',
+		'Ĩ' => 'I', 'ĩ' => 'i',
+		'Ī' => 'I', 'ī' => 'i',
+		'Ĭ' => 'I', 'ĭ' => 'i',
+		'Į' => 'I', 'į' => 'i',
+		'İ' => 'I', 'ı' => 'i',
+		'Ĳ' => 'IJ','ĳ' => 'ij',
+		'Ĵ' => 'J', 'ĵ' => 'j',
+		'Ķ' => 'K', 'ķ' => 'k',
+		'ĸ' => 'k', 'Ĺ' => 'L',
+		'ĺ' => 'l', 'Ļ' => 'L',
+		'ļ' => 'l', 'Ľ' => 'L',
+		'ľ' => 'l', 'Ŀ' => 'L',
+		'ŀ' => 'l', 'Ł' => 'L',
+		'ł' => 'l', 'Ń' => 'N',
+		'ń' => 'n', 'Ņ' => 'N',
+		'ņ' => 'n', 'Ň' => 'N',
+		'ň' => 'n', 'ŉ' => 'n',
+		'Ŋ' => 'N', 'ŋ' => 'n',
+		'Ō' => 'O', 'ō' => 'o',
+		'Ŏ' => 'O', 'ŏ' => 'o',
+		'Ő' => 'O', 'ő' => 'o',
+		'Œ' => 'OE','œ' => 'oe',
+		'Ŕ' => 'R','ŕ' => 'r',
+		'Ŗ' => 'R','ŗ' => 'r',
+		'Ř' => 'R','ř' => 'r',
+		'Ś' => 'S','ś' => 's',
+		'Ŝ' => 'S','ŝ' => 's',
+		'Ş' => 'S','ş' => 's',
+		'Š' => 'S', 'š' => 's',
+		'Ţ' => 'T', 'ţ' => 't',
+		'Ť' => 'T', 'ť' => 't',
+		'Ŧ' => 'T', 'ŧ' => 't',
+		'Ũ' => 'U', 'ũ' => 'u',
+		'Ū' => 'U', 'ū' => 'u',
+		'Ŭ' => 'U', 'ŭ' => 'u',
+		'Ů' => 'U', 'ů' => 'u',
+		'Ű' => 'U', 'ű' => 'u',
+		'Ų' => 'U', 'ų' => 'u',
+		'Ŵ' => 'W', 'ŵ' => 'w',
+		'Ŷ' => 'Y', 'ŷ' => 'y',
+		'Ÿ' => 'Y', 'Ź' => 'Z',
+		'ź' => 'z', 'Ż' => 'Z',
+		'ż' => 'z', 'Ž' => 'Z',
+		'ž' => 'z', 'ſ' => 's',
 		// Decompositions for Latin Extended-B
-		chr(200).chr(152) => 'S', chr(200).chr(153) => 's',
-		chr(200).chr(154) => 'T', chr(200).chr(155) => 't',
+		'Ș' => 'S', 'ș' => 's',
+		'Ț' => 'T', 'ț' => 't',
 		// Euro Sign
-		chr(226).chr(130).chr(172) => 'E',
+		'€' => 'E',
 		// GBP (Pound) Sign
-		chr(194).chr(163) => '',
+		'£' => '',
 		// Vowels with diacritic (Vietnamese)
 		// unmarked
-		chr(198).chr(160) => 'O', chr(198).chr(161) => 'o',
-		chr(198).chr(175) => 'U', chr(198).chr(176) => 'u',
+		'Ơ' => 'O', 'ơ' => 'o',
+		'Ư' => 'U', 'ư' => 'u',
 		// grave accent
-		chr(225).chr(186).chr(166) => 'A', chr(225).chr(186).chr(167) => 'a',
-		chr(225).chr(186).chr(176) => 'A', chr(225).chr(186).chr(177) => 'a',
-		chr(225).chr(187).chr(128) => 'E', chr(225).chr(187).chr(129) => 'e',
-		chr(225).chr(187).chr(146) => 'O', chr(225).chr(187).chr(147) => 'o',
-		chr(225).chr(187).chr(156) => 'O', chr(225).chr(187).chr(157) => 'o',
-		chr(225).chr(187).chr(170) => 'U', chr(225).chr(187).chr(171) => 'u',
-		chr(225).chr(187).chr(178) => 'Y', chr(225).chr(187).chr(179) => 'y',
+		'Ầ' => 'A', 'ầ' => 'a',
+		'Ằ' => 'A', 'ằ' => 'a',
+		'Ề' => 'E', 'ề' => 'e',
+		'Ồ' => 'O', 'ồ' => 'o',
+		'Ờ' => 'O', 'ờ' => 'o',
+		'Ừ' => 'U', 'ừ' => 'u',
+		'Ỳ' => 'Y', 'ỳ' => 'y',
 		// hook
-		chr(225).chr(186).chr(162) => 'A', chr(225).chr(186).chr(163) => 'a',
-		chr(225).chr(186).chr(168) => 'A', chr(225).chr(186).chr(169) => 'a',
-		chr(225).chr(186).chr(178) => 'A', chr(225).chr(186).chr(179) => 'a',
-		chr(225).chr(186).chr(186) => 'E', chr(225).chr(186).chr(187) => 'e',
-		chr(225).chr(187).chr(130) => 'E', chr(225).chr(187).chr(131) => 'e',
-		chr(225).chr(187).chr(136) => 'I', chr(225).chr(187).chr(137) => 'i',
-		chr(225).chr(187).chr(142) => 'O', chr(225).chr(187).chr(143) => 'o',
-		chr(225).chr(187).chr(148) => 'O', chr(225).chr(187).chr(149) => 'o',
-		chr(225).chr(187).chr(158) => 'O', chr(225).chr(187).chr(159) => 'o',
-		chr(225).chr(187).chr(166) => 'U', chr(225).chr(187).chr(167) => 'u',
-		chr(225).chr(187).chr(172) => 'U', chr(225).chr(187).chr(173) => 'u',
-		chr(225).chr(187).chr(182) => 'Y', chr(225).chr(187).chr(183) => 'y',
+		'Ả' => 'A', 'ả' => 'a',
+		'Ẩ' => 'A', 'ẩ' => 'a',
+		'Ẳ' => 'A', 'ẳ' => 'a',
+		'Ẻ' => 'E', 'ẻ' => 'e',
+		'Ể' => 'E', 'ể' => 'e',
+		'Ỉ' => 'I', 'ỉ' => 'i',
+		'Ỏ' => 'O', 'ỏ' => 'o',
+		'Ổ' => 'O', 'ổ' => 'o',
+		'Ở' => 'O', 'ở' => 'o',
+		'Ủ' => 'U', 'ủ' => 'u',
+		'Ử' => 'U', 'ử' => 'u',
+		'Ỷ' => 'Y', 'ỷ' => 'y',
 		// tilde
-		chr(225).chr(186).chr(170) => 'A', chr(225).chr(186).chr(171) => 'a',
-		chr(225).chr(186).chr(180) => 'A', chr(225).chr(186).chr(181) => 'a',
-		chr(225).chr(186).chr(188) => 'E', chr(225).chr(186).chr(189) => 'e',
-		chr(225).chr(187).chr(132) => 'E', chr(225).chr(187).chr(133) => 'e',
-		chr(225).chr(187).chr(150) => 'O', chr(225).chr(187).chr(151) => 'o',
-		chr(225).chr(187).chr(160) => 'O', chr(225).chr(187).chr(161) => 'o',
-		chr(225).chr(187).chr(174) => 'U', chr(225).chr(187).chr(175) => 'u',
-		chr(225).chr(187).chr(184) => 'Y', chr(225).chr(187).chr(185) => 'y',
+		'Ẫ' => 'A', 'ẫ' => 'a',
+		'Ẵ' => 'A', 'ẵ' => 'a',
+		'Ẽ' => 'E', 'ẽ' => 'e',
+		'Ễ' => 'E', 'ễ' => 'e',
+		'Ỗ' => 'O', 'ỗ' => 'o',
+		'Ỡ' => 'O', 'ỡ' => 'o',
+		'Ữ' => 'U', 'ữ' => 'u',
+		'Ỹ' => 'Y', 'ỹ' => 'y',
 		// acute accent
-		chr(225).chr(186).chr(164) => 'A', chr(225).chr(186).chr(165) => 'a',
-		chr(225).chr(186).chr(174) => 'A', chr(225).chr(186).chr(175) => 'a',
-		chr(225).chr(186).chr(190) => 'E', chr(225).chr(186).chr(191) => 'e',
-		chr(225).chr(187).chr(144) => 'O', chr(225).chr(187).chr(145) => 'o',
-		chr(225).chr(187).chr(154) => 'O', chr(225).chr(187).chr(155) => 'o',
-		chr(225).chr(187).chr(168) => 'U', chr(225).chr(187).chr(169) => 'u',
+		'Ấ' => 'A', 'ấ' => 'a',
+		'Ắ' => 'A', 'ắ' => 'a',
+		'Ế' => 'E', 'ế' => 'e',
+		'Ố' => 'O', 'ố' => 'o',
+		'Ớ' => 'O', 'ớ' => 'o',
+		'Ứ' => 'U', 'ứ' => 'u',
 		// dot below
-		chr(225).chr(186).chr(160) => 'A', chr(225).chr(186).chr(161) => 'a',
-		chr(225).chr(186).chr(172) => 'A', chr(225).chr(186).chr(173) => 'a',
-		chr(225).chr(186).chr(182) => 'A', chr(225).chr(186).chr(183) => 'a',
-		chr(225).chr(186).chr(184) => 'E', chr(225).chr(186).chr(185) => 'e',
-		chr(225).chr(187).chr(134) => 'E', chr(225).chr(187).chr(135) => 'e',
-		chr(225).chr(187).chr(138) => 'I', chr(225).chr(187).chr(139) => 'i',
-		chr(225).chr(187).chr(140) => 'O', chr(225).chr(187).chr(141) => 'o',
-		chr(225).chr(187).chr(152) => 'O', chr(225).chr(187).chr(153) => 'o',
-		chr(225).chr(187).chr(162) => 'O', chr(225).chr(187).chr(163) => 'o',
-		chr(225).chr(187).chr(164) => 'U', chr(225).chr(187).chr(165) => 'u',
-		chr(225).chr(187).chr(176) => 'U', chr(225).chr(187).chr(177) => 'u',
-		chr(225).chr(187).chr(180) => 'Y', chr(225).chr(187).chr(181) => 'y',
+		'Ạ' => 'A', 'ạ' => 'a',
+		'Ậ' => 'A', 'ậ' => 'a',
+		'Ặ' => 'A', 'ặ' => 'a',
+		'Ẹ' => 'E', 'ẹ' => 'e',
+		'Ệ' => 'E', 'ệ' => 'e',
+		'Ị' => 'I', 'ị' => 'i',
+		'Ọ' => 'O', 'ọ' => 'o',
+		'Ộ' => 'O', 'ộ' => 'o',
+		'Ợ' => 'O', 'ợ' => 'o',
+		'Ụ' => 'U', 'ụ' => 'u',
+		'Ự' => 'U', 'ự' => 'u',
+		'Ỵ' => 'Y', 'ỵ' => 'y',
 		// Vowels with diacritic (Chinese, Hanyu Pinyin)
-		chr(201).chr(145) => 'a',
+		'ɑ' => 'a',
 		// macron
-		chr(199).chr(149) => 'U', chr(199).chr(150) => 'u',
+		'Ǖ' => 'U', 'ǖ' => 'u',
 		// acute accent
-		chr(199).chr(151) => 'U', chr(199).chr(152) => 'u',
+		'Ǘ' => 'U', 'ǘ' => 'u',
 		// caron
-		chr(199).chr(141) => 'A', chr(199).chr(142) => 'a',
-		chr(199).chr(143) => 'I', chr(199).chr(144) => 'i',
-		chr(199).chr(145) => 'O', chr(199).chr(146) => 'o',
-		chr(199).chr(147) => 'U', chr(199).chr(148) => 'u',
-		chr(199).chr(153) => 'U', chr(199).chr(154) => 'u',
+		'Ǎ' => 'A', 'ǎ' => 'a',
+		'Ǐ' => 'I', 'ǐ' => 'i',
+		'Ǒ' => 'O', 'ǒ' => 'o',
+		'Ǔ' => 'U', 'ǔ' => 'u',
+		'Ǚ' => 'U', 'ǚ' => 'u',
 		// grave accent
-		chr(199).chr(155) => 'U', chr(199).chr(156) => 'u',
+		'Ǜ' => 'U', 'ǜ' => 'u',
 		);
 
 		// Used for locale-specific rules
 		$locale = get_locale();
 
 		if ( 'de_DE' == $locale || 'de_DE_formal' == $locale || 'de_CH' == $locale || 'de_CH_informal' == $locale ) {
-			$chars[ chr(195).chr(132) ] = 'Ae';
-			$chars[ chr(195).chr(164) ] = 'ae';
-			$chars[ chr(195).chr(150) ] = 'Oe';
-			$chars[ chr(195).chr(182) ] = 'oe';
-			$chars[ chr(195).chr(156) ] = 'Ue';
-			$chars[ chr(195).chr(188) ] = 'ue';
-			$chars[ chr(195).chr(159) ] = 'ss';
+			$chars[ 'Ä' ] = 'Ae';
+			$chars[ 'ä' ] = 'ae';
+			$chars[ 'Ö' ] = 'Oe';
+			$chars[ 'ö' ] = 'oe';
+			$chars[ 'Ü' ] = 'Ue';
+			$chars[ 'ü' ] = 'ue';
+			$chars[ 'ß' ] = 'ss';
 		} elseif ( 'da_DK' === $locale ) {
-			$chars[ chr(195).chr(134) ] = 'Ae';
- 			$chars[ chr(195).chr(166) ] = 'ae';
-			$chars[ chr(195).chr(152) ] = 'Oe';
-			$chars[ chr(195).chr(184) ] = 'oe';
-			$chars[ chr(195).chr(133) ] = 'Aa';
-			$chars[ chr(195).chr(165) ] = 'aa';
+			$chars[ 'Æ' ] = 'Ae';
+ 			$chars[ 'æ' ] = 'ae';
+			$chars[ 'Ø' ] = 'Oe';
+			$chars[ 'ø' ] = 'oe';
+			$chars[ 'Å' ] = 'Aa';
+			$chars[ 'å' ] = 'aa';
 		} elseif ( 'ca' === $locale ) {
-			$chars[ chr(108).chr(194).chr(183).chr(108) ] = 'll';
+			$chars[ 'l·l' ] = 'll';
+		} elseif ( 'sr_RS' === $locale ) {
+			$chars[ 'Đ' ] = 'DJ';
+			$chars[ 'đ' ] = 'dj';
 		}
 
 		$string = strtr($string, $chars);
 	} else {
 		$chars = array();
 		// Assume ISO-8859-1 if not UTF-8
-		$chars['in'] = chr(128).chr(131).chr(138).chr(142).chr(154).chr(158)
-			.chr(159).chr(162).chr(165).chr(181).chr(192).chr(193).chr(194)
-			.chr(195).chr(196).chr(197).chr(199).chr(200).chr(201).chr(202)
-			.chr(203).chr(204).chr(205).chr(206).chr(207).chr(209).chr(210)
-			.chr(211).chr(212).chr(213).chr(214).chr(216).chr(217).chr(218)
-			.chr(219).chr(220).chr(221).chr(224).chr(225).chr(226).chr(227)
-			.chr(228).chr(229).chr(231).chr(232).chr(233).chr(234).chr(235)
-			.chr(236).chr(237).chr(238).chr(239).chr(241).chr(242).chr(243)
-			.chr(244).chr(245).chr(246).chr(248).chr(249).chr(250).chr(251)
-			.chr(252).chr(253).chr(255);
+		$chars['in'] = "\x80\x83\x8a\x8e\x9a\x9e"
+			."\x9f\xa2\xa5\xb5\xc0\xc1\xc2"
+			."\xc3\xc4\xc5\xc7\xc8\xc9\xca"
+			."\xcb\xcc\xcd\xce\xcf\xd1\xd2"
+			."\xd3\xd4\xd5\xd6\xd8\xd9\xda"
+			."\xdb\xdc\xdd\xe0\xe1\xe2\xe3"
+			."\xe4\xe5\xe7\xe8\xe9\xea\xeb"
+			."\xec\xed\xee\xef\xf1\xf2\xf3"
+			."\xf4\xf5\xf6\xf8\xf9\xfa\xfb"
+			."\xfc\xfd\xff";
 
 		$chars['out'] = "EfSZszYcYuAAAAAACEEEEIIIINOOOOOOUUUUYaaaaaaceeeeiiiinoooooouuuuyy";
 
 		$string = strtr($string, $chars['in'], $chars['out']);
 		$double_chars = array();
-		$double_chars['in'] = array(chr(140), chr(156), chr(198), chr(208), chr(222), chr(223), chr(230), chr(240), chr(254));
+		$double_chars['in'] = array("\x8c", "\x9c", "\xc6", "\xd0", "\xde", "\xdf", "\xe6", "\xf0", "\xfe");
 		$double_chars['out'] = array('OE', 'oe', 'AE', 'DH', 'TH', 'ss', 'ae', 'dh', 'th');
 		$string = str_replace($double_chars['in'], $double_chars['out'], $string);
 	}
@@ -3206,32 +3223,37 @@ function human_time_diff( $from, $to = '' ) {
 		$mins = round( $diff / MINUTE_IN_SECONDS );
 		if ( $mins <= 1 )
 			$mins = 1;
-		/* translators: min=minute */
+		/* translators: Time difference between two dates, in minutes (min=minute). 1: Number of minutes */
 		$since = sprintf( _n( '%s min', '%s mins', $mins ), $mins );
 	} elseif ( $diff < DAY_IN_SECONDS && $diff >= HOUR_IN_SECONDS ) {
 		$hours = round( $diff / HOUR_IN_SECONDS );
 		if ( $hours <= 1 )
 			$hours = 1;
+		/* translators: Time difference between two dates, in hours. 1: Number of hours */
 		$since = sprintf( _n( '%s hour', '%s hours', $hours ), $hours );
 	} elseif ( $diff < WEEK_IN_SECONDS && $diff >= DAY_IN_SECONDS ) {
 		$days = round( $diff / DAY_IN_SECONDS );
 		if ( $days <= 1 )
 			$days = 1;
+		/* translators: Time difference between two dates, in days. 1: Number of days */
 		$since = sprintf( _n( '%s day', '%s days', $days ), $days );
 	} elseif ( $diff < MONTH_IN_SECONDS && $diff >= WEEK_IN_SECONDS ) {
 		$weeks = round( $diff / WEEK_IN_SECONDS );
 		if ( $weeks <= 1 )
 			$weeks = 1;
+		/* translators: Time difference between two dates, in weeks. 1: Number of weeks */
 		$since = sprintf( _n( '%s week', '%s weeks', $weeks ), $weeks );
 	} elseif ( $diff < YEAR_IN_SECONDS && $diff >= MONTH_IN_SECONDS ) {
 		$months = round( $diff / MONTH_IN_SECONDS );
 		if ( $months <= 1 )
 			$months = 1;
+		/* translators: Time difference between two dates, in months. 1: Number of months */
 		$since = sprintf( _n( '%s month', '%s months', $months ), $months );
 	} elseif ( $diff >= YEAR_IN_SECONDS ) {
 		$years = round( $diff / YEAR_IN_SECONDS );
 		if ( $years <= 1 )
 			$years = 1;
+		/* translators: Time difference between two dates, in years. 1: Number of years */
 		$since = sprintf( _n( '%s year', '%s years', $years ), $years );
 	}
 
@@ -4642,6 +4664,7 @@ function wp_strip_all_tags($string, $remove_breaks = false) {
  *
  * @since 2.9.0
  *
+ * @see sanitize_textarea_field()
  * @see wp_check_invalid_utf8()
  * @see wp_strip_all_tags()
  *
@@ -4649,15 +4672,74 @@ function wp_strip_all_tags($string, $remove_breaks = false) {
  * @return string Sanitized string.
  */
 function sanitize_text_field( $str ) {
+	$filtered = _sanitize_text_fields( $str, false );
+
+	/**
+	 * Filters a sanitized text field string.
+	 *
+	 * @since 2.9.0
+	 *
+	 * @param string $filtered The sanitized string.
+	 * @param string $str      The string prior to being sanitized.
+	 */
+	return apply_filters( 'sanitize_text_field', $filtered, $str );
+}
+
+/**
+ * Sanitizes a multiline string from user input or from the database.
+ *
+ * The function is like sanitize_text_field(), but preserves
+ * new lines (\n) and other whitespace, which are legitimate
+ * input in textarea elements.
+ *
+ * @see sanitize_text_field()
+ *
+ * @since 4.7.0
+ *
+ * @param string $str String to sanitize.
+ * @return string Sanitized string.
+ */
+function sanitize_textarea_field( $str ) {
+	$filtered = _sanitize_text_fields( $str, true );
+
+	/**
+	 * Filters a sanitized textarea field string.
+	 *
+	 * @since 4.7.0
+	 *
+	 * @param string $filtered The sanitized string.
+	 * @param string $str      The string prior to being sanitized.
+	 */
+	return apply_filters( 'sanitize_textarea_field', $filtered, $str );
+}
+
+/**
+ * Internal helper function to sanitize a string from user input or from the db
+ *
+ * @since 4.7.0
+ * @access private
+ *
+ * @param string $str String to sanitize.
+ * @param bool $keep_newlines optional Whether to keep newlines. Default: false.
+ * @return string Sanitized string.
+ */
+function _sanitize_text_fields( $str, $keep_newlines = false ) {
 	$filtered = wp_check_invalid_utf8( $str );
 
 	if ( strpos($filtered, '<') !== false ) {
 		$filtered = wp_pre_kses_less_than( $filtered );
 		// This will strip extra whitespace for us.
-		$filtered = wp_strip_all_tags( $filtered, true );
-	} else {
-		$filtered = trim( preg_replace('/[\r\n\t ]+/', ' ', $filtered) );
+		$filtered = wp_strip_all_tags( $filtered, false );
+
+		// Use html entities in a special case to make sure no later
+		// newline stripping stage could lead to a functional tag
+		$filtered = str_replace("<\n", "&lt;\n", $filtered);
 	}
+
+	if ( ! $keep_newlines ) {
+		$filtered = preg_replace( '/[\r\n\t ]+/', ' ', $filtered );
+	}
+	$filtered = trim( $filtered );
 
 	$found = false;
 	while ( preg_match('/%[a-f0-9]{2}/i', $filtered, $match) ) {
@@ -4670,15 +4752,7 @@ function sanitize_text_field( $str ) {
 		$filtered = trim( preg_replace('/ +/', ' ', $filtered) );
 	}
 
-	/**
-	 * Filters a sanitized text field string.
-	 *
-	 * @since 2.9.0
-	 *
-	 * @param string $filtered The sanitized string.
-	 * @param string $str      The string prior to being sanitized.
-	 */
-	return apply_filters( 'sanitize_text_field', $filtered, $str );
+	return $filtered;
 }
 
 /**
@@ -4927,12 +5001,8 @@ function print_emoji_detection_script() {
  * @ignore
  * @since 4.6.0
  * @access private
- *
- * @global string $wp_version WordPress version string.
  */
 function _print_emoji_detection_script() {
-	global $wp_version;
-
 	$settings = array(
 		/**
 		 * Filters the URL where emoji png images are hosted.
@@ -4941,7 +5011,7 @@ function _print_emoji_detection_script() {
 		 *
 		 * @param string The emoji base URL for png images.
 		 */
-		'baseUrl' => apply_filters( 'emoji_url', 'https://s.w.org/images/core/emoji/2/72x72/' ),
+		'baseUrl' => apply_filters( 'emoji_url', 'https://s.w.org/images/core/emoji/2.2.1/72x72/' ),
 
 		/**
 		 * Filters the extension of the emoji png files.
@@ -4959,7 +5029,7 @@ function _print_emoji_detection_script() {
 		 *
 		 * @param string The emoji base URL for svg images.
 		 */
-		'svgUrl' => apply_filters( 'emoji_svg_url', 'https://s.w.org/images/core/emoji/2/svg/' ),
+		'svgUrl' => apply_filters( 'emoji_svg_url', 'https://s.w.org/images/core/emoji/2.2.1/svg/' ),
 
 		/**
 		 * Filters the extension of the emoji SVG files.
@@ -4971,7 +5041,7 @@ function _print_emoji_detection_script() {
 		'svgExt' => apply_filters( 'emoji_svg_ext', '.svg' ),
 	);
 
-	$version = 'ver=' . $wp_version;
+	$version = 'ver=' . get_bloginfo( 'version' );
 
 	if ( SCRIPT_DEBUG ) {
 		$settings['source'] = array(
@@ -5006,7 +5076,7 @@ function _print_emoji_detection_script() {
 		?>
 		<script type="text/javascript">
 			window._wpemojiSettings = <?php echo wp_json_encode( $settings ); ?>;
-			!function(a,b,c){function d(a){var c,d,e,f,g,h=b.createElement("canvas"),i=h.getContext&&h.getContext("2d"),j=String.fromCharCode;if(!i||!i.fillText)return!1;switch(i.textBaseline="top",i.font="600 32px Arial",a){case"flag":return i.fillText(j(55356,56806,55356,56826),0,0),!(h.toDataURL().length<3e3)&&(i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,65039,8205,55356,57096),0,0),c=h.toDataURL(),i.clearRect(0,0,h.width,h.height),i.fillText(j(55356,57331,55356,57096),0,0),d=h.toDataURL(),c!==d);case"diversity":return i.fillText(j(55356,57221),0,0),e=i.getImageData(16,16,1,1).data,f=e[0]+","+e[1]+","+e[2]+","+e[3],i.fillText(j(55356,57221,55356,57343),0,0),e=i.getImageData(16,16,1,1).data,g=e[0]+","+e[1]+","+e[2]+","+e[3],f!==g;case"simple":return i.fillText(j(55357,56835),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode8":return i.fillText(j(55356,57135),0,0),0!==i.getImageData(16,16,1,1).data[0];case"unicode9":return i.fillText(j(55358,56631),0,0),0!==i.getImageData(16,16,1,1).data[0]}return!1}function e(a){var c=b.createElement("script");c.src=a,c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i;for(i=Array("simple","flag","unicode8","diversity","unicode9"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
+			!function(a,b,c){function d(a){var b,c,d,e,f=String.fromCharCode;if(!k||!k.fillText)return!1;switch(k.clearRect(0,0,j.width,j.height),k.textBaseline="top",k.font="600 32px Arial",a){case"flag":return k.fillText(f(55356,56826,55356,56819),0,0),!(j.toDataURL().length<3e3)&&(k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,65039,8205,55356,57096),0,0),b=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55356,57331,55356,57096),0,0),c=j.toDataURL(),b!==c);case"emoji4":return k.fillText(f(55357,56425,55356,57341,8205,55357,56507),0,0),d=j.toDataURL(),k.clearRect(0,0,j.width,j.height),k.fillText(f(55357,56425,55356,57341,55357,56507),0,0),e=j.toDataURL(),d!==e}return!1}function e(a){var c=b.createElement("script");c.src=a,c.defer=c.type="text/javascript",b.getElementsByTagName("head")[0].appendChild(c)}var f,g,h,i,j=b.createElement("canvas"),k=j.getContext&&j.getContext("2d");for(i=Array("flag","emoji4"),c.supports={everything:!0,everythingExceptFlag:!0},h=0;h<i.length;h++)c.supports[i[h]]=d(i[h]),c.supports.everything=c.supports.everything&&c.supports[i[h]],"flag"!==i[h]&&(c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&c.supports[i[h]]);c.supports.everythingExceptFlag=c.supports.everythingExceptFlag&&!c.supports.flag,c.DOMReady=!1,c.readyCallback=function(){c.DOMReady=!0},c.supports.everything||(g=function(){c.readyCallback()},b.addEventListener?(b.addEventListener("DOMContentLoaded",g,!1),a.addEventListener("load",g,!1)):(a.attachEvent("onload",g),b.attachEvent("onreadystatechange",function(){"complete"===b.readyState&&c.readyCallback()})),f=c.source||{},f.concatemoji?e(f.concatemoji):f.wpemoji&&f.twemoji&&(e(f.twemoji),e(f.wpemoji)))}(window,document,window._wpemojiSettings);
 		</script>
 		<?php
 	}
@@ -5071,7 +5141,7 @@ function wp_staticize_emoji( $text ) {
 	$text = wp_encode_emoji( $text );
 
 	/** This filter is documented in wp-includes/formatting.php */
-	$cdn_url = apply_filters( 'emoji_url', 'https://s.w.org/images/core/emoji/2/72x72/' );
+	$cdn_url = apply_filters( 'emoji_url', 'https://s.w.org/images/core/emoji/2.2.1/72x72/' );
 
 	/** This filter is documented in wp-includes/formatting.php */
 	$ext = apply_filters( 'emoji_ext', '.png' );

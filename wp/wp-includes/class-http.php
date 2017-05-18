@@ -101,8 +101,6 @@ class WP_Http {
 	 * @access public
 	 * @since 2.7.0
 	 *
-	 * @global string $wp_version
-	 *
 	 * @param string       $url  The request URL.
 	 * @param string|array $args {
 	 *     Optional. Array or string of HTTP request arguments.
@@ -116,7 +114,7 @@ class WP_Http {
 	 *     @type string       $httpversion         Version of the HTTP protocol to use. Accepts '1.0' and '1.1'.
 	 *                                             Default '1.0'.
 	 *     @type string       $user-agent          User-agent value sent.
-	 *                                             Default WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' ).
+	 *                                             Default WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ).
 	 *     @type bool         $reject_unsafe_urls  Whether to pass URLs through wp_http_validate_url().
 	 *                                             Default false.
 	 *     @type bool         $blocking            Whether the calling code requires the result of the request.
@@ -148,8 +146,6 @@ class WP_Http {
 	 *                        A WP_Error instance upon error.
 	 */
 	public function request( $url, $args = array() ) {
-		global $wp_version;
-
 		$defaults = array(
 			'method' => 'GET',
 			/**
@@ -185,7 +181,7 @@ class WP_Http {
 			 *
 			 * @param string $user_agent WordPress user agent string.
 			 */
-			'user-agent' => apply_filters( 'http_headers_useragent', 'WordPress/' . $wp_version . '; ' . get_bloginfo( 'url' ) ),
+			'user-agent' => apply_filters( 'http_headers_useragent', 'WordPress/' . get_bloginfo( 'version' ) . '; ' . get_bloginfo( 'url' ) ),
 			/**
 			 * Filters whether to pass URLs through wp_http_validate_url() in an HTTP request.
 			 *
@@ -304,11 +300,16 @@ class WP_Http {
 			'timeout' => $r['timeout'],
 			'useragent' => $r['user-agent'],
 			'blocking' => $r['blocking'],
-			'hooks' => new Requests_Hooks(),
+			'hooks' => new WP_HTTP_Requests_Hooks( $url, $r ),
 		);
 
 		// Ensure redirects follow browser behaviour.
 		$options['hooks']->register( 'requests.before_redirect', array( get_class(), 'browser_redirect_compatibility' ) );
+
+		// Validate redirected URLs.
+		if ( function_exists( 'wp_kses_bad_protocol' ) && $r['reject_unsafe_urls'] ) {
+			$options['hooks']->register( 'requests.before_redirect', array( get_class(), 'validate_redirects' ) );
+		}
 
 		if ( $r['stream'] ) {
 			$options['filename'] = $r['filename'];
@@ -332,6 +333,7 @@ class WP_Http {
 		// SSL certificate handling
 		if ( ! $r['sslverify'] ) {
 			$options['verify'] = false;
+			$options['verifyname'] = false;
 		} else {
 			$options['verify'] = $r['sslcertificates'];
 		}
@@ -362,8 +364,8 @@ class WP_Http {
 			}
 		}
 
-		// Work around a bug in Requests when the path starts with // See https://github.com/rmccue/Requests/issues/231
-		$url = preg_replace( '!^(\w+://[^/]+)//(.*)$!i', '$1/$2', $url );
+		// Avoid issues where mbstring.func_overload is enabled
+		mbstring_binary_safe_encoding();
 
 		try {
 			$requests_response = Requests::request( $url, $headers, $data, $type, $options );
@@ -378,6 +380,8 @@ class WP_Http {
 		catch ( Requests_Exception $e ) {
 			$response = new WP_Error( 'http_request_failed', $e->getMessage() );
 		}
+
+		reset_mbstring_encoding();
 
 		/**
 		 * Fires after an HTTP API response is received and before the response is returned.
@@ -464,6 +468,20 @@ class WP_Http {
 		// Browser compat
 		if ( $original->status_code === 302 ) {
 			$options['type'] = Requests::GET;
+		}
+	}
+
+	/**
+	 * Validate redirected URLs.
+	 *
+	 * @since 4.7.5
+	 *
+	 * @throws Requests_Exception On unsuccessful URL validation
+	 * @param string $location URL to redirect to.
+	 */
+	public static function validate_redirects( $location ) {
+		if ( ! wp_http_validate_url( $location ) ) {
+			throw new Requests_Exception( __('A valid URL was not provided.'), 'wp_http.redirect_failed_validation' );
 		}
 	}
 
