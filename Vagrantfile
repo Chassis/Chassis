@@ -46,6 +46,12 @@ Vagrant.configure("2") do |config|
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
 		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+
+		# Customisations from config.local.yaml
+		if CONF['virtualbox']
+			vb.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
+			vb.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
+		end
 	end
 
 	# We <3 Ubuntu LTS

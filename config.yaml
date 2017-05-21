@@ -101,3 +101,15 @@ synced_folders:
 # PHP version
 # Values: 5.3, 5.4, 5.5, 5.6, 7.0, 7.1 (or e.g. 5.3.3)
 php: 7.0
+
+# VirtualBox-specific customisations.
+virtualbox:
+    # Memory, in megabytes.
+    #
+    # (e.g. 1024)
+    memory: null
+
+    # CPU count.
+    #
+    # (e.g. 2)
+    cpus: null
