@@ -154,8 +154,14 @@ module Chassis
 			repo = extension
 		end
 
-		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
-
-		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
+		if extension.is_a?(String)
+			folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
+			system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
+		elsif extension.is_a?(Hash)
+			extension.values.each { |dep| self.install_extension(dep) }
+			extension = extension.keys
+		elsif extension.is_a?(Array)
+			extension.each { |dep| self.install_extension(dep) }
+		end
 	end
 end
