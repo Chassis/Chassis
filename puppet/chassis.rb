@@ -108,7 +108,7 @@ module Chassis
 					folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
 
 					if ! File.exist?( folder )
-						system("git clone %s %s --recursive" % [repo, folder] )
+						system("git clone %s %s --recursive --shallow-submodules --depth 1," % [repo, folder] )
 					end
 				end
 			end
