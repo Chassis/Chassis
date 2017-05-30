@@ -46,10 +46,6 @@ Vagrant.configure("2") do |config|
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
 		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
-
-		# Workaround for issues with VirtualBox 5.0.x
-		# https://github.com/chef/bento/issues/688
-		vb.customize ["modifyvm", :id, "--cableconnected1", "on"]
 	end
 
 	# We <3 Ubuntu LTS
@@ -115,9 +111,9 @@ Vagrant.configure("2") do |config|
 
 	# Ensure that WordPress can install/update plugins, themes and core
 	if vagrant_version >= "1.3.0"
-		config.vm.synced_folder ".", "/vagrant", :nfs => { :mount_options => ["dmode=777","fmode=777"] }
+		config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ]
 		CONF["synced_folders"].each do |from, to|
-			config.vm.synced_folder from, to, :nfs => { :mount_options => ["dmode=777","fmode=777"] }
+			config.vm.synced_folder from, to, :mount_options => [ "dmode=777,fmode=777" ]
 		end if CONF["synced_folders"]
 	else
 		config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"

@@ -191,6 +191,16 @@ class chassis::php (
 		notify  => Service["${php_package}-fpm"]
 	}
 
+	file { "/etc/${php_dir}/cli/php.ini":
+		content => template('chassis/php.ini.erb'),
+		owner   => 'root',
+		group   => 'root',
+		mode    => 0644,
+		require => Package["${php_package}-fpm"],
+		ensure  => 'present',
+		notify  => Service["${php_package}-fpm"]
+	}
+
 	file { "/etc/${php_dir}/fpm/pool.d/www.conf":
 		content => template('chassis/php-pool.conf.erb'),
 		owner   => 'root',
