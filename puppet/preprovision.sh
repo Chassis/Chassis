@@ -14,10 +14,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		REPOS="main restricted universe multiverse"
 
 		touch /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise $REPOS"           >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise-updates $REPOS"   >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise-backports $REPOS" >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR precise-security $REPOS"  >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial $REPOS"           >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial-updates $REPOS"   >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial-backports $REPOS" >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR xenial-security $REPOS"  >> /tmp/mirrors-sources.list
 
 		# Add mirrors to the start
 		cat /tmp/mirrors-sources.list /etc/apt/sources.list > /tmp/apt-sources.list
@@ -29,11 +29,6 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		# Remove temp files
 		rm /tmp/mirrors-sources.list /tmp/apt-sources.list
 	fi
-
-	# Allow Puppet to be upgraded
-	# (Note that preicse's package is 2.7, so we need the custom deb)
-	wget http://apt.puppetlabs.com/puppetlabs-release-precise.deb
-	dpkg -i puppetlabs-release-precise.deb
 
 	# Update apt
 	sudo apt-get update
