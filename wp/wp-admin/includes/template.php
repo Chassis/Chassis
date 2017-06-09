@@ -821,19 +821,21 @@ function parent_dropdown( $default = 0, $parent = 0, $level = 0, $post = null ) 
  * @param string $selected Slug for the role that should be already selected.
  */
 function wp_dropdown_roles( $selected = '' ) {
-	$p = '';
 	$r = '';
 
 	$editable_roles = array_reverse( get_editable_roles() );
 
 	foreach ( $editable_roles as $role => $details ) {
 		$name = translate_user_role($details['name'] );
-		if ( $selected == $role ) // preselect specified role
-			$p = "\n\t<option selected='selected' value='" . esc_attr($role) . "'>$name</option>";
-		else
-			$r .= "\n\t<option value='" . esc_attr($role) . "'>$name</option>";
+		// preselect specified role
+		if ( $selected == $role ) {
+			$r .= "\n\t<option selected='selected' value='" . esc_attr( $role ) . "'>$name</option>";
+		} else {
+			$r .= "\n\t<option value='" . esc_attr( $role ) . "'>$name</option>";
+		}
 	}
-	echo $p . $r;
+
+	echo $r;
 }
 
 /**
@@ -1038,7 +1040,7 @@ function do_meta_boxes( $screen, $context, $object ) {
 							unset( $box[ 'args' ][ '__widget_basename' ] );
 						}
 
-						echo '<button type="button" class="handlediv button-link" aria-expanded="true">';
+						echo '<button type="button" class="handlediv" aria-expanded="true">';
 						echo '<span class="screen-reader-text">' . sprintf( __( 'Toggle panel: %s' ), $widget_title ) . '</span>';
 						echo '<span class="toggle-indicator" aria-hidden="true"></span>';
 						echo '</button>';
@@ -1207,12 +1209,22 @@ function add_settings_section($id, $title, $callback, $page) {
 	global $wp_settings_sections;
 
 	if ( 'misc' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.0.0', sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ), 'misc' ) );
+		_deprecated_argument( __FUNCTION__, '3.0.0',
+			/* translators: %s: misc */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'misc'
+			)
+		);
 		$page = 'general';
 	}
 
 	if ( 'privacy' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.5.0', sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ), 'privacy' ) );
+		_deprecated_argument( __FUNCTION__, '3.5.0',
+			/* translators: %s: privacy */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'privacy'
+			)
+		);
 		$page = 'reading';
 	}
 
@@ -1258,12 +1270,22 @@ function add_settings_field($id, $title, $callback, $page, $section = 'default',
 	global $wp_settings_fields;
 
 	if ( 'misc' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.0.0', __( 'The miscellaneous options group has been removed. Use another settings group.' ) );
+		_deprecated_argument( __FUNCTION__, '3.0.0',
+			/* translators: %s: misc */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'misc'
+			)
+		);
 		$page = 'general';
 	}
 
 	if ( 'privacy' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.5.0', __( 'The privacy options group has been removed. Use another settings group.' ) );
+		_deprecated_argument( __FUNCTION__, '3.5.0',
+			/* translators: %s: privacy */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'privacy'
+			)
+		);
 		$page = 'reading';
 	}
 
@@ -1498,7 +1520,7 @@ function find_posts_div($found_action = '') {
 	<div id="find-posts" class="find-box" style="display: none;">
 		<div id="find-posts-head" class="find-box-head">
 			<?php _e( 'Attach to existing content' ); ?>
-			<button type="button" id="find-posts-close"><span class="screen-reader-text"><?php _e( 'Close media attachment panel' ); ?></button>
+			<button type="button" id="find-posts-close"><span class="screen-reader-text"><?php _e( 'Close media attachment panel' ); ?></span></button>
 		</div>
 		<div class="find-box-inside">
 			<div class="find-box-search">
@@ -1726,6 +1748,7 @@ function _post_states($post) {
 	 * Filters the default post display states used in the posts list table.
 	 *
 	 * @since 2.8.0
+	 * @since 3.6.0 Added the `$post` parameter.
 	 *
 	 * @param array   $post_states An array of post display states.
 	 * @param WP_Post $post        The current post object.
@@ -1794,7 +1817,7 @@ function _media_states( $post ) {
 		$media_states[] = __( 'Site Icon' );
 	}
 
-	if ( $post->ID == get_theme_mod( 'site_logo' ) ) {
+	if ( $post->ID == get_theme_mod( 'custom_logo' ) ) {
 		$media_states[] = __( 'Logo' );
 	}
 
@@ -1802,11 +1825,13 @@ function _media_states( $post ) {
 	 * Filters the default media display states for items in the Media list table.
 	 *
 	 * @since 3.2.0
+	 * @since 4.8.0 Added the `$post` parameter.
 	 *
-	 * @param array $media_states An array of media states. Default 'Header Image',
-	 *                            'Background Image', 'Site Icon', 'Logo'.
+	 * @param array   $media_states An array of media states. Default 'Header Image',
+	 *                              'Background Image', 'Site Icon', 'Logo'.
+	 * @param WP_Post $post         The current attachment object.
 	 */
-	$media_states = apply_filters( 'display_media_states', $media_states );
+	$media_states = apply_filters( 'display_media_states', $media_states, $post );
 
 	if ( ! empty( $media_states ) ) {
 		$state_count = count( $media_states );
@@ -1893,7 +1918,7 @@ function compression_test() {
  *
  * @param string       $text             The text of the button (defaults to 'Save Changes')
  * @param string       $type             Optional. The type and CSS class(es) of the button. Core values
- *                                       include 'primary', 'secondary', 'delete'. Default 'primary'
+ *                                       include 'primary', 'small', and 'large'. Default 'primary'.
  * @param string       $name             The HTML name of the submit button. Defaults to "submit". If no
  *                                       id attribute is given in $other_attributes below, $name will be
  *                                       used as the button's id.
@@ -1916,8 +1941,8 @@ function submit_button( $text = null, $type = 'primary', $name = 'submit', $wrap
  * @since 3.1.0
  *
  * @param string       $text             Optional. The text of the button. Default 'Save Changes'.
- * @param string       $type             Optional. The type of button. Accepts 'primary', 'secondary',
- *                                       or 'delete'. Default 'primary large'.
+ * @param string       $type             Optional. The type and CSS class(es) of the button. Core values
+ *                                       include 'primary', 'small', and 'large'. Default 'primary large'.
  * @param string       $name             Optional. The HTML name of the submit button. Defaults to "submit".
  *                                       If no id attribute is given in $other_attributes below, `$name` will
  *                                       be used as the button's id. Default 'submit'.

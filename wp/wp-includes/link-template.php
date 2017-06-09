@@ -846,7 +846,7 @@ function get_term_feed_link( $term_id, $taxonomy = 'category', $feed = '' ) {
 		 *
 		 * @param string $link The taxonomy feed link.
 		 * @param string $feed Feed type.
-		 * @param string $feed The taxonomy name.
+		 * @param string $taxonomy The taxonomy name.
 		 */
 		$link = apply_filters( 'taxonomy_feed_link', $link, $feed, $taxonomy );
 	}
@@ -3472,13 +3472,13 @@ function get_dashboard_url( $user_id = 0, $path = '', $scheme = 'admin' ) {
 	$user_id = $user_id ? (int) $user_id : get_current_user_id();
 
 	$blogs = get_blogs_of_user( $user_id );
-	if ( ! is_super_admin() && empty($blogs) ) {
+	if ( is_multisite() && ! user_can( $user_id, 'manage_network' ) && empty($blogs) ) {
 		$url = user_admin_url( $path, $scheme );
 	} elseif ( ! is_multisite() ) {
 		$url = admin_url( $path, $scheme );
 	} else {
 		$current_blog = get_current_blog_id();
-		if ( $current_blog  && ( is_super_admin( $user_id ) || in_array( $current_blog, array_keys( $blogs ) ) ) ) {
+		if ( $current_blog  && ( user_can( $user_id, 'manage_network' ) || in_array( $current_blog, array_keys( $blogs ) ) ) ) {
 			$url = admin_url( $path, $scheme );
 		} else {
 			$active = get_active_blog_for_user( $user_id );
@@ -3583,8 +3583,8 @@ function wp_get_canonical_url( $post = null ) {
 	 *
 	 * @since 4.6.0
 	 *
-	 * @param string  $string The post's canonical URL.
-	 * @param WP_Post $post   Post object.
+	 * @param string  $canonical_url The post's canonical URL.
+	 * @param WP_Post $post          Post object.
 	 */
 	return apply_filters( 'get_canonical_url', $canonical_url, $post );
 }

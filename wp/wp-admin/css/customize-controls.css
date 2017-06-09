@@ -163,6 +163,15 @@ body {
 #customize-controls .customize-info .customize-panel-description.open + .no-widget-areas-rendered-notice {
 	border-top: none;
 }
+.no-widget-areas-rendered-notice {
+	font-style: italic;
+}
+.no-widget-areas-rendered-notice p:first-child {
+	margin-top: 0;
+}
+.no-widget-areas-rendered-notice p:last-child {
+	margin-bottom: 0;
+}
 
 #customize-controls .customize-info .customize-section-description {
 	margin-bottom: 15px;
@@ -608,7 +617,6 @@ p.customize-section-description {
 
 .customize-control select {
 	width: 100%;
-	max-width: 300px;
 	height: 28px;
 	line-height: 28px;
 }
@@ -702,8 +710,16 @@ p.customize-section-description {
 	padding-top: 7px;
 }
 
-.customize-control .thumbnail-image {
+/* Remove descender space. */
+.customize-control .thumbnail-image,
+.customize-control-header .current,
+.customize-control .wp-media-wrapper.wp-video {
 	line-height: 0;
+}
+
+/* Remove descender space. */
+.customize-control-site_icon .favicon-preview .browser-preview {
+	vertical-align: top;
 }
 
 .customize-control .thumbnail-image img {
@@ -735,7 +751,6 @@ p.customize-section-description {
 
 .customize-control-dropdown-pages .new-content-item {
 	width: 100%;
-	max-width: 300px;
 	padding: 5px 0 5px 1px;
 	position: relative;
 }
@@ -767,19 +782,8 @@ p.customize-section-description {
 
 .customize-control-dropdown-pages .add-new-toggle {
 	margin-left: 1px;
-	color: #0073aa;
 	font-weight: 600;
 	line-height: 28px;
-	text-decoration: underline;
-}
-
-.customize-control-dropdown-pages .add-new-toggle:hover,
-.customize-control-dropdown-pages .add-new-toggle:active {
-	color: #00a0d2;
-}
-
-.customize-control-dropdown-pages .add-new-toggle:focus {
-	color: #124964;
 }
 
 #customize-preview iframe {
@@ -936,12 +940,8 @@ p.customize-section-description {
 
 /* Media controls */
 
-.customize-control .attachment-media-view .actions {
-	margin-top: 8px;
-}
-
-.customize-control-header .current {
-	margin-bottom: 8px;
+.customize-control .actions .button {
+	margin-top: 12px;
 }
 
 .customize-control-header .actions,
@@ -969,9 +969,9 @@ p.customize-section-description {
 .customize-control .attachment-media-view .upload-button,
 .customize-control-header button.new,
 .customize-control-header button.remove {
-	white-space: normal;
-	width: 48%;
+	width: auto;
 	height: auto;
+	white-space: normal;
 }
 
 .customize-control .attachment-media-view .thumbnail,
@@ -1017,7 +1017,7 @@ p.customize-section-description {
 .customize-control-header .header-view {
 	position: relative;
 	width: 100%;
-	margin-bottom: 5px;
+	margin-bottom: 12px;
 }
 
 .customize-control-header .header-view:last-child {
@@ -1141,13 +1141,7 @@ p.customize-section-description {
 .customize-control .attachment-media-view .remove-button,
 .customize-control .attachment-media-view .default-button,
 .customize-control-header .remove {
-	float: left;
-	margin-right: 3px;
-}
-
-.customize-control .attachment-media-view .upload-button,
-.customize-control-header .new {
-	float: right;
+	margin-right: 8px;
 }
 
 /* Background position control */
@@ -1191,20 +1185,18 @@ p.customize-section-description {
 .customize-section-description-container + #customize-control-custom_css:last-child {
 	margin-left: -12px;
 	width: 299px;
+	width: -webkit-calc( 100% + 24px );
+	width: calc( 100% + 24px );
 	margin-bottom: -12px;
 }
 
 @media screen and ( max-width: 640px ) {
 	.customize-section-description-container + #customize-control-custom_css:last-child {
-		margin-left: 0;
 		margin-right: 0;
-		width: 100%;
 	}
 	.customize-section-description-container + #customize-control-custom_css:last-child textarea {
 		height: -webkit-calc( 100vh - 140px );
 		height: calc( 100vh - 140px );
-		width: 100%;
-		border: solid 1px #ddd;
 	}
 }
 
@@ -1478,24 +1470,11 @@ body.cheatin p {
 
 /* Reordering */
 .reorder-toggle {
-	color: #0073aa;
 	float: right;
 	padding: 5px 8px;
 	text-decoration: none;
 	cursor: pointer;
 	outline: none;
-	-webkit-user-select: none;
-	-moz-user-select: none;
-	-ms-user-select: none;
-	user-select: none;
-}
-
-.reorder-toggle:hover {
-	color: #00a0d2;
-}
-
-.reorder-toggle:focus {
-	outline: 1px dotted;
 }
 
 .reorder,
@@ -1507,13 +1486,6 @@ body.cheatin p {
 .reorder-done,
 .reordering .reorder {
 	display: none;
-	color: #0073aa;
-}
-
-.reorder-toggle:hover .reorder-done,
-.reorder-toggle:active .reorder-done,
-.reorder-toggle:focus .reorder-done {
-	color: #00a0d2;
 }
 
 .widget-reorder-nav span,

@@ -32,7 +32,12 @@ function map_meta_cap( $cap, $user_id ) {
 
 	switch ( $cap ) {
 	case 'remove_user':
-		$caps[] = 'remove_users';
+		// In multisite the user must be a super admin to remove themselves.
+		if ( isset( $args[0] ) && $user_id == $args[0] && ! is_super_admin( $user_id ) ) {
+			$caps[] = 'do_not_allow';
+		} else {
+			$caps[] = 'remove_users';
+		}
 		break;
 	case 'promote_user':
 	case 'add_users':
@@ -357,7 +362,7 @@ function map_meta_cap( $cap, $user_id ) {
 		// Disallow the file editors.
 		if ( defined( 'DISALLOW_FILE_EDIT' ) && DISALLOW_FILE_EDIT )
 			$caps[] = 'do_not_allow';
-		elseif ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS )
+		elseif ( ! wp_is_file_mod_allowed( 'capability_edit_themes' ) )
 			$caps[] = 'do_not_allow';
 		elseif ( is_multisite() && ! is_super_admin( $user_id ) )
 			$caps[] = 'do_not_allow';
@@ -375,7 +380,7 @@ function map_meta_cap( $cap, $user_id ) {
 	case 'update_core':
 		// Disallow anything that creates, deletes, or updates core, plugin, or theme files.
 		// Files in uploads are excepted.
-		if ( defined( 'DISALLOW_FILE_MODS' ) && DISALLOW_FILE_MODS ) {
+		if ( ! wp_is_file_mod_allowed( 'capability_update_core' ) ) {
 			$caps[] = 'do_not_allow';
 		} elseif ( is_multisite() && ! is_super_admin( $user_id ) ) {
 			$caps[] = 'do_not_allow';
@@ -422,7 +427,11 @@ function map_meta_cap( $cap, $user_id ) {
 		$caps[] = 'edit_theme_options';
 		break;
 	case 'delete_site':
-		$caps[] = 'manage_options';
+		if ( is_multisite() ) {
+			$caps[] = 'manage_options';
+		} else {
+			$caps[] = 'do_not_allow';
+		}
 		break;
 	case 'edit_term':
 	case 'delete_term':
@@ -469,7 +478,15 @@ function map_meta_cap( $cap, $user_id ) {
 	case 'manage_network_plugins':
 	case 'manage_network_themes':
 	case 'manage_network_options':
+	case 'upgrade_network':
 		$caps[] = $cap;
+		break;
+	case 'setup_network':
+		if ( is_multisite() ) {
+			$caps[] = 'manage_network_options';
+		} else {
+			$caps[] = 'manage_options';
+		}
 		break;
 	default:
 		// Handle meta capabilities for custom post types.

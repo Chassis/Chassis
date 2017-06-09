@@ -77,7 +77,7 @@ function twentyseventeen_customize_register( $wp_customize ) {
 		'label'       => __( 'Page Layout', 'twentyseventeen' ),
 		'section'     => 'theme_options',
 		'type'        => 'radio',
-		'description' => __( 'When the two column layout is assigned, the page title is in one column and content is in the other.', 'twentyseventeen' ),
+		'description' => __( 'When the two-column layout is assigned, the page title is in one column and content is in the other.', 'twentyseventeen' ),
 		'choices'     => array(
 			'one-column' => __( 'One Column', 'twentyseventeen' ),
 			'two-column' => __( 'Two Column', 'twentyseventeen' ),
@@ -90,7 +90,7 @@ function twentyseventeen_customize_register( $wp_customize ) {
 	 *
 	 * @since Twenty Seventeen 1.0
 	 *
-	 * @param $num_sections integer
+	 * @param int $num_sections Number of front page sections.
 	 */
 	$num_sections = apply_filters( 'twentyseventeen_front_page_sections', 4 );
 
@@ -123,6 +123,8 @@ add_action( 'customize_register', 'twentyseventeen_customize_register' );
 
 /**
  * Sanitize the page layout options.
+ *
+ * @param string $input Page layout.
  */
 function twentyseventeen_sanitize_page_layout( $input ) {
 	$valid = array(
@@ -139,11 +141,13 @@ function twentyseventeen_sanitize_page_layout( $input ) {
 
 /**
  * Sanitize the colorscheme.
+ *
+ * @param string $input Color scheme.
  */
 function twentyseventeen_sanitize_colorscheme( $input ) {
 	$valid = array( 'light', 'dark', 'custom' );
 
-	if ( in_array( $input, $valid ) ) {
+	if ( in_array( $input, $valid, true ) ) {
 		return $input;
 	}
 

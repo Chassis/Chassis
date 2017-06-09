@@ -96,6 +96,7 @@ function register_nav_menus( $locations = array() ) {
 /**
  * Unregisters a navigation menu location for a theme.
  *
+ * @since 3.1.0
  * @global array $_wp_registered_nav_menus
  *
  * @param string $location The menu location identifier.
@@ -976,4 +977,32 @@ function _wp_auto_add_pages_to_menu( $new_status, $old_status, $post ) {
 		}
 		wp_update_nav_menu_item( $menu_id, 0, $args );
 	}
+}
+
+/**
+ * Delete auto-draft posts associated with the supplied changeset.
+ *
+ * @since 4.8.0
+ * @access private
+ *
+ * @param int $post_id Post ID for the customize_changeset.
+ */
+function _wp_delete_customize_changeset_dependent_auto_drafts( $post_id ) {
+	$post = get_post( $post_id );
+
+	if ( ! $post || 'customize_changeset' !== $post->post_type ) {
+		return;
+	}
+
+	$data = json_decode( $post->post_content, true );
+	if ( empty( $data['nav_menus_created_posts']['value'] ) ) {
+		return;
+	}
+	remove_action( 'delete_post', '_wp_delete_customize_changeset_dependent_auto_drafts' );
+	foreach ( $data['nav_menus_created_posts']['value'] as $post_id ) {
+		if ( ! empty( $post_id ) && 'auto-draft' === get_post_status( $post_id ) ) {
+			wp_delete_post( $post_id, true );
+		}
+	}
+	add_action( 'delete_post', '_wp_delete_customize_changeset_dependent_auto_drafts' );
 }

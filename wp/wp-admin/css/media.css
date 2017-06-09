@@ -469,7 +469,7 @@ border color while dragging a file over the uploader drop area */
 .upload-php .mode-grid .media-sidebar {
 	position: relative;
 	width: auto;
-	margin-bottom: 16px;
+	margin-top: 12px;
 	padding: 0 16px;
 	border-left: 4px solid #dd3d36;
  	-webkit-box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
@@ -506,7 +506,7 @@ border color while dragging a file over the uploader drop area */
 	content: "\f153";
 	display: block;
 	font: normal 16px/1 dashicons;
-	color: #b4b9be;
+	color: #72777c;
 }
 
 .upload-php .mode-grid .media-sidebar .media-uploader-status .upload-dismiss-errors:focus:before,
@@ -526,7 +526,7 @@ border color while dragging a file over the uploader drop area */
 	left: auto;
 	bottom: auto;
 	padding-top: 0;
-	margin-top: 0;
+	margin-top: 20px;
 	border: 4px dashed #b4b9be;
 }
 
@@ -1066,9 +1066,9 @@ border color while dragging a file over the uploader drop area */
 	line-height: 1.4;
 }
 
-.imgedit-group-top h3 a, /* Back-compat for pre-4.4 */
-.imgedit-group-top h2 a {
+#poststuff .imgedit-group-top .button-link {
 	text-decoration: none;
+	color: #23282d;
 }
 
 .imgedit-applyto .imgedit-label {

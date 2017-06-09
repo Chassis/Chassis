@@ -100,8 +100,6 @@ input#link_url {
 	margin-left: 10px;
 	padding: 0;
 	font-size: 11px;
-	text-decoration: underline;
-	color: #0073aa;
 }
 
 #comment-link-box {
@@ -120,7 +118,7 @@ input#link_url {
 #editable-post-name input {
 	font-size: 13px;
 	font-weight: 400;
-	height: 22px;
+	height: 24px;
 	margin: 0;
 	width: 16em;
 }
@@ -1035,25 +1033,6 @@ span.description,
 	width: 260px;
 }
 
-.tagcloud-link.button-link {
-	color: #0073aa;
-	text-decoration: underline;
-}
-
-.tagcloud-link.button-link:hover {
-	color: #00a0d2;
-}
-
-.tagcloud-link.button-link:focus {
-	color: #124964;
-	-webkit-box-shadow:
-		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
-	box-shadow:
-		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
-}
-
 #post-body-content .tagsdiv .the-tags {
 	margin: 0 5px;
 }
@@ -1111,6 +1090,17 @@ p.popular-tags a {
 
 .ac_match {
 	text-decoration: underline;
+}
+
+#edittag {
+	max-width: 800px;
+}
+
+.edit-tag-actions {
+	margin-top: 20px;
+	overflow: hidden;
+	padding: 10px;
+	margin-left: 10px;
 }
 
 /* Comments */
@@ -1369,6 +1359,10 @@ table.links-table {
 }
 
 @media screen and ( max-width: 782px ) {
+	.wp-core-ui .edit-tag-actions .button-primary {
+		margin-bottom: 0;
+	}
+
 	#post-body-content {
 		min-width: 0;
 	}

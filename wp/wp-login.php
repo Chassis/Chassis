@@ -359,6 +359,8 @@ function retrieve_password() {
 	/**
 	 * Filters the message body of the password reset mail.
 	 *
+	 * If the filtered message is empty, the password reset email will not be sent.
+	 *
 	 * @since 2.8.0
 	 * @since 4.1.0 Added `$user_login` and `$user_data` parameters.
 	 *
@@ -436,6 +438,7 @@ case 'postpass' :
 		exit();
 	}
 
+	require_once ABSPATH . WPINC . '/class-phpass.php';
 	$hasher = new PasswordHash( 8, true );
 
 	/**
@@ -697,7 +700,7 @@ case 'register' :
 	$user_email = '';
 	if ( $http_post ) {
 		$user_login = isset( $_POST['user_login'] ) ? $_POST['user_login'] : '';
-		$user_email = isset( $_POST['user_email'] ) ? $_POST['user_email'] : '';
+		$user_email = isset( $_POST['user_email'] ) ? wp_unslash( $_POST['user_email'] ) : '';
 		$errors = register_new_user($user_login, $user_email);
 		if ( !is_wp_error($errors) ) {
 			$redirect_to = !empty( $_POST['redirect_to'] ) ? $_POST['redirect_to'] : 'wp-login.php?checkemail=registered';
@@ -961,7 +964,14 @@ d.select();
 }, 200);
 }
 
-<?php if ( !$error ) { ?>
+/**
+ * Filters whether to print the call to `wp_attempt_focus()` on the login screen.
+ *
+ * @since 4.8.0
+ *
+ * @param bool $print Whether to print the function call. Default true.
+ */
+<?php if ( apply_filters( 'enable_login_autofocus', true ) && ! $error ) { ?>
 wp_attempt_focus();
 <?php } ?>
 if(typeof wpOnload=='function')wpOnload();
