@@ -113,3 +113,8 @@ virtualbox:
     #
     # (e.g. 2)
     cpus: null
+
+    # Network File System (NFS).
+    #
+    # (e.g. Yes)
+    nfs: Yes
