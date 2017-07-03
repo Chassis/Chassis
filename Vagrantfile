@@ -74,6 +74,11 @@ Vagrant.configure("2") do |config|
 	]
 	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
 
+	# VMWare Fusion has a bug with file permissions so let's work around it.
+	config.vm.provider :vmware_fusion do |v|
+		File.delete( base_path.to_s + "/local-config-extensions.php") if File.exist?( base_path.to_s + "/local-config-extensions.php")
+	end
+
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
 		puppet.manifests_path = "puppet/manifests"
