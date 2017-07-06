@@ -9,6 +9,17 @@ Install extensions from the `Extensions Index`_
 .. _Extensions Index: http://beta.chassis.io/extensions/
 
 
+Installing extensions
+---------------------
+
+Extensions can be specified in your configuration (:ref:`extension-format-ref`),
+and will be automatically downloaded by Chassis. You can also manually add
+extensions.
+
+Chassis automatically loads all subdirectories of your ``extensions/`` directory
+as extensions, so extensions can be downloaded into this directory.
+
+
 Example: Installing The Memcached Extension
 -------------------------------------------
 
