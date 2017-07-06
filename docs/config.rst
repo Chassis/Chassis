@@ -251,6 +251,24 @@ into the generated VM like so:
      a/host/directory: a/vm/directory
      "this:ones:got:colons": another/vm/directory
 
+NFS
+~~~
+
+**Key**: ``nfs``
+
+Under the hood, Vagrant uses the default synced folders implementation for your system.
+In certain cases and uses, this might be too slow for everyday usage.
+You can instead use NFS under the hood, which has much better performance, but requires root on your computer.
+
+.. code-block:: yaml
+
+   nfs: true
+
+We highly recommend also installing the `vagrant-bindfs`_ plugin, which ensures that users are correctly mapped into the virtual machine for you.
+If you're experiencing permissions errors, try installing this before anything else.
+
+.. _vagrant-bindfs: https://github.com/gael-ian/vagrant-bindfs
+
 Paths
 -----
 
