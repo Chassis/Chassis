@@ -6,6 +6,7 @@
 
 3. Are you using VirtualBox or VMWare and which version are you using?
 
-4. Do you have a custom yaml file? If so what does it contain? (Please paste in your customc .yaml file)
+4. Do you have a custom YAML file? If so, what does it contain?
+   (Please paste in your `chassis.local.yaml` file)
 
-5. Do you have any Chassis extensions installed? If so what are they? (Please past in your custom .yaml file)
+5. Do you have any Chassis extensions installed? If so, what are they?
