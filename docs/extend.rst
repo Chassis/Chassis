@@ -4,7 +4,7 @@ Extending Chassis
 Chassis includes a flexible extension system to allow setting up the server
 exactly how you like.
 
-Install extensions from the `Extensions Index`_
+Find available extensions on the `Extensions Index`_.
 
 .. _Extensions Index: http://beta.chassis.io/extensions/
 
