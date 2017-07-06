@@ -44,7 +44,7 @@ function check_comment($author, $email, $url, $comment, $user_ip, $user_agent, $
 		return false;
 
 	/** This filter is documented in wp-includes/comment-template.php */
-	$comment = apply_filters( 'comment_text', $comment );
+	$comment = apply_filters( 'comment_text', $comment, null, array() );
 
 	// Check for the number of external links if a max allowed number is set.
 	if ( $max_links = get_option( 'comment_max_links' ) ) {
@@ -3005,8 +3005,12 @@ function wp_handle_comment_submission( $comment_data ) {
 		 * @param int $comment_post_ID Post ID.
 		 */
 		do_action( 'comment_on_draft', $comment_post_ID );
-
-		return new WP_Error( 'comment_on_draft' );
+		
+		if ( current_user_can( 'read_post', $comment_post_ID ) ) {
+			return new WP_Error( 'comment_on_draft', __( 'Sorry, comments are not allowed for this item.' ), 403 );
+		} else {
+			return new WP_Error( 'comment_on_draft' );
+		}
 
 	} elseif ( post_password_required( $comment_post_ID ) ) {
 
@@ -3061,7 +3065,7 @@ function wp_handle_comment_submission( $comment_data ) {
 	$comment_type = '';
 
 	if ( get_option( 'require_name_email' ) && ! $user->exists() ) {
-		if ( 6 > strlen( $comment_author_email ) || '' == $comment_author ) {
+		if ( '' == $comment_author_email || '' == $comment_author ) {
 			return new WP_Error( 'require_name_email', __( '<strong>ERROR</strong>: please fill the required fields (name, email).' ), 200 );
 		} elseif ( ! is_email( $comment_author_email ) ) {
 			return new WP_Error( 'require_valid_email', __( '<strong>ERROR</strong>: please enter a valid email address.' ), 200 );

@@ -1909,6 +1909,7 @@ function wp_upload_dir( $time = null, $create_dir = true, $refresh_cache = false
 /**
  * A non-filtered, non-cached version of wp_upload_dir() that doesn't check the path.
  *
+ * @since 4.5.0
  * @access private
  *
  * @param string $time Optional. Time formatted in 'yyyy/mm'. Default null.
@@ -2128,7 +2129,7 @@ function wp_upload_bits( $name, $deprecated, $bits, $time = null ) {
 
 	$wp_filetype = wp_check_filetype( $name );
 	if ( ! $wp_filetype['ext'] && ! current_user_can( 'unfiltered_upload' ) )
-		return array( 'error' => __( 'Invalid file type' ) );
+		return array( 'error' => __( 'Sorry, this file type is not permitted for security reasons.' ) );
 
 	$upload = wp_upload_dir( $time );
 
@@ -5155,6 +5156,8 @@ function _device_can_upload() {
 /**
  * Test if a given path is a stream URL
  *
+ * @since 3.5.0
+ *
  * @param string $path The resource path or URL.
  * @return bool True if the path is a stream URL.
  */
@@ -5436,7 +5439,7 @@ function wp_delete_file( $file ) {
 	 *
 	 * @since 2.1.0
 	 *
-	 * @param string $medium Path to the file to delete.
+	 * @param string $file Path to the file to delete.
 	 */
 	$delete = apply_filters( 'wp_delete_file', $file );
 	if ( ! empty( $delete ) ) {
@@ -5625,7 +5628,7 @@ function wp_generate_uuid4() {
  *
  * @since 4.7.0
  *
- * @param $group Where the cache contents are grouped.
+ * @param string $group Where the cache contents are grouped.
  *
  * @return string $last_changed UNIX timestamp with microseconds representing when the group was last changed.
  */

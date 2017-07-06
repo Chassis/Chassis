@@ -4420,10 +4420,11 @@
 				function captureSettingModifiedDuringSave( setting ) {
 					modifiedWhileSaving[ setting.id ] = true;
 				}
-				api.bind( 'change', captureSettingModifiedDuringSave );
 
 				submit = function () {
 					var request, query, settingInvalidities = {}, latestRevision = api._latestRevision;
+
+					api.bind( 'change', captureSettingModifiedDuringSave );
 
 					/*
 					 * Block saving if there are any settings that are marked as
@@ -4577,6 +4578,16 @@
 
 				return deferred.promise();
 			}
+		});
+
+		// Ensure preview nonce is included with every customized request, to allow post data to be read.
+		$.ajaxPrefilter( function injectPreviewNonce( options ) {
+			if ( ! /wp_customize=on/.test( options.data ) ) {
+				return;
+			}
+			options.data += '&' + $.param({
+				customize_preview_nonce: api.settings.nonce.preview
+			});
 		});
 
 		// Refresh the nonces if the preview sends updated nonces over.

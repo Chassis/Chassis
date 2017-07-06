@@ -155,7 +155,7 @@ do_action( 'customize_controls_print_scripts' );
 			<div id="customize-info" class="accordion-section customize-info">
 				<div class="accordion-section-title">
 					<span class="preview-notice"><?php
-						echo sprintf( __( 'You are customizing %s' ), '<strong class="panel-title site-title">' . get_bloginfo( 'name' ) . '</strong>' );
+						echo sprintf( __( 'You are customizing %s' ), '<strong class="panel-title site-title">' . get_bloginfo( 'name', 'display' ) . '</strong>' );
 					?></span>
 					<button type="button" class="customize-help-toggle dashicons dashicons-editor-help" aria-expanded="false"><span class="screen-reader-text"><?php _e( 'Help' ); ?></span></button>
 				</div>
@@ -171,30 +171,32 @@ do_action( 'customize_controls_print_scripts' );
 		</div>
 
 		<div id="customize-footer-actions" class="wp-full-overlay-footer">
-			<?php $previewable_devices = $wp_customize->get_previewable_devices(); ?>
-			<?php if ( ! empty( $previewable_devices ) ) : ?>
-			<div class="devices">
-				<?php foreach ( (array) $previewable_devices as $device => $settings ) : ?>
-					<?php
-					if ( empty( $settings['label'] ) ) {
-						continue;
-					}
-					$active = ! empty( $settings['default'] );
-					$class = 'preview-' . $device;
-					if ( $active ) {
-						$class .= ' active';
-					}
-					?>
-					<button type="button" class="<?php echo esc_attr( $class ); ?>" aria-pressed="<?php echo esc_attr( $active ) ?>" data-device="<?php echo esc_attr( $device ); ?>">
-						<span class="screen-reader-text"><?php echo esc_html( $settings['label'] ); ?></span>
-					</button>
-				<?php endforeach; ?>
-			</div>
-			<?php endif; ?>
 			<button type="button" class="collapse-sidebar button" aria-expanded="true" aria-label="<?php echo esc_attr( _x( 'Hide Controls', 'label for hide controls button without length constraints' ) ); ?>">
 				<span class="collapse-sidebar-arrow"></span>
 				<span class="collapse-sidebar-label"><?php _ex( 'Hide Controls', 'short (~12 characters) label for hide controls button' ); ?></span>
 			</button>
+			<?php $previewable_devices = $wp_customize->get_previewable_devices(); ?>
+			<?php if ( ! empty( $previewable_devices ) ) : ?>
+			<div class="devices-wrapper">
+				<div class="devices">
+					<?php foreach ( (array) $previewable_devices as $device => $settings ) : ?>
+						<?php
+						if ( empty( $settings['label'] ) ) {
+							continue;
+						}
+						$active = ! empty( $settings['default'] );
+						$class = 'preview-' . $device;
+						if ( $active ) {
+							$class .= ' active';
+						}
+						?>
+						<button type="button" class="<?php echo esc_attr( $class ); ?>" aria-pressed="<?php echo esc_attr( $active ) ?>" data-device="<?php echo esc_attr( $device ); ?>">
+							<span class="screen-reader-text"><?php echo esc_html( $settings['label'] ); ?></span>
+						</button>
+					<?php endforeach; ?>
+				</div>
+			</div>
+			<?php endif; ?>
 		</div>
 	</form>
 	<div id="customize-preview" class="wp-full-overlay-main"></div>

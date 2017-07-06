@@ -3771,17 +3771,33 @@ AttachmentsBrowser = View.extend({
 
 		this.controller.on( 'toggle:upload:attachment', this.toggleUploader, this );
 		this.controller.on( 'edit:selection', this.editSelection );
-		this.createToolbar();
+
 		// In the Media Library, the sidebar is used to display errors before the attachments grid.
 		if ( this.options.sidebar && 'errors' === this.options.sidebar ) {
 			this.createSidebar();
 		}
+
+		/*
+		 * For accessibility reasons, place the Inline Uploader before other sections.
+		 * This way, in the Media Library, it's right after the Add New button, see ticket #37188.
+		 */
 		this.createUploader();
+
+		/*
+		 * Create a multi-purpose toolbar. Used as main toolbar in the Media Library
+		 * and also for other things, for example the "Drag and drop to reorder" and
+		 * "Suggested dimensions" info in the media modal.
+		 */
+		this.createToolbar();
+
+		// Create the list of attachments.
 		this.createAttachments();
+
 		// For accessibility reasons, place the normal sidebar after the attachments, see ticket #36909.
 		if ( this.options.sidebar && 'errors' !== this.options.sidebar ) {
 			this.createSidebar();
 		}
+
 		this.updateContent();
 
 		if ( ! this.options.sidebar || 'errors' === this.options.sidebar ) {
@@ -3961,7 +3977,9 @@ AttachmentsBrowser = View.extend({
 					controller: this.controller,
 					priority: -55,
 					click: function() {
-						var removed = [], selection = this.controller.state().get( 'selection' );
+						var removed = [],
+							destroy = [],
+							selection = this.controller.state().get( 'selection' );
 
 						if ( ! selection.length || ! window.confirm( l10n.warnBulkDelete ) ) {
 							return;
@@ -3973,11 +3991,20 @@ AttachmentsBrowser = View.extend({
 								return;
 							}
 
-							model.destroy();
+							destroy.push( model );
 						} );
 
-						selection.remove( removed );
-						this.controller.trigger( 'selection:action:done' );
+						if ( removed.length ) {
+							selection.remove( removed );
+						}
+
+						if ( destroy.length ) {
+							$.when.apply( null, destroy.map( function (item) {
+								return item.destroy();
+							} ) ).then( _.bind( function() {
+								this.controller.trigger( 'selection:action:done' );
+							}, this ) );
+						}
 					}
 				}).render() );
 			}
@@ -4023,7 +4050,7 @@ AttachmentsBrowser = View.extend({
 
 		if ( this.options.suggestedWidth && this.options.suggestedHeight ) {
 			this.toolbar.set( 'suggestedDimensions', new View({
-				el: $( '<div class="instructions">' + l10n.suggestedDimensions + ' ' + this.options.suggestedWidth + ' &times; ' + this.options.suggestedHeight + '</div>' )[0],
+				el: $( '<div class="instructions">' + l10n.suggestedDimensions.replace( '%1$s', this.options.suggestedWidth ).replace( '%2$s', this.options.suggestedHeight ) + '</div>' )[0],
 				priority: -40
 			}) );
 		}
@@ -4063,7 +4090,7 @@ AttachmentsBrowser = View.extend({
 			canClose:   this.controller.isModeActive( 'grid' )
 		});
 
-		this.uploader.hide();
+		this.uploader.$el.addClass( 'hidden' );
 		this.views.add( this.uploader );
 	},
 
@@ -4597,7 +4624,6 @@ EmbedLink = wp.media.view.Settings.extend({
 	}, wp.media.controller.Embed.sensitivity ),
 
 	fetch: function() {
-		var embed;
 
 		// check if they haven't typed in 500 ms
 		if ( $('#embed-url-field').val() !== this.model.get('url') ) {
@@ -4608,23 +4634,25 @@ EmbedLink = wp.media.view.Settings.extend({
 			this.dfd.abort();
 		}
 
-		embed = new wp.shortcode({
-			tag: 'embed',
-			attrs: _.pick( this.model.attributes, [ 'width', 'height', 'src' ] ),
-			content: this.model.get('url')
-		});
-
 		this.dfd = $.ajax({
-			type:    'POST',
-			url:     wp.ajax.settings.url,
-			context: this,
-			data:    {
-				action: 'parse-embed',
-				post_ID: wp.media.view.settings.post.id,
-				shortcode: embed.string()
-			}
+			url: wp.media.view.settings.oEmbedProxyUrl,
+			data: {
+				url: this.model.get( 'url' ),
+				maxwidth: this.model.get( 'width' ),
+				maxheight: this.model.get( 'height' ),
+				_wpnonce: wp.media.view.settings.nonce.wpRestApi
+			},
+			type: 'GET',
+			dataType: 'json',
+			context: this
 		})
-			.done( this.renderoEmbed )
+			.done( function( response ) {
+				this.renderoEmbed( {
+					data: {
+						body: response.html || ''
+					}
+				} );
+			} )
 			.fail( this.renderFail );
 	},
 
@@ -4711,7 +4739,7 @@ EmbedUrl = View.extend({
 	},
 
 	url: function( event ) {
-		this.model.set( 'url', event.target.value );
+		this.model.set( 'url', $.trim( event.target.value ) );
 	},
 
 	/**
@@ -7079,9 +7107,7 @@ Search = wp.media.View.extend({
 
 	events: {
 		'input':  'search',
-		'keyup':  'search',
-		'change': 'search',
-		'search': 'search'
+		'keyup':  'search'
 	},
 
 	/**
@@ -7092,13 +7118,13 @@ Search = wp.media.View.extend({
 		return this;
 	},
 
-	search: function( event ) {
+	search: _.debounce( function( event ) {
 		if ( event.target.value ) {
 			this.model.set( 'search', event.target.value );
 		} else {
 			this.model.unset('search');
 		}
-	}
+	}, 300 )
 });
 
 module.exports = Search;
@@ -7729,9 +7755,11 @@ Toolbar = View.extend({
 				disabled = false;
 
 			// Prevent insertion of attachments if any of them are still uploading
-			disabled = _.some( selection.models, function( attachment ) {
-				return attachment.get('uploading') === true;
-			});
+			if ( selection && selection.models ) {
+				disabled = _.some( selection.models, function( attachment ) {
+					return attachment.get('uploading') === true;
+				});
+			}
 
 			if ( requires.selection && selection && ! selection.length ) {
 				disabled = true;
@@ -8199,9 +8227,18 @@ UploaderInline = View.extend({
 	},
 	show: function() {
 		this.$el.removeClass( 'hidden' );
+		if ( this.controller.$uploaderToggler.length ) {
+			this.controller.$uploaderToggler.attr( 'aria-expanded', 'true' );
+		}
 	},
 	hide: function() {
 		this.$el.addClass( 'hidden' );
+		if ( this.controller.$uploaderToggler.length ) {
+			this.controller.$uploaderToggler
+				.attr( 'aria-expanded', 'false' )
+				// Move focus back to the toggle button when closing the uploader.
+				.focus();
+		}
 	}
 
 });
@@ -8390,7 +8427,7 @@ UploaderWindow = wp.media.View.extend({
 	initialize: function() {
 		var uploader;
 
-		this.$browser = $('<a href="#" class="browser" />').hide().appendTo('body');
+		this.$browser = $( '<button type="button" class="browser" />' ).hide().appendTo( 'body' );
 
 		uploader = this.options.uploader = _.defaults( this.options.uploader || {}, {
 			dropzone:  this.$el,

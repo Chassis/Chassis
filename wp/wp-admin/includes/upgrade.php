@@ -194,18 +194,19 @@ function wp_install_defaults( $user_id ) {
 	$wpdb->insert( $wpdb->term_relationships, array('term_taxonomy_id' => $cat_tt_id, 'object_id' => 1) );
 
 	// Default comment
-	$first_comment_author = __( 'A WordPress Commenter' );
-	$first_comment_email = 'wapuu@wordpress.example';
-	$first_comment_url = 'https://wordpress.org/';
-	$first_comment = __( 'Hi, this is a comment.
+	if ( is_multisite() ) {
+		$first_comment_author = get_site_option( 'first_comment_author' );
+		$first_comment_email = get_site_option( 'first_comment_email' );
+		$first_comment_url = get_site_option( 'first_comment_url', network_home_url() );
+		$first_comment = get_site_option( 'first_comment' );
+	}
+
+	$first_comment_author = ! empty( $first_comment_author ) ? $first_comment_author : __( 'A WordPress Commenter' );
+	$first_comment_email = ! empty( $first_comment_email ) ? $first_comment_email : 'wapuu@wordpress.example';
+	$first_comment_url = ! empty( $first_comment_url ) ? $first_comment_url : 'https://wordpress.org/';
+	$first_comment = ! empty( $first_comment ) ? $first_comment :  __( 'Hi, this is a comment.
 To get started with moderating, editing, and deleting comments, please visit the Comments screen in the dashboard.
 Commenter avatars come from <a href="https://gravatar.com">Gravatar</a>.' );
-	if ( is_multisite() ) {
-		$first_comment_author = get_site_option( 'first_comment_author', $first_comment_author );
-		$first_comment_email = get_site_option( 'first_comment_email', $first_comment_email );
-		$first_comment_url = get_site_option( 'first_comment_url', network_home_url() );
-		$first_comment = get_site_option( 'first_comment', $first_comment );
-	}
 	$wpdb->insert( $wpdb->comments, array(
 		'comment_post_ID' => 1,
 		'comment_author' => $first_comment_author,
@@ -217,7 +218,10 @@ Commenter avatars come from <a href="https://gravatar.com">Gravatar</a>.' );
 	));
 
 	// First Page
-	$first_page = sprintf( __( "This is an example page. It's different from a blog post because it will stay in one place and will show up in your site navigation (in most themes). Most people start with an About page that introduces them to potential site visitors. It might say something like this:
+	if ( is_multisite() )
+		$first_page = get_site_option( 'first_page' );
+
+	$first_page = ! empty( $first_page ) ? $first_page : sprintf( __( "This is an example page. It's different from a blog post because it will stay in one place and will show up in your site navigation (in most themes). Most people start with an About page that introduces them to potential site visitors. It might say something like this:
 
 <blockquote>Hi there! I'm a bike messenger by day, aspiring actor by night, and this is my website. I live in Los Angeles, have a great dog named Jack, and I like pi&#241;a coladas. (And gettin' caught in the rain.)</blockquote>
 
@@ -226,8 +230,7 @@ Commenter avatars come from <a href="https://gravatar.com">Gravatar</a>.' );
 <blockquote>The XYZ Doohickey Company was founded in 1971, and has been providing quality doohickeys to the public ever since. Located in Gotham City, XYZ employs over 2,000 people and does all kinds of awesome things for the Gotham community.</blockquote>
 
 As a new WordPress user, you should go to <a href=\"%s\">your dashboard</a> to delete this page and create new pages for your content. Have fun!" ), admin_url() );
-	if ( is_multisite() )
-		$first_page = get_site_option( 'first_page', $first_page );
+
 	$first_post_guid = get_option('home') . '/?page_id=2';
 	$wpdb->insert( $wpdb->posts, array(
 		'post_author' => $user_id,
@@ -2216,7 +2219,7 @@ function dbDelta( $queries = '', $execute = true ) {
 			continue;
 
 		// Clear the field and index arrays.
-		$cfields = $indices = array();
+		$cfields = $indices = $indices_without_subparts = array();
 
 		// Get all of the field names in the query from between the parentheses.
 		preg_match("|\((.*)\)|ms", $qry, $match2);
@@ -2289,10 +2292,10 @@ function dbDelta( $queries = '', $execute = true ) {
 					$index_name = ( 'PRIMARY KEY' === $index_type ) ? '' : '`' . strtolower( $index_matches['index_name'] ) . '`';
 
 					// Parse the columns. Multiple columns are separated by a comma.
-					$index_columns = array_map( 'trim', explode( ',', $index_matches['index_columns'] ) );
+					$index_columns = $index_columns_without_subparts = array_map( 'trim', explode( ',', $index_matches['index_columns'] ) );
 
 					// Normalize columns.
-					foreach ( $index_columns as &$index_column ) {
+					foreach ( $index_columns as $id => &$index_column ) {
 						// Extract column name and number of indexed characters (sub_part).
 						preg_match(
 							  '/'
@@ -2319,6 +2322,9 @@ function dbDelta( $queries = '', $execute = true ) {
 						// Escape the column name with backticks.
 						$index_column = '`' . $index_column_matches['column_name'] . '`';
 
+						// We don't need to add the subpart to $index_columns_without_subparts
+						$index_columns_without_subparts[ $id ] = $index_column;
+
 						// Append the optional sup part with the number of indexed characters.
 						if ( isset( $index_column_matches['sub_part'] ) ) {
 							$index_column .= '(' . $index_column_matches['sub_part'] . ')';
@@ -2327,9 +2333,10 @@ function dbDelta( $queries = '', $execute = true ) {
 
 					// Build the normalized index definition and add it to the list of indices.
 					$indices[] = "{$index_type} {$index_name} (" . implode( ',', $index_columns ) . ")";
+					$indices_without_subparts[] = "{$index_type} {$index_name} (" . implode( ',', $index_columns_without_subparts ) . ")";
 
 					// Destroy no longer needed variables.
-					unset( $index_column, $index_column_matches, $index_matches, $index_type, $index_name, $index_columns );
+					unset( $index_column, $index_column_matches, $index_matches, $index_type, $index_name, $index_columns, $index_columns_without_subparts );
 
 					break;
 			}
@@ -2446,25 +2453,16 @@ function dbDelta( $queries = '', $execute = true ) {
 
 					// Add the field to the column list string.
 					$index_columns .= '`' . $column_data['fieldname'] . '`';
-					if ($column_data['subpart'] != '') {
-						$index_columns .= '('.$column_data['subpart'].')';
-					}
 				}
 
-				// The alternative index string doesn't care about subparts
-				$alt_index_columns = preg_replace( '/\([^)]*\)/', '', $index_columns );
-
 				// Add the column list to the index create string.
-				$index_strings = array(
-					"$index_string ($index_columns)",
-					"$index_string ($alt_index_columns)",
-				);
+				$index_string .= " ($index_columns)";
 
-				foreach ( $index_strings as $index_string ) {
-					if ( ! ( ( $aindex = array_search( $index_string, $indices ) ) === false ) ) {
-						unset( $indices[ $aindex ] );
-						break;
-					}
+				// Check if the index definition exists, ignoring subparts.
+				if ( ! ( ( $aindex = array_search( $index_string, $indices_without_subparts ) ) === false ) ) {
+					// If the index already exists (even with different subparts), we don't need to create it.
+					unset( $indices_without_subparts[ $aindex ] );
+					unset( $indices[ $aindex ] );
 				}
 			}
 		}
@@ -2860,6 +2858,7 @@ function pre_schema_upgrade() {
 	}
 }
 
+if ( !function_exists( 'install_global_terms' ) ) :
 /**
  * Install global terms.
  *
@@ -2868,7 +2867,6 @@ function pre_schema_upgrade() {
  * @global wpdb   $wpdb
  * @global string $charset_collate
  */
-if ( !function_exists( 'install_global_terms' ) ) :
 function install_global_terms() {
 	global $wpdb, $charset_collate;
 	$ms_queries = "

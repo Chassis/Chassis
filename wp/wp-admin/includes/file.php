@@ -663,7 +663,7 @@ function _unzip_file_ziparchive($file, $to, $needed_dirs = array() ) {
 	 * A disk that has zero free bytes has bigger problems.
 	 * Require we have enough space to unzip the file and copy its contents, with a 10% buffer.
 	 */
-	if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+	if ( wp_doing_cron() ) {
 		$available_space = @disk_free_space( WP_CONTENT_DIR );
 		if ( $available_space && ( $uncompressed_size * 2.1 ) > $available_space )
 			return new WP_Error( 'disk_full_unzip_file', __( 'Could not copy files. You may have run out of disk space.' ), compact( 'uncompressed_size', 'available_space' ) );
@@ -769,7 +769,7 @@ function _unzip_file_pclzip($file, $to, $needed_dirs = array()) {
 	 * A disk that has zero free bytes has bigger problems.
 	 * Require we have enough space to unzip the file and copy its contents, with a 10% buffer.
 	 */
-	if ( defined( 'DOING_CRON' ) && DOING_CRON ) {
+	if ( wp_doing_cron() ) {
 		$available_space = @disk_free_space( WP_CONTENT_DIR );
 		if ( $available_space && ( $uncompressed_size * 2.1 ) > $available_space )
 			return new WP_Error( 'disk_full_unzip_file', __( 'Could not copy files. You may have run out of disk space.' ), compact( 'uncompressed_size', 'available_space' ) );
@@ -1091,14 +1091,28 @@ function request_filesystem_credentials( $form_post, $type = '', $error = false,
 
 	$credentials = get_option('ftp_credentials', array( 'hostname' => '', 'username' => ''));
 
+	$submitted_form = wp_unslash( $_POST );
+
+	// Verify nonce, or unset submitted form field values on failure
+	if ( ! isset( $_POST['_fs_nonce'] ) || ! wp_verify_nonce( $_POST['_fs_nonce'], 'filesystem-credentials' ) ) {
+		unset(
+			$submitted_form['hostname'],
+			$submitted_form['username'],
+			$submitted_form['password'],
+			$submitted_form['public_key'],
+			$submitted_form['private_key'],
+			$submitted_form['connection_type']
+		);
+	}
+
 	// If defined, set it to that, Else, If POST'd, set it to that, If not, Set it to whatever it previously was(saved details in option)
-	$credentials['hostname'] = defined('FTP_HOST') ? FTP_HOST : (!empty($_POST['hostname']) ? wp_unslash( $_POST['hostname'] ) : $credentials['hostname']);
-	$credentials['username'] = defined('FTP_USER') ? FTP_USER : (!empty($_POST['username']) ? wp_unslash( $_POST['username'] ) : $credentials['username']);
-	$credentials['password'] = defined('FTP_PASS') ? FTP_PASS : (!empty($_POST['password']) ? wp_unslash( $_POST['password'] ) : '');
+	$credentials['hostname'] = defined('FTP_HOST') ? FTP_HOST : (!empty($submitted_form['hostname']) ? $submitted_form['hostname'] : $credentials['hostname']);
+	$credentials['username'] = defined('FTP_USER') ? FTP_USER : (!empty($submitted_form['username']) ? $submitted_form['username'] : $credentials['username']);
+	$credentials['password'] = defined('FTP_PASS') ? FTP_PASS : (!empty($submitted_form['password']) ? $submitted_form['password'] : '');
 
 	// Check to see if we are setting the public/private keys for ssh
-	$credentials['public_key'] = defined('FTP_PUBKEY') ? FTP_PUBKEY : (!empty($_POST['public_key']) ? wp_unslash( $_POST['public_key'] ) : '');
-	$credentials['private_key'] = defined('FTP_PRIKEY') ? FTP_PRIKEY : (!empty($_POST['private_key']) ? wp_unslash( $_POST['private_key'] ) : '');
+	$credentials['public_key'] = defined('FTP_PUBKEY') ? FTP_PUBKEY : (!empty($submitted_form['public_key']) ? $submitted_form['public_key'] : '');
+	$credentials['private_key'] = defined('FTP_PRIKEY') ? FTP_PRIKEY : (!empty($submitted_form['private_key']) ? $submitted_form['private_key'] : '');
 
 	// Sanitize the hostname, Some people might pass in odd-data:
 	$credentials['hostname'] = preg_replace('|\w+://|', '', $credentials['hostname']); //Strip any schemes off
@@ -1115,8 +1129,8 @@ function request_filesystem_credentials( $form_post, $type = '', $error = false,
 		$credentials['connection_type'] = 'ssh';
 	} elseif ( ( defined( 'FTP_SSL' ) && FTP_SSL ) && 'ftpext' == $type ) { //Only the FTP Extension understands SSL
 		$credentials['connection_type'] = 'ftps';
-	} elseif ( ! empty( $_POST['connection_type'] ) ) {
-		$credentials['connection_type'] = wp_unslash( $_POST['connection_type'] );
+	} elseif ( ! empty( $submitted_form['connection_type'] ) ) {
+		$credentials['connection_type'] = $submitted_form['connection_type'];
 	} elseif ( ! isset( $credentials['connection_type'] ) ) { //All else fails (And it's not defaulted to something else saved), Default to FTP
 		$credentials['connection_type'] = 'ftp';
 	}
@@ -1239,7 +1253,7 @@ if ( isset( $types['ssh'] ) ) {
 		$hidden_class = ' class="hidden"';
 	}
 ?>
-<fieldset id="ssh-keys"<?php echo $hidden_class; ?>">
+<fieldset id="ssh-keys"<?php echo $hidden_class; ?>>
 <legend><?php _e( 'Authentication Keys' ); ?></legend>
 <label for="public_key">
 	<span class="field-title"><?php _e('Public Key:') ?></span>
@@ -1255,11 +1269,12 @@ if ( isset( $types['ssh'] ) ) {
 }
 
 foreach ( (array) $extra_fields as $field ) {
-	if ( isset( $_POST[ $field ] ) )
-		echo '<input type="hidden" name="' . esc_attr( $field ) . '" value="' . esc_attr( wp_unslash( $_POST[ $field ] ) ) . '" />';
+	if ( isset( $submitted_form[ $field ] ) )
+		echo '<input type="hidden" name="' . esc_attr( $field ) . '" value="' . esc_attr( $submitted_form[ $field ] ) . '" />';
 }
 ?>
 	<p class="request-filesystem-credentials-action-buttons">
+		<?php wp_nonce_field( 'filesystem-credentials', '_fs_nonce', false, true ); ?>
 		<button class="button cancel-button" data-js-action="close" type="button"><?php _e( 'Cancel' ); ?></button>
 		<?php submit_button( __( 'Proceed' ), '', 'upgrade', false ); ?>
 	</p>

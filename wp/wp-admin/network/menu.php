@@ -19,7 +19,7 @@ if ( $update_data['counts']['total'] ) {
 	$submenu['index.php'][10] = array( __( 'Updates' ), 'update_core', 'update-core.php' );
 }
 
-$submenu['index.php'][15] = array( __( 'Upgrade Network' ), 'manage_network', 'upgrade.php' );
+$submenu['index.php'][15] = array( __( 'Upgrade Network' ), 'upgrade_network', 'upgrade.php' );
 
 $menu[4] = array( '', 'read', 'separator1', '', 'wp-menu-separator' );
 
@@ -53,7 +53,7 @@ $submenu['plugins.php'][15] = array( _x('Editor', 'plugin editor'), 'edit_plugin
 $menu[25] = array(__('Settings'), 'manage_network_options', 'settings.php', '', 'menu-top menu-icon-settings', 'menu-settings', 'dashicons-admin-settings');
 if ( defined( 'MULTISITE' ) && defined( 'WP_ALLOW_MULTISITE' ) && WP_ALLOW_MULTISITE ) {
 	$submenu['settings.php'][5]  = array( __('Network Settings'), 'manage_network_options', 'settings.php' );
-	$submenu['settings.php'][10] = array( __('Network Setup'), 'manage_network_options', 'setup.php' );
+	$submenu['settings.php'][10] = array( __('Network Setup'), 'setup_network', 'setup.php' );
 }
 unset($update_data);
 

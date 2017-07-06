@@ -146,7 +146,7 @@ do_action( "{$taxonomy}_term_edit_form_top", $tag, $taxonomy );
 <?php } ?>
 <?php if ( is_taxonomy_hierarchical($taxonomy) ) : ?>
 		<tr class="form-field term-parent-wrap">
-			<th scope="row"><label for="parent"><?php _ex( 'Parent', 'term parent' ); ?></label></th>
+			<th scope="row"><label for="parent"><?php echo esc_html( $tax->labels->parent_item ); ?></label></th>
 			<td>
 				<?php
 				$dropdown_args = array(
@@ -165,7 +165,9 @@ do_action( "{$taxonomy}_term_edit_form_top", $tag, $taxonomy );
 				$dropdown_args = apply_filters( 'taxonomy_parent_dropdown_args', $dropdown_args, $taxonomy, 'edit' );
 				wp_dropdown_categories( $dropdown_args ); ?>
 				<?php if ( 'category' == $taxonomy ) : ?>
-				<p class="description"><?php _e('Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.'); ?></p>
+					<p class="description"><?php _e( 'Categories, unlike tags, can have a hierarchy. You might have a Jazz category, and under that have children categories for Bebop and Big Band. Totally optional.' ); ?></p>
+				<?php else : ?>
+					<p class="description"><?php _e( 'Assign a parent term to create a hierarchy. The term Jazz, for example, would be the parent of Bebop and Big Band.' ); ?></p>
 				<?php endif; ?>
 			</td>
 		</tr>
@@ -252,9 +254,20 @@ if ( 'category' == $taxonomy ) {
  * @param string $taxonomy Current taxonomy slug.
  */
 do_action( "{$taxonomy}_edit_form", $tag, $taxonomy );
-
-submit_button( __('Update') );
 ?>
+
+<div class="edit-tag-actions">
+
+	<?php submit_button( __( 'Update' ), 'primary', null, false ); ?>
+
+	<?php if ( current_user_can( 'delete_term', $tag->term_id ) ) : ?>
+		<span id="delete-link">
+			<a class="delete" href="<?php echo admin_url( wp_nonce_url( "edit-tags.php?action=delete&taxonomy=$taxonomy&tag_ID=$tag->term_id", 'delete-tag_' . $tag->term_id ) ) ?>"><?php _e( 'Delete' ); ?></a>
+		</span>
+	<?php endif; ?>
+
+</div>
+
 </form>
 </div>
 

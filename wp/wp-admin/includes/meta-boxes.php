@@ -50,10 +50,16 @@ function post_submit_meta_box( $post, $args = array() ) {
 <?php
 $preview_link = esc_url( get_preview_post_link( $post ) );
 if ( 'publish' == $post->post_status ) {
-	$preview_button = __( 'Preview Changes' );
+	$preview_button_text = __( 'Preview Changes' );
 } else {
-	$preview_button = __( 'Preview' );
+	$preview_button_text = __( 'Preview' );
 }
+
+$preview_button = sprintf( '%1$s<span class="screen-reader-text"> %2$s</span>',
+	$preview_button_text,
+	/* translators: accessibility text */
+	__( '(opens in a new window)' )
+);
 ?>
 <a class="preview button" href="<?php echo $preview_link; ?>" target="wp-preview-<?php echo (int) $post->ID; ?>" id="post-preview"><?php echo $preview_button; ?></a>
 <input type="hidden" name="wp-preview" id="wp-preview" value="" />
@@ -668,11 +674,11 @@ function post_comment_status_meta_box($post) {
 ?>
 <input name="advanced_view" type="hidden" value="1" />
 <p class="meta-options">
-	<label for="comment_status" class="selectit"><input name="comment_status" type="checkbox" id="comment_status" value="open" <?php checked($post->comment_status, 'open'); ?> /> <?php _e( 'Allow comments.' ) ?></label><br />
+	<label for="comment_status" class="selectit"><input name="comment_status" type="checkbox" id="comment_status" value="open" <?php checked($post->comment_status, 'open'); ?> /> <?php _e( 'Allow comments' ) ?></label><br />
 	<label for="ping_status" class="selectit"><input name="ping_status" type="checkbox" id="ping_status" value="open" <?php checked($post->ping_status, 'open'); ?> /> <?php
 		printf(
 			/* translators: %s: Codex URL */
-			__( 'Allow <a href="%s">trackbacks and pingbacks</a> on this page.' ),
+			__( 'Allow <a href="%s">trackbacks and pingbacks</a> on this page' ),
 			__( 'https://codex.wordpress.org/Introduction_to_Blogging#Managing_Comments' ) );
 		?></label>
 	<?php
@@ -1022,8 +1028,9 @@ function link_target_meta_box($link) { ?>
 function xfn_check( $class, $value = '', $deprecated = '' ) {
 	global $link;
 
-	if ( !empty( $deprecated ) )
-		_deprecated_argument( __FUNCTION__, '0.0.0' ); // Never implemented
+	if ( ! empty( $deprecated ) ) {
+		_deprecated_argument( __FUNCTION__, '2.5.0' ); // Never implemented
+	}
 
 	$link_rel = isset( $link->link_rel ) ? $link->link_rel : ''; // In PHP 5.3: $link_rel = $link->link_rel ?: '';
 	$rels = preg_split('/\s+/', $link_rel);

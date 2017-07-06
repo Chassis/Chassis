@@ -44,7 +44,7 @@ class WP_oEmbed {
 	 * @access private
 	 * @var array
 	 */
-	private $compat_methods = array( '_fetch_with_format', '_parse_json', '_parse_xml', '_parse_body' );
+	private $compat_methods = array( '_fetch_with_format', '_parse_json', '_parse_xml', '_parse_xml_body' );
 
 	/**
 	 * Constructor.
@@ -108,6 +108,7 @@ class WP_oEmbed {
 			'#https?://www\.facebook\.com/notes/.*#i'                  => array( 'https://www.facebook.com/plugins/post/oembed.json/',        true  ),
 			'#https?://www\.facebook\.com/.*/videos/.*#i'              => array( 'https://www.facebook.com/plugins/video/oembed.json/',       true  ),
 			'#https?://www\.facebook\.com/video\.php.*#i'              => array( 'https://www.facebook.com/plugins/video/oembed.json/',       true  ),
+			'#https?://(www\.)?screencast\.com/.*#i'                   => array( 'https://api.screencast.com/external/oembed',                true  ),
 		);
 
 		if ( ! empty( self::$early_providers['add'] ) ) {
@@ -181,6 +182,7 @@ class WP_oEmbed {
 		 * | Twitter      | twitter.com/user      |      Yes       | 4.7.0     |
 		 * | Twitter      | twitter.com/likes     |      Yes       | 4.7.0     |
 		 * | Twitter      | twitter.com/lists     |      Yes       | 4.7.0     |
+		 * | Screencast   | screencast.com        |      Yes       | 4.8.0     |
 		 *
 		 * No longer supported providers:
 		 *
@@ -317,6 +319,36 @@ class WP_oEmbed {
 	}
 
 	/**
+	 * Takes a URL and attempts to return the oEmbed data.
+	 *
+	 * @see WP_oEmbed::fetch()
+	 *
+	 * @since 4.8.0
+	 * @access public
+	 *
+	 * @param string       $url  The URL to the content that should be attempted to be embedded.
+	 * @param array|string $args Optional. Arguments, usually passed from a shortcode. Default empty.
+	 * @return false|object False on failure, otherwise the result in the form of an object.
+	 */
+	public function get_data( $url, $args = '' ) {
+		$args = wp_parse_args( $args );
+
+		$provider = $this->get_provider( $url, $args );
+
+		if ( ! $provider ) {
+			return false;
+		}
+
+		$data = $this->fetch( $provider, $url, $args );
+
+		if ( false === $data ) {
+			return false;
+		}
+
+		return $data;
+	}
+
+	/**
 	 * The do-it-all function that takes a URL and attempts to return the HTML.
 	 *
 	 * @see WP_oEmbed::fetch()
@@ -330,8 +362,6 @@ class WP_oEmbed {
 	 * @return false|string False on failure, otherwise the UNSANITIZED (and potentially unsafe) HTML that should be used to embed.
 	 */
 	public function get_html( $url, $args = '' ) {
-		$args = wp_parse_args( $args );
-
 		/**
 		 * Filters the oEmbed result before any HTTP requests are made.
 		 *
@@ -353,9 +383,9 @@ class WP_oEmbed {
 			return $pre;
 		}
 
-		$provider = $this->get_provider( $url, $args );
+		$data = $this->get_data( $url, $args );
 
-		if ( ! $provider || false === $data = $this->fetch( $provider, $url, $args ) ) {
+		if ( false === $data ) {
 			return false;
 		}
 

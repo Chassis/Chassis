@@ -94,6 +94,7 @@
 	 * @type {object} filesystemCredentials.ssh                Holds SSH credentials.
 	 * @type {string} filesystemCredentials.ssh.publicKey      The public key. Default empty string.
 	 * @type {string} filesystemCredentials.ssh.privateKey     The private key. Default empty string.
+	 * @type {string} filesystemCredentials.fsNonce            Filesystem credentials form nonce.
 	 * @type {bool}   filesystemCredentials.available          Whether filesystem credentials have been provided.
 	 *                                                         Default 'false'.
 	 */
@@ -108,6 +109,7 @@
 			publicKey:  '',
 			privateKey: ''
 		},
+		fsNonce: '',
 		available: false
 	};
 
@@ -225,6 +227,7 @@
 		options.data = _.extend( data, {
 			action:          action,
 			_ajax_nonce:     wp.updates.ajaxNonce,
+			_fs_nonce:       wp.updates.filesystemCredentials.fsNonce,
 			username:        wp.updates.filesystemCredentials.ftp.username,
 			password:        wp.updates.filesystemCredentials.ftp.password,
 			hostname:        wp.updates.filesystemCredentials.ftp.hostname,
@@ -319,6 +322,7 @@
 			$( '.subsubsub .upgrade .count' ).text( '(' + itemCount + ')' );
 		} else {
 			$( '.subsubsub .upgrade' ).remove();
+			$( '.subsubsub li:last' ).html( function() { return $( this ).children(); } );
 		}
 	};
 
@@ -370,11 +374,11 @@
 		if ( 'plugins' === pagenow || 'plugins-network' === pagenow ) {
 			$updateRow = $( 'tr[data-plugin="' + args.plugin + '"]' );
 			$message   = $updateRow.find( '.update-message' ).removeClass( 'notice-error' ).addClass( 'updating-message notice-warning' ).find( 'p' );
-			message    = wp.updates.l10n.updatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
+			message    = wp.updates.l10n.pluginUpdatingLabel.replace( '%s', $updateRow.find( '.plugin-title strong' ).text() );
 		} else if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 			$card    = $( '.plugin-card-' + args.slug );
 			$message = $card.find( '.update-now' ).addClass( 'updating-message' );
-			message  = wp.updates.l10n.updatingLabel.replace( '%s', $message.data( 'name' ) );
+			message  = wp.updates.l10n.pluginUpdatingLabel.replace( '%s', $message.data( 'name' ) );
 
 			// Remove previous error messages, if any.
 			$card.removeClass( 'plugin-card-update-failed' ).find( '.notice.notice-error' ).remove();
@@ -428,8 +432,8 @@
 		}
 
 		$updateMessage
-			.attr( 'aria-label', wp.updates.l10n.updatedLabel.replace( '%s', response.pluginName ) )
-			.text( wp.updates.l10n.updated );
+			.attr( 'aria-label', wp.updates.l10n.pluginUpdatedLabel.replace( '%s', response.pluginName ) )
+			.text( wp.updates.l10n.pluginUpdated );
 
 		wp.a11y.speak( wp.updates.l10n.updatedMsg, 'polite' );
 
@@ -475,7 +479,7 @@
 
 			if ( response.pluginName ) {
 				$message.find( 'p' )
-					.attr( 'aria-label', wp.updates.l10n.updateFailedLabel.replace( '%s', response.pluginName ) );
+					.attr( 'aria-label', wp.updates.l10n.pluginUpdateFailedLabel.replace( '%s', response.pluginName ) );
 			} else {
 				$message.find( 'p' ).removeAttr( 'aria-label' );
 			}
@@ -492,7 +496,7 @@
 
 			if ( response.pluginName ) {
 				$card.find( '.update-now' )
-					.attr( 'aria-label', wp.updates.l10n.updateFailedLabel.replace( '%s', response.pluginName ) );
+					.attr( 'aria-label', wp.updates.l10n.pluginUpdateFailedLabel.replace( '%s', response.pluginName ) );
 			} else {
 				$card.find( '.update-now' ).removeAttr( 'aria-label' );
 			}
@@ -579,7 +583,7 @@
 			.removeClass( 'updating-message' )
 			.addClass( 'updated-message installed button-disabled' )
 			.attr( 'aria-label', wp.updates.l10n.pluginInstalledLabel.replace( '%s', response.pluginName ) )
-			.text( wp.updates.l10n.installed );
+			.text( wp.updates.l10n.pluginInstalled );
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 
@@ -840,7 +844,7 @@
 			}
 		} );
 
-		wp.a11y.speak( wp.updates.l10n.deleted, 'polite' );
+		wp.a11y.speak( wp.updates.l10n.pluginDeleted, 'polite' );
 
 		$document.trigger( 'wp-plugin-delete-success', response );
 	};
@@ -964,7 +968,7 @@
 			$theme         = $( '[data-slug="' + response.slug + '"]' ),
 			updatedMessage = {
 				className: 'updated-message notice-success notice-alt',
-				message:   wp.updates.l10n.updated
+				message:   wp.updates.l10n.themeUpdated
 			},
 			$notice, newText;
 
@@ -1101,7 +1105,7 @@
 			.removeClass( 'updating-message' )
 			.addClass( 'updated-message disabled' )
 			.attr( 'aria-label', wp.updates.l10n.themeInstalledLabel.replace( '%s', response.themeName ) )
-			.text( wp.updates.l10n.installed );
+			.text( wp.updates.l10n.themeInstalled );
 
 		wp.a11y.speak( wp.updates.l10n.installedMsg, 'polite' );
 
@@ -1177,7 +1181,7 @@
 	};
 
 	/**
-	 * Sends an Ajax request to the server to install a theme.
+	 * Sends an Ajax request to the server to delete a theme.
 	 *
 	 * @since 4.6.0
 	 *
@@ -1272,7 +1276,7 @@
 			} );
 		}
 
-		wp.a11y.speak( wp.updates.l10n.deleted, 'polite' );
+		wp.a11y.speak( wp.updates.l10n.themeDeleted, 'polite' );
 
 		$document.trigger( 'wp-theme-delete-success', response );
 	};
@@ -1705,6 +1709,7 @@
 			wp.updates.filesystemCredentials.ftp.connectionType = $( 'input[name="connection_type"]:checked' ).val();
 			wp.updates.filesystemCredentials.ssh.publicKey      = $( '#public_key' ).val();
 			wp.updates.filesystemCredentials.ssh.privateKey     = $( '#private_key' ).val();
+			wp.updates.filesystemCredentials.fsNonce            = $( '#_fs_nonce' ).val();
 			wp.updates.filesystemCredentials.available          = true;
 
 			// Unlock and invoke the queue.
@@ -1775,9 +1780,9 @@
 
 				if ( 'plugin-install' === pagenow || 'plugin-install-network' === pagenow ) {
 					if ( 'update-plugin' === job.action ) {
-						$message.attr( 'aria-label', wp.updates.l10n.updateNowLabel.replace( '%s', $message.data( 'name' ) ) );
+						$message.attr( 'aria-label', wp.updates.l10n.pluginUpdateNowLabel.replace( '%s', $message.data( 'name' ) ) );
 					} else if ( 'install-plugin' === job.action ) {
-						$message.attr( 'aria-label', wp.updates.l10n.installNowLabel.replace( '%s', $message.data( 'name' ) ) );
+						$message.attr( 'aria-label', wp.updates.l10n.pluginInstallNowLabel.replace( '%s', $message.data( 'name' ) ) );
 					}
 				}
 			}
@@ -2260,7 +2265,7 @@
 				} else if ( $oldSubTitle.length ) {
 					$oldSubTitle.replaceWith( $subTitle );
 				} else {
-					$( '.wrap h1' ).append( $subTitle );
+					$( '.wp-header-end' ).before( $subTitle );
 				}
 
 				$( 'body' ).removeClass( 'loading-content' );

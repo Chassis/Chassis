@@ -1448,25 +1448,34 @@ function _wp_post_thumbnail_html( $thumbnail_id = null, $post = null ) {
  *
  * @since 2.5.0
  *
- * @param int $post_id ID of the post to check for editing
- * @return integer False: not locked or locked by current user. Int: user ID of user with lock.
+ * @param int $post_id ID of the post to check for editing.
+ * @return int|false ID of the user with lock. False if the post does not exist, post is not locked,
+ *                   the user with lock does not exist, or the post is locked by current user.
  */
 function wp_check_post_lock( $post_id ) {
-	if ( !$post = get_post( $post_id ) )
+	if ( ! $post = get_post( $post_id ) ) {
 		return false;
+	}
 
-	if ( !$lock = get_post_meta( $post->ID, '_edit_lock', true ) )
+	if ( ! $lock = get_post_meta( $post->ID, '_edit_lock', true ) ) {
 		return false;
+	}
 
 	$lock = explode( ':', $lock );
 	$time = $lock[0];
 	$user = isset( $lock[1] ) ? $lock[1] : get_post_meta( $post->ID, '_edit_last', true );
 
+	if ( ! get_userdata( $user ) ) {
+		return false;
+	}
+
 	/** This filter is documented in wp-admin/includes/ajax-actions.php */
 	$time_window = apply_filters( 'wp_check_post_lock_window', 150 );
 
-	if ( $time && $time > time() - $time_window && $user != get_current_user_id() )
+	if ( $time && $time > time() - $time_window && $user != get_current_user_id() ) {
 		return $user;
+	}
+
 	return false;
 }
 
@@ -1475,20 +1484,24 @@ function wp_check_post_lock( $post_id ) {
  *
  * @since 2.5.0
  *
- * @param int $post_id ID of the post to being edited
- * @return bool|array Returns false if the post doesn't exist of there is no current user, or
- * 	an array of the lock time and the user ID.
+ * @param int $post_id ID of the post being edited.
+ * @return array|false Array of the lock time and user ID. False if the post does not exist, or
+ *                     there is no current user.
  */
 function wp_set_post_lock( $post_id ) {
-	if ( !$post = get_post( $post_id ) )
+	if ( ! $post = get_post( $post_id ) ) {
 		return false;
-	if ( 0 == ($user_id = get_current_user_id()) )
+	}
+
+	if ( 0 == ( $user_id = get_current_user_id() ) ) {
 		return false;
+	}
 
 	$now = time();
 	$lock = "$now:$user_id";
 
 	update_post_meta( $post->ID, '_edit_lock', $lock );
+
 	return array( $now, $user_id );
 }
 
@@ -1516,6 +1529,7 @@ function _admin_notice_post_locked() {
 		 * @since 3.6.0
 		 *
 		 * @param bool         $display Whether to display the dialog. Default true.
+		 * @param WP_Post      $post    Post object.
 		 * @param WP_User|bool $user    WP_User object on success, false otherwise.
 		 */
 		if ( ! apply_filters( 'show_post_locked_dialog', true, $post, $user ) )

@@ -861,13 +861,12 @@ function populate_roles_300() {
 	}
 }
 
+if ( !function_exists( 'install_network' ) ) :
 /**
  * Install Network.
  *
  * @since 3.0.0
- *
  */
-if ( !function_exists( 'install_network' ) ) :
 function install_network() {
 	if ( ! defined( 'WP_INSTALLING_NETWORK' ) )
 		define( 'WP_INSTALLING_NETWORK', true );
@@ -952,12 +951,16 @@ function populate_network( $network_id = 1, $domain = '', $email = '', $site_nam
 
 	if ( !is_multisite() ) {
 		$site_admins = array( $site_user->user_login );
-		$users = get_users( array( 'fields' => array( 'ID', 'user_login' ) ) );
+		$users = get_users( array(
+			'fields' => array( 'user_login' ),
+			'role'   => 'administrator',
+		) );
 		if ( $users ) {
 			foreach ( $users as $user ) {
-				if ( is_super_admin( $user->ID ) && !in_array( $user->user_login, $site_admins ) )
-					$site_admins[] = $user->user_login;
+				$site_admins[] = $user->user_login;
 			}
+
+			$site_admins = array_unique( $site_admins );
 		}
 	} else {
 		$site_admins = get_site_option( 'site_admins' );

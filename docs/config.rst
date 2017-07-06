@@ -46,7 +46,7 @@ PHP Version
 
 **Key**: ``php``
 
-PHP 5.6 is included with Chassis by default, plus we register the additional
+PHP 7.0 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
@@ -320,3 +320,22 @@ Extension names can be specified in one of three ways:
       - Tester
       - javorszky/chassis-openssl
       - https://bitbucket.org/some/example.git
+
+
+Machine Customisations
+----------------------
+
+The underlying virtual machine managed by Vagrant can be customised, but depends on which provider you are using.
+
+VirtualBox
+~~~~~~~~~~
+
+**Key**: ``virtualbox``
+
+When using VirtualBox, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the VirtualBox defaults (384 MB of RAM, and 2 vCPUs).
+
+.. code-block:: yaml
+
+   virtualbox:
+      memory: null
+      cpus: null
