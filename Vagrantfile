@@ -106,24 +106,21 @@ Vagrant.configure("2") do |config|
 		]
 	end
 
+	# Set up synced folders.
+	synced_folders = CONF["synced_folders"].clone
+	synced_folders["."] = "/vagrant"
+
 	# Ensure that WordPress can install/update plugins, themes and core
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
 
-	config.vm.synced_folder ".", "/vagrant", :mount_options => mount_opts, :nfs => CONF['nfs']
-
-	# Automatically use bindfs if we can.
-	if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
-		config.bindfs.bind_folder "/vagrant", "/vagrant"
-	end
-
-	CONF["synced_folders"].each do |from, to|
+	synced_folders.each do |from, to|
 		config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs']
 
 		# Automatically use bindfs if we can.
 		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
 			config.bindfs.bind_folder to, to
 		end
-	end if CONF["synced_folders"]
+	end
 
 	# Success?
 end
