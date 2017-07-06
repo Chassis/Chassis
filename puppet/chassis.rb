@@ -129,16 +129,33 @@ module Chassis
 	def self.install_extensions(config)
 		# Install extensions listed in config
 		if config["extensions"]
-			config["extensions"].each do |ext|
-				begin
-					repo = /^(git@|https:)/.match(ext) ? ext : 'https://github.com/' + ext
-					folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
+			config["extensions"].each { |ext| self.install_extension(ext) }
+		end
 
-					if ! File.exist?( folder )
-						system("git clone %s %s --recursive" % [repo, folder] )
-					end
-				end
+		# For each of the extensions in our folder, read the extension config and
+		# install dependencies, etc for that extension.
+		self.get_extensions(2).each do |extension|
+			ext_config = self.get_extension_config(extension)
+
+			# If we have dependencies, then install them.
+			if ext_config["dependencies"]
+				ext_config["dependencies"].each { |ext| self.install_extension(ext) }
 			end
 		end
+	end
+
+	def self.install_extension(extension)
+		# Perform checks for various forms of extension definition.
+		if extension =~ /^[\w-]+$/ # Chassis official extension, like 'nodejs'.
+			repo = 'https://github.com/chassis/' + extension
+		elsif extension =~ /^[\w-]+\/[\w-]+$/ # account/repo style.
+			repo = 'https://github.com/' + extension
+		else
+			repo = extension
+		end
+
+		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
+
+		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
 	end
 end

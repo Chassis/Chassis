@@ -298,6 +298,9 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
       - twentyfifteen
       - twentysixteen
 
+
+.. _extension-format-ref:
+
 Extensions
 ----------
 
@@ -305,8 +308,15 @@ Extensions
 
 You can enable official Chassis extensions and third party extensions by listing their repo name in the ``extensions`` section:
 
+Extension names can be specified in one of three ways:
+
+- `extension-name`: Official Chassis extensions can be specified just by name.
+- `user/repo`: Extensions on GitHub can be specified using the username and repo separated with a slash.
+- `https://github.com/example/example.git`: Any other extension can be specified by its full git URL.
+
 .. code-block:: yaml
 
    extensions:
-      - Chassis/Tester
+      - Tester
       - javorszky/chassis-openssl
+      - https://bitbucket.org/some/example.git

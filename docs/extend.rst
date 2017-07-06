@@ -90,6 +90,11 @@ Extensions **must** specify the following options:
 
 - ``version``: Extension API version. Currently ``2``.
 
+Extensions may also specify the following options:
+
+- ``dependencies``: Extensions that the extension depends on. List of strings,
+  where each string is an extension name (see :ref:`extension-format-ref`).
+
 
 Puppet Class
 ~~~~~~~~~~~~
@@ -139,4 +144,3 @@ contains::
 
   <?php
   $memcached_servers = array( '127.0.0.1:11211' );
-
