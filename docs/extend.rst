@@ -12,7 +12,7 @@ Find available extensions on the `Extensions Index`_.
 Installing extensions
 ---------------------
 
-Extensions can be specified in your configuration (:ref:`extension-format-ref`),
+Extensions can be :ref:`specified in your configuration <extension-format-ref>`,
 and will be automatically downloaded by Chassis. You can also manually add
 extensions.
 
