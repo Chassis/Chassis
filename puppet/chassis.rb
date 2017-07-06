@@ -3,6 +3,33 @@ require "yaml"
 
 module Chassis
 	@@dir = File.dirname(File.dirname(__FILE__))
+	@@extension_dir = File.join(@@dir, 'extensions')
+	@@extension_config = {}
+
+	def self.get_extension_config(extension)
+		# Use cache if we can.
+		return @@extension_config[extension] if @@extension_config.key?(extension)
+
+		path = File.join(@@extension_dir, extension, 'chassis.yaml')
+
+		begin
+			YAML.load_file(path)
+		rescue Errno::ENOENT
+			# No configuration, legacy.
+			{ "version" => 1 }
+		end
+	end
+
+	def self.get_extensions(version = nil)
+		all = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
+
+		return all if ! version
+
+		all.select { |extension|
+			config = get_extension_config(extension)
+			config['version'] == version
+		}
+	end
 
 	def self.load_config()
 		# Load git-managed configuration
