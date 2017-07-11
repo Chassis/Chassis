@@ -92,6 +92,9 @@ module Chassis
 			end
 		end
 
+		# Cast NFS to bool
+		config["nfs"] = !!config["nfs"]
+
 		return config
 	end
 

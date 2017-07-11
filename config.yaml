@@ -113,3 +113,6 @@ virtualbox:
     #
     # (e.g. 2)
     cpus: null
+
+# NFS support. You should change this to Yes if you use VMWare
+nfs: No
