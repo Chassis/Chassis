@@ -3,9 +3,10 @@
 
 # Warn the user if we're on an old version of Vagrant
 if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
-	puts "WARNING: Outdated version of Vagrant"
-	puts "   Chassis requires Vagrant 1.5.0+  "
+	puts "ERROR: Outdated version of Vagrant"
+	puts "  Chassis requires Vagrant 1.5.0+ "
 	puts
+	exit 1
 end
 
 # Check that submodules have been loaded
@@ -38,10 +39,6 @@ module_paths.map! do |path|
 end
 
 Vagrant.configure("2") do |config|
-	# Store the current version of Vagrant for use in conditionals when dealing
-	# with possible backward compatible issues.
-	vagrant_version = Vagrant::VERSION.sub(/^v/, '')
-
 	# Set up potential providers.
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
@@ -109,24 +106,20 @@ Vagrant.configure("2") do |config|
 		]
 	end
 
+	# Set up synced folders.
+	synced_folders = CONF["synced_folders"].clone
+	synced_folders["."] = "/vagrant"
+
 	# Ensure that WordPress can install/update plugins, themes and core
-	if vagrant_version >= "1.3.0"
-		if CONF['nfs'] == true
-			config.vm.synced_folder ".", "/vagrant", :nfs => { :mount_options => ["dmode=777","fmode=777"] }
-			CONF["synced_folders"].each do |from, to|
-				config.vm.synced_folder from, to, :nfs => { :mount_options => ["dmode=777","fmode=777"] }
-			end if CONF["synced_folders"]
-		else
-			config.vm.synced_folder ".", "/vagrant", :mount_options => [ "dmode=777,fmode=777" ]
-			CONF["synced_folders"].each do |from, to|
-				config.vm.synced_folder from, to, :mount_options => [ "dmode=777,fmode=777" ]
-			end if CONF["synced_folders"]
+	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
+
+	synced_folders.each do |from, to|
+		config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs']
+
+		# Automatically use bindfs if we can.
+		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
+			config.bindfs.bind_folder to, to
 		end
-	else
-		config.vm.synced_folder ".", "/vagrant", :extra => "dmode=777,fmode=777"
-		CONF["synced_folders"].each do |from, to|
-			config.vm.synced_folder from, to, :extra => "dmode=777,fmode=777"
-		end if CONF["synced_folders"]
 	end
 
 	# Success?
