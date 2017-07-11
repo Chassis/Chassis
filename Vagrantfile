@@ -124,13 +124,12 @@ Vagrant.configure("2") do |config|
 		end
 	}
 
-	# Each provider needs different default mount options
+	# Run with default settings first...
+	configure_synced_folders.call config, []
+
+	# ...then override for specific providers with custom mount options.
 	config.vm.provider "virtualbox" do |v, override|
 		configure_synced_folders.call override, ["dmode=777","fmode=777"]
-	end
-
-	config.vm.provider "vmware_fusion" do |v, override|
-		configure_synced_folders.call override, []
 	end
 
 	# Success?
