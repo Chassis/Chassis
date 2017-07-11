@@ -107,19 +107,30 @@ Vagrant.configure("2") do |config|
 	end
 
 	# Set up synced folders.
-	synced_folders = CONF["synced_folders"].clone
-	synced_folders["."] = "/vagrant"
+	configure_synced_folders = lambda { |config, provider_mount_opts|
+		synced_folders = CONF["synced_folders"].clone
+		synced_folders["."] = "/vagrant"
 
-	# Ensure that WordPress can install/update plugins, themes and core
-	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
+		# Ensure that WordPress can install/update plugins, themes and core
+		mount_opts = CONF['nfs'] ? [] : provider_mount_opts
 
-	synced_folders.each do |from, to|
-		config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs']
+		synced_folders.each do |from, to|
+			config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs']
 
-		# Automatically use bindfs if we can.
-		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
-			config.bindfs.bind_folder to, to
+			# Automatically use bindfs if we can.
+			if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
+				config.bindfs.bind_folder to, to
+			end
 		end
+	}
+
+	# Each provider needs different default mount options
+	config.vm.provider "virtualbox" do |v, override|
+		configure_synced_folders.call override, ["dmode=777","fmode=777"]
+	end
+
+	config.vm.provider "vmware_fusion" do |v, override|
+		configure_synced_folders.call override, []
 	end
 
 	# Success?
