@@ -4,7 +4,7 @@ install:
   - gem install puppet-lint
 
 script:
-  - puppet-lint --fail-on-warnings --no-2sp_soft_tabs-check --no-hard_tabs-check --no-names_containing_dash-check modules/chassis modules/wp
+  - puppet-lint --fail-on-warnings --no-2sp_soft_tabs-check --no-hard_tabs-check --no-names_containing_dash-check puppet/modules/chassis puppet/modules/wp
 
 notifications:
   slack:
