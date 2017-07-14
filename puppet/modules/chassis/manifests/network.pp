@@ -1,8 +1,9 @@
+# Setup our network configuration
 define chassis::network (
 	$location,
+	$contentdir,
 	$subdomains = false,
 	$wpdir = 'wp',
-	$contentdir,
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',
@@ -22,13 +23,13 @@ define chassis::network (
 	file { $wpdir:
 		ensure => directory
 	}
-	file { "/etc/nginx/sites-available/$name":
+	file { "/etc/nginx/sites-available/${name}":
 		content => template('chassis/multisite.nginx.conf.erb'),
-		notify => Service['nginx']
+		notify  => Service['nginx']
 	}
-	file { "/etc/nginx/sites-enabled/$name":
+	file { "/etc/nginx/sites-enabled/${name}":
 		ensure => link,
-		target => "/etc/nginx/sites-available/$name",
+		target => "/etc/nginx/sites-available/${name}",
 		notify => Service['nginx']
 	}
 
@@ -39,7 +40,7 @@ define chassis::network (
 		grant    => ['all'],
 	}
 
-	wp::site {"${wpdir}":
+	wp::site { $wpdir:
 		url            => "http://${name}/",
 		name           => 'Vagrant Site',
 		require        => Mysql::Db[$database],
