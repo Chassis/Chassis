@@ -1,3 +1,4 @@
+# Install our WordPress site and add our configuration.
 define chassis::wp (
 	$location,
 	$wpdir = 'wp',
@@ -17,7 +18,7 @@ define chassis::wp (
 
 	$extensions = [],
 ) {
-	$subdomains = ( $network == "subdomains" )
+	$subdomains = ( $network == 'subdomains' )
 	if ( $network ) {
 		chassis::network { $name:
 			location          => $location,
@@ -72,12 +73,12 @@ define chassis::wp (
 	}
 
 	wp::plugin { $plugins:
-		location => $location,
 		ensure   => 'enabled',
+		location => $location,
 	}
 
 	wp::theme { $themes:
-		location => $location,
 		ensure   => 'enabled',
+		location => $location,
 	}
 }
