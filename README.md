@@ -1,6 +1,6 @@
 # Chassis
 
-Chassis is a virtual server for your WordPress site, built using [Vagrant][].
+Chassis is a virtual server for your WordPress site, built using [Vagrant](https://www.vagrantup.com/).
 
 Chassis is basically a way to run WordPress (and related parts, such as PHP and
 nginx) without needing to worry about setting up anything. You can imagine it as
