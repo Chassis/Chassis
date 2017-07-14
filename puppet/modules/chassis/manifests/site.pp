@@ -1,3 +1,4 @@
+# Setup Nginx, MySql and WordPress.
 define chassis::site (
 	$location,
 	$wpdir,
@@ -16,13 +17,13 @@ define chassis::site (
 	file { $wpdir:
 		ensure => directory
 	}
-	file { "/etc/nginx/sites-available/$name":
+	file { "/etc/nginx/sites-available/${name}":
 		content => template('chassis/site.nginx.conf.erb'),
-		notify => Service['nginx']
+		notify  => Service['nginx']
 	}
-	file { "/etc/nginx/sites-enabled/$name":
+	file { "/etc/nginx/sites-enabled/${name}":
 		ensure => link,
-		target => "/etc/nginx/sites-available/$name",
+		target => "/etc/nginx/sites-available/${name}",
 		notify => Service['nginx']
 	}
 
@@ -33,10 +34,10 @@ define chassis::site (
 		grant    => ['all'],
 	}
 
-	wp::site {"${wpdir}":
-		url => "http://${name}/",
-		name => 'Vagrant Site',
-		require => Mysql::Db[$database],
+	wp::site { $wpdir:
+		url            => "http://${name}/",
+		name           => 'Vagrant Site',
+		require        => Mysql::Db[$database],
 		admin_user     => $admin_user,
 		admin_email    => $admin_email,
 		admin_password => $admin_password,
