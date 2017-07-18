@@ -1,3 +1,4 @@
+# Setup hhvm
 class chassis::php::hhvm (
 	$extensions = [],
 ) {
@@ -14,21 +15,12 @@ class chassis::php::hhvm (
 		ensure => latest,
 	}
 
-	# Ignore extensions
-	# $extensions.each {|$ext|
-	# 	package {"php5-${ext}":
-	# 		ensure => latest,
-	# 		require => Package[ 'php5-fpm' ]
-	# 	}
-	# }
-
 	file { '/etc/hhvm.hdf':
+		ensure  => 'present',
 		content => template('chassis/hhvm.hdf.erb'),
 		owner   => 'root',
 		group   => 'root',
-		mode    => 0644,
+		mode    => '0644',
 		require => Package['hhvm-fastcgi'],
-		ensure  => 'present',
-		# notify  => Service['hhvm'],
 	}
 }
