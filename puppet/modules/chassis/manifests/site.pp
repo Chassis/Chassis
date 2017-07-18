@@ -1,4 +1,4 @@
-# Setup Nginx, MySql and WordPress.
+# Setup Nginx, MySQL and WordPress.
 define chassis::site (
 	$location,
 	$wpdir,
