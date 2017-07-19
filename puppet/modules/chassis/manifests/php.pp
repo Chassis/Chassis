@@ -23,7 +23,7 @@ class chassis::php (
 		$short_ver = regsubst($version, '^(\d+\.\d+)\.\d+$', '\1')
 	}
 
-	if versioncmp( $version, '5.4') <= 0 {
+	if versioncmp( "${version}", '5.4') <= 0 {
 		$php_package = 'php5'
 		$php_dir = 'php5'
 	}
@@ -32,7 +32,7 @@ class chassis::php (
 		$php_dir = "php/${short_ver}"
 	}
 
-	if versioncmp( $version, '5.5') < 0 {
+	if versioncmp( "${version}", '5.5') < 0 {
 		file { "/etc/init/${php_package}-fpm.conf":
 			ensure => absent
 		}
@@ -66,7 +66,7 @@ class chassis::php (
 	}
 
 	# Add mbstring to all versions of php
-	if versioncmp( $version, '5.5') < 0 {
+	if versioncmp( "${version}", '5.5') < 0 {
 		$packages = [ "${php_package}-fpm", "${php_package}-cli", "${php_package}-common", 'php-xml', 'php-mbstring' ]
 	} else {
 		$packages = [
