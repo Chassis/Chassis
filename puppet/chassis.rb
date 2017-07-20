@@ -119,8 +119,9 @@ module Chassis
 			end
 		end
 
-		# Cast NFS to bool
+		# Cast config as needed
 		config["nfs"] = !!config["nfs"]
+		config["php"] = config["php"].to_s
 
 		return config
 	end
