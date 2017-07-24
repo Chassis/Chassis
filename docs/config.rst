@@ -200,6 +200,7 @@ be redirected by WordPress depending on your configuration or plugins.
    to connect, then inside the box run ``ifconfig eth1`` and look for the line
    starting with ``inet addr:``.
 
+.. _config-ip:
 
 IP Address
 ----------
