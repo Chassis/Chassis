@@ -11,7 +11,7 @@ Networking
 Chassis VMs use the networking features provided by Vagrant and the underlying
 VM management (VirtualBox, VMWare Fusion, etc). The VM is connected to the host
 using a `private network`_, with a dynamically assigned IP address (unless a
-static IP is :doc:`specified in your config <config-ip>`).
+static IP is :ref:`specified in your config <config-ip>`).
 
 .. _private network: https://www.vagrantup.com/docs/networking/private_network.html
 
