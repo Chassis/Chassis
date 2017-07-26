@@ -90,4 +90,11 @@ PHP runs in FastCGI mode (``php-fpm``), using a Unix socket at
 ``/etc/php/<version>/fpm/php.ini`` is provisioned from the ``php.ini.erb``
 template. This is a standard PHP configuration based on the ``php.ini`` included
 in the Ubuntu package. The CLI configuration is also provisioned to the same
-template.
+template into ``/etc/php/<version/cli/php.ini``.
+
+Additionally, PHP loads all files from ``/etc/php/<version>/fpm/conf.d`` (and
+corresponding CLI directory) in alphabetical order. Chassis extensions can place
+additional configuration into this directory. PHP extensions installed via
+packages (e.g. ``php-xdebug``) will automatically place configuration into this
+directory to load the extension (typically with a filename like
+``10-xdebug.ini``).
