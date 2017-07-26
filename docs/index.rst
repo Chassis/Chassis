@@ -40,5 +40,6 @@ User Guide
    intro
    quickstart
    config
+   contents
    extend
    reference
