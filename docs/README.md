@@ -12,10 +12,10 @@ associated tools first:
 $ sudo pip install sphinx sphinx-autobuild sphinx_rtd_theme livereload==2.2.0
 ```
 
-Then, to build:
+Then to build, run the `sphinx-build` within this documentation folder:
 
 ```bash
-$ sphinx-build -b dirhtml _build/dirhtml
+$ sphinx-build -b dirhtml . _build/dirhtml
 ```
 
 You should now be able to access `_build/dirhtml/index.html` in a browser and

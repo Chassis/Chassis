@@ -40,6 +40,7 @@ User Guide
    intro
    quickstart
    config
+   guides
    contents
    extend
    reference
