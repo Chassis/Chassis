@@ -9,7 +9,7 @@ You'll need to grab a copy of Sphinx (the documentation generator) and
 associated tools first:
 
 ```bash
-$ sudo pip install sphinx sphinx-autobuild sphinx_rtd_theme livereload==2.2.0
+$ sudo -H pip install Sphinx sphinx-autobuild sphinx_rtd_theme imagesize livereload==2.2.0
 ```
 
 Then to build, run the `sphinx-build` within this documentation folder:
@@ -20,3 +20,11 @@ $ sphinx-build -b dirhtml . _build/dirhtml
 
 You should now be able to access `_build/dirhtml/index.html` in a browser and
 browse the documentation.
+
+### Troubleshooting
+
+If you see the error `sudo: pip: command not found` while installing the documentation generator, then you'll need to install pip with the following command:
+
+```
+$ sudo easy_install pip
+```
