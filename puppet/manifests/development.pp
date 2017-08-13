@@ -1,5 +1,13 @@
 # Load extensions
-import "/vagrant/extensions/*/chassis.pp"
+# import "/vagrant/extensions/*/chassis.pp"
+
+Service {
+	provider =&gt; runit,
+	path =&gt; '/etc/service',
+}
+Mysql::Params {
+	service_provider =&gt; undef,
+}
 
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
