@@ -1,0 +1,85 @@
+Guides
+======
+
+.. highlight:: yaml
+
+These guides will help you configure Chassis for specific types of development.
+
+WordPress Core Development
+--------------------------
+
+An SVN or Git checkout of WordPress can be mapped as Chassis' ``wp/`` directory to enable development of WordPress Core.
+
+Directory Structure
+~~~~~~~~~~~~~~~~~~~
+
+If you've installed Chassis into a folder such as ``wpcore-box``, use SVN or Git to clone ``develop.svn.wordpress.org`` (or ``develop.git.wordpress.org``, depending on how you develop) into a sibling directory. For example:
+
+- ``wordpress-development/``
+    - ``wpcore/``: A clone of WordPress from ``develop.svn`` or ``develop.git``
+    - ``wpcore-box/``: Chassis
+
+Tester Extension
+~~~~~~~~~~~~~~~~
+
+The `Tester`_ extension adds and configures PHPUnit for WordPress tests. You can install other extensions if you want, but there's nothing else required.
+
+.. _Tester: https://github.com/Chassis/Tester
+
+Configuration
+~~~~~~~~~~~~~
+
+Save this configuration as ``config.local.yaml`` in the Chassis root directory to configure Chassis to look for WordPress in your ``wpcore/`` checkout.
+
+.. code-block:: yaml
+
+   paths:
+       # Use the Chassis box normally...
+       base: .
+       content: content
+
+       # But use my development copy of WordPress for the WP source
+       wp: ../wpcore/src
+
+   # Also use your development copy of WordPress for the unit test
+   # framework, and for the unit tests themselves
+   synced_folders:
+       ../wpcore: /vagrant/extensions/tester/wpdevel
+
+   # Set the host to `core.local` to distinguish from other chassis boxes
+   hosts:
+       - core.local
+
+   # Explicitly set database configuration to avoid warning with Tester
+   database:
+       name: wordpress
+       user: wordpress
+       password: vagrantpassword
+       prefix: wp_
+
+   # Run in multisite mode (totally optional)
+   multisite: true
+
+WordPress will now be loaded from the ``wpcore/`` checkout, not the ``wp/`` directory within Chassis. However, in order for WP-CLI and other tools to be able to find Chassis' ``wp-config.php`` we need to add a dummy configuration file at ``wpcore/src/wp-config.php``:
+
+.. code-block:: php
+
+   <?php
+   // Fool WP-CLI into recognising this as a valid config file
+   if ( false ) {
+       require ABSPATH . './wp-settings.php';
+   }
+
+   require '/vagrant/wp-config.php';
+
+In normal circumstances editing Chassis' own ``wp-config.php`` file is discouraged in favor of using ``local-config.php``. However in this case you're working around WP-CLI with the dummy ``wp-config.php`` file, so you will need to make one change to Chassis' own ``wp-config.php`` file to wrap the line which requires ``wp-settings.php`` in a conditional check:
+
+.. code-block:: php
+
+   if ( ! defined( 'WP_CLI' ) ) {
+       require_once( ABSPATH . 'wp-settings.php' );
+   }
+
+This will prevent WP-CLI from loading ``wp-settings.php`` twice.
+
+With this configuration you should now be ready to develop against WordPress Core.
