@@ -20,6 +20,12 @@ before_install:
   - vagrant --version
   - which VBoxManage
   - VBoxManage --version
+  - curl -L http://download.virtualbox.org/virtualbox/5.1.26/virtualbox-5.1_5.1.26-117224~Ubuntu~trusty_amd64.deb -o virtualbox-5.1_5.1.26.deb && sudo dpkg -i virtualbox-5.1_5.1.26.deb
+  - curl -L https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.deb -o vagrant_1.9.7_x86_64.deb && sudo dpkg -i vagrant_1.9.7_x86_64.deb
+  - which vagrant
+  - vagrant --version
+  - which VBoxManage
+  - VBoxManage --version
 install:
   - mkdir -p content/{themes,plugins}
   - gem install puppet-lint
