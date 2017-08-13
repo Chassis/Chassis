@@ -15,6 +15,7 @@ addons:
 before_install:
   - pwd
   - curl -L http://download.virtualbox.org/virtualbox/5.1.26/virtualbox-5.1_5.1.26-117224~Ubuntu~trusty_amd64.deb -o virtualbox-5.1_5.1.26.deb && sudo dpkg -i virtualbox-5.1_5.1.26.deb
+  - curl -L http://download.virtualbox.org/virtualbox/5.1.26/Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack -o Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack && sudo VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack
   - curl -L https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.deb -o vagrant_1.9.7_x86_64.deb && sudo dpkg -i vagrant_1.9.7_x86_64.deb
   - which vagrant
   - vagrant --version
