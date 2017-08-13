@@ -8,6 +8,9 @@ os:
   - osx
 cache:
   apt: true
+  directories:
+    - $HOME/Library/Caches/Homebrew
+    - $HOME/usr/local/Cellar/
 addons:
   apt:
     packages:
