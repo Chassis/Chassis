@@ -11,6 +11,7 @@ cache:
   directories:
     - $HOME/Library/Caches/Homebrew
     - $HOME/usr/local/Cellar/
+    - $HOME/.vagrant.d/boxes
 addons:
   apt:
     packages:
