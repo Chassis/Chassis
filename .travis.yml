@@ -1,11 +1,33 @@
+sudo: required
+dist: trusty
+services:
+  - docker
 language: ruby
-
+cache:
+  apt: true
+  directories:
+    - $HOME/.vagrant.d/boxes
+addons:
+  apt:
+    packages:
+      - avahi-dnsconfd
+before_install:
+  - pwd
+  - curl -L https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.deb -o vagrant_1.9.7_x86_64.deb && sudo dpkg -i vagrant_1.9.7_x86_64.deb
+  - which vagrant
+  - vagrant --version
 install:
+  - mkdir -p content/{themes,plugins}
   - gem install puppet-lint
-
 script:
   - puppet-lint --fail-on-warnings --no-2sp_soft_tabs-check --no-hard_tabs-check --no-names_containing_dash-check --no-autoloader_layout-check --no-nested_classes_or_defines-check puppet/modules/chassis puppet/modules/wp
-
+  - vagrant up --provider docker
+after_failure:
+  - vagrant status
+after_script:
+  - vagrant destroy --force
+after_success:
+  - vagrant status
 notifications:
   slack:
     secure: JbcRVXdj9FyVH6kbM0tSYi41+5AfChF4AcN76ibUAMQspqp5xna+cdqXxQiLzG9uzgX4dT/vy1QpTI6pJYtru6N3NhX5lMkfDT2gQr9/h5oHjqv/WStPuCXjsUQIS55MnOcNwNjIwyq6PfiFuX5Zn99YdogCa7mdkgQ5TggujBAexZkXUhnXLdZ+/GsLnUeUkdjeIBHDoYrh+/WYeJ94Fmf9vsgEmP6LULnGwqt4n+tLFkqWS9/q6jirbctl+SlN/UdVuuecozvDAkpm5qB52oEjcZTm7IIjrRGq8Hc8xWNYAxOjKjk56trYRZGYgeo87lYcQ+YHtqb82IZNKD3EuHLtbz1nw/jmEsWEv4nBzoKos/9RXw+9Hzm7NFrooqJwX5ThbdjJNQEsnqloXyehKiOpIznf6OnHoOdFLZQfFiOhyUj3RPrQoCKNE9iTLgLb9QE3NljQZW5GBmvAawj1bEF3xymxBS98JZc8d65kLG3q9iwn06MP2RnD2SOlGLl9ECmNLWB4Hcb3AfGUAMKqaZX/rWmT71NvBvVjBTWZSsYQ4JyIMzpFkxi746ODZzxyk6nR8VbtQtHbC3qZAtS5jQANi56p/eiKyXe3OyDtzmaLyxGbe0hbMb2RpcTXSkn5u/oxd26HFGcuELzKQvC9ygPeo0xl+Y82dQ9+MmbTb+c=
