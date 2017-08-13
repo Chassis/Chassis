@@ -5,6 +5,7 @@ services:
 language: ruby
 os:
   - linux
+  - osx
 cache:
   apt: true
 addons:
@@ -14,9 +15,20 @@ addons:
       - avahi-dnsconfd
 before_install:
   - pwd
-  - curl -L http://download.virtualbox.org/virtualbox/5.1.26/virtualbox-5.1_5.1.26-117224~Ubuntu~trusty_amd64.deb -o virtualbox-5.1_5.1.26.deb && sudo dpkg -i virtualbox-5.1_5.1.26.deb
-  - curl -L http://download.virtualbox.org/virtualbox/5.1.26/Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack -o Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack && yes | sudo VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack
-  - curl -L https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.deb -o vagrant_1.9.7_x86_64.deb && sudo dpkg -i vagrant_1.9.7_x86_64.deb
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "linux" ]]; then
+      curl -L http://download.virtualbox.org/virtualbox/5.1.26/virtualbox-5.1_5.1.26-117224~Ubuntu~trusty_amd64.deb -o virtualbox-5.1_5.1.26.deb && sudo dpkg -i virtualbox-5.1_5.1.26.deb
+      curl -L http://download.virtualbox.org/virtualbox/5.1.26/Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack -o Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack && yes | sudo VBoxManage extpack install Oracle_VM_VirtualBox_Extension_Pack-5.1.26-117224.vbox-extpack
+      curl -L https://releases.hashicorp.com/vagrant/1.9.7/vagrant_1.9.7_x86_64.deb -o vagrant_1.9.7_x86_64.deb && sudo dpkg -i vagrant_1.9.7_x86_64.deb
+    fi
+  - |
+    if [[ "${TRAVIS_OS_NAME}" == "osx" ]]; then
+      brew tap caskroom/cask
+      brew update
+      brew upgrade
+      brew cask install virtualbox
+      brew cask install vagrant
+    fi
   - which vagrant
   - vagrant --version
   - which VBoxManage
