@@ -94,7 +94,7 @@ Vagrant.configure("2") do |config|
 		# Disable Puppet warnings
 		puppet.options += " --disable_warnings=deprecations"
 
-		#puppet.options = puppet.options + " --verbose --debug"
+		puppet.options = puppet.options + " --verbose --debug"
 	end
 
 	# Help the user out the first time they provision
