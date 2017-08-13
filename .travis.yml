@@ -17,7 +17,7 @@ before_install:
   - pwd
   - which vagrant
   - vagrant --version
-  - which VirtualBox
+  - which VBoxManage
   - VBoxManage --version
 install:
   - mkdir -p content/{themes,plugins}
