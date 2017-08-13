@@ -2,11 +2,11 @@
 # import "/vagrant/extensions/*/chassis.pp"
 
 Service {
-	provider =&gt; runit,
-	path =&gt; '/etc/service',
+	provider => runit,
+	path     => '/etc/service',
 }
 Mysql::Params {
-	service_provider =&gt; undef,
+	service_provider => undef,
 }
 
 $config = sz_load_config()
