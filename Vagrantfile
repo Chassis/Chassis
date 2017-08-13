@@ -88,9 +88,6 @@ Vagrant.configure("2") do |config|
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
 		puppet.options = "--modulepath " +  module_paths.join( ':' ).inspect
 
-		# Disable Hiera configuration file
-		puppet.options += " --hiera_config /dev/null"
-
 		# Disable Puppet warnings
 		puppet.options += " --disable_warnings=deprecations"
 
