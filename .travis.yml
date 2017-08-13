@@ -10,6 +10,7 @@ cache:
 addons:
   apt:
     packages:
+      - linux-headers-generic
       - virtualbox
       - vagrant
       - avahi-dnsconfd
