@@ -40,9 +40,20 @@ end
 
 Vagrant.configure("2") do |config|
 	# Set up potential providers.
-	config.vm.provider "virtualbox" do |vb|
-		# Use linked clones to preserve disk space.
-		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+	config.vm.provider "docker" do |d, override|
+		override.vm.box = nil
+
+		mapped_paths = module_paths.map { |rel_path| "/vagrant/" + rel_path }
+
+		d.build_dir = "."
+		d.build_args = [
+			# Docker 1.9 and later :|
+			# "--build-arg puppet_modulepaths=" + mapped_paths.join(':')
+		]
+		# d.has_ssh = true
+		# d.ports = ["80"]
+		# d.remains_running = true
+		d.vagrant_vagrantfile = "Vagrantfile.docker"
 	end
 
 	# We <3 Ubuntu LTS
@@ -50,11 +61,6 @@ Vagrant.configure("2") do |config|
 
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
-
-	# Disable updating of Virtual Box Guest Additions for faster provisioning.
-	if Vagrant.has_plugin?("vagrant-vbguest")
-		config.vbguest.auto_update = false
-	end
 
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
@@ -88,7 +94,7 @@ Vagrant.configure("2") do |config|
 		# Disable Puppet warnings
 		puppet.options += " --disable_warnings=deprecations"
 
-		#puppet.options = puppet.options + " --verbose --debug"
+		puppet.options = puppet.options + " --verbose --debug"
 	end
 
 	# Help the user out the first time they provision
