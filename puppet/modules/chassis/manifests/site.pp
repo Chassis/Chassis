@@ -21,9 +21,11 @@ define chassis::site (
 		content => template('chassis/site.nginx.conf.erb'),
 		notify  => Service['nginx']
 	}
-	file { "/etc/nginx/sites-available/${name}.d":
-		ensure  => directory,
-		require => Package['nginx']
+	if ( ! defined( File["/etc/nginx/sites-available/${name}.d"] ) ) {
+		file { "/etc/nginx/sites-available/${name}.d":
+			ensure  => directory,
+			require => Package['nginx']
+		}
 	}
 	file { "/etc/nginx/sites-enabled/${name}":
 		ensure => link,
