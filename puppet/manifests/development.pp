@@ -26,8 +26,10 @@ package { 'git-core':
 	ensure => installed
 }
 
-class { 'mysql::server':
-	root_password => 'password',
+if ! defined ( Class['::mysql::server'] ) {
+	class { 'mysql::server':
+		root_password => 'password',
+	}
 }
 
 class { 'chassis':
