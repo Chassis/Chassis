@@ -43,6 +43,7 @@ Vagrant.configure("2") do |config|
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
 		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
+		vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
 
 		# Customisations from config.local.yaml
 		if CONF['virtualbox']
