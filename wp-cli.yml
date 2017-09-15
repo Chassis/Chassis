@@ -1,0 +1,2 @@
+@local:
+  ssh: vagrant:default
