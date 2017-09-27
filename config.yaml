@@ -99,7 +99,7 @@ synced_folders:
 #  - git@github.com:Chassis/memcache.git
 
 # PHP version
-# Values: 5.6, 7.0, 7.1 (or 5.6.30)
+# Values: 5.6, 7.0, 7.1, 7.2 (or 5.6.30)
 php: 7.0
 
 # VirtualBox-specific customisations.
