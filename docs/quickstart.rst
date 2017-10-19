@@ -27,8 +27,8 @@ Before using Chassis, this is how your system should be set up:
 
   * **OS X**: You already have Bonjour available.
 
-  * **Windows**: If you have Safari, Bonjour Print Services, or Creative
-    Suite 3 installed, you already have Bonjour.
+  * **Windows**: If you have Bonjour Print Services or Creative
+    Cloud installed, you already have Bonjour.
 
     Otherwise, you need to install Bonjour on your system. The easiest way to
     do this is to `install Bonjour Print Services`_. If you'd prefer not to do this, you
