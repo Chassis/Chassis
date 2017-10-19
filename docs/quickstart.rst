@@ -27,11 +27,11 @@ Before using Chassis, this is how your system should be set up:
 
   * **OS X**: You already have Bonjour available.
 
-  * **Windows**: If you have iTunes, Safari, Bonjour Print Services, or Creative
+  * **Windows**: If you have Safari, Bonjour Print Services, or Creative
     Suite 3 installed, you already have Bonjour.
 
     Otherwise, you need to install Bonjour on your system. The easiest way to
-    do this is to `install iTunes`_. If you'd prefer not to do this, you
+    do this is to `install Bonjour Print Services`_. If you'd prefer not to do this, you
     can follow `these instructions <Bonjour_>`_ to install just Bonjour.
 
   * **Linux**: You need to have Avahi installed on your system.
@@ -42,7 +42,7 @@ Before using Chassis, this is how your system should be set up:
 
 .. _VirtualBox: https://www.virtualbox.org/wiki/Downloads
 .. _Vagrant: http://www.vagrantup.com/downloads.html
-.. _install iTunes: http://www.apple.com/itunes/download/
+.. _install Bonjour Print Services: https://support.apple.com/kb/DL999?viewlocale=en_US&locale=en_US
 .. _Bonjour: http://help.touch-able.com/kb/network-setup-windows/make-sure-that-bonjour-is-installed-on-your-windows-pc
 
 
