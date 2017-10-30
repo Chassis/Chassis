@@ -165,7 +165,7 @@ window.wp = window.wp || {};
 	/**
 	 * Observable values that support two-way binding.
 	 *
-	 * @constuctor
+	 * @constructor
 	 */
 	api.Value = api.Class.extend({
 		/**
@@ -304,7 +304,7 @@ window.wp = window.wp || {};
 	/**
 	 * A collection of observable values.
 	 *
-	 * @constuctor
+	 * @constructor
 	 * @augments wp.customize.Class
 	 * @mixes wp.customize.Events
 	 */
@@ -520,7 +520,7 @@ window.wp = window.wp || {};
 	 *
 	 * Handles inputs, selects, and textareas by default.
 	 *
-	 * @constuctor
+	 * @constructor
 	 * @augments wp.customize.Value
 	 * @augments wp.customize.Class
 	 */
@@ -617,7 +617,7 @@ window.wp = window.wp || {};
 	/**
 	 * A communicator for sending data from one window to another over postMessage.
 	 *
-	 * @constuctor
+	 * @constructor
 	 * @augments wp.customize.Class
 	 * @mixes wp.customize.Events
 	 */
@@ -637,22 +637,25 @@ window.wp = window.wp || {};
 		/**
 		 * Initialize Messenger.
 		 *
-		 * @param  {object} params        Parameters to configure the messenger.
-		 *         {string} .url          The URL to communicate with.
-		 *         {window} .targetWindow The window instance to communicate with. Default window.parent.
-		 *         {string} .channel      If provided, will send the channel with each message and only accept messages a matching channel.
-		 * @param  {object} options       Extend any instance parameter or method with this object.
+		 * @param  {object} params - Parameters to configure the messenger.
+		 *         {string} params.url - The URL to communicate with.
+		 *         {window} params.targetWindow - The window instance to communicate with. Default window.parent.
+		 *         {string} params.channel - If provided, will send the channel with each message and only accept messages a matching channel.
+		 * @param  {object} options - Extend any instance parameter or method with this object.
 		 */
 		initialize: function( params, options ) {
 			// Target the parent frame by default, but only if a parent frame exists.
-			var defaultTarget = window.parent == window ? null : window.parent;
+			var defaultTarget = window.parent === window ? null : window.parent;
 
 			$.extend( this, options || {} );
 
 			this.add( 'channel', params.channel );
 			this.add( 'url', params.url || '' );
 			this.add( 'origin', this.url() ).link( this.url ).setter( function( to ) {
-				return to.replace( /([^:]+:\/\/[^\/]+).*/, '$1' );
+				var urlParser = document.createElement( 'a' );
+				urlParser.href = to;
+				// Port stripping needed by IE since it adds to host but not to event.origin.
+				return urlParser.protocol + '//' + urlParser.host.replace( /:(80|443)$/, '' );
 			});
 
 			// first add with no value
@@ -762,18 +765,30 @@ window.wp = window.wp || {};
 	 * @augments wp.customize.Class
 	 * @since 4.6.0
 	 *
-	 * @param {string} code                The error code.
-	 * @param {object} params              Params.
-	 * @param {string} params.message      The error message.
-	 * @param {string} [params.type=error] The notification type.
-	 * @param {*}      [params.data]       Any additional data.
+	 * @param {string}  code - The error code.
+	 * @param {object}  params - Params.
+	 * @param {string}  params.message=null - The error message.
+	 * @param {string}  [params.type=error] - The notification type.
+	 * @param {boolean} [params.fromServer=false] - Whether the notification was server-sent.
+	 * @param {string}  [params.setting=null] - The setting ID that the notification is related to.
+	 * @param {*}       [params.data=null] - Any additional data.
 	 */
 	api.Notification = api.Class.extend({
 		initialize: function( code, params ) {
+			var _params;
 			this.code = code;
-			this.message = params.message;
-			this.type = params.type || 'error';
-			this.data = params.data || null;
+			_params = _.extend(
+				{
+					message: null,
+					type: 'error',
+					fromServer: false,
+					data: null,
+					setting: null
+				},
+				params
+			);
+			delete _params.code;
+			_.extend( this, _params );
 		}
 	});
 
@@ -793,6 +808,40 @@ window.wp = window.wp || {};
 		});
 
 		return result;
+	};
+
+	/**
+	 * Utility function namespace
+	 */
+	api.utils = {};
+
+	/**
+	 * Parse query string.
+	 *
+	 * @since 4.7.0
+	 * @access public
+	 *
+	 * @param {string} queryString Query string.
+	 * @returns {object} Parsed query string.
+	 */
+	api.utils.parseQueryString = function parseQueryString( queryString ) {
+		var queryParams = {};
+		_.each( queryString.split( '&' ), function( pair ) {
+			var parts, key, value;
+			parts = pair.split( '=', 2 );
+			if ( ! parts[0] ) {
+				return;
+			}
+			key = decodeURIComponent( parts[0].replace( /\+/g, ' ' ) );
+			key = key.replace( / /g, '_' ); // What PHP does.
+			if ( _.isUndefined( parts[1] ) ) {
+				value = null;
+			} else {
+				value = decodeURIComponent( parts[1].replace( /\+/g, ' ' ) );
+			}
+			queryParams[ key ] = value;
+		} );
+		return queryParams;
 	};
 
 	// Expose the API publicly on window.wp.customize

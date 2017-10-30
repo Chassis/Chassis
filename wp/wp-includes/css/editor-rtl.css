@@ -12,6 +12,13 @@
 	font-family: inherit;
 }
 
+.mce-container .mce-monospace,
+.mce-widget .mce-monospace {
+	font-family: Consolas, Monaco, monospace;
+	font-size: 13px;
+	line-height: 150%;
+}
+
 /* TinyMCE windows */
 #mce-modal-block,
 #mce-modal-block.mce-fade {
@@ -581,6 +588,7 @@ div.mce-path {
 .mce-menu .mce-menu-item-normal.mce-active,
 .mce-menu .mce-menu-item-preview.mce-active {
 	background: #0073aa; /* See color scheme. */
+	color: #fff;
 }
 
 .mce-menu .mce-menu-item-preview.mce-active {
@@ -600,14 +608,10 @@ div.mce-path {
 }
 
 /* Menubar */
-.mce-menubar {
+div.mce-menubar {
 	border-color: #e5e5e5;
 	background: #fff;
 	border-width: 0px 0px 1px;
-}
-
-.mce-menubar .mce-menubtn {
-	margin: 2px;
 }
 
 .mce-menubar .mce-menubtn:hover,
@@ -641,6 +645,16 @@ div.mce-menu .mce-menu-item-sep,
 
 .mce-menu-has-icons i.mce-ico:before {
 	margin-right: -2px;
+}
+
+/* Keyboard shortcuts position */
+.mce-menu.mce-menu-align .mce-menu-item-normal {
+	position: relative;
+}
+
+.mce-menu.mce-menu-align .mce-menu-shortcut {
+	bottom: 0.6em;
+	font-size: 0.9em;
 }
 
 /* Buttons in modals */
@@ -838,6 +852,11 @@ div.mce-menu .mce-menu-item-sep,
 .mce-toolbar .mce-btn:focus .mce-open,
 .mce-toolbar .mce-btn.mce-active .mce-open {
 	border-right-color: #23282d;
+}
+
+div.mce-notification {
+	right: 10% !important;
+	left: 10%;
 }
 
 .mce-notification button.mce-close {
@@ -1068,6 +1087,7 @@ i.mce-i-wp_code:before {
 
 .wp-editor-container {
 	clear: both;
+	border: 1px solid #e5e5e5;
 }
 
 .wp-editor-area {
@@ -1147,7 +1167,7 @@ i.mce-i-wp_code:before {
 }
 
 .js .tmce-active .wp-editor-area {
-	color: white;
+	color: #fff;
 }
 
 .tmce-active .quicktags-toolbar {
@@ -1304,7 +1324,7 @@ i.mce-i-wp_code:before {
 
 @media screen and ( min-width: 782px ) {
 	.wp-core-ui .quicktags-toolbar input.button.button-small {
-		/* .button-small is normaly 11px, but a bit too small for these buttons. */
+		/* .button-small is normally 11px, but a bit too small for these buttons. */
 		font-size: 12px;
 		height: 26px;
 		line-height: 24px;

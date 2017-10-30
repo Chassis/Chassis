@@ -47,7 +47,7 @@ if ( empty($option_page) ) {
 if ( ! current_user_can( $capability ) ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
-		'<p>' . __( 'Sorry, you are not allowed to manage these items.' ) . '</p>',
+		'<p>' . __( 'Sorry, you are not allowed to manage these options.' ) . '</p>',
 		403
 	);
 }
@@ -74,7 +74,7 @@ if ( is_multisite() ) {
 	}
 }
 
-if ( is_multisite() && ! is_super_admin() && 'update' != $action ) {
+if ( is_multisite() && ! current_user_can( 'manage_network_options' ) && 'update' != $action ) {
 	wp_die(
 		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to delete these items.' ) . '</p>',
@@ -140,7 +140,7 @@ if ( !is_multisite() ) {
  *
  * @since 2.7.0
  *
- * @param array White list options.
+ * @param array $whitelist_options White list options.
  */
 $whitelist_options = apply_filters( 'whitelist_options', $whitelist_options );
 
@@ -160,8 +160,9 @@ if ( 'update' == $action ) {
 		wp_die( __( '<strong>ERROR</strong>: options page not found.' ) );
 
 	if ( 'options' == $option_page ) {
-		if ( is_multisite() && ! is_super_admin() )
+		if ( is_multisite() && ! current_user_can( 'manage_network_options' ) ) {
 			wp_die( __( 'Sorry, you are not allowed to modify unregistered settings for this site.' ) );
+		}
 		$options = explode( ',', wp_unslash( $_POST[ 'page_options' ] ) );
 	} else {
 		$options = $whitelist_options[ $option_page ];
@@ -194,6 +195,8 @@ if ( 'update' == $action ) {
 	}
 
 	if ( $options ) {
+		$user_language_old = get_user_locale();
+
 		foreach ( $options as $option ) {
 			if ( $unregistered ) {
 				_deprecated_argument( 'options.php', '2.7.0',
@@ -209,19 +212,23 @@ if ( 'update' == $action ) {
 			$value = null;
 			if ( isset( $_POST[ $option ] ) ) {
 				$value = $_POST[ $option ];
-				if ( ! is_array( $value ) )
+				if ( ! is_array( $value ) ) {
 					$value = trim( $value );
+				}
 				$value = wp_unslash( $value );
 			}
 			update_option( $option, $value );
 		}
 
-		// Switch translation in case WPLANG was changed.
-		$language = get_option( 'WPLANG' );
-		if ( $language ) {
-			load_default_textdomain( $language );
-		} else {
-			unload_textdomain( 'default' );
+		/*
+		 * Switch translation in case WPLANG was changed.
+		 * The global $locale is used in get_locale() which is
+		 * used as a fallback in get_user_locale().
+		 */
+		unset( $GLOBALS['locale'] );
+		$user_language_new = get_user_locale();
+		if ( $user_language_old !== $user_language_new  ) {
+			load_default_textdomain( $user_language_new );
 		}
 	}
 

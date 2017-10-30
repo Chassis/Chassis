@@ -10,9 +10,6 @@
 /** Load WordPress Administration Bootstrap */
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
-if ( ! is_multisite() )
-	wp_die( __( 'Multisite support is not enabled.' ) );
-
 if ( ! current_user_can( 'manage_sites' ) )
 	wp_die( __( 'Sorry, you are not allowed to manage themes for this site.' ) );
 
@@ -29,8 +26,8 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __('For more information:') . '</strong></p>' .
-	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Sites_Screen" target="_blank">Documentation on Site Management</a>') . '</p>' .
-	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/" target="_blank">Support Forums</a>') . '</p>'
+	'<p>' . __('<a href="https://codex.wordpress.org/Network_Admin_Sites_Screen">Documentation on Site Management</a>') . '</p>' .
+	'<p>' . __('<a href="https://wordpress.org/support/forum/multisite/">Support Forums</a>') . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(
@@ -61,7 +58,7 @@ if ( ! $id )
 
 $wp_list_table->prepare_items();
 
-$details = get_blog_details( $id );
+$details = get_site( $id );
 if ( ! $details ) {
 	wp_die( __( 'The requested site does not exist.' ) );
 }
@@ -122,6 +119,33 @@ if ( $action ) {
 				$n = 'none';
 			}
 			break;
+		default:
+			if ( isset( $_POST['checked'] ) ) {
+				check_admin_referer( 'bulk-themes' );
+				$themes = (array) $_POST['checked'];
+				$n = count( $themes );
+				$screen = get_current_screen()->id;
+
+				/**
+				 * Fires when a custom bulk action should be handled.
+				 *
+				 * The redirect link should be modified with success or failure feedback
+				 * from the action to be used to display feedback to the user.
+				 *
+				 * The dynamic portion of the hook name, `$screen`, refers to the current screen ID.
+				 *
+				 * @since 4.7.0
+				 *
+				 * @param string $redirect_url The redirect URL.
+				 * @param string $action       The action being taken.
+				 * @param array  $items        The items to take the action on.
+				 * @param int    $site_id      The site ID.
+				 */
+				$referer = apply_filters( "handle_network_bulk_actions-{$screen}", $referer, $action, $themes, $id );
+			} else {
+				$action = 'error';
+				$n = 'none';
+			}
 	}
 
 	update_option( 'allowedthemes', $allowed_themes );
@@ -139,6 +163,7 @@ if ( isset( $_GET['action'] ) && 'update-site' == $_GET['action'] ) {
 add_thickbox();
 add_screen_option( 'per_page' );
 
+/* translators: %s: site name */
 $title = sprintf( __( 'Edit Site: %s' ), esc_html( $details->blogname ) );
 
 $parent_file = 'sites.php';

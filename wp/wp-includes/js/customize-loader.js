@@ -132,6 +132,19 @@ window.wp = window.wp || {};
 				targetWindow: this.iframe[0].contentWindow
 			});
 
+			// Expose the changeset UUID on the parent window's URL so that the customized state can survive a refresh.
+			if ( history.replaceState ) {
+				this.messenger.bind( 'changeset-uuid', function( changesetUuid ) {
+					var urlParser = document.createElement( 'a' );
+					urlParser.href = location.href;
+					urlParser.search = $.param( _.extend(
+						api.utils.parseQueryString( urlParser.search.substr( 1 ) ),
+						{ changeset_uuid: changesetUuid }
+					) );
+					history.replaceState( { customize: urlParser.href }, '', urlParser.href );
+				} );
+			}
+
 			// Wait for the connection from the iframe before sending any postMessage events.
 			this.messenger.bind( 'ready', function() {
 				Loader.messenger.send( 'back' );
@@ -183,11 +196,11 @@ window.wp = window.wp || {};
 		 * Callback after the Customizer has been opened.
 		 */
 		opened: function() {
-			Loader.body.addClass( 'customize-active full-overlay-active' );
+			Loader.body.addClass( 'customize-active full-overlay-active' ).attr( 'aria-busy', 'true' );
 		},
 
 		/**
-		 * Close the Customizer overlay and return focus to the link that opened it.
+		 * Close the Customizer overlay.
 		 */
 		close: function() {
 			if ( ! this.active ) {
@@ -209,11 +222,6 @@ window.wp = window.wp || {};
 			if ( this.originalDocumentTitle ) {
 				document.title = this.originalDocumentTitle;
 			}
-
-			// Return focus to link that was originally clicked.
-			if ( this.link ) {
-				this.link.focus();
-			}
 		},
 
 		/**
@@ -227,13 +235,20 @@ window.wp = window.wp || {};
 			Loader.saved     = null;
 			Loader.body.removeClass( 'customize-active full-overlay-active' ).removeClass( 'customize-loading' );
 			$( window ).off( 'beforeunload', Loader.beforeunload );
+			/*
+			 * Return focus to the link that opened the Customizer overlay after
+			 * the body element visibility is restored.
+			 */
+			if ( Loader.link ) {
+				Loader.link.focus();
+			}
 		},
 
 		/**
 		 * Callback for the `load` event on the Customizer iframe.
 		 */
 		loaded: function() {
-			Loader.body.removeClass('customize-loading');
+			Loader.body.removeClass( 'customize-loading' ).attr( 'aria-busy', 'false' );
 		},
 
 		/**

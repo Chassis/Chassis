@@ -13,7 +13,6 @@
 	// Link settings
 	api.Widgets.data = _wpCustomizeWidgetsSettings || {};
 	l10n = api.Widgets.data.l10n;
-	delete api.Widgets.data.l10n;
 
 	/**
 	 * wp.customize.Widgets.WidgetModel
@@ -70,8 +69,7 @@
 				this.search( this.terms );
 			}
 
-			// If search is blank, show all themes
-			// Useful for resetting the views when you clean the input
+			// If search is blank, set all the widgets as they matched the search to reset the views.
 			if ( this.terms === '' ) {
 				this.each( function ( widget ) {
 					widget.set( 'search_matched', true );
@@ -149,8 +147,6 @@
 		events: {
 			'input #widgets-search': 'search',
 			'keyup #widgets-search': 'search',
-			'change #widgets-search': 'search',
-			'search #widgets-search': 'search',
 			'focus .widget-tpl' : 'focus',
 			'click .widget-tpl' : '_submit',
 			'keypress .widget-tpl' : '_submit',
@@ -163,17 +159,24 @@
 		// Cache sidebar control which has opened panel
 		currentSidebarControl: null,
 		$search: null,
+		$clearResults: null,
+		searchMatchesCount: null,
 
 		initialize: function() {
 			var self = this;
 
 			this.$search = $( '#widgets-search' );
 
+			this.$clearResults = this.$el.find( '.clear-results' );
+
 			_.bindAll( this, 'close' );
 
 			this.listenTo( this.collection, 'change', this.updateList );
 
 			this.updateList();
+
+			// Set the initial search count to the number of available widgets.
+			this.searchMatchesCount = this.collection.length;
 
 			// If the available widgets panel is open and the customize controls are
 			// interacted with (i.e. available widgets panel is blurred) then close the
@@ -185,6 +188,11 @@
 				}
 			} );
 
+			// Clear the search results and trigger a `keyup` event to fire a new search.
+			this.$clearResults.on( 'click', function() {
+				self.$search.val( '' ).focus().trigger( 'keyup' );
+			} );
+
 			// Close the panel if the URL in the preview changes
 			api.previewer.bind( 'url', this.close );
 		},
@@ -194,6 +202,10 @@
 			var firstVisible;
 
 			this.collection.doSearch( event.target.value );
+			// Update the search matches count.
+			this.updateSearchMatchesCount();
+			// Announce how many search results.
+			this.announceSearchMatches();
 
 			// Remove a widget from being selected if it is no longer visible
 			if ( this.selected && ! this.selected.is( ':visible' ) ) {
@@ -214,7 +226,37 @@
 					this.select( firstVisible );
 				}
 			}
+
+			// Toggle the clear search results button.
+			if ( '' !== event.target.value ) {
+				this.$clearResults.addClass( 'is-visible' );
+			} else if ( '' === event.target.value ) {
+				this.$clearResults.removeClass( 'is-visible' );
+			}
+
+			// Set a CSS class on the search container when there are no search results.
+			if ( ! this.searchMatchesCount ) {
+				this.$el.addClass( 'no-widgets-found' );
+			} else {
+				this.$el.removeClass( 'no-widgets-found' );
+			}
 		},
+
+		// Update the count of the available widgets that have the `search_matched` attribute.
+		updateSearchMatchesCount: function() {
+			this.searchMatchesCount = this.collection.where({ search_matched: true }).length;
+		},
+
+		// Send a message to the aria-live region to announce how many search results.
+		announceSearchMatches: _.debounce( function() {
+			var message = l10n.widgetsFound.replace( '%d', this.searchMatchesCount ) ;
+
+			if ( ! this.searchMatchesCount ) {
+				message = l10n.noWidgetsFound;
+			}
+
+			wp.a11y.speak( message );
+		}, 500 ),
 
 		// Changes visibility of available widgets
 		updateList: function() {
@@ -835,7 +877,7 @@
 			$saveBtn = this.container.find( '.widget-control-save' );
 			$saveBtn.val( l10n.saveBtnLabel );
 			$saveBtn.attr( 'title', l10n.saveBtnTooltip );
-			$saveBtn.removeClass( 'button-primary' ).addClass( 'button-secondary' );
+			$saveBtn.removeClass( 'button-primary' );
 			$saveBtn.on( 'click', function( e ) {
 				e.preventDefault();
 				self.updateWidget( { disable_form: true } ); // @todo disable_form is unused?
@@ -910,7 +952,7 @@
 			var self = this, $removeBtn, replaceDeleteWithRemove;
 
 			// Configure remove button
-			$removeBtn = this.container.find( 'a.widget-control-remove' );
+			$removeBtn = this.container.find( '.widget-control-remove' );
 			$removeBtn.on( 'click', function( e ) {
 				e.preventDefault();
 
@@ -946,7 +988,7 @@
 			} );
 
 			replaceDeleteWithRemove = function() {
-				$removeBtn.text( l10n.removeBtnLabel ); // wp_widget_control() outputs the link as "Delete"
+				$removeBtn.text( l10n.removeBtnLabel ); // wp_widget_control() outputs the button as "Delete"
 				$removeBtn.attr( 'title', l10n.removeBtnTooltip );
 			};
 
@@ -1111,7 +1153,7 @@
 			params.action = 'update-widget';
 			params.wp_customize = 'on';
 			params.nonce = api.settings.nonce['update-widget'];
-			params.theme = api.settings.theme.stylesheet;
+			params.customize_theme = api.settings.theme.stylesheet;
 			params.customized = wp.customize.previewer.query().customized;
 
 			data = $.param( params );
@@ -1325,7 +1367,7 @@
 		 * @param {Object} args  merged on top of this.defaultActiveArguments
 		 */
 		onChangeExpanded: function ( expanded, args ) {
-			var self = this, $widget, $inside, complete, prevComplete;
+			var self = this, $widget, $inside, complete, prevComplete, expandControl, $toggleBtn;
 
 			self.embedWidgetControl(); // Make sure the outer form is embedded so that the expanded state can be set in the UI.
 			if ( expanded ) {
@@ -1344,12 +1386,9 @@
 
 			$widget = this.container.find( 'div.widget:first' );
 			$inside = $widget.find( '.widget-inside:first' );
+			$toggleBtn = this.container.find( '.widget-top button.widget-action' );
 
-			if ( expanded ) {
-
-				if ( self.section() && api.section( self.section() ) ) {
-					self.expandControlSection();
-				}
+			expandControl = function() {
 
 				// Close all other widget controls before expanding this one
 				api.control.each( function( otherControl ) {
@@ -1361,6 +1400,7 @@
 				complete = function() {
 					self.container.removeClass( 'expanding' );
 					self.container.addClass( 'expanded' );
+					$toggleBtn.attr( 'aria-expanded', 'true' );
 					self.container.trigger( 'expanded' );
 				};
 				if ( args.completeCallback ) {
@@ -1379,11 +1419,21 @@
 
 				self.container.trigger( 'expand' );
 				self.container.addClass( 'expanding' );
-			} else {
+			};
 
+			if ( expanded ) {
+				if ( api.section.has( self.section() ) ) {
+					api.section( self.section() ).expand( {
+						completeCallback: expandControl
+					} );
+				} else {
+					expandControl();
+				}
+			} else {
 				complete = function() {
 					self.container.removeClass( 'collapsing' );
 					self.container.removeClass( 'expanded' );
+					$toggleBtn.attr( 'aria-expanded', 'false' );
 					self.container.trigger( 'collapsed' );
 				};
 				if ( args.completeCallback ) {
@@ -1528,36 +1578,86 @@
 			api.Panel.prototype.ready.call( panel );
 
 			panel.deferred.embedded.done(function() {
-				var panelMetaContainer, noRenderedAreasNotice, shouldShowNotice;
+				var panelMetaContainer, noticeContainer, updateNotice, getActiveSectionCount, shouldShowNotice;
 				panelMetaContainer = panel.container.find( '.panel-meta' );
-				noRenderedAreasNotice = $( '<div></div>', {
+
+				// @todo This should use the Notifications API introduced to panels. See <https://core.trac.wordpress.org/ticket/38794>.
+				noticeContainer = $( '<div></div>', {
 					'class': 'no-widget-areas-rendered-notice'
 				});
-				noRenderedAreasNotice.append( $( '<em></em>', {
-					text: l10n.noAreasRendered
-				} ) );
-				panelMetaContainer.append( noRenderedAreasNotice );
+				panelMetaContainer.append( noticeContainer );
 
-				shouldShowNotice = function() {
-					return ( 0 === _.filter( panel.sections(), function( section ) {
+				/**
+				 * Get the number of active sections in the panel.
+				 *
+				 * @return {number} Number of active sidebar sections.
+				 */
+				getActiveSectionCount = function() {
+					return _.filter( panel.sections(), function( section ) {
 						return section.active();
-					} ).length );
+					} ).length;
 				};
+
+				/**
+				 * Determine whether or not the notice should be displayed.
+				 *
+				 * @return {boolean}
+				 */
+				shouldShowNotice = function() {
+					var activeSectionCount = getActiveSectionCount();
+					if ( 0 === activeSectionCount ) {
+						return true;
+					} else {
+						return activeSectionCount !== api.Widgets.data.registeredSidebars.length;
+					}
+				};
+
+				/**
+				 * Update the notice.
+				 *
+				 * @returns {void}
+				 */
+				updateNotice = function() {
+					var activeSectionCount = getActiveSectionCount(), someRenderedMessage, nonRenderedAreaCount, registeredAreaCount;
+					noticeContainer.empty();
+
+					registeredAreaCount = api.Widgets.data.registeredSidebars.length;
+					if ( activeSectionCount !== registeredAreaCount ) {
+
+						if ( 0 !== activeSectionCount ) {
+							nonRenderedAreaCount = registeredAreaCount - activeSectionCount;
+							someRenderedMessage = l10n.someAreasShown[ nonRenderedAreaCount ];
+						} else {
+							someRenderedMessage = l10n.noAreasShown;
+						}
+						if ( someRenderedMessage ) {
+							noticeContainer.append( $( '<p></p>', {
+								text: someRenderedMessage
+							} ) );
+						}
+
+						noticeContainer.append( $( '<p></p>', {
+							text: l10n.navigatePreview
+						} ) );
+					}
+				};
+				updateNotice();
 
 				/*
 				 * Set the initial visibility state for rendered notice.
 				 * Update the visibility of the notice whenever a reflow happens.
 				 */
-				noRenderedAreasNotice.toggle( shouldShowNotice() );
+				noticeContainer.toggle( shouldShowNotice() );
 				api.previewer.deferred.active.done( function () {
-					noRenderedAreasNotice.toggle( shouldShowNotice() );
+					noticeContainer.toggle( shouldShowNotice() );
 				});
 				api.bind( 'pane-contents-reflowed', function() {
 					var duration = ( 'resolved' === api.previewer.deferred.active.state() ) ? 'fast' : 0;
+					updateNotice();
 					if ( shouldShowNotice() ) {
-						noRenderedAreasNotice.slideDown( duration );
+						noticeContainer.slideDown( duration );
 					} else {
-						noRenderedAreasNotice.slideUp( duration );
+						noticeContainer.slideUp( duration );
 					}
 				});
 			});

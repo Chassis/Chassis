@@ -49,12 +49,19 @@ class Walker_Page extends Walker {
 	 *
 	 * @param string $output Passed by reference. Used to append additional content.
 	 * @param int    $depth  Optional. Depth of page. Used for padding. Default 0.
-	 * @param array  $args   Optional. Arguments for outputing the next level.
+	 * @param array  $args   Optional. Arguments for outputting the next level.
 	 *                       Default empty array.
 	 */
 	public function start_lvl( &$output, $depth = 0, $args = array() ) {
-		$indent = str_repeat("\t", $depth);
-		$output .= "\n$indent<ul class='children'>\n";
+		if ( isset( $args['item_spacing'] ) && 'preserve' === $args['item_spacing'] ) {
+			$t = "\t";
+			$n = "\n";
+		} else {
+			$t = '';
+			$n = '';
+		}
+		$indent = str_repeat( $t, $depth );
+		$output .= "{$n}{$indent}<ul class='children'>{$n}";
 	}
 
 	/**
@@ -71,8 +78,15 @@ class Walker_Page extends Walker {
 	 *                       Default empty array.
 	 */
 	public function end_lvl( &$output, $depth = 0, $args = array() ) {
-		$indent = str_repeat("\t", $depth);
-		$output .= "$indent</ul>\n";
+		if ( isset( $args['item_spacing'] ) && 'preserve' === $args['item_spacing'] ) {
+			$t = "\t";
+			$n = "\n";
+		} else {
+			$t = '';
+			$n = '';
+		}
+		$indent = str_repeat( $t, $depth );
+		$output .= "{$indent}</ul>{$n}";
 	}
 
 	/**
@@ -89,8 +103,15 @@ class Walker_Page extends Walker {
 	 * @param int     $current_page Optional. Page ID. Default 0.
 	 */
 	public function start_el( &$output, $page, $depth = 0, $args = array(), $current_page = 0 ) {
+		if ( isset( $args['item_spacing'] ) && 'preserve' === $args['item_spacing'] ) {
+			$t = "\t";
+			$n = "\n";
+		} else {
+			$t = '';
+			$n = '';
+		}
 		if ( $depth ) {
-			$indent = str_repeat( "\t", $depth );
+			$indent = str_repeat( $t, $depth );
 		} else {
 			$indent = '';
 		}
@@ -139,10 +160,38 @@ class Walker_Page extends Walker {
 		$args['link_before'] = empty( $args['link_before'] ) ? '' : $args['link_before'];
 		$args['link_after'] = empty( $args['link_after'] ) ? '' : $args['link_after'];
 
+		$atts = array();
+		$atts['href'] = get_permalink( $page->ID );
+
+		/**
+		 * Filters the HTML attributes applied to a page menu item's anchor element.
+		 *
+		 * @since 4.8.0
+		 *
+		 * @param array $atts {
+		 *     The HTML attributes applied to the menu item's `<a>` element, empty strings are ignored.
+		 *
+		 *     @type string $href The href attribute.
+		 * }
+		 * @param WP_Post $page         Page data object.
+		 * @param int     $depth        Depth of page, used for padding.
+		 * @param array   $args         An array of arguments.
+		 * @param int     $current_page ID of the current page.
+		 */
+		$atts = apply_filters( 'page_menu_link_attributes', $atts, $page, $depth, $args, $current_page );
+
+		$attributes = '';
+		foreach ( $atts as $attr => $value ) {
+			if ( ! empty( $value ) ) {
+				$value = esc_attr( $value );
+				$attributes .= ' ' . $attr . '="' . $value . '"';
+			}
+		}
+
 		$output .= $indent . sprintf(
-			'<li class="%s"><a href="%s">%s%s%s</a>',
+			'<li class="%s"><a%s>%s%s%s</a>',
 			$css_classes,
-			get_permalink( $page->ID ),
+			$attributes,
 			$args['link_before'],
 			/** This filter is documented in wp-includes/post-template.php */
 			apply_filters( 'the_title', $page->post_title, $page->ID ),
@@ -175,7 +224,14 @@ class Walker_Page extends Walker {
 	 * @param array   $args   Optional. Array of arguments. Default empty array.
 	 */
 	public function end_el( &$output, $page, $depth = 0, $args = array() ) {
-		$output .= "</li>\n";
+		if ( isset( $args['item_spacing'] ) && 'preserve' === $args['item_spacing'] ) {
+			$t = "\t";
+			$n = "\n";
+		} else {
+			$t = '';
+			$n = '';
+		}
+		$output .= "</li>{$n}";
 	}
 
 }

@@ -27,9 +27,11 @@
  * @property string $user_registered
  * @property string $user_activation_key
  * @property string $user_status
+ * @property int    $user_level
  * @property string $display_name
  * @property string $spam
  * @property string $deleted
+ * @property string $locale
  */
 class WP_User {
 	/**
@@ -89,13 +91,14 @@ class WP_User {
 	 * The filter context applied to user data fields.
 	 *
 	 * @since 2.9.0
-	 * @access private
+	 * @access public
 	 * @var string
 	 */
-	var $filter = null;
+	public $filter = null;
 
 	/**
 	 * @static
+	 * @since 3.3.0
 	 * @access private
 	 * @var array
 	 */
@@ -156,6 +159,8 @@ class WP_User {
 
 	/**
 	 * Sets up object properties, including capabilities.
+	 *
+	 * @since  3.3.0
 	 *
 	 * @param object $data    User DB row object.
 	 * @param int    $blog_id Optional. The site ID to initialize for.

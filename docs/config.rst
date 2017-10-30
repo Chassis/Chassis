@@ -46,7 +46,7 @@ PHP Version
 
 **Key**: ``php``
 
-PHP 5.6 is included with Chassis by default, plus we register the additional
+PHP 7.0 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
@@ -151,6 +151,9 @@ values, like so::
    You must include all lines shown above (albeit with your custom
    configuration), even if you're not changing from the default.
 
+   Changing the default admin requires creating the box from scratch, using
+   vagrant destroy before running vagrant up.
+
    Note also that the indentation must be done with **spaces, not tabs** in
    YAML configuration.
 
@@ -248,6 +251,24 @@ into the generated VM like so:
      a/host/directory: a/vm/directory
      "this:ones:got:colons": another/vm/directory
 
+NFS
+~~~
+
+**Key**: ``nfs``
+
+Under the hood, Vagrant uses the default synced folders implementation for your system.
+In certain cases and uses, this might be too slow for everyday usage.
+You can instead use NFS under the hood, which has much better performance, but requires root on your computer.
+
+.. code-block:: yaml
+
+   nfs: true
+
+We highly recommend also installing the `vagrant-bindfs`_ plugin, which ensures that users are correctly mapped into the virtual machine for you.
+If you're experiencing permissions errors, try installing this before anything else.
+
+.. _vagrant-bindfs: https://github.com/gael-ian/vagrant-bindfs
+
 Paths
 -----
 
@@ -287,10 +308,52 @@ Themes
 If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
 These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
 
-To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slud ``twentysixteen``.
+To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slug ``twentysixteen``.
 
 .. code-block:: yaml
 
    themes:
       - twentyfifteen
       - twentysixteen
+
+
+.. _extension-format-ref:
+
+Extensions
+----------
+
+**Key**: ``extensions``
+
+You can enable official Chassis extensions and third party extensions by listing their repo name in the ``extensions`` section:
+
+Extension names can be specified in one of three ways:
+
+- `extension-name`: Official Chassis extensions can be specified just by name.
+- `user/repo`: Extensions on GitHub can be specified using the username and repo separated with a slash.
+- `https://github.com/example/example.git`: Any other extension can be specified by its full git URL.
+
+.. code-block:: yaml
+
+   extensions:
+      - Tester
+      - javorszky/chassis-openssl
+      - https://bitbucket.org/some/example.git
+
+
+Machine Customisations
+----------------------
+
+The underlying virtual machine managed by Vagrant can be customised, but depends on which provider you are using.
+
+VirtualBox
+~~~~~~~~~~
+
+**Key**: ``virtualbox``
+
+When using VirtualBox, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the VirtualBox defaults (384 MB of RAM, and 2 vCPUs).
+
+.. code-block:: yaml
+
+   virtualbox:
+      memory: null
+      cpus: null

@@ -13,10 +13,19 @@ defined( 'ABSPATH' ) or define( 'ABSPATH', '<%= @wpdir %>/' );
 defined( 'WP_CONTENT_DIR' ) or define( 'WP_CONTENT_DIR', '<%= @contentdir %>' );
 
 <% if @network != false %>
-define( 'MULTISITE', true );
-define( 'SUBDOMAIN_INSTALL', false );
-define( 'DOMAIN_CURRENT_SITE', '<%= @name %>' );
-define( 'PATH_CURRENT_SITE', '/' );
-define( 'SITE_ID_CURRENT_SITE', 1 );
-define( 'BLOG_ID_CURRENT_SITE', 1 );
+if ( ! defined( 'WP_INSTALLING' ) || ! WP_INSTALLING ) {
+	define( 'MULTISITE', true );
+<% if @subdomains != false -%>
+	define( 'SUBDOMAIN_INSTALL', true );
+<% else -%>
+	define( 'SUBDOMAIN_INSTALL', false );
+<% end -%>
+	define( 'DOMAIN_CURRENT_SITE', '<%= @name %>' );
+	define( 'PATH_CURRENT_SITE', '/' );
+	define( 'SITE_ID_CURRENT_SITE', 1 );
+	define( 'BLOG_ID_CURRENT_SITE', 1 );
+}
+if ( empty( $_SERVER['HTTP_HOST'] ) ) {
+	$_SERVER['HTTP_HOST'] = '<%= @name %>';
+}
 <% end %>

@@ -3,6 +3,33 @@ require "yaml"
 
 module Chassis
 	@@dir = File.dirname(File.dirname(__FILE__))
+	@@extension_dir = File.join(@@dir, 'extensions')
+	@@extension_config = {}
+
+	def self.get_extension_config(extension)
+		# Use cache if we can.
+		return @@extension_config[extension] if @@extension_config.key?(extension)
+
+		path = File.join(@@extension_dir, extension, 'chassis.yaml')
+
+		begin
+			YAML.load_file(path)
+		rescue Errno::ENOENT
+			# No configuration, legacy.
+			{ "version" => 1 }
+		end
+	end
+
+	def self.get_extensions(version = nil)
+		all = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
+
+		return all if ! version
+
+		all.select { |extension|
+			config = get_extension_config(extension)
+			config['version'] == version
+		}
+	end
 
 	def self.load_config()
 		# Load git-managed configuration
@@ -25,9 +52,10 @@ module Chassis
 				end
 			rescue Errno::ENOENT
 				# No overriden YAML found -- that's OK; just use the defaults.
-			rescue Psych::Error => e
+			rescue Psych::SyntaxError => e
 				# Syntax error of some sort, probably
 				puts "ERROR: Could not load config:\n    #{e.message}"
+				exit 1
 			end
 		end
 
@@ -91,6 +119,10 @@ module Chassis
 			end
 		end
 
+		# Cast config as needed
+		config["nfs"] = !!config["nfs"]
+		config["php"] = config["php"].to_s
+
 		return config
 	end
 
@@ -101,16 +133,33 @@ module Chassis
 	def self.install_extensions(config)
 		# Install extensions listed in config
 		if config["extensions"]
-			config["extensions"].each do |ext|
-				begin
-					repo = /^(git@|https:)/.match(ext) ? ext : 'https://github.com/' + ext
-					folder = @@dir + '/extensions/' + ext.split('/').last.gsub(/.git$/, '')
+			config["extensions"].each { |ext| self.install_extension(ext) }
+		end
 
-					if ! File.exist?( folder )
-						system("git clone %s %s --recursive" % [repo, folder] )
-					end
-				end
+		# For each of the extensions in our folder, read the extension config and
+		# install dependencies, etc for that extension.
+		self.get_extensions(2).each do |extension|
+			ext_config = self.get_extension_config(extension)
+
+			# If we have dependencies, then install them.
+			if ext_config["dependencies"]
+				ext_config["dependencies"].each { |ext| self.install_extension(ext) }
 			end
 		end
+	end
+
+	def self.install_extension(extension)
+		# Perform checks for various forms of extension definition.
+		if extension =~ /^[\w-]+$/ # Chassis official extension, like 'nodejs'.
+			repo = 'https://github.com/chassis/' + extension
+		elsif extension =~ /^[\w-]+\/[\w-]+$/ # account/repo style.
+			repo = 'https://github.com/' + extension
+		else
+			repo = extension
+		end
+
+		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
+
+		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
 	end
 end

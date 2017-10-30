@@ -1,3 +1,4 @@
+# Install the main packages we need.
 class chassis {
 	if ! defined(Package['nginx']) {
 		package {'nginx':
@@ -15,6 +16,14 @@ class chassis {
 		package {'sendmail':}
 	}
 
+	if ! defined(Exec['systemctl-daemon-reload']) {
+		exec {'systemctl-daemon-reload':
+			refreshonly => true,
+			path        => '/bin',
+			command     => 'systemctl daemon-reload',
+		}
+	}
+
 	service { 'nginx':
 		ensure     => running,
 		enable     => true,
@@ -30,6 +39,6 @@ class chassis {
 	file {'/etc/nginx/nginx.conf':
 		content => template('chassis/nginx.conf.erb'),
 		require => Package['nginx'],
-		notify => Service['nginx']
+		notify  => Service['nginx']
 	}
 }

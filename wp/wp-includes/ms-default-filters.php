@@ -55,11 +55,11 @@ add_action( 'transition_post_status', '_update_posts_count_on_transition_post_st
 
 // Counts
 add_action( 'admin_init', 'wp_schedule_update_network_counts');
-add_action( 'update_network_counts', 'wp_update_network_counts');
+add_action( 'update_network_counts', 'wp_update_network_counts', 10, 0 );
 foreach ( array( 'user_register', 'deleted_user', 'wpmu_new_user', 'make_spam_user', 'make_ham_user' ) as $action )
-	add_action( $action, 'wp_maybe_update_network_user_counts' );
+	add_action( $action, 'wp_maybe_update_network_user_counts', 10, 0 );
 foreach ( array( 'make_spam_blog', 'make_ham_blog', 'archive_blog', 'unarchive_blog', 'make_delete_blog', 'make_undelete_blog' ) as $action )
-	add_action( $action, 'wp_maybe_update_network_site_counts' );
+	add_action( $action, 'wp_maybe_update_network_site_counts', 10, 0 );
 unset( $action );
 
 // Files
@@ -84,10 +84,11 @@ add_filter( 'force_filtered_html_on_import', '__return_true' );
 remove_filter( 'option_siteurl', '_config_wp_siteurl' );
 remove_filter( 'option_home',    '_config_wp_home'    );
 
-// Some options changes should trigger blog details refresh.
-add_action( 'update_option_blogname',   'refresh_blog_details', 10, 0 );
-add_action( 'update_option_siteurl',    'refresh_blog_details', 10, 0 );
-add_action( 'update_option_post_count', 'refresh_blog_details', 10, 0 );
+// Some options changes should trigger site details refresh.
+add_action( 'update_option_blogname',   'clean_site_details_cache', 10, 0 );
+add_action( 'update_option_siteurl',    'clean_site_details_cache', 10, 0 );
+add_action( 'update_option_post_count', 'clean_site_details_cache', 10, 0 );
+add_action( 'update_option_home',       'clean_site_details_cache', 10, 0 );
 
 // If the network upgrade hasn't run yet, assume ms-files.php rewriting is used.
 add_filter( 'default_site_option_ms_files_rewriting', '__return_true' );

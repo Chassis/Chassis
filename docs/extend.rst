@@ -4,54 +4,31 @@ Extending Chassis
 Chassis includes a flexible extension system to allow setting up the server
 exactly how you like.
 
-Available Extensions
---------------------
+Find available extensions on the `Extensions Index`_.
 
-This is a non-exhaustive list of what's available to drop into your Chassis box.
-
-* `Memcache`_: Install a memcached server, and configure WordPress to use it
-  automatically.
-
-* `Redis`_: Install Redis server.
-
-* `phpMyAdmin`_: Set up phpMyAdmin on your Chassis box
-
-* `Tester`_: Install and configure PHPUnit, along with the WordPress additions
-  so you can run plugin unit tests.
-
-* `Theme Review`_: Set Chassis up for theme reviewing.
-
-* `MailHog`_: A Chassis extension to install and configure MailHog on your server.
-
-* `Cavalcade`_: Cavalcade is a replacement for WordPress' built-in cron that runs as a daemon on your system. It horizontally scales in production to ensure your scheduled tasks keep up with the scale of your site.
-
-* `XDebug`_: A Chassis extension to install and configure Xdebug on your server.
-
-* `Query Monitor`_: A Chassis extension to install and configure your Chassis WP install to use Query Monitor to help with debugging.
-
-* `Debugging`_: A Chassis extension to install and activate common WordPress plugins used for debugging during development.
-
-* `NodeJS`_: A Chassis extension to install NodeJS.
-
-* `Imagick`_: A Chassis extension to install ImageMagick.
-
-* `Fish`_: A Chassis extension to install Fish Shell.
+.. _Extensions Index: http://beta.chassis.io/extensions/
 
 
-.. _Memcache: https://github.com/Chassis/memcache
-.. _Redis: https://github.com/shadyvb/chassis-redis
-.. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
-.. _Tester: https://github.com/Chassis/Tester
-.. _Theme Review: https://github.com/Chassis/themereview
-.. _MailHog: https://github.com/Chassis/MailHog
-.. _Cavalcade: https://github.com/Chassis/Cavalcade
-.. _Xdebug: https://github.com/Chassis/Xdebug
-.. _Query Monitor: https://github.com/Chassis/Query-Monitor
-.. _Debugging: https://github.com/Chassis/Debugging
-.. _OpenSSL: https://github.com/javorszky/chassis-openssl
-.. _NodeJS: https://github.com/Chassis/nodejs
-.. _Imagick: https://github.com/Chassis/Imagick
-.. _Fish: https://github.com/Chassis/Fish
+Installing extensions
+---------------------
+
+Extensions can be :ref:`specified in your configuration <extension-format-ref>`,
+and will be automatically downloaded by Chassis. You can also manually add
+extensions.
+
+Chassis automatically loads all subdirectories of your ``extensions/`` directory
+as extensions, so extensions can be downloaded into this directory.
+
+
+Example: Installing The Memcached Extension
+-------------------------------------------
+
+To install the memcached extension you would do the following:
+
+1. Open your terminal and navigate to your root Chassis folder.
+2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
+3. `vagrant provision`.
+
 
 Creating your own
 -----------------
@@ -88,28 +65,93 @@ follow any of the steps by simply running ``puppet`` inside the box.
 Once you've got a grip on Puppet, we'd recommend having a quick read of how
 Chassis works internally. We store all our files in the ``puppet/`` directory.
 
-Extensions are nothing more than a bit of convention and a Puppet manifest. An
-extension is essentially a subdirectory of ``extensions/`` under your Chassis
-root directory, containing a ``chassis.pp`` Puppet manifest. This manifest is
-added to the Chassis manifests and run during a provision. It's also loaded in
-at the same time as the rest of the Chassis Puppet files, so you can add your
-own configuration and set up resource dependencies as needed.
 
-If you need to load PHP in, Chassis also automatically adds a ``require`` block
-for ``extensions/*/local-config.php``. Simply create this file, or use Puppet to
-create it at ``/vagrant/extensions/<extension>/local-config.php`` and it'll be
-loaded in via ``wp-config.php``.
+Extensions API (v2)
+-------------------
 
-For an example of how it's done, take a look at one of the existing extensions
-linked above. The memcache extension includes an example of how to install a PHP
-extension and automatically configure WordPress to use it, and is a very simple
-introduction to the system.
+.. note::
+   Chassis v2 introduced a formal extensions API. This is a
+   backwards-incompatible change from our initial extensions (now v1), so
+   extensions need to opt-in with the ``chassis.yaml`` metadata file.
 
-Example: Installing The Memcached Extension
--------------------------------------------
+   If your extension does not specify the version, it will be assumed to be v1.
+   This will generate a deprecation warning in the future, and may be removed,
+   so it is highly recommended to update your extensions.
 
-To install the memcached extension you would do the following:
+Making your own extension is easy. There's two required pieces for an
+extension: an extension metadata file, and a Puppet class.
 
-1. Open your terminal and navigate to your root Chassis folder.
-2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
-3. `vagrant provision`.
+An extension exists as a subdirectory of the `extensions` directory in Chassis.
+For example, the memcache extension lives in the `extensions/memcache/`
+directory.
+
+An example extension is included with Chassis, and lives in the
+`extensions/example/` directory. We highly recommend reading the docs and code
+inside this extension to understand how it works.
+
+
+Extension Metadata
+~~~~~~~~~~~~~~~~~~
+
+Extensions specify information about themselves in the extension metadata file,
+a YAML file specifying options to the extension. This metadata file lives at
+``chassis.yaml`` inside your extension's directory.
+
+Extensions **must** specify the following options:
+
+- ``version``: Extension API version. Currently ``2``.
+
+Extensions may also specify the following options:
+
+- ``dependencies``: Extensions that the extension depends on. List of strings,
+  where each string is an extension name (see :ref:`extension-format-ref`).
+
+
+Puppet Class
+~~~~~~~~~~~~
+
+To integrate into Chassis' provisioning, Chassis loads a class with the same
+name as your extension. This class must be defined in
+``extensions/{name}/modules/{name}/manifests/init.pp``, and the name of the
+class must match the extension's directory name.
+
+This class receives a single hash parameter of ``$config``, which contains the
+Chassis configuration specified in the ``config.yaml`` files.
+
+Internally, Chassis registers ``extensions/{name}/modules`` as an additional
+module path for Puppet. This means you can add third-party modules into your
+``modules/`` directory as needed.
+
+For example, an extension called ``example`` located in the
+``extensions/example/`` directory would have the following class at
+``extensions/example/modules/example/manifests/init.pp``::
+
+  class example(
+    $config
+  ) {
+    notify { "PHP version is ${config[php]}": }
+  }
+
+Currently, a class is always required, even if you don't need to provision
+anything using Puppet. If you don't need provisioning, you can use an empty
+class::
+
+  class example( $config ) {}
+
+
+WordPress Configuration
+~~~~~~~~~~~~~~~~~~~~~~~
+
+Chassis automatically loads ``local-config.php`` from your extension's
+directory when loading ``wp-config.php``. If you need to run PHP inside the
+WordPress context, use this file.
+
+This file can be committed to your extension's repository, or provisioned by
+Puppet, if you need to set additional settings.
+
+For example, the memcache extension sets configuration for the object cache
+inside WordPress to set the hostname. The ``local-config.php`` file hence
+contains::
+
+  <?php
+  $memcached_servers = array( '127.0.0.1:11211' );

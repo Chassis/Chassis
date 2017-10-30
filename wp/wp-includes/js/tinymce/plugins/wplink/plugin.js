@@ -1,5 +1,5 @@
 ( function( tinymce ) {
-	tinymce.ui.WPLinkPreview = tinymce.ui.Control.extend( {
+	tinymce.ui.Factory.add( 'WPLinkPreview', tinymce.ui.Control.extend( {
 		url: '#',
 		renderHtml: function() {
 			return (
@@ -50,9 +50,9 @@
 				tinymce.$( this.getEl().firstChild ).attr( 'href', this.url ).text( url );
 			}
 		}
-	} );
+	} ) );
 
-	tinymce.ui.WPLinkInput = tinymce.ui.Control.extend( {
+	tinymce.ui.Factory.add( 'WPLinkInput', tinymce.ui.Control.extend( {
 		renderHtml: function() {
 			return (
 				'<div id="' + this._id + '" class="wp-link-input">' +
@@ -82,7 +82,7 @@
 			urlInput.value = '';
 			urlInput.nextSibling.value = '';
 		}
-	} );
+	} ) );
 
 	tinymce.PluginManager.add( 'wplink', function( editor ) {
 		var toolbar;
@@ -101,7 +101,7 @@
 
 		function getSelectedLink() {
 			var href, html,
-				node = editor.selection.getNode(),
+				node = editor.selection.getStart(),
 				link = editor.dom.getParent( node, 'a[href]' );
 
 			if ( ! link ) {
@@ -560,8 +560,8 @@
 		} );
 
 		editor.addButton( 'wp_link_remove', {
-			tooltip: 'Remove',
-			icon: 'dashicon dashicons-no',
+			tooltip: 'Remove link',
+			icon: 'dashicon dashicons-editor-unlink',
 			cmd: 'wp_unlink'
 		} );
 
@@ -587,9 +587,9 @@
 						editor.focus(); // Needed for IE
 					}
 
+					editToolbar.tempHide = true;
 					window.wpLink.open( editor.id, url, text, linkNode );
 
-					editToolbar.tempHide = true;
 					inputInstance.reset();
 				}
 			}

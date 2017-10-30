@@ -100,7 +100,7 @@ function show_blog_form( $blogname = '', $blog_title = '', $errors = '' ) {
 		$errors = new WP_Error();
 	}
 
-	$current_site = get_current_site();
+	$current_network = get_network();
 	// Blog name
 	if ( !is_subdomain_install() )
 		echo '<label for="blogname">' . __('Site Name:') . '</label>';
@@ -112,15 +112,15 @@ function show_blog_form( $blogname = '', $blog_title = '', $errors = '' ) {
 	<?php }
 
 	if ( !is_subdomain_install() )
-		echo '<span class="prefix_address">' . $current_site->domain . $current_site->path . '</span><input name="blogname" type="text" id="blogname" value="'. esc_attr($blogname) .'" maxlength="60" /><br />';
+		echo '<span class="prefix_address">' . $current_network->domain . $current_network->path . '</span><input name="blogname" type="text" id="blogname" value="'. esc_attr($blogname) .'" maxlength="60" /><br />';
 	else
-		echo '<input name="blogname" type="text" id="blogname" value="'.esc_attr($blogname).'" maxlength="60" /><span class="suffix_address">.' . ( $site_domain = preg_replace( '|^www\.|', '', $current_site->domain ) ) . '</span><br />';
+		echo '<input name="blogname" type="text" id="blogname" value="'.esc_attr($blogname).'" maxlength="60" /><span class="suffix_address">.' . ( $site_domain = preg_replace( '|^www\.|', '', $current_network->domain ) ) . '</span><br />';
 
 	if ( ! is_user_logged_in() ) {
 		if ( ! is_subdomain_install() ) {
-			$site = $current_site->domain . $current_site->path . __( 'sitename' );
+			$site = $current_network->domain . $current_network->path . __( 'sitename' );
 		} else {
-			$site = __( 'domain' ) . '.' . $site_domain . $current_site->path;
+			$site = __( 'domain' ) . '.' . $site_domain . $current_network->path;
 		}
 
 		/* translators: %s: site address */
@@ -304,7 +304,7 @@ function signup_another_blog( $blogname = '', $blog_title = '', $errors = '' ) {
 	$blog_title = $filtered_results['blog_title'];
 	$errors = $filtered_results['errors'];
 
-	echo '<h2>' . sprintf( __( 'Get <em>another</em> %s site in seconds' ), get_current_site()->site_name ) . '</h2>';
+	echo '<h2>' . sprintf( __( 'Get <em>another</em> %s site in seconds' ), get_network()->site_name ) . '</h2>';
 
 	if ( $errors->get_error_code() ) {
 		echo '<p>' . __( 'There was a problem, please correct the form below and try again.' ) . '</p>';
@@ -532,7 +532,7 @@ function signup_user( $user_name = '', $user_email = '', $errors = '' ) {
 
 	<h2><?php
 		/* translators: %s: name of the network */
-		printf( __( 'Get your own %s account in seconds' ), get_current_site()->site_name );
+		printf( __( 'Get your own %s account in seconds' ), get_network()->site_name );
 	?></h2>
 	<form id="setupform" method="post" action="wp-signup.php" novalidate="novalidate">
 		<input type="hidden" name="stage" value="validate-user-signup" />
@@ -816,15 +816,31 @@ $active_signup = get_site_option( 'registration', 'none' );
  */
 $active_signup = apply_filters( 'wpmu_active_signup', $active_signup );
 
-// Make the signup type translatable.
-$i18n_signup['all'] = _x('all', 'Multisite active signup type');
-$i18n_signup['none'] = _x('none', 'Multisite active signup type');
-$i18n_signup['blog'] = _x('blog', 'Multisite active signup type');
-$i18n_signup['user'] = _x('user', 'Multisite active signup type');
+if ( current_user_can( 'manage_network' ) ) {
+	echo '<div class="mu_alert">';
+	_e( 'Greetings Network Administrator!' );
+	echo ' ';
 
-if ( is_super_admin() ) {
-	/* translators: 1: type of site sign-up; 2: network settings URL */
-	echo '<div class="mu_alert">' . sprintf( __( 'Greetings Site Administrator! You are currently allowing &#8220;%s&#8221; registrations. To change or disable registration go to your <a href="%s">Options page</a>.' ), $i18n_signup[$active_signup], esc_url( network_admin_url( 'settings.php' ) ) ) . '</div>';
+	switch ( $active_signup ) {
+		case 'none':
+			_e( 'The network currently disallows registrations.' );
+			break;
+		case 'blog':
+			_e( 'The network currently allows site registrations.' );
+			break;
+		case 'user':
+			_e( 'The network currently allows user registrations.' );
+			break;
+		default:
+			_e( 'The network currently allows both site and user registrations.' );
+			break;
+	}
+
+	echo ' ';
+
+	/* translators: %s: network settings URL */
+	printf( __( 'To change or disable registration go to your <a href="%s">Options page</a>.' ), esc_url( network_admin_url( 'settings.php' ) ) );
+	echo '</div>';
 }
 
 $newblogname = isset($_GET['new']) ? strtolower(preg_replace('/^-|-$|[^-a-zA-Z0-9]/', '', $_GET['new'])) : null;

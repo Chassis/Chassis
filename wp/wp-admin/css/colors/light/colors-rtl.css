@@ -2,7 +2,7 @@
  * Button mixin- creates 3d-ish button effect with correct
  * highlights/shadows, based on a base color.
  */
-html {
+body {
   background: #f5f5f5;
 }
 
@@ -40,7 +40,7 @@ input[type=radio]:checked:before {
 .wp-core-ui .button-primary {
   background: #04a4cc;
   border-color: #037c9a #036881 #036881;
-  color: white;
+  color: #fff;
   -webkit-box-shadow: 0 1px 0 #036881;
   box-shadow: 0 1px 0 #036881;
   text-shadow: 0 -1px 1px #036881, -1px 0 1px #036881, 0 1px 1px #036881, 1px 0 1px #036881;
@@ -49,7 +49,7 @@ input[type=radio]:checked:before {
 .wp-core-ui .button-primary:hover, .wp-core-ui .button-primary:focus {
   background: #04b0db;
   border-color: #036881;
-  color: white;
+  color: #fff;
   -webkit-box-shadow: 0 1px 0 #036881;
   box-shadow: 0 1px 0 #036881;
 }
@@ -259,20 +259,13 @@ ul#adminmenu > li.current > a.current:after {
 }
 
 /* Admin Menu: collapse button */
-#collapse-menu {
+#collapse-button {
   color: #777;
 }
 
-#collapse-menu:hover {
-  color: #333;
-}
-
-#collapse-button div:after {
-  color: #999;
-}
-
-#collapse-menu:hover #collapse-button div:after {
-  color: #555;
+#collapse-button:hover,
+#collapse-button:focus {
+  color: #04a4cc;
 }
 
 /* Admin Bar */
@@ -352,6 +345,7 @@ ul#adminmenu > li.current > a.current:after {
 #wpadminbar li:hover .ab-item:before,
 #wpadminbar li a:focus .ab-icon:before,
 #wpadminbar li .ab-item:focus:before,
+#wpadminbar li .ab-item:focus .ab-icon:before,
 #wpadminbar li.hover .ab-icon:before,
 #wpadminbar li.hover .ab-item:before,
 #wpadminbar li:hover #adminbarsearch:before,
@@ -436,8 +430,8 @@ ul#adminmenu > li.current > a.current:after {
 }
 
 .media-selection .attachment.selection.details .thumbnail {
-  -webkit-box-shadow: 0px 0px 0px 1px #fff, 0px 0px 0px 3px #04a4cc;
-  box-shadow: 0px 0px 0px 1px #fff, 0px 0px 0px 3px #04a4cc;
+  -webkit-box-shadow: 0 0 0 1px #fff, 0 0 0 3px #04a4cc;
+  box-shadow: 0 0 0 1px #fff, 0 0 0 3px #04a4cc;
 }
 
 /* Themes */
@@ -486,16 +480,6 @@ body.more-filters-opened .more-filters:focus:before {
 .widgets-chooser li.widgets-chooser-selected:before,
 .widgets-chooser li.widgets-chooser-selected:focus:before {
   color: #fff;
-}
-
-/* Customize */
-#customize-theme-controls .widget-area-select .selected {
-  background-color: #888;
-  color: #fff;
-}
-
-#customize-footer-actions .devices button:focus {
-  border-bottom-color: #04a4cc;
 }
 
 /* Responsive Component */

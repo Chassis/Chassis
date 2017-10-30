@@ -99,5 +99,20 @@ synced_folders:
 #  - git@github.com:Chassis/memcache.git
 
 # PHP version
-# Values: 5.3, 5.4, 5.5, 5.6, 7.0, 7.1 (or e.g. 5.3.3)
-php: 5.6
+# Values: 5.6, 7.0, 7.1 (or 5.6.30)
+php: 7.0
+
+# VirtualBox-specific customisations.
+virtualbox:
+    # Memory, in megabytes.
+    #
+    # (e.g. 1024)
+    memory: null
+
+    # CPU count.
+    #
+    # (e.g. 2)
+    cpus: null
+
+# NFS support. You should change this to Yes if you use VMWare
+nfs: No

@@ -50,11 +50,10 @@ if ( ! defined( 'ABSPATH' ) ) {
 // ======================================
 // Fake HTTP Host (for CLI compatibility)
 // ======================================
-if ( empty( $_SERVER['HTTP_HOST'] ) ) {
+if ( ! isset( $_SERVER['HTTP_HOST'] ) ) {
 	if ( defined( 'DOMAIN_CURRENT_SITE' ) ) {
 		$_SERVER['HTTP_HOST'] = DOMAIN_CURRENT_SITE;
-	}
-	else {
+	} else {
 		$_SERVER['HTTP_HOST'] = 'vagrant.local';
 	}
 }
@@ -87,7 +86,7 @@ if ( file_exists( WP_CONTENT_DIR . '/config.php' ) ) {
 // =====================
 // URL hacks for Vagrant
 // =====================
-if ( WP_LOCAL_DEV && ! defined('WP_SITEURL') ) {
+if ( WP_LOCAL_DEV && ! defined('WP_SITEURL') && ! defined( 'WP_INSTALLING' ) ) {
 	define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . '/wp');
 
 	if ( ! defined( 'WP_HOME' ) ) {

@@ -94,7 +94,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 
 		$comments_per_page = $this->get_per_page( $comment_status );
 
-		$doing_ajax = defined( 'DOING_AJAX' ) && DOING_AJAX;
+		$doing_ajax = wp_doing_ajax();
 
 		if ( isset( $_REQUEST['number'] ) ) {
 			$number = (int) $_REQUEST['number'];
@@ -351,10 +351,10 @@ class WP_Comments_List_Table extends WP_List_Table {
 			 * @since 3.5.0
 			 */
 			do_action( 'restrict_manage_comments' );
-			submit_button( __( 'Filter' ), 'button', 'filter_action', false, array( 'id' => 'post-query-submit' ) );
+			submit_button( __( 'Filter' ), '', 'filter_action', false, array( 'id' => 'post-query-submit' ) );
 		}
 
-		if ( ( 'spam' === $comment_status || 'trash' === $comment_status ) && current_user_can( 'moderate_comments' ) ) {
+		if ( ( 'spam' === $comment_status || 'trash' === $comment_status ) && current_user_can( 'moderate_comments' ) && $this->has_items() ) {
 			wp_nonce_field( 'bulk-destroy', '_destroy_nonce' );
 			$title = ( 'spam' === $comment_status ) ? esc_attr__( 'Empty Spam' ) : esc_attr__( 'Empty Trash' );
 			submit_button( $title, 'apply', 'delete_all', false );
@@ -600,7 +600,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 			( ( ( 'approve' === $action || 'unapprove' === $action ) && 2 === $i ) || 1 === $i ) ? $sep = '' : $sep = ' | ';
 
 			// Reply and quickedit need a hide-if-no-js span when not added with ajax
-			if ( ( 'reply' === $action || 'quickedit' === $action ) && ! defined('DOING_AJAX') )
+			if ( ( 'reply' === $action || 'quickedit' === $action ) && ! wp_doing_ajax() )
 				$action .= ' hide-if-no-js';
 			elseif ( ( $action === 'untrash' && $the_comment_status === 'trash' ) || ( $action === 'unspam' && $the_comment_status === 'spam' ) ) {
 				if ( '1' == get_comment_meta( $comment->comment_ID, '_wp_trash_meta_status', true ) )
@@ -690,7 +690,7 @@ class WP_Comments_List_Table extends WP_List_Table {
 
 		if ( $this->user_can ) {
 			if ( ! empty( $comment->comment_author_email ) ) {
-				/* This filter is documented in wp-includes/comment-template.php */
+				/** This filter is documented in wp-includes/comment-template.php */
 				$email = apply_filters( 'comment_email', $comment->comment_author_email, $comment );
 
 				if ( ! empty( $email ) && '@' !== $email ) {

@@ -94,8 +94,8 @@ class AtomParser {
 
         $this->feed = new AtomFeed();
         $this->current = null;
-        $this->map_attrs_func = create_function('$k,$v', 'return "$k=\"$v\"";');
-        $this->map_xmlns_func = create_function('$p,$n', '$xd = "xmlns"; if(strlen($n[0])>0) $xd .= ":{$n[0]}"; return "{$xd}=\"{$n[1]}\"";');
+        $this->map_attrs_func = array( __CLASS__, 'map_attrs' );
+        $this->map_xmlns_func = array( __CLASS__, 'map_xmlns' );
     }
 
 	/**
@@ -103,6 +103,32 @@ class AtomParser {
 	 */
 	public function AtomParser() {
 		self::__construct();
+	}
+
+	/**
+	 * Map attributes to key="val"
+	 *
+	 * @param string $k Key
+	 * @param string $v Value
+	 * @return string
+	 */
+	public static function map_attrs($k, $v) {
+		return "$k=\"$v\"";
+	}
+
+	/**
+	 * Map XML namespace to string.
+	 *
+	 * @param indexish $p XML Namespace element index
+	 * @param array $n Two-element array pair. [ 0 => {namespace}, 1 => {url} ]
+	 * @return string 'xmlns="{url}"' or 'xmlns:{namespace}="{url}"'
+	 */
+	public static function map_xmlns($p, $n) {
+		$xd = "xmlns";
+		if( 0 < strlen($n[0]) ) {
+			$xd .= ":{$n[0]}";
+		}
+		return "{$xd}=\"{$n[1]}\"";
 	}
 
     function _p($msg) {
@@ -120,6 +146,11 @@ class AtomParser {
         set_error_handler(array(&$this, 'error_handler'));
 
         array_unshift($this->ns_contexts, array());
+
+        if ( ! function_exists( 'xml_parser_create_ns' ) ) {
+        	trigger_error( __( "PHP's XML extension is not available. Please contact your hosting provider to enable PHP's XML extension." ) );
+        	return false;
+        }
 
         $parser = xml_parser_create_ns();
         xml_set_object($parser, $this);

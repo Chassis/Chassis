@@ -1,3 +1,4 @@
+# Install our WordPress site and add our configuration.
 define chassis::wp (
 	$location,
 	$wpdir = 'wp',
@@ -17,9 +18,11 @@ define chassis::wp (
 
 	$extensions = [],
 ) {
-	if ( $network == true ) {
+	$subdomains = ( $network == 'subdomains' )
+	if ( $network ) {
 		chassis::network { $name:
 			location          => $location,
+			subdomains        => $subdomains,
 			wpdir             => $wpdir,
 			contentdir        => $contentdir,
 			hosts             => $hosts,
@@ -61,7 +64,8 @@ define chassis::wp (
 	}
 
 	file { '/home/vagrant/.wp-cli':
-		ensure => directory
+		ensure => directory,
+		owner  => 'vagrant',
 	}
 
 	file { '/home/vagrant/.wp-cli/config.yml':
@@ -69,12 +73,12 @@ define chassis::wp (
 	}
 
 	wp::plugin { $plugins:
-		location => $location,
 		ensure   => 'enabled',
+		location => $location,
 	}
 
 	wp::theme { $themes:
-		location => $location,
 		ensure   => 'enabled',
+		location => $location,
 	}
 }

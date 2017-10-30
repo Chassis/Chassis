@@ -157,6 +157,14 @@
 
 			text = tinymce.DOM.decode( text );
 
+			if ( text.indexOf( '[' ) !== -1 && text.indexOf( ']' ) !== -1 ) {
+				// Looks like a shortcode? Remove any line breaks from inside of shortcodes
+				// or autop will replace them with <p> and <br> later and the string won't match.
+				text = text.replace( /\[[^\]]+\]/g, function( match ) {
+					return match.replace( /[\r\n]/g, '' );
+				});
+			}
+
 			if ( ! force ) {
 				instance = this.getInstance( text );
 
@@ -208,7 +216,7 @@
 		 */
 		render: function( force ) {
 			_.each( instances, function( instance ) {
-				instance.render( force );
+				instance.render( null, force );
 			} );
 		},
 
@@ -294,7 +302,7 @@
 		initialize: function() {},
 
 		/**
-		 * Retuns the content to render in the view node.
+		 * Returns the content to render in the view node.
 		 *
 		 * @return {*}
 		 */
@@ -420,6 +428,7 @@
 		 */
 		replaceMarkers: function() {
 			this.getMarkers( function( editor, node ) {
+				var selected = node === editor.selection.getNode();
 				var $viewNode;
 
 				if ( ! this.loader && $( node ).text() !== this.text ) {
@@ -432,6 +441,13 @@
 				);
 
 				editor.$( node ).replaceWith( $viewNode );
+
+				if ( selected ) {
+					setTimeout( function() {
+						editor.selection.select( $viewNode[0] );
+						editor.selection.collapse();
+					} );
+				}
 			} );
 		},
 
@@ -452,7 +468,7 @@
 		 * @param {Boolean}  rendered Only set for (un)rendered nodes. Optional.
 		 */
 		setContent: function( content, callback, rendered ) {
-			if ( _.isObject( content ) && content.body.indexOf( '<script' ) !== -1 ) {
+			if ( _.isObject( content ) && ( content.sandbox || content.head || content.body.indexOf( '<script' ) !== -1 ) ) {
 				this.setIframes( content.head || '', content.body, callback, rendered );
 			} else if ( _.isString( content ) && content.indexOf( '<script' ) !== -1 ) {
 				this.setIframes( '', content, callback, rendered );
@@ -490,7 +506,8 @@
 				var dom = editor.dom,
 					styles = '',
 					bodyClasses = editor.getBody().className || '',
-					editorHead = editor.getDoc().getElementsByTagName( 'head' )[0];
+					editorHead = editor.getDoc().getElementsByTagName( 'head' )[0],
+					iframe, iframeWin, iframeDoc, MutationObserver, observer, i, block;
 
 				tinymce.each( dom.$( 'link[rel="stylesheet"]', editorHead ), function( link ) {
 					if ( link.href && link.href.indexOf( 'skins/lightgray/content.min.css' ) === -1 &&
@@ -511,135 +528,150 @@
 					}, '\u200B' );
 				}
 
-				// Seems the browsers need a bit of time to insert/set the view nodes,
-				// or the iframe will fail especially when switching Text => Visual.
-				setTimeout( function() {
-					var iframe, iframeWin, iframeDoc, MutationObserver, observer, i, block;
+				editor.undoManager.transact( function() {
+					node.innerHTML = '';
 
-					editor.undoManager.transact( function() {
-						node.innerHTML = '';
-
-						iframe = dom.add( node, 'iframe', {
-							/* jshint scripturl: true */
-							src: tinymce.Env.ie ? 'javascript:""' : '',
-							frameBorder: '0',
-							allowTransparency: 'true',
-							scrolling: 'no',
-							'class': 'wpview-sandbox',
-							style: {
-								width: '100%',
-								display: 'block'
-							},
-							height: self.iframeHeight
-						} );
-
-						dom.add( node, 'span', { 'class': 'mce-shim' } );
-						dom.add( node, 'span', { 'class': 'wpview-end' } );
+					iframe = dom.add( node, 'iframe', {
+						/* jshint scripturl: true */
+						src: tinymce.Env.ie ? 'javascript:""' : '',
+						frameBorder: '0',
+						allowTransparency: 'true',
+						scrolling: 'no',
+						'class': 'wpview-sandbox',
+						style: {
+							width: '100%',
+							display: 'block'
+						},
+						height: self.iframeHeight
 					} );
 
-					// Bail if the iframe node is not attached to the DOM.
-					// Happens when the view is dragged in the editor.
-					// There is a browser restriction when iframes are moved in the DOM. They get emptied.
-					// The iframe will be rerendered after dropping the view node at the new location.
-					if ( ! iframe.contentWindow ) {
+					dom.add( node, 'span', { 'class': 'mce-shim' } );
+					dom.add( node, 'span', { 'class': 'wpview-end' } );
+				} );
+
+				// Bail if the iframe node is not attached to the DOM.
+				// Happens when the view is dragged in the editor.
+				// There is a browser restriction when iframes are moved in the DOM. They get emptied.
+				// The iframe will be rerendered after dropping the view node at the new location.
+				if ( ! iframe.contentWindow ) {
+					return;
+				}
+
+				iframeWin = iframe.contentWindow;
+				iframeDoc = iframeWin.document;
+				iframeDoc.open();
+
+				iframeDoc.write(
+					'<!DOCTYPE html>' +
+					'<html>' +
+						'<head>' +
+							'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
+							head +
+							styles +
+							'<style>' +
+								'html {' +
+									'background: transparent;' +
+									'padding: 0;' +
+									'margin: 0;' +
+								'}' +
+								'body#wpview-iframe-sandbox {' +
+									'background: transparent;' +
+									'padding: 1px 0 !important;' +
+									'margin: -1px 0 0 !important;' +
+								'}' +
+								'body#wpview-iframe-sandbox:before,' +
+								'body#wpview-iframe-sandbox:after {' +
+									'display: none;' +
+									'content: "";' +
+								'}' +
+								'iframe {' +
+									'max-width: 100%;' +
+								'}' +
+							'</style>' +
+						'</head>' +
+						'<body id="wpview-iframe-sandbox" class="' + bodyClasses + '">' +
+							body +
+						'</body>' +
+					'</html>'
+				);
+
+				iframeDoc.close();
+
+				function resize() {
+					var $iframe;
+
+					if ( block ) {
 						return;
 					}
 
-					iframeWin = iframe.contentWindow;
-					iframeDoc = iframeWin.document;
-					iframeDoc.open();
+					// Make sure the iframe still exists.
+					if ( iframe.contentWindow ) {
+						$iframe = $( iframe );
+						self.iframeHeight = $( iframeDoc.body ).height();
 
-					iframeDoc.write(
-						'<!DOCTYPE html>' +
-						'<html>' +
-							'<head>' +
-								'<meta http-equiv="Content-Type" content="text/html; charset=UTF-8" />' +
-								head +
-								styles +
-								'<style>' +
-									'html {' +
-										'background: transparent;' +
-										'padding: 0;' +
-										'margin: 0;' +
-									'}' +
-									'body#wpview-iframe-sandbox {' +
-										'background: transparent;' +
-										'padding: 1px 0 !important;' +
-										'margin: -1px 0 0 !important;' +
-									'}' +
-									'body#wpview-iframe-sandbox:before,' +
-									'body#wpview-iframe-sandbox:after {' +
-										'display: none;' +
-										'content: "";' +
-									'}' +
-								'</style>' +
-							'</head>' +
-							'<body id="wpview-iframe-sandbox" class="' + bodyClasses + '">' +
-								body +
-							'</body>' +
-						'</html>'
-					);
-
-					iframeDoc.close();
-
-					function resize() {
-						var $iframe;
-
-						if ( block ) {
-							return;
-						}
-
-						// Make sure the iframe still exists.
-						if ( iframe.contentWindow ) {
-							$iframe = $( iframe );
-							self.iframeHeight = $( iframeDoc.body ).height();
-
-							if ( $iframe.height() !== self.iframeHeight ) {
-								$iframe.height( self.iframeHeight );
-								editor.nodeChanged();
-							}
+						if ( $iframe.height() !== self.iframeHeight ) {
+							$iframe.height( self.iframeHeight );
+							editor.nodeChanged();
 						}
 					}
+				}
 
-					if ( self.iframeHeight ) {
-						block = true;
+				if ( self.iframeHeight ) {
+					block = true;
+
+					setTimeout( function() {
+						block = false;
+						resize();
+					}, 3000 );
+				}
+
+				function reload() {
+					if ( ! editor.isHidden() ) {
+						$( node ).data( 'rendered', null );
 
 						setTimeout( function() {
-							block = false;
-							resize();
-						}, 3000 );
-					}
-
-					$( iframeWin ).on( 'load', resize );
-
-					MutationObserver = iframeWin.MutationObserver || iframeWin.WebKitMutationObserver || iframeWin.MozMutationObserver;
-
-					if ( MutationObserver ) {
-						observer = new MutationObserver( _.debounce( resize, 100 ) );
-
-						observer.observe( iframeDoc.body, {
-							attributes: true,
-							childList: true,
-							subtree: true
+							wp.mce.views.render();
 						} );
-					} else {
-						for ( i = 1; i < 6; i++ ) {
-							setTimeout( resize, i * 700 );
-						}
 					}
+				}
 
-					callback && callback.call( self, editor, node );
-				}, 50 );
+				function addObserver() {
+					observer = new MutationObserver( _.debounce( resize, 100 ) );
+
+					observer.observe( iframeDoc.body, {
+						attributes: true,
+						childList: true,
+						subtree: true
+					} );
+				}
+
+				$( iframeWin ).on( 'load', resize ).on( 'unload', reload );
+
+				MutationObserver = iframeWin.MutationObserver || iframeWin.WebKitMutationObserver || iframeWin.MozMutationObserver;
+
+				if ( MutationObserver ) {
+					if ( ! iframeDoc.body ) {
+						iframeDoc.addEventListener( 'DOMContentLoaded', addObserver, false );
+					} else {
+						addObserver();
+					}
+				} else {
+					for ( i = 1; i < 6; i++ ) {
+						setTimeout( resize, i * 700 );
+					}
+				}
+
+				callback && callback.call( self, editor, node );
 			}, rendered );
 		},
 
 		/**
 		 * Sets a loader for all view nodes tied to this view instance.
 		 */
-		setLoader: function() {
+		setLoader: function( dashicon ) {
 			this.setContent(
 				'<div class="loading-placeholder">' +
-					'<div class="dashicons dashicons-admin-media"></div>' +
+					'<div class="dashicons dashicons-' + ( dashicon || 'admin-media' ) + '"></div>' +
 					'<div class="wpview-loading"><ins></ins></div>' +
 				'</div>'
 			);
@@ -697,6 +729,9 @@
 					$( node ).data( 'rendered', false );
 					editor.dom.setAttrib( node, 'data-wpview-text', encodeURIComponent( text ) );
 					wp.mce.views.createInstance( type, text, match.options, force ).render();
+
+					editor.selection.select( node );
+					editor.nodeChanged();
 					editor.focus();
 
 					return true;

@@ -148,7 +148,7 @@ function get_the_author_meta( $field = '', $user_id = false ) {
 	 * @param int      $user_id          The user ID for the value.
 	 * @param int|bool $original_user_id The original user ID, as passed to the function.
 	 */
-	return apply_filters( 'get_the_author_' . $field, $value, $user_id, $original_user_id );
+	return apply_filters( "get_the_author_{$field}", $value, $user_id, $original_user_id );
 }
 
 /**
@@ -174,7 +174,7 @@ function the_author_meta( $field = '', $user_id = false ) {
 	 * @param string $author_meta The value of the metadata.
 	 * @param int    $user_id     The user ID.
 	 */
-	echo apply_filters( 'the_author_' . $field, $author_meta, $user_id );
+	echo apply_filters( "the_author_{$field}", $author_meta, $user_id );
 }
 
 /**
@@ -183,12 +183,19 @@ function the_author_meta( $field = '', $user_id = false ) {
  * If the author has a home page set, return an HTML link, otherwise just return the
  * author's name.
  *
+ * @since 3.0.0
+ *
  * @return string|null An HTML link if the author's url exist in user meta,
  *                     else the result of get_the_author().
  */
 function get_the_author_link() {
 	if ( get_the_author_meta('url') ) {
-		return '<a href="' . esc_url( get_the_author_meta('url') ) . '" title="' . esc_attr( sprintf(__("Visit %s&#8217;s website"), get_the_author()) ) . '" rel="author external">' . get_the_author() . '</a>';
+		return sprintf( '<a href="%1$s" title="%2$s" rel="author external">%3$s</a>',
+			esc_url( get_the_author_meta('url') ),
+			/* translators: %s: author's display name */
+			esc_attr( sprintf( __( 'Visit %s&#8217;s website' ), get_the_author() ) ),
+			get_the_author()
+		);
 	} else {
 		return get_the_author();
 	}
@@ -250,9 +257,9 @@ function get_the_author_posts_link() {
 		return;
 	}
 
-	$link = sprintf(
-		'<a href="%1$s" title="%2$s" rel="author">%3$s</a>',
+	$link = sprintf( '<a href="%1$s" title="%2$s" rel="author">%3$s</a>',
 		esc_url( get_author_posts_url( $authordata->ID, $authordata->user_nicename ) ),
+		/* translators: %s: author's display name */
 		esc_attr( sprintf( __( 'Posts by %s' ), get_the_author() ) ),
 		get_the_author()
 	);
@@ -412,7 +419,12 @@ function wp_list_authors( $args = '' ) {
 			$return .= '<li>';
 		}
 
-		$link = '<a href="' . get_author_posts_url( $author->ID, $author->user_nicename ) . '" title="' . esc_attr( sprintf(__("Posts by %s"), $author->display_name) ) . '">' . $name . '</a>';
+		$link = sprintf( '<a href="%1$s" title="%2$s">%3$s</a>',
+			get_author_posts_url( $author->ID, $author->user_nicename ),
+			/* translators: %s: author's display name */
+			esc_attr( sprintf( __( 'Posts by %s' ), $author->display_name ) ),
+			$name
+		);
 
 		if ( ! empty( $args['feed_image'] ) || ! empty( $args['feed'] ) ) {
 			$link .= ' ';
@@ -492,7 +504,8 @@ function is_multi_author() {
 /**
  * Helper function to clear the cache for number of authors.
  *
- * @private
+ * @since 3.2.0
+ * @access private
  */
 function __clear_multi_author_cache() {
 	delete_transient( 'is_multi_author' );

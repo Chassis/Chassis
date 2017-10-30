@@ -293,14 +293,15 @@ function get_inline_data($post) {
 	<div class="ss">' . mysql2date( 's', $post->post_date, false ) . '</div>
 	<div class="post_password">' . esc_html( $post->post_password ) . '</div>';
 
-	if ( $post_type_object->hierarchical )
+	if ( $post_type_object->hierarchical ) {
 		echo '<div class="post_parent">' . $post->post_parent . '</div>';
+	}
 
-	if ( $post->post_type == 'page' )
-		echo '<div class="page_template">' . esc_html( get_post_meta( $post->ID, '_wp_page_template', true ) ) . '</div>';
+	echo '<div class="page_template">' . ( $post->page_template ? esc_html( $post->page_template ) : 'default' ) . '</div>';
 
-	if ( post_type_supports( $post->post_type, 'page-attributes' ) )
+	if ( post_type_supports( $post->post_type, 'page-attributes' ) ) {
 		echo '<div class="menu_order">' . $post->menu_order . '</div>';
+	}
 
 	$taxonomy_names = get_object_taxonomies( $post->post_type );
 	foreach ( $taxonomy_names as $taxonomy_name) {
@@ -423,11 +424,11 @@ function wp_comment_reply( $position = 1, $checkbox = false, $mode = 'single', $
 	</div>
 
 	<p id="replysubmit" class="submit">
-	<a href="#comments-form" class="save button-primary alignright">
+	<a href="#comments-form" class="save button button-primary alignright">
 	<span id="addbtn" style="display:none;"><?php _e('Add Comment'); ?></span>
 	<span id="savebtn" style="display:none;"><?php _e('Update Comment'); ?></span>
 	<span id="replybtn" style="display:none;"><?php _e('Submit Reply'); ?></span></a>
-	<a href="#comments-form" class="cancel button-secondary alignleft"><?php _e('Cancel'); ?></a>
+	<a href="#comments-form" class="cancel button alignleft"><?php _e('Cancel'); ?></a>
 	<span class="waiting spinner"></span>
 	<span class="error" style="display:none;"></span>
 	</p>
@@ -657,7 +658,7 @@ function meta_form( $post = null ) {
 
 <tr><td colspan="2">
 <div class="submit">
-<?php submit_button( __( 'Add Custom Field' ), 'secondary', 'addmeta', false, array( 'id' => 'newmeta-submit', 'data-wp-lists' => 'add:the-list:newmeta' ) ); ?>
+<?php submit_button( __( 'Add Custom Field' ), '', 'addmeta', false, array( 'id' => 'newmeta-submit', 'data-wp-lists' => 'add:the-list:newmeta' ) ); ?>
 </div>
 <?php wp_nonce_field( 'add-meta', '_ajax_nonce-add-meta', false ); ?>
 </td></tr>
@@ -761,11 +762,13 @@ function touch_time( $edit = 1, $for_post = 1, $tab_index = 0, $multi = 0 ) {
  * Print out option HTML elements for the page templates drop-down.
  *
  * @since 1.5.0
+ * @since 4.7.0 Added the `$post_type` parameter.
  *
- * @param string $default Optional. The template file name. Default empty.
+ * @param string $default   Optional. The template file name. Default empty.
+ * @param string $post_type Optional. Post type to get templates for. Default 'post'.
  */
-function page_template_dropdown( $default = '' ) {
-	$templates = get_page_templates( get_post() );
+function page_template_dropdown( $default = '', $post_type = 'page' ) {
+	$templates = get_page_templates( null, $post_type );
 	ksort( $templates );
 	foreach ( array_keys( $templates ) as $template ) {
 		$selected = selected( $default, $templates[ $template ], false );
@@ -818,19 +821,21 @@ function parent_dropdown( $default = 0, $parent = 0, $level = 0, $post = null ) 
  * @param string $selected Slug for the role that should be already selected.
  */
 function wp_dropdown_roles( $selected = '' ) {
-	$p = '';
 	$r = '';
 
 	$editable_roles = array_reverse( get_editable_roles() );
 
 	foreach ( $editable_roles as $role => $details ) {
 		$name = translate_user_role($details['name'] );
-		if ( $selected == $role ) // preselect specified role
-			$p = "\n\t<option selected='selected' value='" . esc_attr($role) . "'>$name</option>";
-		else
-			$r .= "\n\t<option value='" . esc_attr($role) . "'>$name</option>";
+		// preselect specified role
+		if ( $selected == $role ) {
+			$r .= "\n\t<option selected='selected' value='" . esc_attr( $role ) . "'>$name</option>";
+		} else {
+			$r .= "\n\t<option value='" . esc_attr( $role ) . "'>$name</option>";
+		}
 	}
-	echo $p . $r;
+
+	echo $r;
 }
 
 /**
@@ -1035,7 +1040,7 @@ function do_meta_boxes( $screen, $context, $object ) {
 							unset( $box[ 'args' ][ '__widget_basename' ] );
 						}
 
-						echo '<button type="button" class="handlediv button-link" aria-expanded="true">';
+						echo '<button type="button" class="handlediv" aria-expanded="true">';
 						echo '<span class="screen-reader-text">' . sprintf( __( 'Toggle panel: %s' ), $widget_title ) . '</span>';
 						echo '<span class="toggle-indicator" aria-hidden="true"></span>';
 						echo '</button>';
@@ -1204,12 +1209,22 @@ function add_settings_section($id, $title, $callback, $page) {
 	global $wp_settings_sections;
 
 	if ( 'misc' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.0.0', sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ), 'misc' ) );
+		_deprecated_argument( __FUNCTION__, '3.0.0',
+			/* translators: %s: misc */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'misc'
+			)
+		);
 		$page = 'general';
 	}
 
 	if ( 'privacy' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.5.0', sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ), 'privacy' ) );
+		_deprecated_argument( __FUNCTION__, '3.5.0',
+			/* translators: %s: privacy */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'privacy'
+			)
+		);
 		$page = 'reading';
 	}
 
@@ -1255,12 +1270,22 @@ function add_settings_field($id, $title, $callback, $page, $section = 'default',
 	global $wp_settings_fields;
 
 	if ( 'misc' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.0.0', __( 'The miscellaneous options group has been removed. Use another settings group.' ) );
+		_deprecated_argument( __FUNCTION__, '3.0.0',
+			/* translators: %s: misc */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'misc'
+			)
+		);
 		$page = 'general';
 	}
 
 	if ( 'privacy' == $page ) {
-		_deprecated_argument( __FUNCTION__, '3.5.0', __( 'The privacy options group has been removed. Use another settings group.' ) );
+		_deprecated_argument( __FUNCTION__, '3.5.0',
+			/* translators: %s: privacy */
+			sprintf( __( 'The "%s" options group has been removed. Use another settings group.' ),
+				'privacy'
+			)
+		);
 		$page = 'reading';
 	}
 
@@ -1495,7 +1520,7 @@ function find_posts_div($found_action = '') {
 	<div id="find-posts" class="find-box" style="display: none;">
 		<div id="find-posts-head" class="find-box-head">
 			<?php _e( 'Attach to existing content' ); ?>
-			<button type="button" id="find-posts-close"><span class="screen-reader-text"><?php _e( 'Close media attachment panel' ); ?></button>
+			<button type="button" id="find-posts-close"><span class="screen-reader-text"><?php _e( 'Close media attachment panel' ); ?></span></button>
 		</div>
 		<div class="find-box-inside">
 			<div class="find-box-search">
@@ -1513,7 +1538,7 @@ function find_posts_div($found_action = '') {
 			<div id="find-posts-response"></div>
 		</div>
 		<div class="find-box-buttons">
-			<?php submit_button( __( 'Select' ), 'button-primary alignright', 'find-posts-submit', false ); ?>
+			<?php submit_button( __( 'Select' ), 'primary alignright', 'find-posts-submit', false ); ?>
 			<div class="clear"></div>
 		</div>
 	</div>
@@ -1622,7 +1647,7 @@ do_action( "admin_head-$hook_suffix" );
 /** This action is documented in wp-admin/admin-header.php */
 do_action( 'admin_head' );
 
-$admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_locale() ) ) );
+$admin_body_class .= ' locale-' . sanitize_html_class( strtolower( str_replace( '_', '-', get_user_locale() ) ) );
 
 if ( is_rtl() )
 	$admin_body_class .= ' rtl';
@@ -1723,6 +1748,7 @@ function _post_states($post) {
 	 * Filters the default post display states used in the posts list table.
 	 *
 	 * @since 2.8.0
+	 * @since 3.6.0 Added the `$post` parameter.
 	 *
 	 * @param array   $post_states An array of post display states.
 	 * @param WP_Post $post        The current post object.
@@ -1752,21 +1778,46 @@ function _media_states( $post ) {
 
 	if ( current_theme_supports( 'custom-header') ) {
 		$meta_header = get_post_meta($post->ID, '_wp_attachment_is_custom_header', true );
-		if ( ! empty( $meta_header ) && $meta_header == $stylesheet )
-			$media_states[] = __( 'Header Image' );
+
+		if ( is_random_header_image() ) {
+			$header_images = wp_list_pluck( get_uploaded_header_images(), 'attachment_id' );
+
+			if ( $meta_header == $stylesheet && in_array( $post->ID, $header_images ) ) {
+				$media_states[] = __( 'Header Image' );
+			}
+		} else {
+			$header_image = get_header_image();
+
+			// Display "Header Image" if the image was ever used as a header image
+			if ( ! empty( $meta_header ) && $meta_header == $stylesheet && $header_image !== wp_get_attachment_url( $post->ID ) ) {
+				$media_states[] = __( 'Header Image' );
+			}
+
+			// Display "Current Header Image" if the image is currently the header image
+			if ( $header_image && $header_image == wp_get_attachment_url( $post->ID ) ) {
+				$media_states[] = __( 'Current Header Image' );
+			}
+		}
 	}
 
 	if ( current_theme_supports( 'custom-background') ) {
 		$meta_background = get_post_meta($post->ID, '_wp_attachment_is_custom_background', true );
-		if ( ! empty( $meta_background ) && $meta_background == $stylesheet )
+
+		if ( ! empty( $meta_background ) && $meta_background == $stylesheet ) {
 			$media_states[] = __( 'Background Image' );
+
+			$background_image = get_background_image();
+			if ( $background_image && $background_image == wp_get_attachment_url( $post->ID ) ) {
+				$media_states[] = __( 'Current Background Image' );
+			}
+		}
 	}
 
 	if ( $post->ID == get_option( 'site_icon' ) ) {
 		$media_states[] = __( 'Site Icon' );
 	}
 
-	if ( $post->ID == get_theme_mod( 'site_logo' ) ) {
+	if ( $post->ID == get_theme_mod( 'custom_logo' ) ) {
 		$media_states[] = __( 'Logo' );
 	}
 
@@ -1774,11 +1825,13 @@ function _media_states( $post ) {
 	 * Filters the default media display states for items in the Media list table.
 	 *
 	 * @since 3.2.0
+	 * @since 4.8.0 Added the `$post` parameter.
 	 *
-	 * @param array $media_states An array of media states. Default 'Header Image',
-	 *                            'Background Image', 'Site Icon', 'Logo'.
+	 * @param array   $media_states An array of media states. Default 'Header Image',
+	 *                              'Background Image', 'Site Icon', 'Logo'.
+	 * @param WP_Post $post         The current attachment object.
 	 */
-	$media_states = apply_filters( 'display_media_states', $media_states );
+	$media_states = apply_filters( 'display_media_states', $media_states, $post );
 
 	if ( ! empty( $media_states ) ) {
 		$state_count = count( $media_states );
@@ -1865,7 +1918,7 @@ function compression_test() {
  *
  * @param string       $text             The text of the button (defaults to 'Save Changes')
  * @param string       $type             Optional. The type and CSS class(es) of the button. Core values
- *                                       include 'primary', 'secondary', 'delete'. Default 'primary'
+ *                                       include 'primary', 'small', and 'large'. Default 'primary'.
  * @param string       $name             The HTML name of the submit button. Defaults to "submit". If no
  *                                       id attribute is given in $other_attributes below, $name will be
  *                                       used as the button's id.
@@ -1888,8 +1941,8 @@ function submit_button( $text = null, $type = 'primary', $name = 'submit', $wrap
  * @since 3.1.0
  *
  * @param string       $text             Optional. The text of the button. Default 'Save Changes'.
- * @param string       $type             Optional. The type of button. Accepts 'primary', 'secondary',
- *                                       or 'delete'. Default 'primary large'.
+ * @param string       $type             Optional. The type and CSS class(es) of the button. Core values
+ *                                       include 'primary', 'small', and 'large'. Default 'primary large'.
  * @param string       $name             Optional. The HTML name of the submit button. Defaults to "submit".
  *                                       If no id attribute is given in $other_attributes below, `$name` will
  *                                       be used as the button's id. Default 'submit'.
@@ -1914,10 +1967,8 @@ function get_submit_button( $text = '', $type = 'primary large', $name = 'submit
 			continue;
 		$classes[] = in_array( $t, $button_shorthand ) ? 'button-' . $t : $t;
 	}
-	$class = implode( ' ', array_unique( $classes ) );
-
-	if ( 'delete' === $type )
-		$class = 'button-secondary delete';
+	// Remove empty items, remove duplicate items, and finally build a string.
+	$class = implode( ' ', array_unique( array_filter( $classes ) ) );
 
 	$text = $text ? $text : __( 'Save Changes' );
 
@@ -1995,7 +2046,7 @@ function _wp_admin_html_begin() {
  * @return WP_Screen Screen object.
  */
 function convert_to_screen( $hook_name ) {
-	if ( ! class_exists( 'WP_Screen', false ) ) {
+	if ( ! class_exists( 'WP_Screen' ) ) {
 		_doing_it_wrong( 'convert_to_screen(), add_meta_box()', __( "Likely direct inclusion of wp-admin/includes/template.php in order to use add_meta_box(). This is very wrong. Hook the add_meta_box() call into the add_meta_boxes action instead." ), '3.3.0' );
 		return (object) array( 'id' => '_invalid', 'base' => '_are_belong_to_us' );
 	}

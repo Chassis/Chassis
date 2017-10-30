@@ -15,8 +15,12 @@
  *
  * @since 4.5.0
  *
- * @property int $id
- * @property int $network_id
+ * @property int    $id
+ * @property int    $network_id
+ * @property string $blogname
+ * @property string $siteurl
+ * @property int    $post_count
+ * @property string $home
  */
 final class WP_Site {
 
@@ -236,11 +240,15 @@ final class WP_Site {
 			case 'siteurl':
 			case 'post_count':
 			case 'home':
+			default: // Custom properties added by 'site_details' filter.
 				if ( ! did_action( 'ms_loaded' ) ) {
 					return null;
 				}
+
 				$details = $this->get_details();
-				return $details->$key;
+				if ( isset( $details->$key ) ) {
+					return $details->$key;
+				}
 		}
 
 		return null;
@@ -271,6 +279,15 @@ final class WP_Site {
 					return false;
 				}
 				return true;
+			default: // Custom properties added by 'site_details' filter.
+				if ( ! did_action( 'ms_loaded' ) ) {
+					return false;
+				}
+
+				$details = $this->get_details();
+				if ( isset( $details->$key ) ) {
+					return true;
+				}
 		}
 
 		return false;
@@ -310,7 +327,7 @@ final class WP_Site {
 	 *
 	 * @see WP_Site::__get()
 	 *
-	 * @return object A raw site object with all details included.
+	 * @return stdClass A raw site object with all details included.
 	 */
 	private function get_details() {
 		$details = wp_cache_get( $this->blog_id, 'site-details' );
@@ -329,25 +346,18 @@ final class WP_Site {
 			$details->home       = get_option( 'home' );
 			restore_current_blog();
 
-			$cache_details = true;
-			foreach ( array( 'blogname', 'siteurl', 'post_count', 'home' ) as $field ) {
-				if ( false === $details->$field ) {
-					$cache_details = false;
-					break;
-				}
-			}
-
-			if ( $cache_details ) {
-				wp_cache_set( $this->blog_id, $details, 'site-details' );
-			}
+			wp_cache_set( $this->blog_id, $details, 'site-details' );
 		}
+
+		/** This filter is documented in wp-includes/ms-blogs.php */
+		$details = apply_filters_deprecated( 'blog_details', array( $details ), '4.7.0', 'site_details' );
 
 		/**
 		 * Filters a site's extended properties.
 		 *
 		 * @since 4.6.0
 		 *
-		 * @param object $details The site details.
+		 * @param stdClass $details The site details.
 		 */
 		$details = apply_filters( 'site_details', $details );
 

@@ -82,6 +82,26 @@ if ( $doaction ) {
 		}
 	}
 
+	if ( ! in_array( $doaction, array( 'approve', 'unapprove', 'spam', 'unspam', 'trash', 'delete' ), true ) ) {
+		$screen = get_current_screen()->id;
+
+		/**
+		 * Fires when a custom bulk action should be handled.
+		 *
+		 * The redirect link should be modified with success or failure feedback
+		 * from the action to be used to display feedback to the user.
+		 *
+		 * The dynamic portion of the hook name, `$screen`, refers to the current screen ID.
+		 *
+		 * @since 4.7.0
+		 *
+		 * @param string $redirect_url The redirect URL.
+		 * @param string $doaction     The action being taken.
+		 * @param array  $items        The items to take the action on.
+		 */
+		$redirect_to = apply_filters( "handle_bulk_actions-{$screen}", $redirect_to, $doaction, $comment_ids );
+	}
+
 	wp_defer_comment_counting( false );
 
 	if ( $approved )
@@ -162,10 +182,10 @@ get_current_screen()->add_help_tab( array(
 
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
-	'<p>' . __( '<a href="https://codex.wordpress.org/Administration_Screens#Comments" target="_blank">Documentation on Comments</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://codex.wordpress.org/Comment_Spam" target="_blank">Documentation on Comment Spam</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts" target="_blank">Documentation on Keyboard Shortcuts</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://wordpress.org/support/" target="_blank">Support Forums</a>' ) . '</p>'
+	'<p>' . __( '<a href="https://codex.wordpress.org/Administration_Screens#Comments">Documentation on Comments</a>' ) . '</p>' .
+	'<p>' . __( '<a href="https://codex.wordpress.org/Comment_Spam">Documentation on Comment Spam</a>' ) . '</p>' .
+	'<p>' . __( '<a href="https://codex.wordpress.org/Keyboard_Shortcuts">Documentation on Keyboard Shortcuts</a>' ) . '</p>' .
+	'<p>' . __( '<a href="https://wordpress.org/support/">Support Forums</a>' ) . '</p>'
 );
 
 get_current_screen()->set_screen_reader_content( array(
@@ -178,7 +198,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 ?>
 
 <div class="wrap">
-<h1><?php
+<h1 class="wp-heading-inline"><?php
 if ( $post_id ) {
 	/* translators: %s: link to post */
 	printf( __( 'Comments on &#8220;%s&#8221;' ),
@@ -190,7 +210,9 @@ if ( $post_id ) {
 } else {
 	_e( 'Comments' );
 }
+?></h1>
 
+<?php
 if ( isset($_REQUEST['s']) && strlen( $_REQUEST['s'] ) ) {
 	echo '<span class="subtitle">';
 	/* translators: %s: search keywords */
@@ -199,7 +221,9 @@ if ( isset($_REQUEST['s']) && strlen( $_REQUEST['s'] ) ) {
 	);
 	echo '</span>';
 }
-?></h1>
+?>
+
+<hr class="wp-header-end">
 
 <?php
 if ( isset( $_REQUEST['error'] ) ) {

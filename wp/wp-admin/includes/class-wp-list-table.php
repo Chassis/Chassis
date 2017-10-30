@@ -284,7 +284,7 @@ class WP_List_Table {
 			$args['total_pages'] = ceil( $args['total_items'] / $args['per_page'] );
 
 		// Redirect if page number is invalid and headers are not already sent.
-		if ( ! headers_sent() && ( ! defined( 'DOING_AJAX' ) || ! DOING_AJAX ) && $args['total_pages'] > 0 && $this->get_pagenum() > $args['total_pages'] ) {
+		if ( ! headers_sent() && ! wp_doing_ajax() && $args['total_pages'] > 0 && $this->get_pagenum() > $args['total_pages'] ) {
 			wp_redirect( add_query_arg( 'paged', $args['total_pages'] ) );
 			exit;
 		}
@@ -361,7 +361,7 @@ class WP_List_Table {
 <p class="search-box">
 	<label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo $text; ?>:</label>
 	<input type="search" id="<?php echo esc_attr( $input_id ); ?>" name="s" value="<?php _admin_search_query(); ?>" />
-	<?php submit_button( $text, 'button', '', false, array( 'id' => 'search-submit' ) ); ?>
+	<?php submit_button( $text, '', '', false, array( 'id' => 'search-submit' ) ); ?>
 </p>
 <?php
 	}
@@ -436,7 +436,7 @@ class WP_List_Table {
 	 */
 	protected function bulk_actions( $which = '' ) {
 		if ( is_null( $this->_actions ) ) {
-			$no_new_actions = $this->_actions = $this->get_bulk_actions();
+			$this->_actions = $this->get_bulk_actions();
 			/**
 			 * Filters the list table Bulk Actions drop-down.
 			 *
@@ -450,7 +450,6 @@ class WP_List_Table {
 			 * @param array $actions An array of the available bulk actions.
 			 */
 			$this->_actions = apply_filters( "bulk_actions-{$this->screen->id}", $this->_actions );
-			$this->_actions = array_intersect_assoc( $this->_actions, $no_new_actions );
 			$two = '';
 		} else {
 			$two = '2';
@@ -733,7 +732,7 @@ class WP_List_Table {
 		 *
 		 * @param int $per_page Number of items to be displayed. Default 20.
 		 */
-		return (int) apply_filters( $option, $per_page );
+		return (int) apply_filters( "{$option}", $per_page );
 	}
 
 	/**

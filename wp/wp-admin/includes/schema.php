@@ -165,7 +165,7 @@ CREATE TABLE $wpdb->posts (
   post_status varchar(20) NOT NULL default 'publish',
   comment_status varchar(20) NOT NULL default 'open',
   ping_status varchar(20) NOT NULL default 'open',
-  post_password varchar(20) NOT NULL default '',
+  post_password varchar(255) NOT NULL default '',
   post_name varchar(200) NOT NULL default '',
   to_ping text NOT NULL,
   pinged text NOT NULL,
@@ -527,7 +527,7 @@ function populate_options() {
 	// 3.0 multisite
 	if ( is_multisite() ) {
 		/* translators: site tagline */
-		$options[ 'blogdescription' ] = sprintf(__('Just another %s site'), get_current_site()->site_name );
+		$options[ 'blogdescription' ] = sprintf(__('Just another %s site'), get_network()->site_name );
 		$options[ 'permalink_structure' ] = '/%year%/%monthnum%/%day%/%postname%/';
 	}
 
@@ -861,13 +861,12 @@ function populate_roles_300() {
 	}
 }
 
+if ( !function_exists( 'install_network' ) ) :
 /**
  * Install Network.
  *
  * @since 3.0.0
- *
  */
-if ( !function_exists( 'install_network' ) ) :
 function install_network() {
 	if ( ! defined( 'WP_INSTALLING_NETWORK' ) )
 		define( 'WP_INSTALLING_NETWORK', true );
@@ -952,12 +951,16 @@ function populate_network( $network_id = 1, $domain = '', $email = '', $site_nam
 
 	if ( !is_multisite() ) {
 		$site_admins = array( $site_user->user_login );
-		$users = get_users( array( 'fields' => array( 'ID', 'user_login' ) ) );
+		$users = get_users( array(
+			'fields' => array( 'user_login' ),
+			'role'   => 'administrator',
+		) );
 		if ( $users ) {
 			foreach ( $users as $user ) {
-				if ( is_super_admin( $user->ID ) && !in_array( $user->user_login, $site_admins ) )
-					$site_admins[] = $user->user_login;
+				$site_admins[] = $user->user_login;
 			}
+
+			$site_admins = array_unique( $site_admins );
 		}
 	} else {
 		$site_admins = get_site_option( 'site_admins' );

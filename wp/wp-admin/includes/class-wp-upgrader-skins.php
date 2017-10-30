@@ -7,6 +7,8 @@
  * @since 2.8.0
  */
 
+_deprecated_file( basename( __FILE__ ), '4.7.0', 'class-wp-upgrader.php' );
+
 /** WP_Upgrader_Skin class */
 require_once ABSPATH . 'wp-admin/includes/class-wp-upgrader-skin.php';
 

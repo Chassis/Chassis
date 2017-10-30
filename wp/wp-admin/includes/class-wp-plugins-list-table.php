@@ -253,6 +253,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 
 		wp_localize_script( 'updates', '_wpUpdatesItemCounts', array(
 			'plugins' => $js_plugins,
+			'totals'  => wp_get_update_data(),
 		) );
 
 		if ( ! $orderby ) {
@@ -367,7 +368,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 		<p class="search-box">
 			<label class="screen-reader-text" for="<?php echo esc_attr( $input_id ); ?>"><?php echo $text; ?>:</label>
 			<input type="search" id="<?php echo esc_attr( $input_id ); ?>" class="wp-filter-search" name="s" value="<?php _admin_search_query(); ?>" placeholder="<?php esc_attr_e( 'Search installed plugins...' ); ?>"/>
-			<?php submit_button( $text, 'button hide-if-js', '', false, array( 'id' => 'search-submit' ) ); ?>
+			<?php submit_button( $text, 'hide-if-js', '', false, array( 'id' => 'search-submit' ) ); ?>
 		</p>
 		<?php
 	}
@@ -496,7 +497,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 		echo '<div class="alignleft actions">';
 
 		if ( 'recently_activated' == $status ) {
-			submit_button( __( 'Clear List' ), 'button', 'clear-recent-list', false );
+			submit_button( __( 'Clear List' ), '', 'clear-recent-list', false );
 		} elseif ( 'top' === $which && 'mustuse' === $status ) {
 			/* translators: %s: mu-plugins directory name */
 			echo '<p>' . sprintf( __( 'Files in the %s directory are executed automatically.' ),
@@ -652,8 +653,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 			 * The default action links for the Network plugins list table include
 			 * 'Network Activate', 'Network Deactivate', 'Edit', and 'Delete'.
 			 *
-			 * @since 3.1.0 As `{$prefix}_plugin_action_links`
-			 * @since 4.4.0
+			 * @since 3.1.0
 			 *
 			 * @param array  $actions     An array of plugin action links.
 			 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -670,8 +670,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 			 * The dynamic portion of the hook name, $plugin_file, refers to the path
 			 * to the plugin file, relative to the plugins directory.
 			 *
-			 * @since 3.1.0 As `{$prefix}_plugin_action_links_{$plugin_file}`
-			 * @since 4.4.0
+			 * @since 3.1.0
 			 *
 			 * @param array  $actions     An array of plugin action links.
 			 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -691,8 +690,8 @@ class WP_Plugins_List_Table extends WP_List_Table {
 			 * 'Activate', 'Deactivate', and 'Edit', for a network site, and
 			 * 'Activate', 'Deactivate', 'Edit', and 'Delete' for a single site.
 			 *
-			 * @since 2.5.0 As `{$prefix}_plugin_action_links`
-			 * @since 4.4.0
+			 * @since 2.5.0
+			 * @since 2.6.0 The `$context` parameter was added.
 			 *
 			 * @param array  $actions     An array of plugin action links.
 			 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -709,8 +708,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 			 * The dynamic portion of the hook name, $plugin_file, refers to the path
 			 * to the plugin file, relative to the plugins directory.
 			 *
-			 * @since 2.7.0 As `{$prefix}_plugin_action_links_{$plugin_file}`
-			 * @since 4.4.0
+			 * @since 2.7.0
 			 *
 			 * @param array  $actions     An array of plugin action links.
 			 * @param string $plugin_file Path to the plugin file relative to the plugins directory.
@@ -864,7 +862,7 @@ class WP_Plugins_List_Table extends WP_List_Table {
 		 *                            'Inactive', 'Recently Activated', 'Upgrade', 'Must-Use',
 		 *                            'Drop-ins', 'Search'.
 		 */
-		do_action( "after_plugin_row_$plugin_file", $plugin_file, $plugin_data, $status );
+		do_action( "after_plugin_row_{$plugin_file}", $plugin_file, $plugin_data, $status );
 	}
 
 	/**
