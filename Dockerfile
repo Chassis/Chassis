@@ -26,14 +26,9 @@ ADD wp /vagrant/wp/
 RUN chmod u+x /vagrant/puppet/preprovision.sh
 RUN /vagrant/puppet/preprovision.sh
 
-RUN puppet apply \
-	--modulepath "/vagrant/puppet/modules" \
-	--hiera_config /dev/null \
-	--disable_warnings=deprecations \
-	/vagrant/puppet/manifests/development.pp
-
-# Enable SSH
-RUN rm -f /etc/service/sshd/down
+# Install via Puppet, while running services.
+RUN chmod u+x /vagrant/puppet/docker-build.sh
+RUN ["/vagrant/puppet/docker-build.sh"]
 
 # CMD /vagrant/puppet/dockerrun.sh
 # CMD ["/sbin/my_init"]
