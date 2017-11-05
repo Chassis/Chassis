@@ -63,14 +63,14 @@ define chassis::wp (
 		content => template('chassis/local-config-extensions.php.erb')
 	}
 
-	file { '/home/vagrant/.wp-cli':
-		ensure => directory,
-		owner  => 'vagrant',
-	}
+	# file { '/home/vagrant/.wp-cli':
+	# 	ensure => directory,
+	# 	owner  => 'vagrant',
+	# }
 
-	file { '/home/vagrant/.wp-cli/config.yml':
-		content => template('chassis/wp-cli.yml.erb')
-	}
+	# file { '/home/vagrant/.wp-cli/config.yml':
+	# 	content => template('chassis/wp-cli.yml.erb')
+	# }
 
 	wp::plugin { $plugins:
 		ensure   => 'enabled',
