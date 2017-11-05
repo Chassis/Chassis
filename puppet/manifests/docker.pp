@@ -3,9 +3,6 @@ Service {
 	provider => runit,
 	path => '/etc/service',
 }
-Mysql::Server {
-	service_provider => 'runit',
-}
 
 # Configure Services
 #

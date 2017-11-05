@@ -1,14 +1,6 @@
 # Load extensions
 # import "/vagrant/extensions/*/chassis.pp"
 
-Service {
-	provider => runit,
-	path => '/etc/service',
-}
-Mysql::Params {
-	service_provider => undef,
-}
-
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $loadable_extensions = sz_extensions('/vagrant/extensions', 2)
@@ -36,6 +28,7 @@ package { 'git-core':
 
 class { 'mysql::server':
 	root_password => 'password',
+	service_provider => 'runit',
 }
 
 class { 'chassis':
