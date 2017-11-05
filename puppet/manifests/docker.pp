@@ -24,9 +24,11 @@ Package['mysql-server'] -> File['/etc/service/mysql'] -> File['/etc/service/mysq
 Package['php7.0-fpm'] -> File['/etc/service/php7.0-fpm'] -> File['/etc/service/php7.0-fpm/run'] -> Service['php7.0-fpm']
 
 file { '/var/run/mysqld':
-	ensure => directory,
-	owner => 'mysql',
-	group => 'mysql'
+	ensure  => directory,
+	owner   => 'mysql',
+	group   => 'mysql',
+	require => Package['mysql-server'],
+	before  => File['/etc/service/mysql/run'],
 }
 
 file { '/etc/service/php7.0-fpm/run':
