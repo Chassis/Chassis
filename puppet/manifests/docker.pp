@@ -59,4 +59,56 @@ file { '/etc/service/sshd/down':
 }
 
 # Now, load the actual provisioning.
-import "development.pp"
+$config = sz_load_config()
+
+class { 'apt': }
+
+class { 'chassis::php':
+	extensions => [ 'curl', 'gd', 'mysql' ],
+	version => $config[php],
+	require => [
+		Class['apt'],
+	],
+}
+
+package { 'git-core':
+	ensure => installed
+}
+
+class { 'mysql::server':
+	root_password => 'password',
+	service_provider => 'runit',
+}
+
+class { 'chassis':
+	require => Class['chassis::php'],
+}
+
+$subdomains = ( $config[multisite] == 'subdomains' )
+
+chassis::wp { 'localhost':
+	location          => '/chassis',
+	wpdir             => '/chassis/wp',
+	contentdir        => '/chassis/content',
+
+	hosts             => [],
+	database          => $config[database][name],
+	database_user     => $config[database][user],
+	database_password => $config[database][password],
+	database_prefix   => $config[database][prefix],
+	network           => $config[multisite],
+	admin_user        => $config[admin][user],
+	admin_email       => $config[admin][email],
+	admin_password    => $config[admin][password],
+	plugins           => $config[plugins],
+	themes            => $config[themes],
+
+	extensions        => [],
+
+	require  => [
+		Class['chassis::php'],
+		Package['git-core'],
+		Class['mysql::server'],
+	]
+}
+

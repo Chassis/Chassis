@@ -22,8 +22,10 @@ ADD puppet/docker-build.sh /vagrant/puppet/docker-build.sh
 ADD wp /vagrant/wp/
 
 # Install via Puppet, while running services.
+RUN ln -s /vagrant /chassis
 RUN chmod u+x /vagrant/puppet/docker-build.sh
 RUN ["/vagrant/puppet/docker-build.sh"]
+RUN rm /chassis
 
 # CMD /vagrant/puppet/dockerrun.sh
 CMD ["/sbin/my_init"]
