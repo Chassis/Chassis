@@ -6,7 +6,7 @@ RUN apt-get update
 RUN apt-get install -q -y wget #ca-certificates
 
 # Add everything we need for prerequisites.
-ADD puppet /vagrant/puppet/
+ADD puppet/preprovision.sh /vagrant/puppet/preprovision.sh
 
 # Install pre-requisites.
 RUN chmod u+x /vagrant/puppet/preprovision.sh
@@ -14,8 +14,12 @@ RUN /vagrant/puppet/preprovision.sh
 
 # Add remaining files needed for actual installation
 ADD config.yaml /vagrant/config.yaml
-ADD wp /vagrant/wp/
+ADD puppet/chassis.rb /vagrant/puppet/chassis.rb
+ADD puppet/modules /vagrant/puppet/modules
 ADD wp-config.php /vagrant/wp-config.php
+ADD puppet/manifests/docker.pp /vagrant/puppet/manifests/docker.pp
+ADD puppet/docker-build.sh /vagrant/puppet/docker-build.sh
+ADD wp /vagrant/wp/
 
 # Install via Puppet, while running services.
 RUN chmod u+x /vagrant/puppet/docker-build.sh
