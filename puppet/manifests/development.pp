@@ -1,5 +1,5 @@
 # Load extensions
-# import "/vagrant/extensions/*/chassis.pp"
+import "/vagrant/extensions/*/chassis.pp"
 
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
@@ -28,7 +28,6 @@ package { 'git-core':
 
 class { 'mysql::server':
 	root_password => 'password',
-	service_provider => 'runit',
 }
 
 class { 'chassis':
