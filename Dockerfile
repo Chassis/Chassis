@@ -27,5 +27,11 @@ RUN chmod u+x /vagrant/puppet/docker-build.sh
 RUN ["/vagrant/puppet/docker-build.sh"]
 RUN rm /chassis
 
-# CMD /vagrant/puppet/dockerrun.sh
+# Clean up.
+RUN apt-get remove -q -y --allow-remove-essential --purge init puppet python3-software-properties systemd systemd-sysv \
+	&& apt-get autoremove -q -y \
+	&& apt-get clean \
+	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
+	&& rm -rf /vagrant/wp /vagrant/puppet
+
 CMD ["/sbin/my_init"]
