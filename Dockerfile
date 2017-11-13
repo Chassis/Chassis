@@ -34,4 +34,7 @@ RUN apt-get remove -q -y --allow-remove-essential --purge init puppet python3-so
 	&& rm -rf /var/lib/apt/lists/* /tmp/* /var/tmp/* \
 	&& rm -rf /vagrant/wp /vagrant/puppet
 
+# Set container settings.
+EXPOSE 80
+VOLUME ["/chassis"]
 CMD ["/sbin/my_init"]
