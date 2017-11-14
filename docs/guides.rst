@@ -103,7 +103,7 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 
 3. **Alter your Chassis config**
 
-   Alter one of your Chassis config files to include the additional URL without the `http://`. e.g.
+   Alter one of your Chassis config files to include the additional subdomain. e.g.
    .. code-block:: yaml
 
    hosts:
