@@ -83,3 +83,43 @@ In normal circumstances editing Chassis' own ``wp-config.php`` file is discourag
 This will prevent WP-CLI from loading ``wp-settings.php`` twice.
 
 With this configuration you should now be ready to develop against WordPress Core.
+
+Vagrant Share
+-------------
+
+Vagrant Share enables the ability to generate a temporary URL which you can share with people to allow them access to your local Chassis installation.
+
+1. **Install ngrok**
+
+   Vagrant Share requires `ngrok` to be installed on the host machine.
+   You can verify if this is installed by running `which ngrok` in a terminal. If there is no output then you will need to download and install `ngrok`_.
+   Once you've downloaded `ngrok` unzip it: `unzip /path/to/ngrok-stable-darwin-amd64.zip`
+   Move ngrok: `mv /path/to/ngrok /usr/local/bin/ngrok`
+
+2. **Run Vagrant Share**
+
+   You now need to run `vagrant share --http=vagrant.local:80`. If you're using a custom domain then you will need to use that e.g. `vagrant share --http=<your-custom-domain>.local:80`.
+   You will then have a temporary URL generated for you. e.g. `http://<id>.ngrok.io`. You need to leave this running in the background.
+
+3. **Alter your Chassis config**
+
+   Alter one of your Chassis config files to include the additional subdomain. e.g.
+   .. code-block:: yaml
+
+   hosts:
+       - vagrant.local
+       - <id>.ngrok.io
+
+4. **Reprovision Vagrant**
+
+   You now need to run `vagrant provision` and you should be able to access your Chassis box with the URL generated in Step 2.
+
+Debugging
+~~~~~~~~~
+
+If you see an error when you run `vagrant provision` then try running it again.
+If you're still having trouble accessing the URL try a `vagrant reload` after you've run a successful `vagrant provision`.
+
+
+
+.. _ngrok: https://ngrok.com/download
