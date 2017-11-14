@@ -89,11 +89,6 @@ Vagrant Share
 
 Vagrant Share enables the ability to generate a temporary URL which you can share with people to allow them access to your local Chassis installation.
 
-You can set this up on the host machine or inside the VM.
-
-Setting Up Vagrant Share On The Host Machine
-~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
-
 1. **Install ngrok**
 
    Vagrant Share requires `ngrok` to be installed on the host machine.
