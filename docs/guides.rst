@@ -99,7 +99,7 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 2. **Run Vagrant Share**
 
    You now need to run `vagrant share --http=vagrant.local:80`. If you're using a custom domain then you will need to use that e.g. `vagrant share --http=<your-custom-domain>.local:80`.
-   You will then have a temporary URL generated for you. e.g. `http://bea1a5c2.ngrok.io`. You need to leave this running in the background.
+   You will then have a temporary URL generated for you. e.g. `http://<id>.ngrok.io`. You need to leave this running in the background.
 
 3. **Alter your Chassis config**
 
@@ -108,7 +108,7 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 
    hosts:
        - vagrant.local
-       - bea1a5c2.ngrok.io
+       - <id>.ngrok.io
 
 4. **Reprovision Vagrant**
 
