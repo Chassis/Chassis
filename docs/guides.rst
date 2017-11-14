@@ -113,7 +113,13 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 4. **Reprovision Vagrant**
 
    You now need to run `vagrant provision` and you should be able to access your Chassis box with the URL generated in Step 2.
-   If you see an error when you run `vagrant provision` then try running it again.
-   If you're still having trouble accessing the URL try a `vagrant reload` after you've run a successful `vagrant provision`.
+
+Debugging
+~~~~~~~~~
+
+If you see an error when you run `vagrant provision` then try running it again.
+If you're still having trouble accessing the URL try a `vagrant reload` after you've run a successful `vagrant provision`.
+
+
 
 .. _ngrok: https://ngrok.com/download
