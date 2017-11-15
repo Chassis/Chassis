@@ -46,6 +46,8 @@ file { '/etc/service/nginx/run':
 file { '/etc/service/mysql/run':
 	ensure => file,
 	content => "#!/bin/sh -e\n\
+cd /\n\
+umask 077\n\
 MYSQLADMIN='/usr/bin/mysqladmin --defaults-extra-file=/etc/mysql/debian.cnf'\n\
 trap \"\$MYSQLADMIN shutdown\" 0\n\
 trap 'exit 2' 1 2 3 15\n\
