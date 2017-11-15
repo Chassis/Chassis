@@ -12,7 +12,7 @@ if $loadable_extensions {
 	}
 }
 
-class { 'apt': }
+include apt
 
 class { 'chassis::php':
 	extensions => $php_extensions,

@@ -31,6 +31,9 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		rm /tmp/mirrors-sources.list /tmp/apt-sources.list
 	fi
 
+	# Clean apt
+	sudo rm -r /var/lib/apt/lists/
+
 	# Update apt
 	apt-get update
 
