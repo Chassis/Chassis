@@ -125,7 +125,8 @@ class chassis::php (
 			'5.5',
 			'5.6',
 			'7.0',
-			'7.1': {
+			'7.1',
+			'7.2': {
 				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
 					ensure => absent,
 				}
@@ -142,32 +143,37 @@ class chassis::php (
 
 	case $short_ver {
 		'5.3': {
-			remove_php_fpm { [ '5.5', '5.6', '7.0', '7.1' ]:
+			remove_php_fpm { [ '5.5', '5.6', '7.0', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'5.4': {
-			remove_php_fpm { [ '5.5', '5.6', '7.0', '7.1' ]:
+			remove_php_fpm { [ '5.5', '5.6', '7.0', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'5.5': {
-			remove_php_fpm { [ 'old', '5.6', '7.0', '7.1' ]:
+			remove_php_fpm { [ 'old', '5.6', '7.0', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'5.6': {
-			remove_php_fpm { [ 'old', '5.5', '7.0', '7.1' ]:
+			remove_php_fpm { [ 'old', '5.5', '7.0', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.0': {
-			remove_php_fpm { [ 'old', '5.5', '5.6', '7.1' ]:
+			remove_php_fpm { [ 'old', '5.5', '5.6', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.1': {
-			remove_php_fpm { [ 'old', '5.5', '5.6', '7.0' ]:
+			remove_php_fpm { [ 'old', '5.5', '5.6', '7.0', '7.2' ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+		'7.2': {
+			remove_php_fpm { [ 'old', '5.5', '5.6', '7.0', '7.1' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
