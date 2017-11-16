@@ -18,7 +18,6 @@ class WP_Community_Events {
 	/**
 	 * ID for a WordPress user account.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @var int
@@ -28,7 +27,6 @@ class WP_Community_Events {
 	/**
 	 * Stores location data for the user.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @var bool|array
@@ -94,20 +92,28 @@ class WP_Community_Events {
 			return $cached_events;
 		}
 
-		$api_url        = 'https://api.wordpress.org/events/1.0/';
-		$request_args   = $this->get_request_args( $location_search, $timezone );
+		// include an unmodified $wp_version
+		include( ABSPATH . WPINC . '/version.php' );
+
+		$api_url      = 'http://api.wordpress.org/events/1.0/';
+		$request_args = $this->get_request_args( $location_search, $timezone );
+		$request_args['user-agent'] = 'WordPress/' . $wp_version . '; ' . home_url( '/' );
+
+		if ( wp_http_supports( array( 'ssl' ) ) ) {
+			$api_url = set_url_scheme( $api_url, 'https' );
+		}
+
 		$response       = wp_remote_get( $api_url, $request_args );
 		$response_code  = wp_remote_retrieve_response_code( $response );
 		$response_body  = json_decode( wp_remote_retrieve_body( $response ), true );
 		$response_error = null;
-		$debugging_info = compact( 'api_url', 'request_args', 'response_code', 'response_body' );
 
 		if ( is_wp_error( $response ) ) {
 			$response_error = $response;
 		} elseif ( 200 !== $response_code ) {
 			$response_error = new WP_Error(
 				'api-error',
-				/* translators: %s is a numeric HTTP status code; e.g., 400, 403, 500, 504, etc. */
+				/* translators: %d: numeric HTTP status code, e.g. 400, 403, 500, 504, etc. */
 				sprintf( __( 'Invalid API response code (%d)' ), $response_code )
 			);
 		} elseif ( ! isset( $response_body['location'], $response_body['events'] ) ) {
@@ -118,8 +124,6 @@ class WP_Community_Events {
 		}
 
 		if ( is_wp_error( $response_error ) ) {
-			$this->maybe_log_events_response( $response_error->get_error_message(), $debugging_info );
-
 			return $response_error;
 		} else {
 			$expiration = false;
@@ -159,11 +163,6 @@ class WP_Community_Events {
 			$response_body = $this->trim_events( $response_body );
 			$response_body = $this->format_event_data_time( $response_body );
 
-			// Avoid bloating the log with all the event data, but keep the count.
-			$debugging_info['response_body']['events'] = count( $debugging_info['response_body']['events'] ) . ' events trimmed.';
-
-			$this->maybe_log_events_response( 'Valid response received', $debugging_info );
-
 			return $response_body;
 		}
 	}
@@ -171,12 +170,11 @@ class WP_Community_Events {
 	/**
 	 * Builds an array of args to use in an HTTP request to the w.org Events API.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
-	 * @param  string $search   Optional. City search string. Default empty string.
-	 * @param  string $timezone Optional. Timezone string. Default empty string.
-	 * @return @return array The request args.
+	 * @param string $search   Optional. City search string. Default empty string.
+	 * @param string $timezone Optional. Timezone string. Default empty string.
+	 * @return array The request args.
 	 */
 	protected function get_request_args( $search = '', $timezone = '' ) {
 		$args = array(
@@ -221,7 +219,7 @@ class WP_Community_Events {
 	 * a proxy. In those cases, $_SERVER['REMOTE_ADDR'] is set to the proxy address rather
 	 * than the user's actual address.
 	 *
-	 * Modified from http://stackoverflow.com/a/2031935/450127, MIT license.
+	 * Modified from https://stackoverflow.com/a/2031935/450127, MIT license.
 	 * Modified from https://github.com/geertw/php-ip-anonymizer, MIT license.
 	 *
 	 * SECURITY WARNING: This function is _NOT_ intended to be used in
@@ -229,14 +227,14 @@ class WP_Community_Events {
 	 * _NOT_ guarantee that the returned address is valid or accurate, and it can
 	 * be easily spoofed.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @return false|string The anonymized address on success; the given address
 	 *                      or false on failure.
 	 */
 	public static function get_unsafe_client_ip() {
-		$client_ip = false;
+		$client_ip = $netmask = false;
+		$ip_prefix = '';
 
 		// In order of preference, with the best ones for this purpose first.
 		$address_headers = array(
@@ -263,25 +261,53 @@ class WP_Community_Events {
 			}
 		}
 
-		// These functions are not available on Windows until PHP 5.3.
-		if ( function_exists( 'inet_pton' ) && function_exists( 'inet_ntop' ) ) {
-			if ( 4 === strlen( inet_pton( $client_ip ) ) ) {
-				$netmask = '255.255.255.0'; // ipv4.
-			} else {
-				$netmask = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000'; // ipv6.
-			}
-
-			$client_ip = inet_ntop( inet_pton( $client_ip ) & inet_pton( $netmask ) );
+		if ( ! $client_ip ) {
+			return false;
 		}
 
-		return $client_ip;
+		// Detect what kind of IP address this is.
+		$is_ipv6 = substr_count( $client_ip, ':' ) > 1;
+		$is_ipv4 = ( 3 === substr_count( $client_ip, '.' ) );
+
+		if ( $is_ipv6 && $is_ipv4 ) {
+			// IPv6 compatibility mode, temporarily strip the IPv6 part, and treat it like IPv4.
+			$ip_prefix = '::ffff:';
+			$client_ip = preg_replace( '/^\[?[0-9a-f:]*:/i', '', $client_ip );
+			$client_ip = str_replace( ']', '', $client_ip );
+			$is_ipv6   = false;
+		}
+
+		if ( $is_ipv6 ) {
+			// IPv6 addresses will always be enclosed in [] if there's a port.
+			$ip_start = 1;
+			$ip_end   = (int) strpos( $client_ip, ']' ) - 1;
+			$netmask  = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000';
+
+			// Strip the port (and [] from IPv6 addresses), if they exist.
+			if ( $ip_end > 0 ) {
+				$client_ip = substr( $client_ip, $ip_start, $ip_end );
+			}
+
+			// Partially anonymize the IP by reducing it to the corresponding network ID.
+			if ( function_exists( 'inet_pton' ) && function_exists( 'inet_ntop' ) ) {
+				$client_ip = inet_ntop( inet_pton( $client_ip ) & inet_pton( $netmask ) );
+			}
+		} elseif ( $is_ipv4 ) {
+			// Strip any port and partially anonymize the IP.
+			$last_octet_position = strrpos( $client_ip, '.' );
+			$client_ip           = substr( $client_ip, 0, $last_octet_position ) . '.0';
+		} else {
+			return false;
+		}
+
+		// Restore the IPv6 prefix to compatibility mode addresses.
+		return $ip_prefix . $client_ip;
 	}
 
 	/**
 	 * Test if two pairs of latitude/longitude coordinates match each other.
 	 *
 	 * @since 4.8.0
-	 * @access protected
 	 *
 	 * @param array $a The first pair, with indexes 'latitude' and 'longitude'.
 	 * @param array $b The second pair, with indexes 'latitude' and 'longitude'.
@@ -303,7 +329,6 @@ class WP_Community_Events {
 	 * functions, and having it abstracted keeps the logic consistent and DRY,
 	 * which is less prone to errors.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @param  array $location Should contain 'latitude' and 'longitude' indexes.
@@ -324,7 +349,6 @@ class WP_Community_Events {
 	/**
 	 * Caches an array of events data from the Events API.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @param array    $events     Response body from the API request.
@@ -366,7 +390,6 @@ class WP_Community_Events {
 	 * the cache, then all users would see the events in the localized data/time
 	 * of the user who triggered the cache refresh, rather than their own.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @param  array $response_body The response which contains the events.
@@ -395,7 +418,6 @@ class WP_Community_Events {
 	/**
 	 * Discards expired events, and reduces the remaining list.
 	 *
-	 * @access protected
 	 * @since 4.8.0
 	 *
 	 * @param  array $response_body The response body which contains the events.
@@ -427,23 +449,16 @@ class WP_Community_Events {
 	/**
 	 * Logs responses to Events API requests.
 	 *
-	 * All responses are logged when debugging, even if they're not WP_Errors.
-	 * Debugging info is still needed for "successful" responses, because
-	 * the API might have returned a different location than the one the user
-	 * intended to receive. In those cases, knowing the exact `request_url` is
-	 * critical.
-	 *
-	 * Errors are logged instead of being triggered, to avoid breaking the JSON
-	 * response when called from AJAX handlers and `display_errors` is enabled.
-	 *
-	 * @access protected
 	 * @since 4.8.0
+	 * @deprecated 4.9.0 Use a plugin instead. See #41217 for an example.
 	 *
 	 * @param string $message A description of what occurred.
 	 * @param array  $details Details that provide more context for the
 	 *                        log entry.
 	 */
 	protected function maybe_log_events_response( $message, $details ) {
+		_deprecated_function( __METHOD__, '4.9.0' );
+
 		if ( ! WP_DEBUG_LOG ) {
 			return;
 		}

@@ -22,6 +22,15 @@
 			$thumbnail_id = get_the_ID();
 		}
 
+		/**
+		 * Filters the thumbnail image ID for use in the embed template.
+		 *
+		 * @since 4.9.0
+		 *
+		 * @param int $thumbnail_id Attachment ID.
+		 */
+		$thumbnail_id = apply_filters( 'embed_thumbnail_id', $thumbnail_id );
+
 		if ( $thumbnail_id ) {
 			$aspect_ratio = 1;
 			$measurements = array( 1, 1 );
@@ -30,7 +39,7 @@
 			$meta = wp_get_attachment_metadata( $thumbnail_id );
 			if ( ! empty( $meta['sizes'] ) ) {
 				foreach ( $meta['sizes'] as $size => $data ) {
-					if ( $data['width'] / $data['height'] > $aspect_ratio ) {
+					if ( $data['height'] > 0 && $data['width'] / $data['height'] > $aspect_ratio ) {
 						$aspect_ratio = $data['width'] / $data['height'];
 						$measurements = array( $data['width'], $data['height'] );
 						$image_size   = $size;

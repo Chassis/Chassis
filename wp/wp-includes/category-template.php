@@ -275,23 +275,17 @@ function category_description( $category = 0 ) {
  * @since 4.6.0 Introduced the `required` argument.
  *
  * @param string|array $args {
- *     Optional. Array or string of arguments to generate a categories drop-down element.
+ *     Optional. Array or string of arguments to generate a categories drop-down element. See WP_Term_Query::__construct()
+ *     for information on additional accepted arguments.
  *
  *     @type string       $show_option_all   Text to display for showing all categories. Default empty.
  *     @type string       $show_option_none  Text to display for showing no categories. Default empty.
  *     @type string       $option_none_value Value to use when no category is selected. Default empty.
  *     @type string       $orderby           Which column to use for ordering categories. See get_terms() for a list
  *                                           of accepted values. Default 'id' (term_id).
- *     @type string       $order             Whether to order terms in ascending or descending order. Accepts 'ASC'
- *                                           or 'DESC'. Default 'ASC'.
  *     @type bool         $pad_counts        See get_terms() for an argument description. Default false.
  *     @type bool|int     $show_count        Whether to include post counts. Accepts 0, 1, or their bool equivalents.
  *                                           Default 0.
- *     @type bool|int     $hide_empty        Whether to hide categories that don't have any posts. Accepts 0, 1, or
- *                                           their bool equivalents. Default 1.
- *     @type int          $child_of          Term ID to retrieve child terms of. See get_terms(). Default 0.
- *     @type array|string $exclude           Array or comma/space-separated string of term ids to exclude.
- *                                           If `$include` is non-empty, `$exclude` is ignored. Default empty array.
  *     @type bool|int     $echo              Whether to echo or return the generated markup. Accepts 0, 1, or their
  *                                           bool equivalents. Default 1.
  *     @type bool|int     $hierarchical      Whether to traverse the taxonomy hierarchy. Accepts 0, 1, or their bool
@@ -397,9 +391,10 @@ function wp_dropdown_categories( $args = '' ) {
 		 *
 		 * @see wp_dropdown_categories()
 		 *
-		 * @param string $element Taxonomy element to list.
+		 * @param string       $element  Category name.
+		 * @param WP_Term|null $category The category object, or null if there's no corresponding category.
 		 */
-		$show_option_none = apply_filters( 'list_cats', $r['show_option_none'] );
+		$show_option_none = apply_filters( 'list_cats', $r['show_option_none'], null );
 		$output .= "\t<option value='" . esc_attr( $option_none_value ) . "' selected='selected'>$show_option_none</option>\n";
 	}
 
@@ -408,7 +403,7 @@ function wp_dropdown_categories( $args = '' ) {
 		if ( $r['show_option_all'] ) {
 
 			/** This filter is documented in wp-includes/category-template.php */
-			$show_option_all = apply_filters( 'list_cats', $r['show_option_all'] );
+			$show_option_all = apply_filters( 'list_cats', $r['show_option_all'], null );
 			$selected = ( '0' === strval($r['selected']) ) ? " selected='selected'" : '';
 			$output .= "\t<option value='0'$selected>$show_option_all</option>\n";
 		}
@@ -416,7 +411,7 @@ function wp_dropdown_categories( $args = '' ) {
 		if ( $r['show_option_none'] ) {
 
 			/** This filter is documented in wp-includes/category-template.php */
-			$show_option_none = apply_filters( 'list_cats', $r['show_option_none'] );
+			$show_option_none = apply_filters( 'list_cats', $r['show_option_none'], null );
 			$selected = selected( $option_none_value, $r['selected'], false );
 			$output .= "\t<option value='" . esc_attr( $option_none_value ) . "'$selected>$show_option_none</option>\n";
 		}
@@ -482,7 +477,7 @@ function wp_dropdown_categories( $args = '' ) {
  *                                               See get_terms(). Default true.
  *     @type string       $order                 Which direction to order categories. Accepts 'ASC' or 'DESC'.
  *                                               Default 'ASC'.
- *     @type string       $orderby               The column to use for ordering categories. Default 'ID'.
+ *     @type string       $orderby               The column to use for ordering categories. Default 'name'.
  *     @type string       $separator             Separator between links. Default '<br />'.
  *     @type bool|int     $show_count            Whether to show how many posts are in the category. Default 0.
  *     @type string       $show_option_all       Text to display for showing all categories. Default empty string.

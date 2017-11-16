@@ -33,7 +33,6 @@ class WP_Admin_Bar {
 	}
 
 	/**
-	 * @access public
 	 */
 	public function initialize() {
 		$this->user = new stdClass;
@@ -100,7 +99,6 @@ class WP_Admin_Bar {
 	 *
 	 * @since 3.1.0
 	 * @since 4.5.0 Added the ability to pass 'lang' and 'dir' meta data.
-	 * @access public
 	 *
 	 * @param array $args {
 	 *     Arguments for adding a node.
@@ -258,7 +256,6 @@ class WP_Admin_Bar {
 	}
 
 	/**
-	 * @access public
 	 */
 	public function render() {
 		$root = $this->_bind();
@@ -556,6 +553,13 @@ class WP_Admin_Bar {
 	}
 
 	/**
+	 * Renders toolbar items recursively.
+	 *
+	 * @since 3.1.0
+	 * @deprecated 3.3.0 Use WP_Admin_Bar::_render_item() or WP_Admin_bar::render() instead.
+	 * @see WP_Admin_Bar::_render_item()
+	 * @see WP_Admin_Bar::render()
+	 *
 	 * @param string $id    Unused.
 	 * @param object $node
 	 */
@@ -565,7 +569,6 @@ class WP_Admin_Bar {
 	}
 
 	/**
-	 * @access public
 	 */
 	public function add_menus() {
 		// User related, aligned right.

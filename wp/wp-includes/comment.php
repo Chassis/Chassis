@@ -138,7 +138,7 @@ function check_comment($author, $email, $url, $comment, $user_ip, $user_agent, $
  * @since 4.1.0 Refactored to leverage WP_Comment_Query over a direct query.
  *
  * @param  int   $post_id The ID of the post.
- * @param  array $args    Optional. See WP_Comment_Query::query() for information on accepted arguments.
+ * @param  array $args    Optional. See WP_Comment_Query::__construct() for information on accepted arguments.
  * @return int|array $comments The approved comments, or number of comments if `$count`
  *                             argument is true.
  */
@@ -217,7 +217,7 @@ function get_comment( &$comment = null, $output = OBJECT ) {
  *
  * @since 2.7.0
  *
- * @param string|array $args Optional. Array or string of arguments. See WP_Comment_Query::parse_query()
+ * @param string|array $args Optional. Array or string of arguments. See WP_Comment_Query::__construct()
  *                           for information on accepted arguments. Default empty.
  * @return int|array List of comments or number of found comments if `$count` argument is true.
  */
@@ -423,7 +423,11 @@ function get_comment_count( $post_id = 0 ) {
  * @return int|bool Meta ID on success, false on failure.
  */
 function add_comment_meta($comment_id, $meta_key, $meta_value, $unique = false) {
-	return add_metadata('comment', $comment_id, $meta_key, $meta_value, $unique);
+	$added = add_metadata( 'comment', $comment_id, $meta_key, $meta_value, $unique );
+	if ( $added ) {
+		wp_cache_set( 'last_changed', microtime(), 'comment' );
+	}
+	return $added;
 }
 
 /**
@@ -442,7 +446,11 @@ function add_comment_meta($comment_id, $meta_key, $meta_value, $unique = false) 
  * @return bool True on success, false on failure.
  */
 function delete_comment_meta($comment_id, $meta_key, $meta_value = '') {
-	return delete_metadata('comment', $comment_id, $meta_key, $meta_value);
+	$deleted = delete_metadata( 'comment', $comment_id, $meta_key, $meta_value );
+	if ( $deleted ) {
+		wp_cache_set( 'last_changed', microtime(), 'comment' );
+	}
+	return $deleted;
 }
 
 /**
@@ -479,7 +487,11 @@ function get_comment_meta($comment_id, $key = '', $single = false) {
  * @return int|bool Meta ID if the key didn't exist, true on successful update, false on failure.
  */
 function update_comment_meta($comment_id, $meta_key, $meta_value, $prev_value = '') {
-	return update_metadata('comment', $comment_id, $meta_key, $meta_value, $prev_value);
+	$updated = update_metadata( 'comment', $comment_id, $meta_key, $meta_value, $prev_value );
+	if ( $updated ) {
+		wp_cache_set( 'last_changed', microtime(), 'comment' );
+	}
+	return $updated;
 }
 
 /**
@@ -757,9 +769,11 @@ function wp_allow_comment( $commentdata, $avoid_die = false ) {
 	 * Filters a comment's approval status before it is set.
 	 *
 	 * @since 2.1.0
+	 * @since 4.9.0 Returning a WP_Error value from the filter will shortcircuit comment insertion and
+	 *              allow skipping further processing.
 	 *
-	 * @param bool|string $approved    The approval status. Accepts 1, 0, or 'spam'.
-	 * @param array       $commentdata Comment data.
+	 * @param bool|string|WP_Error $approved    The approval status. Accepts 1, 0, 'spam' or WP_Error.
+	 * @param array                $commentdata Comment data.
 	 */
 	$approved = apply_filters( 'pre_comment_approved', $approved, $commentdata );
 	return $approved;
@@ -790,8 +804,8 @@ function check_comment_flood_db() {
  * @global wpdb $wpdb WordPress database abstraction object.
  *
  * @param bool   $is_flood  Is a comment flooding occurring?
- * @param string $ip        Comment IP.
- * @param string $email     Comment author email address.
+ * @param string $ip        Comment author's IP address.
+ * @param string $email     Comment author's email address.
  * @param string $date      MySQL time string.
  * @param bool   $avoid_die When true, a disallowed comment will result in the function
  *                          returning a WP_Error object, rather than executing wp_die().
@@ -1156,7 +1170,7 @@ function wp_check_comment_data_max_lengths( $comment_data ) {
  * @param string $email The email of the comment
  * @param string $url The url used in the comment
  * @param string $comment The comment content
- * @param string $user_ip The comment author IP address
+ * @param string $user_ip The comment author's IP address
  * @param string $user_agent The author's browser user agent
  * @return bool True if comment contains blacklisted content, false if comment does not
  */
@@ -1285,10 +1299,12 @@ function wp_delete_comment($comment_id, $force_delete = false) {
 	 * Fires immediately before a comment is deleted from the database.
 	 *
 	 * @since 1.2.0
+	 * @since 4.9.0 Added the `$comment` parameter.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int        $comment_id The comment ID.
+	 * @param WP_Comment $comment    The comment to be deleted.
 	 */
-	do_action( 'delete_comment', $comment->comment_ID );
+	do_action( 'delete_comment', $comment->comment_ID, $comment );
 
 	// Move children up a level.
 	$children = $wpdb->get_col( $wpdb->prepare("SELECT comment_ID FROM $wpdb->comments WHERE comment_parent = %d", $comment->comment_ID) );
@@ -1309,10 +1325,12 @@ function wp_delete_comment($comment_id, $force_delete = false) {
 	 * Fires immediately after a comment is deleted from the database.
 	 *
 	 * @since 2.9.0
+	 * @since 4.9.0 Added the `$comment` parameter.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int        $comment_id The comment ID.
+	 * @param WP_Comment $comment    The deleted comment.
 	 */
-	do_action( 'deleted_comment', $comment->comment_ID );
+	do_action( 'deleted_comment', $comment->comment_ID, $comment );
 
 	$post_id = $comment->comment_post_ID;
 	if ( $post_id && $comment->comment_approved == 1 )
@@ -1348,10 +1366,12 @@ function wp_trash_comment($comment_id) {
 	 * Fires immediately before a comment is sent to the Trash.
 	 *
 	 * @since 2.9.0
+	 * @since 4.9.0 Added the `$comment` parameter.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int        $comment_id The comment ID.
+	 * @param WP_Comment $comment    The comment to be trashed.
 	 */
-	do_action( 'trash_comment', $comment->comment_ID );
+	do_action( 'trash_comment', $comment->comment_ID, $comment );
 
 	if ( wp_set_comment_status( $comment, 'trash' ) ) {
 		delete_comment_meta( $comment->comment_ID, '_wp_trash_meta_status' );
@@ -1363,10 +1383,12 @@ function wp_trash_comment($comment_id) {
 		 * Fires immediately after a comment is sent to Trash.
 		 *
 		 * @since 2.9.0
+		 * @since 4.9.0 Added the `$comment` parameter.
 		 *
-		 * @param int $comment_id The comment ID.
+		 * @param int        $comment_id The comment ID.
+		 * @param WP_Comment $comment    The trashed comment.
 		 */
-		do_action( 'trashed_comment', $comment->comment_ID );
+		do_action( 'trashed_comment', $comment->comment_ID, $comment );
 		return true;
 	}
 
@@ -1391,10 +1413,12 @@ function wp_untrash_comment($comment_id) {
 	 * Fires immediately before a comment is restored from the Trash.
 	 *
 	 * @since 2.9.0
+	 * @since 4.9.0 Added the `$comment` parameter.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int        $comment_id The comment ID.
+	 * @param WP_Comment $comment    The comment to be untrashed.
 	 */
-	do_action( 'untrash_comment', $comment->comment_ID );
+	do_action( 'untrash_comment', $comment->comment_ID, $comment );
 
 	$status = (string) get_comment_meta( $comment->comment_ID, '_wp_trash_meta_status', true );
 	if ( empty($status) )
@@ -1407,10 +1431,12 @@ function wp_untrash_comment($comment_id) {
 		 * Fires immediately after a comment is restored from the Trash.
 		 *
 		 * @since 2.9.0
+		 * @since 4.9.0 Added the `$comment` parameter.
 		 *
-		 * @param int $comment_id The comment ID.
+		 * @param int        $comment_id The comment ID.
+		 * @param WP_Comment $comment    The untrashed comment.
 		 */
-		do_action( 'untrashed_comment', $comment->comment_ID );
+		do_action( 'untrashed_comment', $comment->comment_ID, $comment );
 		return true;
 	}
 
@@ -1435,10 +1461,12 @@ function wp_spam_comment( $comment_id ) {
 	 * Fires immediately before a comment is marked as Spam.
 	 *
 	 * @since 2.9.0
+	 * @since 4.9.0 Added the `$comment` parameter.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int        $comment_id The comment ID.
+	 * @param WP_Comment $comment    The comment to be marked as spam.
 	 */
-	do_action( 'spam_comment', $comment->comment_ID );
+	do_action( 'spam_comment', $comment->comment_ID, $comment );
 
 	if ( wp_set_comment_status( $comment, 'spam' ) ) {
 		delete_comment_meta( $comment->comment_ID, '_wp_trash_meta_status' );
@@ -1449,10 +1477,12 @@ function wp_spam_comment( $comment_id ) {
 		 * Fires immediately after a comment is marked as Spam.
 		 *
 		 * @since 2.9.0
+		 * @since 4.9.0 Added the `$comment` parameter.
 		 *
-		 * @param int $comment_id The comment ID.
+		 * @param int        $comment_id The comment ID.
+		 * @param WP_Comment $comment    The comment marked as spam.
 		 */
-		do_action( 'spammed_comment', $comment->comment_ID );
+		do_action( 'spammed_comment', $comment->comment_ID, $comment );
 		return true;
 	}
 
@@ -1477,10 +1507,12 @@ function wp_unspam_comment( $comment_id ) {
 	 * Fires immediately before a comment is unmarked as Spam.
 	 *
 	 * @since 2.9.0
+	 * @since 4.9.0 Added the `$comment` parameter.
 	 *
-	 * @param int $comment_id The comment ID.
+	 * @param int        $comment_id The comment ID.
+	 * @param WP_Comment $comment    The comment to be unmarked as spam.
 	 */
-	do_action( 'unspam_comment', $comment->comment_ID );
+	do_action( 'unspam_comment', $comment->comment_ID, $comment );
 
 	$status = (string) get_comment_meta( $comment->comment_ID, '_wp_trash_meta_status', true );
 	if ( empty($status) )
@@ -1493,10 +1525,12 @@ function wp_unspam_comment( $comment_id ) {
 		 * Fires immediately after a comment is unmarked as Spam.
 		 *
 		 * @since 2.9.0
+		 * @since 4.9.0 Added the `$comment` parameter.
 		 *
-		 * @param int $comment_id The comment ID.
+		 * @param int        $comment_id The comment ID.
+		 * @param WP_Comment $comment    The comment unmarked as spam.
 		 */
-		do_action( 'unspammed_comment', $comment->comment_ID );
+		do_action( 'unspammed_comment', $comment->comment_ID, $comment );
 		return true;
 	}
 
@@ -1814,11 +1848,11 @@ function wp_filter_comment($commentdata) {
 	 */
 	$commentdata['comment_content'] = apply_filters( 'pre_comment_content', $commentdata['comment_content'] );
 	/**
-	 * Filters the comment author's IP before it is set.
+	 * Filters the comment author's IP address before it is set.
 	 *
 	 * @since 1.5.0
 	 *
-	 * @param string $comment_author_ip The comment author's IP.
+	 * @param string $comment_author_ip The comment author's IP address.
 	 */
 	$commentdata['comment_author_IP'] = apply_filters( 'pre_comment_user_ip', $commentdata['comment_author_IP'] );
 	/** This filter is documented in wp-includes/comment.php */
@@ -2126,6 +2160,7 @@ function wp_set_comment_status($comment_id, $comment_status, $wp_error = false) 
  * Filters the comment and makes sure certain fields are valid before updating.
  *
  * @since 2.0.0
+ * @since 4.9.0 Add updating comment meta during comment update.
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
@@ -2198,6 +2233,13 @@ function wp_update_comment($commentarr) {
 	$data = wp_array_slice_assoc( $data, $keys );
 
 	$rval = $wpdb->update( $wpdb->comments, $data, compact( 'comment_ID' ) );
+
+	// If metadata is provided, store it.
+	if ( isset( $commentarr['comment_meta'] ) && is_array( $commentarr['comment_meta'] ) ) {
+		foreach ( $commentarr['comment_meta'] as $meta_key => $meta_value ) {
+			update_comment_meta( $comment_ID, $meta_key, $meta_value );
+		}
+	}
 
 	clean_comment_cache( $comment_ID );
 	wp_update_comment_count( $comment_post_ID );
@@ -2592,9 +2634,9 @@ function pingback( $content, $post_id ) {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param array &$post_links An array of post links to be checked, passed by reference.
-	 * @param array &$pung       Whether a link has already been pinged, passed by reference.
-	 * @param int   $post_ID     The post ID.
+	 * @param array $post_links An array of post links to be checked (passed by reference).
+	 * @param array $pung       Whether a link has already been pinged (passed by reference).
+	 * @param int   $post_ID    The post ID.
 	 */
 	do_action_ref_array( 'pre_ping', array( &$post_links, &$pung, $post->ID ) );
 

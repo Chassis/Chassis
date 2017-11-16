@@ -19,7 +19,6 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 	 * Control type.
 	 *
 	 * @since 4.2.0
-	 * @access public
 	 * @var string
 	 */
 	public $type = 'media';
@@ -28,7 +27,6 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 	 * Media control mime type.
 	 *
 	 * @since 4.2.0
-	 * @access public
 	 * @var string
 	 */
 	public $mime_type = '';
@@ -37,7 +35,6 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 	 * Button labels.
 	 *
 	 * @since 4.2.0
-	 * @access public
 	 * @var array
 	 */
 	public $button_labels = array();
@@ -55,17 +52,7 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 	public function __construct( $manager, $id, $args = array() ) {
 		parent::__construct( $manager, $id, $args );
 
-		if ( ! ( $this instanceof WP_Customize_Image_Control ) ) {
-			$this->button_labels = wp_parse_args( $this->button_labels, array(
-				'select'       => __( 'Select File' ),
-				'change'       => __( 'Change File' ),
-				'default'      => __( 'Default' ),
-				'remove'       => __( 'Remove' ),
-				'placeholder'  => __( 'No file selected' ),
-				'frame_title'  => __( 'Select File' ),
-				'frame_button' => __( 'Choose File' ),
-			) );
-		}
+		$this->button_labels = wp_parse_args( $this->button_labels, $this->get_default_button_labels() );
 	}
 
 	/**
@@ -144,14 +131,18 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 	 */
 	public function content_template() {
 		?>
-		<label for="{{ data.settings['default'] }}-button">
-			<# if ( data.label ) { #>
-				<span class="customize-control-title">{{ data.label }}</span>
-			<# } #>
-			<# if ( data.description ) { #>
-				<span class="description customize-control-description">{{{ data.description }}}</span>
-			<# } #>
-		</label>
+		<#
+		var selectButtonId = _.uniqueId( 'customize-media-control-button-' );
+		var descriptionId = _.uniqueId( 'customize-media-control-description-' );
+		var describedByAttr = data.description ? ' aria-describedby="' + descriptionId + '" ' : '';
+		#>
+		<# if ( data.label ) { #>
+			<label class="customize-control-title" for="{{ selectButtonId }}">{{ data.label }}</label>
+		<# } #>
+		<div class="customize-control-notifications-container"></div>
+		<# if ( data.description ) { #>
+			<span id="{{ descriptionId }}" class="description customize-control-description">{{{ data.description }}}</span>
+		<# } #>
 
 		<# if ( data.attachment && data.attachment.id ) { #>
 			<div class="attachment-media-view attachment-media-view-{{ data.attachment.type }} {{ data.attachment.orientation }}">
@@ -191,7 +182,7 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 				<div class="actions">
 					<# if ( data.canUpload ) { #>
 					<button type="button" class="button remove-button">{{ data.button_labels.remove }}</button>
-					<button type="button" class="button upload-button control-focus" id="{{ data.settings['default'] }}-button">{{ data.button_labels.change }}</button>
+					<button type="button" class="button upload-button control-focus" id="{{ selectButtonId }}" {{{ describedByAttr }}}>{{ data.button_labels.change }}</button>
 					<# } #>
 				</div>
 			</div>
@@ -205,11 +196,68 @@ class WP_Customize_Media_Control extends WP_Customize_Control {
 						<button type="button" class="button default-button">{{ data.button_labels['default'] }}</button>
 					<# } #>
 					<# if ( data.canUpload ) { #>
-					<button type="button" class="button upload-button" id="{{ data.settings['default'] }}-button">{{ data.button_labels.select }}</button>
+					<button type="button" class="button upload-button" id="{{ selectButtonId }}" {{{ describedByAttr }}}>{{ data.button_labels.select }}</button>
 					<# } #>
 				</div>
 			</div>
 		<# } #>
 		<?php
+	}
+
+	/**
+	 * Get default button labels.
+	 *
+	 * Provides an array of the default button labels based on the mime type of the current control.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @return array An associative array of default button labels.
+	 */
+	public function get_default_button_labels() {
+		// Get just the mime type and strip the mime subtype if present.
+		$mime_type = ! empty( $this->mime_type ) ? strtok( ltrim( $this->mime_type, '/' ), '/' ) : 'default';
+
+		switch ( $mime_type ) {
+			case 'video':
+				return array(
+					'select'       => __( 'Select video' ),
+					'change'       => __( 'Change video' ),
+					'default'      => __( 'Default' ),
+					'remove'       => __( 'Remove' ),
+					'placeholder'  => __( 'No video selected' ),
+					'frame_title'  => __( 'Select video' ),
+					'frame_button' => __( 'Choose video' ),
+				);
+			case 'audio':
+				return array(
+					'select'       => __( 'Select audio' ),
+					'change'       => __( 'Change audio' ),
+					'default'      => __( 'Default' ),
+					'remove'       => __( 'Remove' ),
+					'placeholder'  => __( 'No audio selected' ),
+					'frame_title'  => __( 'Select audio' ),
+					'frame_button' => __( 'Choose audio' ),
+				);
+			case 'image':
+				return array(
+					'select'       => __( 'Select image' ),
+					'change'       => __( 'Change image' ),
+					'default'      => __( 'Default' ),
+					'remove'       => __( 'Remove' ),
+					'placeholder'  => __( 'No image selected' ),
+					'frame_title'  => __( 'Select image' ),
+					'frame_button' => __( 'Choose image' ),
+				);
+			default:
+				return array(
+					'select'       => __( 'Select file' ),
+					'change'       => __( 'Change file' ),
+					'default'      => __( 'Default' ),
+					'remove'       => __( 'Remove' ),
+					'placeholder'  => __( 'No file selected' ),
+					'frame_title'  => __( 'Select file' ),
+					'frame_button' => __( 'Choose file' ),
+				);
+		} // End switch().
 	}
 }

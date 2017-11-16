@@ -58,6 +58,7 @@ wp_localize_script( 'theme', '_wpThemeSettings', array(
 			__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
 			__( 'https://wordpress.org/support/' )
 		),
+		'tryAgain'            => __( 'Try Again' ),
 		'themesFound'         => __( 'Number of Themes found: %d' ),
 		'noThemesFound'       => __( 'No themes found. Try a different search.' ),
 		'collapseSidebar'     => __( 'Collapse Sidebar' ),
@@ -76,7 +77,7 @@ if ( $tab ) {
 	 * Fires before each of the tabs are rendered on the Install Themes page.
 	 *
 	 * The dynamic portion of the hook name, `$tab`, refers to the current
-	 * theme install tab. Possible values are 'dashboard', 'search', 'upload',
+	 * theme installation tab. Possible values are 'dashboard', 'search', 'upload',
 	 * 'featured', 'new', or 'updated'.
 	 *
 	 * @since 2.8.0
@@ -197,7 +198,7 @@ include(ABSPATH . 'wp-admin/admin-header.php');
 				<button type="button" class="clear-filters button" aria-label="<?php esc_attr_e( 'Clear current filters' ); ?>"><?php _e( 'Clear' ); ?></button>
 			</div>
 		<?php
-		$feature_list = get_theme_feature_list();
+		$feature_list = get_theme_feature_list( false ); // Use the core list, rather than the .org API, due to inconsistencies and to ensure tags are translated.
 		foreach ( $feature_list as $feature_name => $features ) {
 			echo '<fieldset class="filter-group">';
 			$feature_name = esc_html( $feature_name );
@@ -236,7 +237,7 @@ if ( $tab ) {
 	 * Fires at the top of each of the tabs on the Install Themes page.
 	 *
 	 * The dynamic portion of the hook name, `$tab`, refers to the current
-	 * theme install tab. Possible values are 'dashboard', 'search', 'upload',
+	 * theme installation tab. Possible values are 'dashboard', 'search', 'upload',
 	 * 'featured', 'new', or 'updated'.
 	 *
 	 * @since 2.8.0
@@ -263,30 +264,33 @@ if ( $tab ) {
 		printf( __( 'By %s' ), '{{ data.author }}' );
 		?>
 	</div>
-	<h3 class="theme-name">{{ data.name }}</h3>
 
-	<div class="theme-actions">
-		<# if ( data.installed ) { #>
-			<?php
-			/* translators: %s: Theme name */
-			$aria_label = sprintf( _x( 'Activate %s', 'theme' ), '{{ data.name }}' );
-			?>
-			<# if ( data.activate_url ) { #>
-				<a class="button button-primary activate" href="{{ data.activate_url }}" aria-label="<?php echo esc_attr( $aria_label ); ?>"><?php _e( 'Activate' ); ?></a>
-			<# } #>
-			<# if ( data.customize_url ) { #>
-				<a class="button load-customize" href="{{ data.customize_url }}"><?php _e( 'Live Preview' ); ?></a>
+	<div class="theme-id-container">
+		<h3 class="theme-name">{{ data.name }}</h3>
+
+		<div class="theme-actions">
+			<# if ( data.installed ) { #>
+				<?php
+				/* translators: %s: Theme name */
+				$aria_label = sprintf( _x( 'Activate %s', 'theme' ), '{{ data.name }}' );
+				?>
+				<# if ( data.activate_url ) { #>
+					<a class="button button-primary activate" href="{{ data.activate_url }}" aria-label="<?php echo esc_attr( $aria_label ); ?>"><?php _e( 'Activate' ); ?></a>
+				<# } #>
+				<# if ( data.customize_url ) { #>
+					<a class="button load-customize" href="{{ data.customize_url }}"><?php _e( 'Live Preview' ); ?></a>
+				<# } else { #>
+					<button class="button preview install-theme-preview"><?php _e( 'Preview' ); ?></button>
+				<# } #>
 			<# } else { #>
+				<?php
+				/* translators: %s: Theme name */
+				$aria_label = sprintf( __( 'Install %s' ), '{{ data.name }}' );
+				?>
+				<a class="button button-primary theme-install" data-name="{{ data.name }}" data-slug="{{ data.id }}" href="{{ data.install_url }}" aria-label="<?php echo esc_attr( $aria_label ); ?>"><?php _e( 'Install' ); ?></a>
 				<button class="button preview install-theme-preview"><?php _e( 'Preview' ); ?></button>
 			<# } #>
-		<# } else { #>
-			<?php
-			/* translators: %s: Theme name */
-			$aria_label = sprintf( __( 'Install %s' ), '{{ data.name }}' );
-			?>
-			<a class="button button-primary theme-install" data-name="{{ data.name }}" data-slug="{{ data.id }}" href="{{ data.install_url }}" aria-label="<?php echo esc_attr( $aria_label ); ?>"><?php _e( 'Install' ); ?></a>
-			<button class="button preview install-theme-preview"><?php _e( 'Preview' ); ?></button>
-		<# } #>
+		</div>
 	</div>
 
 	<# if ( data.installed ) { #>

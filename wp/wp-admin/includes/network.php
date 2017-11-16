@@ -27,10 +27,10 @@ function network_domain_check() {
 }
 
 /**
- * Allow subdomain install
+ * Allow subdomain installation
  *
  * @since 3.0.0
- * @return bool Whether subdomain install is allowed
+ * @return bool Whether subdomain installation is allowed
  */
 function allow_subdomain_install() {
 	$domain = preg_replace( '|https?://([^/]+)|', '$1', get_option( 'home' ) );
@@ -41,22 +41,22 @@ function allow_subdomain_install() {
 }
 
 /**
- * Allow subdirectory install.
+ * Allow subdirectory installation.
  *
  * @since 3.0.0
  *
  * @global wpdb $wpdb WordPress database abstraction object.
  *
- * @return bool Whether subdirectory install is allowed
+ * @return bool Whether subdirectory installation is allowed
  */
 function allow_subdirectory_install() {
 	global $wpdb;
         /**
-         * Filters whether to enable the subdirectory install feature in Multisite.
+         * Filters whether to enable the subdirectory installation feature in Multisite.
          *
          * @since 3.0.0
          *
-         * @param bool $allow Whether to enable the subdirectory install feature in Multisite. Default is false.
+         * @param bool $allow Whether to enable the subdirectory installation feature in Multisite. Default is false.
          */
 	if ( apply_filters( 'allow_subdirectory_install', false ) )
 		return true;
@@ -102,7 +102,11 @@ function network_step1( $errors = false ) {
 	global $is_apache;
 
 	if ( defined('DO_NOT_UPGRADE_GLOBAL_TABLES') ) {
-		echo '<div class="error"><p><strong>' . __('ERROR:') . '</strong> ' . __( 'The constant DO_NOT_UPGRADE_GLOBAL_TABLES cannot be defined when creating a network.' ) . '</p></div>';
+		echo '<div class="error"><p><strong>' . __( 'ERROR:' ) . '</strong> ' . sprintf(
+			/* translators: %s: DO_NOT_UPGRADE_GLOBAL_TABLES */
+			__( 'The constant %s cannot be defined when creating a network.' ),
+			'<code>DO_NOT_UPGRADE_GLOBAL_TABLES</code>'
+		) . '</p></div>';
 		echo '</div>';
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 		die();
@@ -110,7 +114,12 @@ function network_step1( $errors = false ) {
 
 	$active_plugins = get_option( 'active_plugins' );
 	if ( ! empty( $active_plugins ) ) {
-		echo '<div class="updated"><p><strong>' . __('Warning:') . '</strong> ' . sprintf( __( 'Please <a href="%s">deactivate your plugins</a> before enabling the Network feature.' ), admin_url( 'plugins.php?plugin_status=active' ) ) . '</p></div><p>' . __( 'Once the network is created, you may reactivate your plugins.' ) . '</p>';
+		echo '<div class="updated"><p><strong>' . __( 'Warning:' ) . '</strong> ' . sprintf(
+			/* translators: %s: Plugins screen URL */
+			__( 'Please <a href="%s">deactivate your plugins</a> before enabling the Network feature.' ),
+			admin_url( 'plugins.php?plugin_status=active' )
+		) . '</p></div>';
+		echo '<p>' . __( 'Once the network is created, you may reactivate your plugins.' ) . '</p>';
 		echo '</div>';
 		include( ABSPATH . 'wp-admin/admin-footer.php' );
 		die();
@@ -119,7 +128,7 @@ function network_step1( $errors = false ) {
 	$hostname = get_clean_basedomain();
 	$has_ports = strstr( $hostname, ':' );
 	if ( ( false !== $has_ports && ! in_array( $has_ports, array( ':80', ':443' ) ) ) ) {
-		echo '<div class="error"><p><strong>' . __( 'ERROR:') . '</strong> ' . __( 'You cannot install a network of sites with your server address.' ) . '</p></div>';
+		echo '<div class="error"><p><strong>' . __( 'ERROR:' ) . '</strong> ' . __( 'You cannot install a network of sites with your server address.' ) . '</p></div>';
 		echo '<p>' . sprintf(
 			/* translators: %s: port number */
 			__( 'You cannot use port numbers such as %s.' ),
@@ -177,7 +186,7 @@ function network_step1( $errors = false ) {
 			);
 			echo '</p>';
 		} elseif ( $is_apache ) {
-			echo '<div class="error inline"><p><strong>' . __( 'Warning!' ) . '</strong> ';
+			echo '<div class="error inline"><p><strong>' . __( 'Warning:' ) . '</strong> ';
 			/* translators: %s: mod_rewrite */
 			printf( __( 'It looks like the Apache %s module is not installed.' ),
 				'<code>mod_rewrite</code>'
@@ -226,7 +235,7 @@ function network_step1( $errors = false ) {
 	endif;
 
 		if ( WP_CONTENT_DIR != ABSPATH . 'wp-content' && ( allow_subdirectory_install() || ! allow_subdomain_install() ) )
-			echo '<div class="error inline"><p><strong>' . __('Warning!') . '</strong> ' . __( 'Subdirectory networks may not be fully compatible with custom wp-content directories.' ) . '</p></div>';
+			echo '<div class="error inline"><p><strong>' . __( 'Warning:' ) . '</strong> ' . __( 'Subdirectory networks may not be fully compatible with custom wp-content directories.' ) . '</p></div>';
 
 		$is_www = ( 0 === strpos( $hostname, 'www.' ) );
 		if ( $is_www ) :
@@ -257,7 +266,7 @@ function network_step1( $errors = false ) {
 		<table class="form-table">
 		<?php if ( 'localhost' == $hostname ) : ?>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Sub-directory Install' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Sub-directory Installation' ); ?></th>
 				<td><?php
 					printf(
 						/* translators: 1: localhost 2: localhost.localdomain */
@@ -267,24 +276,24 @@ function network_step1( $errors = false ) {
 					);
 					// Uh oh:
 					if ( !allow_subdirectory_install() )
-						echo ' <strong>' . __( 'Warning!' ) . ' ' . __( 'The main site in a sub-directory install will need to use a modified permalink structure, potentially breaking existing links.' ) . '</strong>';
+						echo ' <strong>' . __( 'Warning:' ) . ' ' . __( 'The main site in a sub-directory installation will need to use a modified permalink structure, potentially breaking existing links.' ) . '</strong>';
 				?></td>
 			</tr>
 		<?php elseif ( !allow_subdomain_install() ) : ?>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Sub-directory Install' ); ?></th>
+				<th scope="row"><?php esc_html_e( 'Sub-directory Installation' ); ?></th>
 				<td><?php
-					_e( 'Because your install is in a directory, the sites in your WordPress network must use sub-directories.' );
+					_e( 'Because your installation is in a directory, the sites in your WordPress network must use sub-directories.' );
 					// Uh oh:
 					if ( !allow_subdirectory_install() )
-						echo ' <strong>' . __( 'Warning!' ) . ' ' . __( 'The main site in a sub-directory install will need to use a modified permalink structure, potentially breaking existing links.' ) . '</strong>';
+						echo ' <strong>' . __( 'Warning:' ) . ' ' . __( 'The main site in a sub-directory installation will need to use a modified permalink structure, potentially breaking existing links.' ) . '</strong>';
 				?></td>
 			</tr>
 		<?php elseif ( !allow_subdirectory_install() ) : ?>
 			<tr>
-				<th scope="row"><?php esc_html_e( 'Sub-domain Install' ); ?></th>
-				<td><?php _e( 'Because your install is not new, the sites in your WordPress network must use sub-domains.' );
-					echo ' <strong>' . __( 'The main site in a sub-directory install will need to use a modified permalink structure, potentially breaking existing links.' ) . '</strong>';
+				<th scope="row"><?php esc_html_e( 'Sub-domain Installation' ); ?></th>
+				<td><?php _e( 'Because your installation is not new, the sites in your WordPress network must use sub-domains.' );
+					echo ' <strong>' . __( 'The main site in a sub-directory installation will need to use a modified permalink structure, potentially breaking existing links.' ) . '</strong>';
 				?></td>
 			</tr>
 		<?php endif; ?>
@@ -370,7 +379,7 @@ function network_step2( $errors = false ) {
 		} else {
 			$subdomain_install = (bool) $wpdb->get_var( "SELECT meta_value FROM $wpdb->sitemeta WHERE site_id = 1 AND meta_key = 'subdomain_install'" );
 ?>
-	<div class="error"><p><strong><?php _e('Warning:'); ?></strong> <?php _e( 'An existing WordPress network was detected.' ); ?></p></div>
+	<div class="error"><p><strong><?php _e( 'Warning:' ); ?></strong> <?php _e( 'An existing WordPress network was detected.' ); ?></p></div>
 	<p><?php _e( 'Please complete the configuration steps. To create a new network, you will need to empty or remove the network database tables.' ); ?></p>
 <?php
 		}
@@ -542,7 +551,7 @@ define('BLOG_ID_CURRENT_SITE', 1);
 		);
 		echo '</p>';
 		if ( ! $subdomain_install && WP_CONTENT_DIR != ABSPATH . 'wp-content' )
-			echo '<p><strong>' . __('Warning:') . ' ' . __( 'Subdirectory networks may not be fully compatible with custom wp-content directories.' ) . '</strong></p>';
+			echo '<p><strong>' . __( 'Warning:' ) . ' ' . __( 'Subdirectory networks may not be fully compatible with custom wp-content directories.' ) . '</strong></p>';
 		?>
 		<textarea class="code" readonly="readonly" cols="100" rows="20"><?php echo esc_textarea( $web_config_file ); ?>
 		</textarea></li>
@@ -582,7 +591,7 @@ EOF;
 		);
 		echo '</p>';
 		if ( ! $subdomain_install && WP_CONTENT_DIR != ABSPATH . 'wp-content' )
-			echo '<p><strong>' . __('Warning:') . ' ' . __( 'Subdirectory networks may not be fully compatible with custom wp-content directories.' ) . '</strong></p>';
+			echo '<p><strong>' . __( 'Warning:' ) . ' ' . __( 'Subdirectory networks may not be fully compatible with custom wp-content directories.' ) . '</strong></p>';
 		?>
 		<textarea class="code" readonly="readonly" cols="100" rows="<?php echo substr_count( $htaccess_file, "\n" ) + 1; ?>">
 <?php echo esc_textarea( $htaccess_file ); ?></textarea></li>

@@ -4,7 +4,7 @@ Theme URI: https://wordpress.org/themes/twentyten/
 Description: The 2010 theme for WordPress is stylish, customizable, simple, and readable -- make it yours with a custom menu, header image, and background. Twenty Ten supports six widgetized areas (two in the sidebar, four in the footer) and featured images (thumbnails for gallery posts and custom header images for posts and pages). It includes stylesheets for print and the admin Visual Editor, special styles for posts in the "Asides" and "Gallery" categories, and has an optional one-column page template that removes the sidebar.
 Author: the WordPress team
 Author URI: https://wordpress.org/
-Version: 2.3
+Version: 2.4
 License: GNU General Public License v2 or later
 License URI: http://www.gnu.org/licenses/gpl-2.0.html
 Tags: blog, two-columns, custom-header, custom-background, threaded-comments, sticky-post, translation-ready, microformats, rtl-language-support, editor-style, custom-menu, flexible-header, featured-images, footer-widgets, featured-image-header
@@ -1237,6 +1237,27 @@ h3#reply-title {
 }
 .widget_media_video video {
 	max-width: 100%;
+}
+.tagcloud ul {
+	list-style-type: none;
+	margin-left: 0 !important;
+}
+.tagcloud ul li {
+	display: inline-block;
+}
+
+/* Helps galleries in widget areas look presentable in most cases. */
+.widget-area .gallery-columns-2 img,
+.widget-area .gallery-columns-3 img,
+.widget-area .gallery-columns-4 img,
+.widget-area .gallery-columns-5 img,
+.widget-area .gallery-columns-6 img,
+.widget-area .gallery-columns-7 img,
+.widget-area .gallery-columns-8 img,
+.widget-area .gallery-columns-9 img {
+	border: none;
+	max-width: 90%;
+	width: auto;
 }
 
 /* Main sidebars */

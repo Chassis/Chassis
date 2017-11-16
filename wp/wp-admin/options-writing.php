@@ -27,7 +27,7 @@ if ( apply_filters( 'enable_post_by_email_configuration', true ) ) {
 	get_current_screen()->add_help_tab( array(
 		'id'      => 'options-postemail',
 		'title'   => __( 'Post Via Email' ),
-		'content' => '<p>' . __( 'Post via email settings allow you to send your WordPress install an email with the content of your post. You must set up a secret email account with POP3 access to use this, and any mail received at this address will be posted, so it&#8217;s a good idea to keep this address very secret.' ) . '</p>',
+		'content' => '<p>' . __( 'Post via email settings allow you to send your WordPress installation an email with the content of your post. You must set up a secret email account with POP3 access to use this, and any mail received at this address will be posted, so it&#8217;s a good idea to keep this address very secret.' ) . '</p>',
 	) );
 }
 
@@ -168,16 +168,29 @@ if ( apply_filters( 'enable_update_services_configuration', true ) ) {
 
 <?php if ( 1 == get_option('blog_public') ) : ?>
 
-<p><label for="ping_sites"><?php _e( 'When you publish a new post, WordPress automatically notifies the following site update services. For more about this, see <a href="https://codex.wordpress.org/Update_Services">Update Services</a> on the Codex. Separate multiple service URLs with line breaks.' ) ?></label></p>
+	<p><label for="ping_sites"><?php
+		printf(
+			/* translators: %s: Codex URL */
+			__( 'When you publish a new post, WordPress automatically notifies the following site update services. For more about this, see <a href="%s">Update Services</a> on the Codex. Separate multiple service URLs with line breaks.' ),
+			__( 'https://codex.wordpress.org/Update_Services' )
+		);
+	?></label></p>
 
-<textarea name="ping_sites" id="ping_sites" class="large-text code" rows="3"><?php echo esc_textarea( get_option('ping_sites') ); ?></textarea>
+	<textarea name="ping_sites" id="ping_sites" class="large-text code" rows="3"><?php echo esc_textarea( get_option('ping_sites') ); ?></textarea>
 
 <?php else : ?>
 
-	<p><?php printf(__('WordPress is not notifying any <a href="https://codex.wordpress.org/Update_Services">Update Services</a> because of your site&#8217;s <a href="%s">visibility settings</a>.'), 'options-reading.php'); ?></p>
+	<p><?php
+		printf(
+			/* translators: 1: Codex URL, 2: Reading Settings URL */
+			__( 'WordPress is not notifying any <a href="%1$s">Update Services</a> because of your site&#8217;s <a href="%2$s">visibility settings</a>.' ),
+			__( 'https://codex.wordpress.org/Update_Services' ),
+			'options-reading.php'
+		);
+	?></p>
 
 <?php endif; ?>
-<?php } // multisite ?>
+<?php } // enable_update_services_configuration ?>
 
 <?php do_settings_sections('writing'); ?>
 

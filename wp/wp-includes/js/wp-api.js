@@ -6,12 +6,17 @@
 	 * Initialise the WP_API.
 	 */
 	function WP_API() {
+		/** @namespace wp.api.models */
 		this.models = {};
+		/** @namespace wp.api.collections */
 		this.collections = {};
+		/** @namespace wp.api.views */
 		this.views = {};
 	}
 
+	/** @namespace wp */
 	window.wp            = window.wp || {};
+	/** @namespace wp.api */
 	wp.api               = wp.api || new WP_API();
 	wp.api.versionString = wp.api.versionString || 'wp/v2/';
 
@@ -28,9 +33,39 @@
 
 	var pad, r;
 
+	/** @namespace wp */
 	window.wp = window.wp || {};
+	/** @namespace wp.api */
 	wp.api = wp.api || {};
+	/** @namespace wp.api.utils */
 	wp.api.utils = wp.api.utils || {};
+
+	/**
+	 * Determine model based on API route.
+	 *
+	 * @param {string} route    The API route.
+	 *
+	 * @return {Backbone Model} The model found at given route. Undefined if not found.
+	 */
+	wp.api.getModelByRoute = function( route ) {
+		return _.find( wp.api.models, function( model ) {
+			return model.prototype.route && route === model.prototype.route.index;
+		} );
+	};
+
+	/**
+	 * Determine collection based on API route.
+	 *
+	 * @param {string} route    The API route.
+	 *
+	 * @return {Backbone Model} The collection found at given route. Undefined if not found.
+	 */
+	wp.api.getCollectionByRoute = function( route ) {
+		return _.find( wp.api.collections, function( collection ) {
+			return collection.prototype.route && route === collection.prototype.route.index;
+		} );
+	};
+
 
 	/**
 	 * ECMAScript 5 shim, adapted from MDN.
@@ -466,8 +501,49 @@
 			 * Add a helper function to handle post Meta.
 			 */
 			MetaMixin = {
-				getMeta: function() {
-					return buildCollectionGetter( this, 'PostMeta', 'https://api.w.org/meta' );
+
+				/**
+				 * Get meta by key for a post.
+				 *
+				 * @param {string} key The meta key.
+				 *
+				 * @return {object} The post meta value.
+				 */
+				getMeta: function( key ) {
+					var metas = this.get( 'meta' );
+					return metas[ key ];
+				},
+
+				/**
+				 * Get all meta key/values for a post.
+				 *
+				 * @return {object} The post metas, as a key value pair object.
+				 */
+				getMetas: function() {
+					return this.get( 'meta' );
+				},
+
+				/**
+				 * Set a group of meta key/values for a post.
+				 *
+				 * @param {object} meta The post meta to set, as key/value pairs.
+				 */
+				setMetas: function( meta ) {
+					var metas = this.get( 'meta' );
+					_.extend( metas, meta );
+					this.set( 'meta', metas );
+				},
+
+				/**
+				 * Set a single meta value for a post, by key.
+				 *
+				 * @param {string} key   The meta key.
+				 * @param {object} value The meta value.
+				 */
+				setMeta: function( key, value ) {
+					var metas = this.get( 'meta' );
+					metas[ key ] = value;
+					this.set( 'meta', metas );
 				}
 			},
 
@@ -699,8 +775,8 @@
 			model = model.extend( CategoriesMixin );
 		}
 
-		// Add the MetaMixin for models that support meta collections.
-		if ( ! _.isUndefined( loadingObjects.collections[ modelClassName + 'Meta' ] ) ) {
+		// Add the MetaMixin for models that support meta.
+		if ( ! _.isUndefined( model.prototype.args.meta ) ) {
 			model = model.extend( MetaMixin );
 		}
 
@@ -727,7 +803,8 @@
 
 	'use strict';
 
-	var wpApiSettings = window.wpApiSettings || {};
+	var wpApiSettings = window.wpApiSettings || {},
+	trashableTypes    = [ 'Comment', 'Media', 'Comment', 'Post', 'Page', 'Status', 'Taxonomy', 'Type' ];
 
 	/**
 	 * Backbone base model for all models.
@@ -735,6 +812,19 @@
 	wp.api.WPApiBaseModel = Backbone.Model.extend(
 		/** @lends WPApiBaseModel.prototype  */
 		{
+
+			// Initialize the model.
+			initialize: function() {
+
+				/**
+				* Types that don't support trashing require passing ?force=true to delete.
+				*
+				*/
+				if ( -1 === _.indexOf( trashableTypes, this.name ) ) {
+					this.requireForceForDelete = true;
+				}
+			},
+
 			/**
 			 * Set nonce header before every Backbone sync.
 			 *
@@ -758,17 +848,27 @@
 					model.unset( 'slug' );
 				}
 
-				if ( ! _.isUndefined( wpApiSettings.nonce ) && ! _.isNull( wpApiSettings.nonce ) ) {
+				if ( _.isFunction( model.nonce ) && ! _.isUndefined( model.nonce() ) && ! _.isNull( model.nonce() ) ) {
 					beforeSend = options.beforeSend;
 
 					// @todo enable option for jsonp endpoints
 					// options.dataType = 'jsonp';
 
+					// Include the nonce with requests.
 					options.beforeSend = function( xhr ) {
-						xhr.setRequestHeader( 'X-WP-Nonce', wpApiSettings.nonce );
+						xhr.setRequestHeader( 'X-WP-Nonce', model.nonce() );
 
 						if ( beforeSend ) {
 							return beforeSend.apply( this, arguments );
+						}
+					};
+
+					// Update the nonce when a new nonce is returned with the response.
+					options.complete = function( xhr ) {
+						var returnedNonce = xhr.getResponseHeader( 'X-WP-Nonce' );
+
+						if ( returnedNonce && _.isFunction( model.nonce ) && model.nonce() !== returnedNonce ) {
+							model.endpointModel.set( 'nonce', returnedNonce );
 						}
 					};
 				}
@@ -997,7 +1097,11 @@
 
 	var Endpoint, initializedDeferreds = {},
 		wpApiSettings = window.wpApiSettings || {};
+
+	/** @namespace wp */
 	window.wp = window.wp || {};
+
+	/** @namespace wp.api */
 	wp.api    = wp.api || {};
 
 	// If wpApiSettings is unavailable, try the default.
@@ -1005,10 +1109,11 @@
 		wpApiSettings.root = window.location.origin + '/wp-json/';
 	}
 
-	Endpoint = Backbone.Model.extend( {
+	Endpoint = Backbone.Model.extend(/** @lends Endpoint.prototype */{
 		defaults: {
 			apiRoot: wpApiSettings.root,
 			versionString: wp.api.versionString,
+			nonce: null,
 			schema: null,
 			models: {},
 			collections: {}
@@ -1026,8 +1131,9 @@
 			model.schemaConstructed = deferred.promise();
 
 			model.schemaModel = new wp.api.models.Schema( null, {
-				apiRoot: model.get( 'apiRoot' ),
-				versionString: model.get( 'versionString' )
+				apiRoot:       model.get( 'apiRoot' ),
+				versionString: model.get( 'versionString' ),
+				nonce:         model.get( 'nonce' )
 			} );
 
 			// When the model loads, resolve the promise.
@@ -1054,6 +1160,8 @@
 					 * When the server returns the schema model data, store the data in a sessionCache so we don't
 					 * have to retrieve it again for this session. Then, construct the models and collections based
 					 * on the schema model data.
+					 *
+					 * @callback
 					 */
 					success: function( newSchemaModel ) {
 
@@ -1197,6 +1305,13 @@
 							return url;
 						},
 
+						// Track nonces on the Endpoint 'routeModel'.
+						nonce: function() {
+							return routeModel.get( 'nonce' );
+						},
+
+						endpointModel: routeModel,
+
 						// Include a reference to the original route object.
 						route: modelRoute,
 
@@ -1206,23 +1321,8 @@
 						// Include the array of route methods for easy reference.
 						methods: modelRoute.route.methods,
 
-						initialize: function( attributes, options ) {
-							wp.api.WPApiBaseModel.prototype.initialize.call( this, attributes, options );
-
-							/**
-							 * Posts and pages support trashing, other types don't support a trash
-							 * and require that you pass ?force=true to actually delete them.
-							 *
-							 * @todo we should be getting trashability from the Schema, not hard coding types here.
-							 */
-							if (
-								'Posts' !== this.name &&
-								'Pages' !== this.name &&
-								_.includes( this.methods, 'DELETE' )
-							) {
-								this.requireForceForDelete = true;
-							}
-						}
+						// Include the array of route endpoints for easy reference.
+						endpoints: modelRoute.route.endpoints
 					} );
 				} else {
 
@@ -1243,6 +1343,13 @@
 							return url;
 						},
 
+						// Track nonces at the Endpoint level.
+						nonce: function() {
+							return routeModel.get( 'nonce' );
+						},
+
+						endpointModel: routeModel,
+
 						// Include a reference to the original route object.
 						route: modelRoute,
 
@@ -1250,7 +1357,10 @@
 						name: modelClassName,
 
 						// Include the array of route methods for easy reference.
-						methods: modelRoute.route.methods
+						methods: modelRoute.route.methods,
+
+						// Include the array of route endpoints for easy reference.
+						endpoints: modelRoute.route.endpoints
 					} );
 				}
 
@@ -1364,6 +1474,7 @@
 		var endpoint, attributes = {}, deferred, promise;
 
 		args                      = args || {};
+		attributes.nonce          = args.nonce || wpApiSettings.nonce || '';
 		attributes.apiRoot        = args.apiRoot || wpApiSettings.root || '/wp-json';
 		attributes.versionString  = args.versionString || wpApiSettings.versionString || 'wp/v2/';
 		attributes.schema         = args.schema || null;
