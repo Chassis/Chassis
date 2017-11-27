@@ -286,7 +286,7 @@ These can be set to absolute paths, or relative paths.
       content: wordpress/wp-content
 
 In case you have the Chassis folder nested within the project rather than wrapping it, eg: `base : ..`, you will need to navigate to Chassis folder in order to carry out any Vagrant commands, like `vagrant up`/`vagrant halt` and `vagrant ssh`, because they only work from the folder that has a `VagrantFile`.
-There is a workaround for that, which is to use the `VAGRANT_CWD` variable, eg: `VAGRANT_CWD=chassis vagrant ssh`. And you can automate this by using dotenv files with `direnv`_. Install it and from the project directory execute: `direnv allow .; echo 'export VAGRANT_CWD=chassis';` replacing `chassis` with your Chassis directory name.
+There is a workaround for that, which is to use the `VAGRANT_CWD` variable, eg: `VAGRANT_CWD=chassis vagrant ssh`. And you can automate this by using dotenv files with `direnv`_. Install it and from the project directory execute: `direnv allow .; echo 'export VAGRANT_CWD=chassis' > .envrc;` replacing `chassis` with your relative Chassis directory name.
 
 
 .. _direnv: https://github.com/direnv/direnv
