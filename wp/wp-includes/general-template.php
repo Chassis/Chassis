@@ -703,7 +703,7 @@ function get_bloginfo( $show = '', $filter = 'raw' ) {
 			 */
 			$output = __( 'html_lang_attribute' );
 			if ( 'html_lang_attribute' === $output || preg_match( '/[^a-zA-Z0-9-]/', $output ) ) {
-				$output = get_locale();
+				$output = is_admin() ? get_user_locale() : get_locale();
 				$output = str_replace( '_', '-', $output );
 			}
 			break;
@@ -3568,12 +3568,14 @@ function get_language_attributes( $doctype = 'html' ) {
 	if ( function_exists( 'is_rtl' ) && is_rtl() )
 		$attributes[] = 'dir="rtl"';
 
-	if ( $lang = get_bloginfo('language') ) {
-		if ( get_option('html_type') == 'text/html' || $doctype == 'html' )
-			$attributes[] = "lang=\"$lang\"";
+	if ( $lang = get_bloginfo( 'language' ) ) {
+		if ( get_option( 'html_type' ) == 'text/html' || $doctype == 'html' ) {
+			$attributes[] = 'lang="' . esc_attr( $lang ) . '"';
+		}
 
-		if ( get_option('html_type') != 'text/html' || $doctype == 'xhtml' )
-			$attributes[] = "xml:lang=\"$lang\"";
+		if ( get_option( 'html_type' ) != 'text/html' || $doctype == 'xhtml' ) {
+			$attributes[] = 'xml:lang="' . esc_attr( $lang ) . '"';
+		}
 	}
 
 	$output = implode(' ', $attributes);
