@@ -98,21 +98,6 @@ Vagrant.configure("2") do |config|
 		#puppet.options = puppet.options + " --verbose --debug"
 	end
 
-	# Help the user out the first time they provision
-	config.vm.provision :shell do |shell|
-		shell.path = "puppet/postprovision.sh"
-		shell.args = [
-			# 0 = hostname
-			CONF['hosts'][0],
-
-			# 1 = username
-			CONF['admin']['user'],
-
-			# 2 = password
-			CONF['admin']['password']
-		]
-	end
-
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
 	synced_folders["."] = "/vagrant"
