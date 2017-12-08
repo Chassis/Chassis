@@ -8,6 +8,15 @@
 # - project/config.local.yaml          (global overrides)
 # - project/config.yaml                 (global defaults)
 
+# By default we set the mode to normal.
+# This uses a Chassis box we've built that has Php 7.0, MySQL 5.7 and nginx 1.10.3.
+# Set to base if you'd like to configure Php versions, add extensions and make other modifications.
+# When you set this to base your initial provision will take longer as it will start with the bento/ubuntu-16.04 box.
+#
+# Values: normal or base.
+_mode:
+   - normal
+
 # Domain names to use for Vagrant
 #
 # The first name will be used as the machine's name, subsequent names will be
