@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
 
 	if CONF['_mode'] == "normal"
 		# Use the Chassis box we've built Php 7.0, MySQL 5.7 and nginx 1.10.3.
-		config.vm.box = "chassis.box"
+		config.vm.box = "chassis/chassis"
 	else
 		# We <3 Ubuntu LTS
 		config.vm.box = "bento/ubuntu-16.04"
