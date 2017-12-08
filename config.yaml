@@ -14,8 +14,7 @@
 # When you set this to base your initial provision will take longer as it will start with the bento/ubuntu-16.04 box.
 #
 # Values: normal or base.
-_mode:
-   - normal
+_mode: normal
 
 # Domain names to use for Vagrant
 #

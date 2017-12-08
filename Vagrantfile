@@ -52,8 +52,13 @@ Vagrant.configure("2") do |config|
 		end
 	end
 
-	# We <3 Ubuntu LTS
-	config.vm.box = "bento/ubuntu-16.04"
+	if CONF['_mode'] == "normal"
+		# Use the Chassis box we've built Php 7.0, MySQL 5.7 and nginx 1.10.3.
+		config.vm.box = "chassis.box"
+	else
+		# We <3 Ubuntu LTS
+		config.vm.box = "bento/ubuntu-16.04"
+	end
 
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
@@ -100,7 +105,11 @@ Vagrant.configure("2") do |config|
 
 	# Help the user out the first time they provision
 	config.vm.provision :shell do |shell|
-		shell.path = "puppet/postprovision.sh"
+		if CONF['_mode'] == "normal"
+			shell.path = "puppet/postprovision.sh"
+		else
+			shell.path = "puppet/preparebox.sh"
+		end
 		shell.args = [
 			# 0 = hostname
 			CONF['hosts'][0],
