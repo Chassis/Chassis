@@ -105,7 +105,7 @@ Vagrant.configure("2") do |config|
 
 	# Help the user out the first time they provision
 	config.vm.provision :shell do |shell|
-		if CONF['_mode'] != "normal"
+		if CONF['_mode'] == "base"
 			shell.path = "puppet/preparebox.sh"
 		else
 			shell.path = "puppet/postprovision.sh"
