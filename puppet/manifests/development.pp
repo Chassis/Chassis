@@ -14,7 +14,7 @@ if $loadable_extensions {
 
 class { 'apt':
 	update => {
-		frequency => 'monthly',
+		frequency => 'weekly',
 	},
 }
 
