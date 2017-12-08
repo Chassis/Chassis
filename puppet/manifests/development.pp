@@ -12,6 +12,12 @@ if $loadable_extensions {
 	}
 }
 
+class { 'apt':
+	update => {
+		frequency => 'monthly',
+	},
+}
+
 include apt
 
 class { 'chassis::php':
