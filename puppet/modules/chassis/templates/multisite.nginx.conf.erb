@@ -25,6 +25,7 @@ server {
 		# rewrite ^/(wp-admin/.*)$ <%= @wpdir %>/$1 last;
 
 		rewrite ^/[_0-9a-zA-Z-]+(/wp-.*) $1 last;
+		rewrite ^/[_0-9a-zA-Z-]+(/xmlrpc.php) $1 last;
 		rewrite ^/[_0-9a-zA-Z-]+.*(/wp-admin/.*)$ $1 last;
 		# rewrite ^/[_0-9a-zA-Z-]+(/.*\.php)$ <%= @wpdir %>$1 last;
 	}
