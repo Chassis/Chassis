@@ -53,7 +53,7 @@ Vagrant.configure("2") do |config|
 	end
 
 	if CONF['_mode'] == "normal"
-		# Use the Chassis box we've built Php 7.0, MySQL 5.7 and nginx 1.10.3.
+		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
 	else
 		# We <3 Ubuntu LTS
