@@ -87,10 +87,10 @@ if ( file_exists( WP_CONTENT_DIR . '/config.php' ) ) {
 // URL hacks for Vagrant
 // =====================
 if ( WP_LOCAL_DEV && ! defined('WP_SITEURL') && ! defined( 'WP_INSTALLING' ) ) {
-	define('WP_SITEURL', 'http://' . $_SERVER['HTTP_HOST'] . '/wp');
+	define('WP_SITEURL', 'https://' . $_SERVER['HTTP_HOST'] . '/wp');
 
 	if ( ! defined( 'WP_HOME' ) ) {
-		define('WP_HOME', 'http://' . $_SERVER['HTTP_HOST']);
+		define('WP_HOME', 'https://' . $_SERVER['HTTP_HOST']);
 	}
 }
 
