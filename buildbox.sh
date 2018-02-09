@@ -6,7 +6,7 @@
 # running the following commands in a terminal:
 # `brew install curl --with-nghttp2`
 # `brew link curl --force`
-
+#
 # To run this just run `sh buildbox.sh` in the root directory of Chassis.
 
 # Check for curl
@@ -41,17 +41,22 @@ vagrant package --output "chassis-$NOW.box"
 
 # Prompt for a token so we can upload the new box to Vagrant Cloud.
 echo "We know need you to copy and paste your Vagrant Cloud authenication token: https://app.vagrantup.com/settings/security"
-read -sp 'Token: ' token
+read -sp 'Token: ' TOKEN
 
 # We need to get an upload path from the Vagrant Cloud API.
-RESPONSE=$(curl --silent --header "Authorization: Bearer $token" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/1.0.0/provider/virtualbox/upload)
+RESPONSE=$(curl --silent --header "Authorization: Bearer $TOKEN" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/1.0.0/provider/virtualbox/upload)
 
 # Requires the jq command.
-upload_path=$(echo "$RESPONSE" | jq -r .upload_path)
+UPLOAD_PATH=$(echo "$RESPONSE" | jq -r .upload_path)
+
+if [ null == $UPLOAD_PATH ]; then
+	echo "\nThere was an issue with your token for Vagrant Cloud."
+	exit 1
+fi
 
 echo "\nCommencing upload of the new Chassis box to Vagrant Cloud..."
 
 # Do a put request to the Vagrant Cloud endpoint and output the progress to the terminal.
-curl $upload_path --request PUT --upload-file "chassis-$NOW.box" --progress-bar | tee /dev/null
+curl $UPLOAD_PATH --request PUT --upload-file "chassis-2018-02-09-15:28:03.box" --progress-bar | tee /dev/null
 
 echo "\nUpload complete!"
