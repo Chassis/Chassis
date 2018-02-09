@@ -11,13 +11,13 @@
 
 # Check for curl
 if ! [ -x "$(command -v curl)" ]; then
-  echo 'Curl is not installed. Please install curl.' >&2
+  echo 'Curl is not installed. Please install curl. `brew install curl --with-nghttp2; brew link curl --force`' >&2
   exit 1
 fi
 
 # Check for jq
 if ! [ -x "$(command -v jq)" ]; then
-  echo 'jq is not installed. Please install jq: https://stedolan.github.io/jq/.' >&2
+  echo 'jq is not installed. Please install jq: `brew install jq`.' >&2
   exit 1
 fi
 
