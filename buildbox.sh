@@ -17,7 +17,7 @@ if [ ! $VM_STATUS ]; then
 	vagrant up
 fi
 
-# Delete the chassis-provisioned file as we don't want that in the base box.
+# Delete the chassis-provisioned and any custom config files as we don't want that in the base box.
 /usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
 
 echo "We are now ready to halt the VM and generate the base box."
