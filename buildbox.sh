@@ -1,6 +1,6 @@
 #!/bin/bash
 # A script to build a new base box for Vagrant Cloud. This needs to be run
-# on the host computer and not instead the virtual machine.
+# on the host computer and not inside the virtual machine.
 
 # You need to have https support for curl. If you have Brew you can do that by
 # running the following commands in a terminal:
