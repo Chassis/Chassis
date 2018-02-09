@@ -7,6 +7,8 @@
 # `brew install curl --with-nghttp2`
 # `brew link curl --force`
 
+# To run this just run `sh buildbox.sh` in the root directory of Chassis.
+
 VM_STATUS=`vagrant status --machine-readable | grep state,running`
 NOW=`date +%Y-%m-%d`
 
