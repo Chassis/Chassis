@@ -14,3 +14,4 @@ config.local.yaml
 /wp-cli.local.yml
 /extensions
 /phpmyadmin
+*.box
