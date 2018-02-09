@@ -22,7 +22,7 @@ if ! [ -x "$(command -v jq)" ]; then
 fi
 
 VM_STATUS=`vagrant status --machine-readable | grep state,running`
-NOW=`date +%Y-%m-%d`
+NOW=`date +%Y-%m-%d-%H:%M:%S`
 
 if [ ! $VM_STATUS ]; then
 	echo "We need to boot up your Vagrant box to ensure some files have been deleted before generating the new base box."
