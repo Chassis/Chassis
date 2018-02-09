@@ -13,7 +13,7 @@ if [ ! $VM_STATUS ]; then
 	vagrant up
 fi
 # Delete the chassis-provisioned file as we don't want that in the base box.
-/usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned;'
+/usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
 
 echo "We are now ready to halt the VM and generate the base box"
 
@@ -21,7 +21,10 @@ vagrant halt
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
 
-RESPONSE=$(curl --silent --header "Authorization: Bearer IUyNUyTJLfJ0rw.atlasv1.BlPei9QC5xGystKl2BlUyDUnPLqudHomBclhHZNzv0C0apjkHN6ikfKqvErpAsfoXFQ" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/1.0.0/provider/virtualbox/upload)
+echo "We know need you to copy and paste your Vagrant Cloud authenication token: https://app.vagrantup.com/settings/security"
+read -sp 'Token: ' token
+
+RESPONSE=$(curl --silent --header "Authorization: Bearer $token" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/1.0.0/provider/virtualbox/upload)
 
 # Requires the jq command
 upload_path=$(echo "$RESPONSE" | jq -r .upload_path)
