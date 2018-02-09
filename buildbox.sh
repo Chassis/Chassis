@@ -54,4 +54,4 @@ echo "\nCommencing upload of the new Chassis box to Vagrant Cloud..."
 # Do a put request to the Vagrant Cloud endpoint and output the progress to the terminal.
 curl $upload_path --request PUT --upload-file "chassis-$NOW.box" --progress-bar | tee /dev/null
 
-echo "Upload complete!"
+echo "\nUpload complete!"
