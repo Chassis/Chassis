@@ -21,7 +21,10 @@ if ! [ -x "$(command -v jq)" ]; then
   exit 1
 fi
 
+# Store the virtual machines status.
 VM_STATUS=`vagrant status --machine-readable | grep state,running`
+
+# Create a timestamp to use in the boxes filename.
 NOW=`date +%Y-%m-%d-%H:%M:%S`
 
 if [ ! $VM_STATUS ]; then
