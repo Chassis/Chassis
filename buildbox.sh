@@ -43,7 +43,7 @@ vagrant halt
 vagrant package --output "chassis-$NOW.box"
 
 # Prompt for a token so we can upload the new box to Vagrant Cloud.
-echo "\033[0;32mWe know need you to copy and paste your Vagrant Cloud authenication token: https://app.vagrantup.com/settings/security"
+echo "\033[0;32mWe know need you to copy and paste your Vagrant Cloud authenication token: https://app.vagrantup.com/settings/security\033[0m"
 read -sp 'Token: ' TOKEN
 
 # We need to get an upload path from the Vagrant Cloud API.
