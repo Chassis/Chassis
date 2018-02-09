@@ -28,14 +28,14 @@ VM_STATUS=`vagrant status --machine-readable | grep state,running`
 NOW=`date +%Y-%m-%d-%H:%M:%S`
 
 if [ ! $VM_STATUS ]; then
-	echo "We need to boot up your Vagrant box to ensure some files have been deleted before generating the new base box."
+	echo "\033[0;32mWe need to boot up your Vagrant box to ensure some files have been deleted before generating the new base box."
 	vagrant up
 fi
 
 # Delete the chassis-provisioned and any custom config files as we don't want that in the base box.
 /usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
 
-echo "We are now ready to halt the VM and generate the base box."
+echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0m"
 
 vagrant halt
 
@@ -43,7 +43,7 @@ vagrant halt
 vagrant package --output "chassis-$NOW.box"
 
 # Prompt for a token so we can upload the new box to Vagrant Cloud.
-echo "We know need you to copy and paste your Vagrant Cloud authenication token: https://app.vagrantup.com/settings/security"
+echo "\033[0;32mWe know need you to copy and paste your Vagrant Cloud authenication token: https://app.vagrantup.com/settings/security"
 read -sp 'Token: ' TOKEN
 
 # We need to get an upload path from the Vagrant Cloud API.
@@ -53,13 +53,13 @@ RESPONSE=$(curl --silent --header "Authorization: Bearer $TOKEN" https://app.vag
 UPLOAD_PATH=$(echo "$RESPONSE" | jq -r .upload_path)
 
 if [ null == $UPLOAD_PATH ]; then
-	echo "\nThere was an issue with your token for Vagrant Cloud."
+	echo "\n\033[0;31mThere was an issue with your token for Vagrant Cloud.\033[0m"
 	exit 1
 fi
 
-echo "\nCommencing upload of the new Chassis box to Vagrant Cloud..."
+echo "\n\033[0;32mCommencing upload of the new Chassis box to Vagrant Cloud..."
 
 # Do a put request to the Vagrant Cloud endpoint and output the progress to the terminal.
 curl $UPLOAD_PATH --request PUT --upload-file "chassis-$NOW.box" --progress-bar | tee /dev/null
 
-echo "\nUpload complete!"
+echo "\n\033[0;32mUpload complete!"
