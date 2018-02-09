@@ -8,6 +8,7 @@
 # `brew link curl --force`
 #
 # To run this just run `sh buildbox.sh` in the root directory of Chassis.
+# Please note that due to the size of the base boxes you'll want to have a connection with a good upload speed.
 
 # Check for curl
 if ! [ -x "$(command -v curl)" ]; then
