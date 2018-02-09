@@ -9,6 +9,18 @@
 
 # To run this just run `sh buildbox.sh` in the root directory of Chassis.
 
+# Check for curl
+if ! [ -x "$(command -v curl)" ]; then
+  echo 'Curl is not installed. Please install curl.' >&2
+  exit 1
+fi
+
+# Check for jq
+if ! [ -x "$(command -v jq)" ]; then
+  echo 'jq is not installed. Please install jq: https://stedolan.github.io/jq/.' >&2
+  exit 1
+fi
+
 VM_STATUS=`vagrant status --machine-readable | grep state,running`
 NOW=`date +%Y-%m-%d`
 
@@ -34,7 +46,7 @@ read -sp 'Token: ' token
 # We need to get an upload path from the Vagrant Cloud API.
 RESPONSE=$(curl --silent --header "Authorization: Bearer $token" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/1.0.0/provider/virtualbox/upload)
 
-# Requires the jq command. https://stedolan.github.io/jq/
+# Requires the jq command.
 upload_path=$(echo "$RESPONSE" | jq -r .upload_path)
 
 echo "\nCommencing upload of the new Chassis box to Vagrant Cloud..."
