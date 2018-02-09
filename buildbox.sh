@@ -29,7 +29,7 @@ RESPONSE=$(curl --silent --header "Authorization: Bearer $token" https://app.vag
 # Requires the jq command
 upload_path=$(echo "$RESPONSE" | jq -r .upload_path)
 
-echo "Commencing upload of the new Chassis box to Vagrant Cloud..."
+echo "\nCommencing upload of the new Chassis box to Vagrant Cloud..."
 
 curl $upload_path --request PUT --upload-file "chassis-$NOW.box" --progress-bar | tee /dev/null
 
