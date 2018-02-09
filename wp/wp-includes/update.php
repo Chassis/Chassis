@@ -259,7 +259,7 @@ function wp_update_plugins( $extra_stats = array() ) {
 			break;
 		default :
 			if ( $doing_cron ) {
-				$timeout = 0;
+				$timeout = 2 * HOUR_IN_SECONDS;
 			} else {
 				$timeout = 12 * HOUR_IN_SECONDS;
 			}
@@ -443,7 +443,11 @@ function wp_update_themes( $extra_stats = array() ) {
 			$timeout = HOUR_IN_SECONDS;
 			break;
 		default :
-			$timeout = $doing_cron ? 0 : 12 * HOUR_IN_SECONDS;
+			if ( $doing_cron ) {
+				$timeout = 2 * HOUR_IN_SECONDS;
+			} else {
+				$timeout = 12 * HOUR_IN_SECONDS;
+			}
 	}
 
 	$time_not_changed = isset( $last_update->last_checked ) && $timeout > ( time() - $last_update->last_checked );

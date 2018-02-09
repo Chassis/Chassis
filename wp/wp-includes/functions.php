@@ -2449,6 +2449,7 @@ function wp_get_mime_types() {
 	'ra|ram' => 'audio/x-realaudio',
 	'wav' => 'audio/wav',
 	'ogg|oga' => 'audio/ogg',
+	'flac' => 'audio/flac',
 	'mid|midi' => 'audio/midi',
 	'wma' => 'audio/x-ms-wma',
 	'wax' => 'audio/x-ms-wax',
@@ -2534,7 +2535,7 @@ function wp_get_ext_types() {
 	 */
 	return apply_filters( 'ext2type', array(
 		'image'       => array( 'jpg', 'jpeg', 'jpe',  'gif',  'png',  'bmp',   'tif',  'tiff', 'ico' ),
-		'audio'       => array( 'aac', 'ac3',  'aif',  'aiff', 'm3a',  'm4a',   'm4b',  'mka',  'mp1',  'mp2',  'mp3', 'ogg', 'oga', 'ram', 'wav', 'wma' ),
+		'audio'       => array( 'aac', 'ac3',  'aif',  'aiff', 'flac', 'm3a',  'm4a',   'm4b',  'mka',  'mp1',  'mp2',  'mp3', 'ogg', 'oga', 'ram', 'wav', 'wma' ),
 		'video'       => array( '3g2',  '3gp', '3gpp', 'asf', 'avi',  'divx', 'dv',   'flv',  'm4v',   'mkv',  'mov',  'mp4',  'mpeg', 'mpg', 'mpv', 'ogm', 'ogv', 'qt',  'rm', 'vob', 'wmv' ),
 		'document'    => array( 'doc', 'docx', 'docm', 'dotm', 'odt',  'pages', 'pdf',  'xps',  'oxps', 'rtf',  'wp', 'wpd', 'psd', 'xcf' ),
 		'spreadsheet' => array( 'numbers',     'ods',  'xls',  'xlsx', 'xlsm',  'xlsb' ),
@@ -5737,6 +5738,13 @@ function wp_cache_get_last_changed( $group ) {
  * @param string $option_name The relevant database option name.
  */
 function wp_site_admin_email_change_notification( $old_email, $new_email, $option_name ) {
+	$send = true;
+
+	// Don't send the notification to the default 'admin_email' value.
+	if ( 'you@example.com' === $old_email ) {
+		$send = false;
+	}
+
 	/**
 	 * Filters whether to send the site admin email change notification email.
 	 *
@@ -5746,7 +5754,7 @@ function wp_site_admin_email_change_notification( $old_email, $new_email, $optio
 	 * @param string $old_email The old site admin email address.
 	 * @param string $new_email The new site admin email address.
 	 */
-	$send = apply_filters( 'send_site_admin_email_change_email', true, $old_email, $new_email );
+	$send = apply_filters( 'send_site_admin_email_change_email', $send, $old_email, $new_email );
 
 	if ( ! $send ) {
 		return;

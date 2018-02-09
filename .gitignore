@@ -15,3 +15,4 @@ config.local.yaml
 /extensions
 /phpmyadmin
 *.box
+/*.cert
