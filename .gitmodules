@@ -10,3 +10,6 @@
 [submodule "wp/wp-content/themes/twentysixteen"]
 	path = wp/wp-content/themes/twentysixteen
 	url = https://github.com/WordPress/twentysixteen
+[submodule "puppet/modules/wp"]
+	path = puppet/modules/wp
+	url = git@github.com:Chassis/puppet-wp.git
