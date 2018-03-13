@@ -23,4 +23,23 @@ class example (
 	if $config['show_example'] {
 		notify { "Here's my message: ${config['show_example']}": }
 	}
+
+# This is an example of how you can use disabled_extensions in the yaml files to add or remove packages.
+# 	if ( ! empty( $config[disabled_extensions] ) and 'chassis/example' in $config[disabled_extensions] ) {
+# 		$package = absent
+# 		$file    = absent
+# 	} else {
+# 		$package = latest
+# 		$file    = present
+# 	}
+#
+# 	package { 'php-package-name':
+# 		ensure  => $package
+# 	}
+#
+# 	file { '/tmp/randomfile.ini':
+# 		ensure => $file,
+# 		content => '# Example content',
+# 		force  => true
+# 	}
 }
