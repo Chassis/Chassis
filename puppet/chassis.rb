@@ -173,6 +173,7 @@ module Chassis
 		extensions.each do |extension|
 			next if extension == 'example'
 			Dir.chdir(@@extension_dir + '/' + extension )
+			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout master")
 			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
 			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
 			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
@@ -180,10 +181,8 @@ module Chassis
 			end
 		end
 
-		if updates.empty?
-			print "All your extensions are up to date!\n"
-		elsif
-			print "The following Chassis extensions appear to be out of date: " + updates.join(", ") + ". This may cause provisioning may fail! Would you like to update them now? [Y/n]:"
+		if updates.empty? != true
+		print "The following Chassis extensions appear to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]:"
 			autoupdate = STDIN.gets.chomp
 			if ( autoupdate != "n" )
 				updates.each do |update|
@@ -193,6 +192,8 @@ module Chassis
 				puts "The #{update} extension is now up to date."
 				end
 			end
+		elsif
+			puts "All your extensions are up to date!\n"
 		end
 	end
 end
