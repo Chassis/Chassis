@@ -182,7 +182,7 @@ module Chassis
 		end
 
 		if updates.empty? != true
-		print "The following Chassis extensions appear to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]:"
+			print "The following Chassis extensions appear to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]:"
 			autoupdate = STDIN.gets.chomp
 			if ( autoupdate != "n" )
 				updates.each do |update|
