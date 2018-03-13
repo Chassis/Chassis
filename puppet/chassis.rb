@@ -1,5 +1,6 @@
 require "pathname"
 require "yaml"
+require "open3"
 
 module Chassis
 	@@dir = File.dirname(File.dirname(__FILE__))
@@ -161,5 +162,37 @@ module Chassis
 		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
 
 		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
+	end
+
+	def self.update_extensions
+		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
+		updates = Array.new
+
+		puts "Checking for updates for your Chassis extensions..."
+
+		extensions.each do |extension|
+			next if extension == 'example'
+			Dir.chdir(@@extension_dir + '/' + extension )
+			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
+			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
+			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
+				updates.push extension
+			end
+		end
+
+		if updates.empty?
+			print "All your extensions are up to date!\n"
+		elsif
+			print "The following Chassis extensions appear to be out of date: " + updates.join(", ") + ". This may cause provisioning may fail! Would you like to update them now? [Y/n]:"
+			autoupdate = STDIN.gets.chomp
+			if ( autoupdate != "n" )
+				updates.each do |update|
+				puts "Updating the #{update} extension..."
+				Dir.chdir(@@extension_dir + '/' + update )
+				git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
+				puts "The #{update} extension is now up to date."
+				end
+			end
+		end
 	end
 end
