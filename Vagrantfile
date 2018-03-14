@@ -26,6 +26,7 @@ CONF = Chassis.config
 
 # Install extensions defined in config file
 Chassis.install_extensions(CONF)
+Chassis.update_core
 Chassis.update_extensions
 
 # Add extra extension modules

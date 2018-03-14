@@ -164,12 +164,40 @@ module Chassis
 		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
 	end
 
-	def self.update_extensions
-		puts "\e[32mChecking for Chassis updates...\e[0m"
+	def self.update_core
+		puts "\e[32mChecking for Chassis core updates...\e[0m"
+		core = ['core']
+		updates = self.updates_check(core, @@dir)
+		self.do_updates(updates, @@dir)
+    end
 
+	def self.update_extensions
+		puts "\e[32mChecking for Chassis extension updates...\e[0m"
 		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
 		updates = self.updates_check(extensions, @@extension_dir)
+		self.do_updates(updates, @@extension_dir)
+	end
 
+	def self.updates_check(folders, directory)
+		updates = Array.new
+		folders.each do |folder|
+			next if folder == 'example'
+			if 'core' == folder
+				Dir.chdir(directory)
+			elsif
+				Dir.chdir(directory + '/' + folder )
+			end
+			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout master")
+			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
+			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
+			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
+				updates.push folder
+			end
+		end
+		return updates
+	end
+
+	def self.do_updates(updates, directory)
 		if updates.empty? != true
 			if ( updates.count > 1 )
 				wording = String.new("extensions appear")
@@ -180,33 +208,14 @@ module Chassis
 			autoupdate = STDIN.gets.chomp
 			if ( autoupdate != "n" )
 				updates.each do |update|
-				puts "\e[32mUpdating the #{update} extension...\e[0m"
-				Dir.chdir(@@extension_dir + '/' + update )
-				git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
-				puts "\e[32;1mThe #{update} extension is now up to date.\e[0m"
+					puts "\e[32mUpdating the #{update} extension...\e[0m"
+					Dir.chdir(directory + '/' + update )
+					git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
+					puts "\e[32;1mThe #{update} extension is now up to date.\e[0m"
 				end
 			end
 		elsif
 			puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
 		end
-	end
-
-	def self.updates_check(folders, directory)
-		updates = Array.new
-		folders.each do |extension|
-			next if extension == 'example'
-			Dir.chdir(directory + '/' + extension )
-			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout master")
-			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
-			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
-			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
-				updates.push extension
-			end
-		end
-		return updates
-	end
-
-	def self.do_updates(updates, directory)
-
 	end
 end
