@@ -191,6 +191,7 @@ module Chassis
 		folders.each do |folder|
 			next if folder == 'example'
 			if 'core' == folder
+				folder = directory
 				Dir.chdir(directory)
 			elsif
 				Dir.chdir(directory + '/' + folder )
