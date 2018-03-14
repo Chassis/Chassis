@@ -171,6 +171,14 @@ module Chassis
 		self.prompt_for_updates(updates, @@dir, 'core')
 	end
 
+	def self.update_submodules
+		puts "\e[32mChecking for Chassis submodule updates...\e[0m"
+		submodules = ['apt','mysql','stdlib','wp']
+		directory = File.join(@@dir, 'puppet/modules')
+		updates = self.updates_check(submodules, directory)
+		self.prompt_for_updates(updates, directory, 'submodules')
+	end
+
 	def self.update_extensions
 		puts "\e[32mChecking for Chassis extension updates...\e[0m"
 		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
@@ -202,7 +210,7 @@ module Chassis
 			print "\e[0;1mChassis core appears to be out of date. This may cause provisioning to fail! Would you like to update it now? [Y/n]: \e[0m"
 			autoupdate = STDIN.gets.chomp
 			self.do_updates(autoupdate, updates, directory)
-		elsif
+		elsif 'extensions' == context
 			if updates.empty? != true
 				if ( updates.count > 1 )
 					wording = String.new("extensions appear")
@@ -215,6 +223,10 @@ module Chassis
 			elsif
 				puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
 			end
+		else
+			print "\e[0;1mThe Chassis submodules appear to be out of date. This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
+			autoupdate = STDIN.gets.chomp
+			self.do_updates(autoupdate, updates, directory)
 		end
 	end
 
