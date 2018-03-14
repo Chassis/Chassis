@@ -175,8 +175,8 @@ module Chassis
 		puts "\e[32mChecking for Chassis submodule updates...\e[0m"
 		submodules = ['apt','mysql','stdlib','wp']
 		directory = File.join(@@dir, 'puppet/modules')
-		updates = self.updates_check(submodules, directory)
-		self.prompt_for_updates(updates, directory, 'submodules')
+		updates = self.submodule_update_check(submodules, directory)
+		#self.prompt_for_updates(updates, directory, 'submodules')
 	end
 
 	def self.update_extensions
@@ -203,6 +203,18 @@ module Chassis
 			end
 		end
 		return updates
+	end
+
+	def self.submodule_update_check(folders, directory)
+		git_submodule_status_stdout, git_submodule_status_stdeerr, git_submodule_status_status = Open3.capture3("git submodule status")
+		if git_submodule_status_stdout =~ /(\+)/
+			print "\e[0;1mYour Chassis submodules are out of date. This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
+			autoupdate = STDIN.gets.chomp
+			if ( autoupdate != "n" )
+				git_submodule_update_stdout, git_submodule_update_stdeerr, git_submodule_update_status = Open3.capture3("git submodule update")
+				puts "\e[032;1mAll your submodules are up to date!\e[0m\n"
+			end
+		end
 	end
 
 	def self.prompt_for_updates(updates, directory, context)
