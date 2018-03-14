@@ -168,7 +168,7 @@ module Chassis
 		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
 		updates = Array.new
 
-		puts "Checking for updates for your Chassis extensions..."
+		puts "\e[32mChecking for updates for your Chassis extensions...\e[0m"
 
 		extensions.each do |extension|
 			next if extension == 'example'
@@ -182,18 +182,23 @@ module Chassis
 		end
 
 		if updates.empty? != true
-			print "The following Chassis extensions appear to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]:"
+			if ( updates.count > 1 )
+				wording = String.new("extensions appear")
+			elsif
+				wording = String.new("extension appears")
+			end
+			print "\e[33;1mThe following Chassis #{wording} to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]:\e[0m"
 			autoupdate = STDIN.gets.chomp
 			if ( autoupdate != "n" )
 				updates.each do |update|
-				puts "Updating the #{update} extension..."
+				puts "\e[32mUpdating the #{update} extension...\e[0m"
 				Dir.chdir(@@extension_dir + '/' + update )
 				git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
-				puts "The #{update} extension is now up to date."
+				puts "\e[32;1mThe #{update} extension is now up to date.\e[0m"
 				end
 			end
 		elsif
-			puts "All your extensions are up to date!\n"
+			puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
 		end
 	end
 end
