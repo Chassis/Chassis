@@ -176,7 +176,6 @@ module Chassis
 		submodules = ['apt','mysql','stdlib','wp']
 		directory = File.join(@@dir, 'puppet/modules')
 		updates = self.submodule_update_check(submodules, directory)
-		#self.prompt_for_updates(updates, directory, 'submodules')
 	end
 
 	def self.update_extensions
@@ -246,7 +245,7 @@ module Chassis
 	def self.do_updates(prompt, updates, directory)
 		if ( prompt != "n" )
 			updates.each do |update|
-				puts "\e[32mUpdating #{update} ...\e[0m"
+				puts "\e[32mUpdating #{update}...\e[0m"
 				Dir.chdir(directory + '/' + update )
 				git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
 				puts "\e[32;1mThe #{update} is now up to date.\e[0m"
