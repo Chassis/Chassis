@@ -187,7 +187,7 @@ module Chassis
 			elsif
 				wording = String.new("extension appears")
 			end
-			print "\e[33;1mThe following Chassis #{wording} to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
+			print "\e[0;1mThe following Chassis #{wording} to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
 			autoupdate = STDIN.gets.chomp
 			if ( autoupdate != "n" )
 				updates.each do |update|
