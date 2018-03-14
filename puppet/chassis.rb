@@ -165,21 +165,10 @@ module Chassis
 	end
 
 	def self.update_extensions
+		puts "\e[32mChecking for Chassis updates...\e[0m"
+
 		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
-		updates = Array.new
-
-		puts "\e[32mChecking for updates for your Chassis extensions...\e[0m"
-
-		extensions.each do |extension|
-			next if extension == 'example'
-			Dir.chdir(@@extension_dir + '/' + extension )
-			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout master")
-			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
-			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
-			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
-				updates.push extension
-			end
-		end
+		updates = self.updates_check(extensions, @@extension_dir)
 
 		if updates.empty? != true
 			if ( updates.count > 1 )
@@ -200,5 +189,24 @@ module Chassis
 		elsif
 			puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
 		end
+	end
+
+	def self.updates_check(folders, directory)
+		updates = Array.new
+		folders.each do |extension|
+			next if extension == 'example'
+			Dir.chdir(directory + '/' + extension )
+			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout master")
+			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
+			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
+			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
+				updates.push extension
+			end
+		end
+		return updates
+	end
+
+	def self.do_updates(updates, directory)
+
 	end
 end
