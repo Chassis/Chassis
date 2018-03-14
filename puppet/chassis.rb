@@ -168,14 +168,14 @@ module Chassis
 		puts "\e[32mChecking for Chassis core updates...\e[0m"
 		core = ['core']
 		updates = self.updates_check(core, @@dir)
-		self.do_updates(updates, @@dir)
+		self.prompt_for_updates(updates, @@dir, 'core')
     end
 
 	def self.update_extensions
 		puts "\e[32mChecking for Chassis extension updates...\e[0m"
 		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
 		updates = self.updates_check(extensions, @@extension_dir)
-		self.do_updates(updates, @@extension_dir)
+		self.prompt_for_updates(updates, @@extension_dir, 'extensions')
 	end
 
 	def self.updates_check(folders, directory)
@@ -197,25 +197,35 @@ module Chassis
 		return updates
 	end
 
-	def self.do_updates(updates, directory)
-		if updates.empty? != true
-			if ( updates.count > 1 )
-				wording = String.new("extensions appear")
-			elsif
-				wording = String.new("extension appears")
-			end
-			print "\e[0;1mThe following Chassis #{wording} to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
+	def self.prompt_for_updates(updates, directory, context)
+		if 'core' == context
+			print "\e[0;1mChassis core appears to be out of date. This may cause provisioning to fail! Would you like to update it now? [Y/n]: \e[0m"
 			autoupdate = STDIN.gets.chomp
-			if ( autoupdate != "n" )
-				updates.each do |update|
-					puts "\e[32mUpdating the #{update} extension...\e[0m"
-					Dir.chdir(directory + '/' + update )
-					git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
-					puts "\e[32;1mThe #{update} extension is now up to date.\e[0m"
-				end
-			end
+			self.do_updates(autoupdate, updates, directory)
 		elsif
-			puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
+			if updates.empty? != true
+				if ( updates.count > 1 )
+					wording = String.new("extensions appear")
+				elsif
+					wording = String.new("extension appears")
+				end
+				print "\e[0;1mThe following Chassis #{wording} to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
+				autoupdate = STDIN.gets.chomp
+				self.do_updates(autoupdate, updates, directory)
+			elsif
+				puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
+			end
+		end
+	end
+
+	def self.do_updates(prompt, updates, directory)
+		if ( prompt != "n" )
+			updates.each do |update|
+				puts "\e[32mUpdating #{update} ...\e[0m"
+				Dir.chdir(directory + '/' + update )
+				git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
+				puts "\e[32;1mThe #{update} is now up to date.\e[0m"
+			end
 		end
 	end
 end
