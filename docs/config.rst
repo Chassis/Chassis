@@ -67,6 +67,8 @@ You can use either a two-part version (``5.3``) or a three-part version
 WordPress Directory
 -------------------
 
+**Note**: Deprecated; use ``paths.wp`` instead.
+
 **Key**: ``wpdir``
 
 Chassis also includes the latest-released version of WordPress by default, but
