@@ -41,6 +41,7 @@ class chassis::hosts(
 
 		service { 'chassis-hosts':
 			ensure  => running,
+			enable  => true,
 			require => [
 				Package[ 'avahi-daemon' ],
 				Package[ 'python-avahi' ],

@@ -7,3 +7,6 @@ TimeoutStopSec=600
 Restart=on-failure
 RestartSec=30s
 ExecStart=/usr/bin/python /vagrant/puppet/chassis-hosts.py
+
+[Install]
+WantedBy=multi-user.target
