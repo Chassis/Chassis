@@ -348,6 +348,15 @@ Extension names can be specified in one of three ways:
       - javorszky/chassis-openssl
       - https://bitbucket.org/some/example.git
 
+You can also remove extensions that you have previously installed. All configuration files will be remove from your Chassis server.
+
+To remove an extension simply add new section to one of your `.yaml` configuration files:
+
+.. code-block:: yaml
+
+   disabled_extensions:
+      - chassis/mailhog
+
 
 Machine Customisations
 ----------------------
