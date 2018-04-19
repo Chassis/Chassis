@@ -4,7 +4,7 @@ Description=Chassis subdomain hosts updater
 [Service]
 TimeoutStartSec=0
 TimeoutStopSec=600
-Restart=on-failure
+Restart=always
 RestartSec=30s
 StartLimitBurst=5
 ExecStart=/usr/bin/python /vagrant/puppet/chassis-hosts.py
