@@ -15,3 +15,6 @@ config.local.yaml
 /extensions
 /phpmyadmin
 /*.cert
+
+# Ignore symlinked Puppet manifests
+/puppet/manifests/*.pp
