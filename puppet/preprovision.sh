@@ -14,10 +14,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		REPOS="main restricted universe multiverse"
 
 		touch /tmp/mirrors-sources.list
-		echo "deb $MIRROR xenial $REPOS"           >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR xenial-updates $REPOS"   >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR xenial-backports $REPOS" >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR xenial-security $REPOS"  >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR bionic $REPOS"           >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR bionic-updates $REPOS"   >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR bionic-backports $REPOS" >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR bionic-security $REPOS"  >> /tmp/mirrors-sources.list
 
 		# Add mirrors to the start
 		cat /tmp/mirrors-sources.list /etc/apt/sources.list > /tmp/apt-sources.list
