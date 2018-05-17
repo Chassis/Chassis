@@ -1,3 +1,25 @@
+# Add a type we can use to remove old php versions.
+	define remove_php_fpm {
+		case $name {
+			'5.5',
+			'5.6',
+			'7.0',
+			'7.1',
+			'7.2': {
+				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
+					ensure => absent,
+				}
+			}
+			# "5.3",
+			# "5.4",
+			default: {
+				package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
+					ensure => absent,
+				}
+			}
+		}
+	}
+
 # Setup up everything that relates to PHP
 class chassis::php (
 	$extensions = [],
@@ -117,28 +139,6 @@ class chassis::php (
 	service { "${php_package}-fpm":
 		ensure  => running,
 		require => Package["${php_package}-fpm"]
-	}
-
-	# Add a type we can use to remove old php versions.
-	define remove_php_fpm {
-		case $name {
-			'5.5',
-			'5.6',
-			'7.0',
-			'7.1',
-			'7.2': {
-				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
-					ensure => absent,
-				}
-			}
-			# "5.3",
-			# "5.4",
-			default: {
-				package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
-					ensure => absent,
-				}
-			}
-		}
 	}
 
 	case $short_ver {
