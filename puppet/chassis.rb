@@ -162,4 +162,13 @@ module Chassis
 
 		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
 	end
+
+	def self.post_up_message
+		# Remind the user of the login details
+		msg = 'Your Chassis vagrant box is ready to use!'
+		msg << "\nURL: http://" + config["hosts"][0] + "/"
+		msg << "\nLogin: http://" + config["hosts"][0] + "/wp/wp-admin/"
+		msg << "\nUsername: " + config["admin"]["user"]
+		msg << "\nPassword: " + config["admin"]["password"]
+    end
 end
