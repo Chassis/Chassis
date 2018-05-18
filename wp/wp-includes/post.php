@@ -210,6 +210,21 @@ function create_initial_post_types() {
 		'supports'         => array(),
 	) );
 
+	register_post_type( 'user_request', array(
+		'labels'           => array(
+			'name'          => __( 'User Requests' ),
+			'singular_name' => __( 'User Request' ),
+		),
+		'public'           => false,
+		'_builtin'         => true, /* internal use only. don't use this when registering your own post type. */
+		'hierarchical'     => false,
+		'rewrite'          => false,
+		'query_var'        => false,
+		'can_export'       => false,
+		'delete_with_user' => false,
+		'supports'         => array(),
+	) );
+
 	register_post_status( 'publish', array(
 		'label'       => _x( 'Published', 'post status' ),
 		'public'      => true,
@@ -263,6 +278,34 @@ function create_initial_post_types() {
 		'label'    => 'inherit',
 		'internal' => true,
 		'_builtin' => true, /* internal use only. */
+		'exclude_from_search' => false,
+	) );
+
+	register_post_status( 'request-pending', array(
+		'label'               => _x( 'Pending', 'request status' ),
+		'internal'            => true,
+		'_builtin'            => true, /* internal use only. */
+		'exclude_from_search' => false,
+	) );
+
+	register_post_status( 'request-confirmed', array(
+		'label'               => _x( 'Confirmed', 'request status' ),
+		'internal'            => true,
+		'_builtin'            => true, /* internal use only. */
+		'exclude_from_search' => false,
+	) );
+
+	register_post_status( 'request-failed', array(
+		'label'               => _x( 'Failed', 'request status' ),
+		'internal'            => true,
+		'_builtin'            => true, /* internal use only. */
+		'exclude_from_search' => false,
+	) );
+
+	register_post_status( 'request-completed', array(
+		'label'               => _x( 'Completed', 'request status' ),
+		'internal'            => true,
+		'_builtin'            => true, /* internal use only. */
 		'exclude_from_search' => false,
 	) );
 }
@@ -727,6 +770,22 @@ function get_page_statuses() {
 	);
 
 	return $status;
+}
+
+/**
+ * Return statuses for privacy requests.
+ *
+ * @since 5.0.0
+ *
+ * @return array
+ */
+function _wp_privacy_statuses() {
+	return array(
+		'request-pending'   => __( 'Pending' ),      // Pending confirmation from user.
+		'request-confirmed' => __( 'Confirmed' ),    // User has confirmed the action.
+		'request-failed'    => __( 'Failed' ),       // User failed to confirm the action.
+		'request-completed' => __( 'Completed' ),    // Admin has handled the request.
+	);
 }
 
 /**
@@ -3741,7 +3800,7 @@ function check_and_publish_future_post( $post_id ) {
  * @return string Unique slug for the post, based on $post_name (with a -1, -2, etc. suffix)
  */
 function wp_unique_post_slug( $slug, $post_ID, $post_status, $post_type, $post_parent ) {
-	if ( in_array( $post_status, array( 'draft', 'pending', 'auto-draft' ) ) || ( 'inherit' == $post_status && 'revision' == $post_type ) )
+	if ( in_array( $post_status, array( 'draft', 'pending', 'auto-draft' ) ) || ( 'inherit' == $post_status && 'revision' == $post_type ) || 'user_request' === $post_type )
 		return $slug;
 
 	global $wpdb, $wp_rewrite;

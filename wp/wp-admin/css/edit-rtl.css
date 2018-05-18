@@ -646,6 +646,93 @@ span.wp-media-buttons-icon:before {
  	margin-bottom: 20px;
 }
 
+/* Suggested text for privacy policy */
+.wp-privacy-policy-guide {
+	max-width: 1000px;
+}
+
+.privacy-text-box {
+	width: calc(100% - 260px);
+}
+
+.privacy-text-box-toc {
+	float: left;
+	width: 250px;
+	background-color: #fff;
+}
+
+.privacy-text-box-toc p {
+	margin: 0;
+	padding: 0.7em 1em;
+	border-bottom: 1px solid #eee;
+}
+
+.privacy-text-box-toc ol {
+	margin-right: 2em;
+}
+
+.wp-privacy-policy-guide h3 {
+	font-size: 1.2em;
+	margin: 1em 0 0.5em;
+}
+
+.privacy-text-section .privacy-text-copy {
+	float: left;
+}
+
+.privacy-text-section {
+	position: relative;
+	border-top: 1px solid #e3e3e3;
+}
+
+.privacy-text-box-head,
+.privacy-text-section.text-removed {
+	padding-bottom: 12px;
+}
+
+.text-removed .policy-text {
+	font-style: italic;
+	color: #666;
+	font-weight: 600;
+}
+
+.privacy-text-actions {
+	height: 32px;
+	line-height: 32px;
+	padding-bottom: 6px;
+}
+
+.wp-privacy-policy-guide .policy-text h2 {
+	margin: 1.2em 0 1em;
+	padding: 0;
+}
+
+.suggested-policy-content {
+	font-style: italic;
+}
+
+.privacy-text-section a.return-to-top {
+	float: left;
+	margin-left: -250px;
+	margin-top: 6px;
+}
+
+.hide-privacy-policy-tutorial .privacy-policy-tutorial {
+	visibility: hidden;
+}
+
+.wp-suggested-text p {
+	font-style: italic;
+}
+
+.wp-suggested-text p.privacy-policy-tutorial {
+	font-style: normal;
+}
+
+.notice.wp-pp-notice {
+	margin: 15px 0 3px;
+}
+
 /*------------------------------------------------------------------------------
   11.1 - Custom Fields
 ------------------------------------------------------------------------------*/
@@ -1569,5 +1656,20 @@ table.links-table {
 	.links-table th,
 	.links-table td {
 		padding: 10px 0;
+	}
+	
+	.privacy-text-box {
+		width: auto;
+	}
+	
+	.privacy-text-box-toc {
+		float: none;
+		width: auto;
+		height: 100%;
+	}
+
+	.privacy-text-section a.return-to-top {
+		float: none;
+		margin: 0;
 	}
 }
