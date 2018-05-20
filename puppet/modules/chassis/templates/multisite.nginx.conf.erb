@@ -17,7 +17,7 @@ server {
 	}
 
 	location /content/ {
-		alias <%= contentdir %>/;
+		alias <%= @contentdir %>/;
 	}
 
 	if (!-e $request_filename) {
