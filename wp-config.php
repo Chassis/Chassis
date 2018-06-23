@@ -98,7 +98,7 @@ if ( WP_LOCAL_DEV && ! defined('WP_SITEURL') && ! defined( 'WP_INSTALLING' ) ) {
 // You almost certainly do not want to change these
 // ================================================
 define( 'DB_CHARSET', 'utf8' );
-define( 'DB_COLLATE', '' );
+define( 'DB_COLLATE', 'utf8mb4_unicode_520_ci' );
 
 // ==============================================================
 // Salts, for security
