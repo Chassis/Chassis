@@ -293,6 +293,9 @@ There is a workaround for that, which is to use the `VAGRANT_CWD` variable, eg: 
 
 .. _direnv: https://github.com/direnv/direnv
 
+.. note::
+   When you change the ``paths`` configuration you will need to run ``vagrant provision`` for the changes to be applied.
+
 Plugins
 -------
 
