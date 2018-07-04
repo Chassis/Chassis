@@ -119,8 +119,6 @@ Debugging
 ~~~~~~~~~
 
 If you see an error when you run ``vagrant provision`` then try running it again.
-If you're still having trouble accessing the URL try a ``vagrant reload`` after you've run a successful ``vagrant provision``.
-
-
+If you're still having trouble accessing the URL try a ``vagrant reload`` after you've run a successful ``vagrant provision``
 
 .. _ngrok: https://ngrok.com/download
