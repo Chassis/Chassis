@@ -1,7 +1,7 @@
 Reference
 =========
 
-.. highlight:: bash
+.. highlight:: console
 
 Commands
 --------
