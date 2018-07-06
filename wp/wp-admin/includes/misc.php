@@ -194,6 +194,8 @@ function insert_with_markers( $filename, $marker, $insertion ) {
  * @since 1.5.0
  *
  * @global WP_Rewrite $wp_rewrite
+ *
+ * @return bool|null True on write success, false on failure. Null in multisite.
  */
 function save_mod_rewrite_rules() {
 	if ( is_multisite() )
@@ -201,8 +203,11 @@ function save_mod_rewrite_rules() {
 
 	global $wp_rewrite;
 
-	$home_path = get_home_path();
-	$htaccess_file = $home_path.'.htaccess';
+	// Ensure get_home_path() is declared.
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+	$home_path     = get_home_path();
+	$htaccess_file = $home_path . '.htaccess';
 
 	/*
 	 * If the file doesn't already exist check for write access to the directory
@@ -226,7 +231,7 @@ function save_mod_rewrite_rules() {
  *
  * @global WP_Rewrite $wp_rewrite
  *
- * @return bool True if web.config was updated successfully
+ * @return bool|null True on write success, false on failure. Null in multisite.
  */
 function iis7_save_url_rewrite_rules(){
 	if ( is_multisite() )
@@ -234,7 +239,10 @@ function iis7_save_url_rewrite_rules(){
 
 	global $wp_rewrite;
 
-	$home_path = get_home_path();
+	// Ensure get_home_path() is declared.
+	require_once( ABSPATH . 'wp-admin/includes/file.php' );
+
+	$home_path       = get_home_path();
 	$web_config_file = $home_path . 'web.config';
 
 	// Using win_is_writable() instead of is_writable() because of a bug in Windows PHP
@@ -1150,7 +1158,7 @@ function update_option_new_admin_email( $old_value, $value ) {
 		return;
 	}
 
-	$hash = md5( $value . time() . mt_rand() );
+	$hash = md5( $value . time() . wp_rand() );
 	$new_admin_email = array(
 		'hash'     => $hash,
 		'newemail' => $value,
@@ -1701,7 +1709,7 @@ final class WP_Privacy_Policy_Content {
 
 			'<h3>' . __( 'Embedded content from other websites' ) . '</h3>' .
 			'<p>' . $suggested_text . __( 'Articles on this site may include embedded content (e.g. videos, images, articles, etc.). Embedded content from other websites behaves in the exact same way as if the visitor has visited the other website.' ) . '</p>' .
-			'<p>' . __( 'These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracing your interaction with the embedded content if you have an account and are logged in to that website.' ) . '</p>' .
+			'<p>' . __( 'These websites may collect data about you, use cookies, embed additional third-party tracking, and monitor your interaction with that embedded content, including tracking your interaction with the embedded content if you have an account and are logged in to that website.' ) . '</p>' .
 
 			'<h3>' . __( 'Analytics' ) . '</h3>';
 		$descr && $content .=
