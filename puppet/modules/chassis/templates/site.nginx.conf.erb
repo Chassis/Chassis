@@ -2,7 +2,7 @@ server {
 	listen 80;
 	server_name <%= @server_name %>;
 	root <%= @location %>;
-	client_max_body_size 50M;
+	client_max_body_size 100M;
 
 	fastcgi_split_path_info ^(.+\.php)(/.+)$;
 	fastcgi_index index.php;
