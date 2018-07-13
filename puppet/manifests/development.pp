@@ -55,14 +55,20 @@ chassis::wp { $config['hosts'][0]:
 	admin_user        => $config[admin][user],
 	admin_email       => $config[admin][email],
 	admin_password    => $config[admin][password],
-	plugins           => $config[plugins],
-	themes            => $config[themes],
 
 	extensions        => $extensions,
 
-	require  => [
+	require => [
 		Class['chassis::php'],
 		Package['git-core'],
 		Class['mysql::server'],
 	]
+}
+
+# Tasks wp::plugin and wp::theme run onlyif "/usr/bin/wp core is-installed":
+# sequence chassis::content after chassis::wp.
+-> chassis::content { $config['hosts'][0]:
+	location => $config[mapped_paths][base],
+	plugins  => $config[plugins],
+	themes   => $config[themes],
 }
