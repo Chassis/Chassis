@@ -1,4 +1,4 @@
-# Install our WordPress site and add our configuration.
+# Install WordPress themes and plugins.
 define chassis::content (
 	$location,
 	$plugins = [],
