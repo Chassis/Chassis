@@ -159,9 +159,9 @@ module Chassis
 			repo = extension
 		end
 
-		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '')
+		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
 
-		system("git clone %s %s --recursive" % [repo, folder] ) unless File.exist?( folder )
+		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 	end
 
 	def self.update_core

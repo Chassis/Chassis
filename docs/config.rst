@@ -67,6 +67,8 @@ You can use either a two-part version (``5.3``) or a three-part version
 WordPress Directory
 -------------------
 
+**Note**: Deprecated; use ``paths.wp`` instead.
+
 **Key**: ``wpdir``
 
 Chassis also includes the latest-released version of WordPress by default, but
@@ -285,11 +287,14 @@ These can be set to absolute paths, or relative paths.
       wp: wordpress
       content: wordpress/wp-content
 
-In case you have the Chassis folder nested within the project rather than wrapping it, eg: `base : ..`, you will need to navigate to Chassis folder in order to carry out any Vagrant commands, like `vagrant up`/`vagrant halt` and `vagrant ssh`, because they only work from the folder that has a `VagrantFile`.
-There is a workaround for that, which is to use the `VAGRANT_CWD` variable, eg: `VAGRANT_CWD=chassis vagrant ssh`. And you can automate this by using dotenv files with `direnv`_. Install it and from the project directory execute: `direnv allow .; echo 'export VAGRANT_CWD=chassis' > .envrc;` replacing `chassis` with your relative Chassis directory name.
+In case you have the Chassis folder nested within the project rather than wrapping it, eg: ``base : ..``, you will need to navigate to Chassis folder in order to carry out any Vagrant commands, like ``vagrant up``/``vagrant halt`` and ``vagrant ssh``, because they only work from the folder that has a ``VagrantFile``.
+There is a workaround for that, which is to use the ``VAGRANT_CWD`` variable, eg: ``VAGRANT_CWD=chassis vagrant ssh``. And you can automate this by using dotenv files with ``direnv``_. Install it and from the project directory execute: ``direnv allow .; echo 'export VAGRANT_CWD=chassis' > .envrc;`` replacing ``chassis`` with your relative Chassis directory name.
 
 
 .. _direnv: https://github.com/direnv/direnv
+
+.. note::
+   When you change the ``paths`` configuration you will need to run ``vagrant provision`` for the changes to be applied.
 
 Plugins
 -------
@@ -345,6 +350,15 @@ Extension names can be specified in one of three ways:
       - Tester
       - javorszky/chassis-openssl
       - https://bitbucket.org/some/example.git
+
+You can also remove extensions that you have previously installed. All configuration files will be remove from your Chassis server.
+
+To remove an extension simply add new section to one of your `.yaml` configuration files:
+
+.. code-block:: yaml
+
+   disabled_extensions:
+      - chassis/mailhog
 
 
 Machine Customisations

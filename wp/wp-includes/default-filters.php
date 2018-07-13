@@ -300,7 +300,7 @@ add_action( 'do_feed_rss2',               'do_feed_rss2',                       
 add_action( 'do_feed_atom',               'do_feed_atom',                            10, 1 );
 add_action( 'do_pings',                   'do_all_pings',                            10, 1 );
 add_action( 'do_robots',                  'do_robots'                                      );
-add_action( 'set_comment_cookies',        'wp_set_comment_cookies',                  10, 2 );
+add_action( 'set_comment_cookies',        'wp_set_comment_cookies',                  10, 3 );
 add_action( 'sanitize_comment_cookies',   'sanitize_comment_cookies'                       );
 add_action( 'admin_print_scripts',        'print_emoji_detection_script'                   );
 add_action( 'admin_print_scripts',        'print_head_scripts',                      20    );
@@ -319,6 +319,16 @@ add_action( 'transition_post_status',     '_update_term_count_on_transition_post
 add_action( 'comment_form',               'wp_comment_form_unfiltered_html_nonce'          );
 add_action( 'admin_init',                 'send_frame_options_header',               10, 0 );
 add_action( 'welcome_panel',              'wp_welcome_panel'                               );
+
+// Privacy
+add_action( 'user_request_action_confirmed', '_wp_privacy_account_request_confirmed' );
+add_action( 'user_request_action_confirmed', '_wp_privacy_send_request_confirmation_notification', 12 ); // After request marked as completed.
+add_filter( 'wp_privacy_personal_data_exporters', 'wp_register_comment_personal_data_exporter' );
+add_filter( 'wp_privacy_personal_data_exporters', 'wp_register_media_personal_data_exporter' );
+add_filter( 'wp_privacy_personal_data_exporters', 'wp_register_user_personal_data_exporter', 1 );
+add_filter( 'wp_privacy_personal_data_erasers', 'wp_register_comment_personal_data_eraser' );
+add_action( 'init', 'wp_schedule_delete_old_privacy_export_files' );
+add_action( 'wp_privacy_delete_old_export_files', 'wp_privacy_delete_old_export_files' );
 
 // Cron tasks
 add_action( 'wp_scheduled_delete',            'wp_scheduled_delete'       );
