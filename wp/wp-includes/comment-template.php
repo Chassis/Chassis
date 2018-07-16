@@ -2123,6 +2123,7 @@ function wp_list_comments( $args = array(), $comments = null ) {
  * @since 4.5.0 The 'author', 'email', and 'url' form fields are limited to 245, 100,
  *              and 200 characters, respectively.
  * @since 4.6.0 Introduced the 'action' argument.
+ * @since 4.9.6 Introduced the 'cookies' default comment field.
  *
  * @param array       $args {
  *     Optional. Default arguments and form fields to override.
@@ -2130,9 +2131,10 @@ function wp_list_comments( $args = array(), $comments = null ) {
  *     @type array $fields {
  *         Default comment fields, filterable by default via the {@see 'comment_form_default_fields'} hook.
  *
- *         @type string $author Comment author field HTML.
- *         @type string $email  Comment author email field HTML.
- *         @type string $url    Comment author URL field HTML.
+ *         @type string $author  Comment author field HTML.
+ *         @type string $email   Comment author email field HTML.
+ *         @type string $url     Comment author URL field HTML.
+ *         @type string $cookies Comment cookie opt-in field HTML.
  *     }
  *     @type string $comment_field        The comment textarea field HTML.
  *     @type string $must_log_in          HTML element for a 'must be logged in to comment' message.
@@ -2194,13 +2196,16 @@ function comment_form( $args = array(), $post_id = null ) {
 	$req      = get_option( 'require_name_email' );
 	$html_req = ( $req ? " required='required'" : '' );
 	$html5    = 'html5' === $args['format'];
+	$consent  = empty( $commenter['comment_author_email'] ) ? '' : ' checked="checked"';
 	$fields   =  array(
-		'author' => '<p class="comment-form-author">' . '<label for="author">' . __( 'Name' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' .
-		            '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" maxlength="245"' . $html_req . ' /></p>',
-		'email'  => '<p class="comment-form-email"><label for="email">' . __( 'Email' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' .
-		            '<input id="email" name="email" ' . ( $html5 ? 'type="email"' : 'type="text"' ) . ' value="' . esc_attr(  $commenter['comment_author_email'] ) . '" size="30" maxlength="100" aria-describedby="email-notes"' . $html_req  . ' /></p>',
-		'url'    => '<p class="comment-form-url"><label for="url">' . __( 'Website' ) . '</label> ' .
-		            '<input id="url" name="url" ' . ( $html5 ? 'type="url"' : 'type="text"' ) . ' value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" maxlength="200" /></p>',
+		'author'  => '<p class="comment-form-author">' . '<label for="author">' . __( 'Name' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' .
+					 '<input id="author" name="author" type="text" value="' . esc_attr( $commenter['comment_author'] ) . '" size="30" maxlength="245"' . $html_req . ' /></p>',
+		'email'   => '<p class="comment-form-email"><label for="email">' . __( 'Email' ) . ( $req ? ' <span class="required">*</span>' : '' ) . '</label> ' .
+					 '<input id="email" name="email" ' . ( $html5 ? 'type="email"' : 'type="text"' ) . ' value="' . esc_attr( $commenter['comment_author_email'] ) . '" size="30" maxlength="100" aria-describedby="email-notes"' . $html_req . ' /></p>',
+		'url'     => '<p class="comment-form-url"><label for="url">' . __( 'Website' ) . '</label> ' .
+					 '<input id="url" name="url" ' . ( $html5 ? 'type="url"' : 'type="text"' ) . ' value="' . esc_attr( $commenter['comment_author_url'] ) . '" size="30" maxlength="200" /></p>',
+		'cookies' => '<p class="comment-form-cookies-consent"><input id="wp-comment-cookies-consent" name="wp-comment-cookies-consent" type="checkbox" value="yes"' . $consent . ' />' .
+					 '<label for="wp-comment-cookies-consent">' . __( 'Save my name, email, and website in this browser for the next time I comment.' ) . '</label></p>',
 	);
 
 	$required_text = sprintf( ' ' . __('Required fields are marked %s'), '<span class="required">*</span>' );

@@ -1896,3 +1896,55 @@ function plugin_sandbox_scrape( $plugin ) {
 	wp_register_plugin_realpath( WP_PLUGIN_DIR . '/' . $plugin );
 	include( WP_PLUGIN_DIR . '/' . $plugin );
 }
+
+/**
+ * Helper function for adding content to the Privacy Policy Guide.
+ *
+ * Plugins and themes should suggest text for inclusion in the site's privacy policy.
+ * The suggested text should contain information about any functionality that affects user privacy,
+ * and will be shown on the Privacy Policy Guide screen.
+ *
+ * A plugin or theme can use this function multiple times as long as it will help to better present
+ * the suggested policy content. For example modular plugins such as WooCommerse or Jetpack
+ * can add or remove suggested content depending on the modules/extensions that are enabled.
+ * For more information see the Plugin Handbook:
+ * https://developer.wordpress.org/plugins/privacy/suggesting-text-for-the-site-privacy-policy/.
+ *
+ * Intended for use with the `'admin_init'` action.
+ *
+ * @since 4.9.6
+ *
+ * @param string $plugin_name The name of the plugin or theme that is suggesting content for the site's privacy policy.
+ * @param string $policy_text The suggested content for inclusion in the policy.
+ */
+function wp_add_privacy_policy_content( $plugin_name, $policy_text ) {
+	if ( ! is_admin() ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: admin_init */
+				__( 'The suggested privacy policy content should be added only in wp-admin by using the %s (or later) action.' ),
+				'<code>admin_init</code>'
+			),
+			'4.9.7'
+		);
+		return;
+	} elseif ( ! doing_action( 'admin_init' ) && ! did_action( 'admin_init' ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: admin_init */
+				__( 'The suggested privacy policy content should be added by using the %s (or later) action. Please see the inline documentation.' ),
+				'<code>admin_init</code>'
+			),
+			'4.9.7'
+		);
+		return;
+	}
+
+	if ( ! class_exists( 'WP_Privacy_Policy_Content' ) ) {
+		require_once( ABSPATH . 'wp-admin/includes/misc.php' );
+	}
+
+	WP_Privacy_Policy_Content::add( $plugin_name, $policy_text );
+}
