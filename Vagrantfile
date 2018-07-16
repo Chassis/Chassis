@@ -129,9 +129,6 @@ Vagrant.configure("2") do |config|
 		]
 	end
 
-	# Show the URL and login details.
-	config.vm.post_up_message = Chassis.post_up_message
-
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
 	synced_folders["."] = "/vagrant"
