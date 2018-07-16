@@ -67,17 +67,7 @@ Vagrant.configure("2") do |config|
 	if CONF['ip'] == "dhcp"
 		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
 	else
-		config.vm.network :private_network, ip: CONF['ip']
-		# Add IP addresses of the other domains to /etc/hosts
-		if defined?(VagrantPlugins::HostsUpdater)
-			if CONF['hosts'].count > 1
-				# Clone the current hosts so we can remove the primary domain
-				aliases = CONF['hosts'].clone
-				aliases.shift
-				# Add the aliases to /etc/hosts
-				config.hostsupdater.aliases = aliases
-			end
-		end
+		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
 	end
 	config.vm.hostname = CONF['hosts'][0]
 
