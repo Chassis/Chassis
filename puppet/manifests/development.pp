@@ -65,10 +65,11 @@ chassis::wp { $config['hosts'][0]:
 	]
 }
 
-# Tasks wp::plugin and wp::theme run onlyif "/usr/bin/wp core is-installed":
-# sequence chassis::content after chassis::wp.
--> chassis::content { $config['hosts'][0]:
+chassis::content { $config['hosts'][0]:
 	location => $config[mapped_paths][base],
 	plugins  => $config[plugins],
 	themes   => $config[themes],
+
+	# These tasks will not run unless WP is installed.
+	require  => Chassis::Wp[ $config['hosts'][0] ],
 }

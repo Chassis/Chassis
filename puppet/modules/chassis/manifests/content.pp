@@ -4,13 +4,13 @@ define chassis::content (
 	$plugins = [],
 	$themes = [],
 ) {
-  wp::plugin { $plugins:
-    ensure   => 'enabled',
-    location => $location,
-  }
+	wp::plugin { $plugins:
+		ensure   => 'enabled',
+		location => $location,
+	}
 
-  wp::theme { $themes:
-    ensure   => 'enabled',
-    location => $location,
-  }
+	wp::theme { $themes:
+		ensure   => 'enabled',
+		location => $location,
+	}
 }
