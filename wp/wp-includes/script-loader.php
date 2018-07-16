@@ -130,7 +130,7 @@ function wp_default_scripts( &$scripts ) {
 	$scripts->add( 'wp-ajax-response', "/wp-includes/js/wp-ajax-response$suffix.js", array('jquery'), false, 1 );
 	did_action( 'init' ) && $scripts->localize( 'wp-ajax-response', 'wpAjax', array(
 		'noPerm' => __('Sorry, you are not allowed to do that.'),
-		'broken' => __('An unidentified error has occurred.')
+		'broken' => __('Something went wrong.')
 	) );
 
 	$scripts->add( 'wp-api-request', "/wp-includes/js/api-request$suffix.js", array( 'jquery' ), false, 1 );
@@ -562,7 +562,8 @@ function wp_default_scripts( &$scripts ) {
 		'close'              => __( 'Close' ),
 		'action'             => __( 'Action' ),
 		'discardChanges'     => __( 'Discard changes' ),
-		'cheatin'            => __( 'Cheatin&#8217; uh?' ),
+		'cheatin'            => __( 'Something went wrong.' ),
+		'notAllowedHeading'  => __( 'You need a higher level of permission.' ),
 		'notAllowed'         => __( 'Sorry, you are not allowed to customize this site.' ),
 		'previewIframeTitle' => __( 'Site Preview' ),
 		'loginIframeTitle'   => __( 'Session expired' ),
@@ -641,7 +642,7 @@ function wp_default_scripts( &$scripts ) {
 		$scripts->add( 'admin-tags', "/wp-admin/js/tags$suffix.js", array( 'jquery', 'wp-ajax-response' ), false, 1 );
 		did_action( 'init' ) && $scripts->localize( 'admin-tags', 'tagsl10n', array(
 			'noPerm' => __('Sorry, you are not allowed to do that.'),
-			'broken' => __('An unidentified error has occurred.')
+			'broken' => __('Something went wrong.')
 		));
 
 		$scripts->add( 'admin-comments', "/wp-admin/js/edit-comments$suffix.js", array('wp-lists', 'quicktags', 'jquery-query'), false, 1 );
@@ -658,6 +659,17 @@ function wp_default_scripts( &$scripts ) {
 		) );
 
 		$scripts->add( 'xfn', "/wp-admin/js/xfn$suffix.js", array('jquery'), false, 1 );
+		did_action( 'init' ) && $scripts->localize(
+			'xfn', 'privacyToolsL10n', array(
+				'noDataFound'     => __( 'No personal data was found for this user.' ),
+				'foundAndRemoved' => __( 'All of the personal data found for this user was erased.' ),
+				'noneRemoved'     => __( 'Personal data was found for this user but was not erased.' ),
+				'someNotRemoved'  => __( 'Personal data was found for this user but some of the personal data found was not erased.' ),
+				'removalError'    => __( 'An error occurred while attempting to find and erase personal data.' ),
+				'noExportFile'    => __( 'No personal data export file was generated.' ),
+				'exportError'     => __( 'An error occurred while attempting to export personal data.' ),
+			)
+		);
 
 		$scripts->add( 'postbox', "/wp-admin/js/postbox$suffix.js", array('jquery-ui-sortable'), false, 1 );
 		did_action( 'init' ) && $scripts->localize( 'postbox', 'postBoxL10n', array(
@@ -835,7 +847,7 @@ function wp_default_scripts( &$scripts ) {
 				'activateImporter'           => __( 'Run Importer' ),
 				/* translators: %s: Importer name */
 				'activateImporterLabel'      => __( 'Run %s' ),
-				'unknownError'               => __( 'An unidentified error has occurred.' ),
+				'unknownError'               => __( 'Something went wrong.' ),
 				'connectionError'            => __( 'Connection lost or the server is busy. Please try again later.' ),
 				'nonceError'                 => __( 'An error has occurred. Please reload the page and try again.' ),
 				'pluginsFound'               => __( 'Number of plugins found: %d' ),

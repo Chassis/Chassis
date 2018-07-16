@@ -98,3 +98,12 @@ additional configuration into this directory. PHP extensions installed via
 packages (e.g. ``php-xdebug``) will automatically place configuration into this
 directory to load the extension (typically with a filename like
 ``10-xdebug.ini``).
+
+Database
+--------
+
+The root MySQL credentials, if you need them, are:
+
+**Username**: ``root``
+
+**Password**: ``password``

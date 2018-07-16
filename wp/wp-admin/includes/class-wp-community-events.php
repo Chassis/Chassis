@@ -234,7 +234,6 @@ class WP_Community_Events {
 	 */
 	public static function get_unsafe_client_ip() {
 		$client_ip = $netmask = false;
-		$ip_prefix = '';
 
 		// In order of preference, with the best ones for this purpose first.
 		$address_headers = array(
@@ -265,43 +264,13 @@ class WP_Community_Events {
 			return false;
 		}
 
-		// Detect what kind of IP address this is.
-		$is_ipv6 = substr_count( $client_ip, ':' ) > 1;
-		$is_ipv4 = ( 3 === substr_count( $client_ip, '.' ) );
+		$anon_ip = wp_privacy_anonymize_ip( $client_ip, true );
 
-		if ( $is_ipv6 && $is_ipv4 ) {
-			// IPv6 compatibility mode, temporarily strip the IPv6 part, and treat it like IPv4.
-			$ip_prefix = '::ffff:';
-			$client_ip = preg_replace( '/^\[?[0-9a-f:]*:/i', '', $client_ip );
-			$client_ip = str_replace( ']', '', $client_ip );
-			$is_ipv6   = false;
-		}
-
-		if ( $is_ipv6 ) {
-			// IPv6 addresses will always be enclosed in [] if there's a port.
-			$ip_start = 1;
-			$ip_end   = (int) strpos( $client_ip, ']' ) - 1;
-			$netmask  = 'ffff:ffff:ffff:ffff:0000:0000:0000:0000';
-
-			// Strip the port (and [] from IPv6 addresses), if they exist.
-			if ( $ip_end > 0 ) {
-				$client_ip = substr( $client_ip, $ip_start, $ip_end );
-			}
-
-			// Partially anonymize the IP by reducing it to the corresponding network ID.
-			if ( function_exists( 'inet_pton' ) && function_exists( 'inet_ntop' ) ) {
-				$client_ip = inet_ntop( inet_pton( $client_ip ) & inet_pton( $netmask ) );
-			}
-		} elseif ( $is_ipv4 ) {
-			// Strip any port and partially anonymize the IP.
-			$last_octet_position = strrpos( $client_ip, '.' );
-			$client_ip           = substr( $client_ip, 0, $last_octet_position ) . '.0';
-		} else {
+		if ( '0.0.0.0' === $anon_ip || '::' === $anon_ip ) {
 			return false;
 		}
 
-		// Restore the IPv6 prefix to compatibility mode addresses.
-		return $ip_prefix . $client_ip;
+		return $anon_ip;
 	}
 
 	/**
@@ -416,20 +385,33 @@ class WP_Community_Events {
 	}
 
 	/**
-	 * Discards expired events, and reduces the remaining list.
+	 * Prepares the event list for presentation.
+	 *
+	 * Discards expired events, and makes WordCamps "sticky." Attendees need more
+	 * advanced notice about WordCamps than they do for meetups, so camps should
+	 * appear in the list sooner. If a WordCamp is coming up, the API will "stick"
+	 * it in the response, even if it wouldn't otherwise appear. When that happens,
+	 * the event will be at the end of the list, and will need to be moved into a
+	 * higher position, so that it doesn't get trimmed off.
 	 *
 	 * @since 4.8.0
+	 * @since 4.9.7 Stick a WordCamp to the final list.
 	 *
 	 * @param  array $response_body The response body which contains the events.
 	 * @return array The response body with events trimmed.
 	 */
 	protected function trim_events( $response_body ) {
 		if ( isset( $response_body['events'] ) ) {
+			$wordcamps         = array();
 			$current_timestamp = current_time( 'timestamp' );
 
 			foreach ( $response_body['events'] as $key => $event ) {
-				// Skip WordCamps, because they might be multi-day events.
-				if ( 'meetup' !== $event['type'] ) {
+				/*
+				 * Skip WordCamps, because they might be multi-day events.
+				 * Save a copy so they can be pinned later.
+				 */
+				if ( 'wordcamp' === $event['type'] ) {
+					$wordcamps[] = $event;
 					continue;
 				}
 
@@ -441,6 +423,13 @@ class WP_Community_Events {
 			}
 
 			$response_body['events'] = array_slice( $response_body['events'], 0, 3 );
+			$trimmed_event_types     = wp_list_pluck( $response_body['events'], 'type' );
+
+			// Make sure the soonest upcoming WordCamps is pinned in the list.
+			if ( ! in_array( 'wordcamp', $trimmed_event_types ) && $wordcamps ) {
+				array_pop( $response_body['events'] );
+				array_push( $response_body['events'], $wordcamps[0] );
+			}
 		}
 
 		return $response_body;
