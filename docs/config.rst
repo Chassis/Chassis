@@ -63,6 +63,29 @@ You can use either a two-part version (``5.3``) or a three-part version
 .. note::
    There are a few known issues on Windows with PHP 5.4.
 
+PHP Configuration
+-----------------
+
+**Key**: ``php_config``
+
+While Chassis provisions PHP with the necessary packages and standard configuration
+needed to run WordPress these might not always match the set up you have in
+production, or you may want to modify certain configuration settings to test against.
+
+To add extra extensions such as `intl` or override the default `php.ini`
+settings add a section to your config file like so::
+
+   php_config:
+      extensions:
+         - intl
+         - pdo
+         - imagick
+      ini:
+         memory_limit: 256M
+         post_max_size: 10M
+
+.. note::
+   Available extensions may depend on the version of PHP configured.
 
 WordPress Directory
 -------------------

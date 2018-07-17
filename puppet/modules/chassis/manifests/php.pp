@@ -2,6 +2,7 @@
 class chassis::php (
 	$extensions = [],
 	$version = '5.6',
+	$config = {},
 ) {
 	# Ensure add-apt-repository is actually available.
 	if !defined(Package[$::apt::ppa_package]) {
@@ -13,6 +14,13 @@ class chassis::php (
 	apt::ppa { 'ppa:ondrej/php':
 		require => [ Package[ $::apt::ppa_package ] ],
 	}
+
+	$defaults = {
+		ini => {},
+		extensions => [],
+	}
+
+	$options = deep_merge($defaults, $config)
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
 		$package_version = "${version}.*"
@@ -78,7 +86,9 @@ class chassis::php (
 			"${php_package}-zip"
 		]
 	}
-	$prefixed_extensions = prefix($extensions, "${php_package}-")
+
+	$all_extensions = union($extensions, $options[extensions])
+	$prefixed_extensions = prefix($all_extensions, "${php_package}-")
 
 	# Hold the packages at the necessary version
 	apt::pin { $packages:

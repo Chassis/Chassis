@@ -17,6 +17,7 @@ include apt
 class { 'chassis::php':
 	extensions => $php_extensions,
 	version => $config[php],
+	config => $config[php_config],
 	require => [
 		Class['apt'],
 	],
