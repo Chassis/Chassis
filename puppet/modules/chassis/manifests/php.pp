@@ -99,27 +99,27 @@ class chassis::php (
 
 	case $short_ver {
 		'5.6': {
-			remove_php_fpm { [ '7.0', '7.1', '7.2' ]:
+			chassis::php::remove_php_fpm { [ '7.0', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.0': {
-			remove_php_fpm { [ '5.6', '7.1', '7.2' ]:
+			chassis::php::remove_php_fpm { [ '5.6', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.1': {
-			remove_php_fpm { [ '5.6', '7.0', '7.2' ]:
+			chassis::php::remove_php_fpm { [ '5.6', '7.0', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.2': {
-			remove_php_fpm { [ '5.6', '7.0', '7.1' ]:
+			chassis::php::remove_php_fpm { [ '5.6', '7.0', '7.1' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		default: {
-			remove_php_fpm { [ '5.6', '7.1', '7.2' ]:
+			chassis::php::remove_php_fpm { [ 'old', '5.5', '5.6' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
