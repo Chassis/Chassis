@@ -118,10 +118,7 @@ class chassis::php (
 				notify => Service["${php_package}-fpm"],
 			}
 		}
-		default: {
-			remove_php_fpm { [ '5.6', '7.1', '7.2' ]:
-				notify => Service["${php_package}-fpm"],
-			}
+		default:
 		}
 	}
 
