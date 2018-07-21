@@ -118,8 +118,7 @@ class chassis::php (
 				notify => Service["${php_package}-fpm"],
 			}
 		}
-		default:
-		}
+		default: {}
 	}
 
 	# Install the extensions we need
