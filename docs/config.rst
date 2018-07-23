@@ -51,17 +51,14 @@ repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
 
-To switch to 5.3 for example:
+To switch to 5.6 for example:
 
-1. Add ``php: 5.3``
+1. Add ``php: 5.6``
 2. Run ``vagrant provision``
 
-You can use either a two-part version (``5.3``) or a three-part version
-(``5.3.1``) if you want to pick specifc versions. We support any version between
-5.3.0 and 5.6.x.
-
-.. note::
-   There are a few known issues on Windows with PHP 5.4.
+You can use either a two-part version (``5.6``) or a three-part version
+(``5.6.1``) if you want to pick specifc versions. We support any version between
+5.6.0 and 7.2.x.
 
 
 WordPress Directory
@@ -286,6 +283,15 @@ These can be set to absolute paths, or relative paths.
       base: .
       wp: wordpress
       content: wordpress/wp-content
+
+There are a few important things to note about ``paths``:
+
+1. Paths must be set in ``config.local.yaml`` in the same directory as your ``Vagrantfile``.
+2. Path's can't be used in ``content/config.yaml``.
+3. ``base`` is relative to ``Vagrantfile``.
+4. ``content`` and ``wp`` are relative to ``base``.
+5. When used, the internal mount point is changed to ``/chassis`` instead of ``/vagrant``.
+6. Any time you make a change to the paths you will need to run ``vagrant reload`` for those changes to take effect.
 
 In case you have the Chassis folder nested within the project rather than wrapping it, eg: ``base : ..``, you will need to navigate to Chassis folder in order to carry out any Vagrant commands, like ``vagrant up``/``vagrant halt`` and ``vagrant ssh``, because they only work from the folder that has a ``VagrantFile``.
 There is a workaround for that, which is to use the ``VAGRANT_CWD`` variable, eg: ``VAGRANT_CWD=chassis vagrant ssh``. And you can automate this by using dotenv files with ``direnv``_. Install it and from the project directory execute: ``direnv allow .; echo 'export VAGRANT_CWD=chassis' > .envrc;`` replacing ``chassis`` with your relative Chassis directory name.
