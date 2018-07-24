@@ -36,6 +36,10 @@ fi
 # Delete the chassis-provisioned and any custom config files as we don't want that in the base box.
 /usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
 
+# Clear any logs and errors that might be on the box.
+
+/usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /var/log/php/*; sudo rm -f /var/log/nginx/*;'
+
 echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0m"
 
 vagrant halt
