@@ -1203,7 +1203,7 @@ function wp_calculate_image_srcset( $size_array, $image_src, $image_meta, $attac
 	$sources = apply_filters( 'wp_calculate_image_srcset', $sources, $size_array, $image_src, $image_meta, $attachment_id );
 
 	// Only return a 'srcset' value if there is more than one source.
-	if ( ! $src_matched || count( $sources ) < 2 ) {
+	if ( ! $src_matched || ! is_array( $sources ) || count( $sources ) < 2 ) {
 		return false;
 	}
 
@@ -1578,7 +1578,7 @@ function img_caption_shortcode( $attr, $content = null ) {
 
 	$style = '';
 	if ( $caption_width ) {
-		$style = 'style="max-width: ' . (int) $caption_width . 'px" ';
+		$style = 'style="width: ' . (int) $caption_width . 'px" ';
 	}
 
 	if ( $html5 ) {
@@ -3523,6 +3523,7 @@ function wp_enqueue_media( $args = array() ) {
 		'noItemsFound'           => __( 'No items found.' ),
 		'insertIntoPost'         => $post_type_object->labels->insert_into_item,
 		'unattached'             => __( 'Unattached' ),
+		'mine'                   => _x( 'Mine', 'media items' ),
 		'trash'                  => _x( 'Trash', 'noun' ),
 		'uploadedToThisPost'     => $post_type_object->labels->uploaded_to_this_item,
 		'warnDelete'             => __( "You are about to permanently delete this item from your site.\nThis action cannot be undone.\n 'Cancel' to stop, 'OK' to delete." ),
@@ -3955,4 +3956,80 @@ function wpview_media_sandbox_styles() {
  	$wpmediaelement = includes_url( "js/mediaelement/wp-mediaelement.css?$version" );
 
 	return array( $mediaelement, $wpmediaelement );
+}
+
+/**
+ * Registers the personal data exporter for media
+ *
+ * @param array   $exporters   An array of personal data exporters.
+ * @return array  An array of personal data exporters.
+ */
+function wp_register_media_personal_data_exporter( $exporters ) {
+	$exporters['wordpress-media'] = array(
+		'exporter_friendly_name' => __( 'WordPress Media' ),
+		'callback'               => 'wp_media_personal_data_exporter',
+	);
+
+	return $exporters;
+}
+
+/**
+ * Finds and exports attachments associated with an email address.
+ *
+ * @since 4.9.6
+ *
+ * @param  string $email_address The attachment owner email address.
+ * @param  int    $page          Attachment page.
+ * @return array  $return        An array of personal data.
+ */
+function wp_media_personal_data_exporter( $email_address, $page = 1 ) {
+	// Limit us to 50 attachments at a time to avoid timing out.
+	$number = 50;
+	$page   = (int) $page;
+
+	$data_to_export = array();
+
+	$user = get_user_by( 'email' , $email_address );
+	if ( false === $user ) {
+		return array(
+			'data' => $data_to_export,
+			'done' => true,
+		);
+	}
+
+	$post_query = new WP_Query(
+		array(
+			'author'         => $user->ID,
+			'posts_per_page' => $number,
+			'paged'          => $page,
+			'post_type'      => 'attachment',
+			'post_status'    => 'any',
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
+		)
+	);
+
+	foreach ( (array) $post_query->posts as $post ) {
+		$attachment_url = wp_get_attachment_url( $post->ID );
+
+		if ( $attachment_url ) {
+			$post_data_to_export = array(
+				array( 'name'  => __( 'URL' ), 'value' => $attachment_url ),
+			);
+
+			$data_to_export[] = array(
+				'group_id'    => 'media',
+				'group_label' => __( 'Media' ),
+				'item_id'     => "post-{$post->ID}",
+				'data'        => $post_data_to_export,
+			);
+		}
+	}
+
+	$done = $post_query->max_num_pages <= $page;
+
+	return array(
+		'data' => $data_to_export,
+		'done' => $done,
+	);
 }

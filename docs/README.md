@@ -9,7 +9,7 @@ You'll need to grab a copy of Sphinx (the documentation generator) and
 associated tools first:
 
 ```bash
-$ sudo -H pip install Sphinx sphinx-autobuild sphinx_rtd_theme imagesize livereload==2.2.0
+$ sudo -H pip install Sphinx sphinx-autobuild sphinx_rtd_theme imagesize livereload==2.3.0
 ```
 
 Then to build, run the `sphinx-build` within this documentation folder:

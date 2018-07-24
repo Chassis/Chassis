@@ -953,9 +953,6 @@ Library = wp.media.controller.State.extend(/** @lends wp.media.controller.Librar
 			}) );
 		}
 
-		this._filterContext();
-		this.get('library').on( 'add', this._filterContext, this );
-
 		this.resetDisplays();
 	},
 
@@ -1155,20 +1152,8 @@ Library = wp.media.controller.State.extend(/** @lends wp.media.controller.Librar
 		if ( view && view.get( mode ) ) {
 			setUserSetting( 'libraryContent', mode );
 		}
-	},
-
-	/**
-	 * Filter out contextually created attachments (e.g. headers, logos, etc.)
-	 *
-	 * @since 4.9.0
-	 */
-	_filterContext: function() {
-		var library = this.get('library');
-
-		library.set( library.filter( function( item ) {
-			return item.get('context') === '';
-		} ) );
 	}
+
 });
 
 // Make selectionSync available on any Media Library state.
@@ -7037,6 +7022,7 @@ Uploaded = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attac
 	createFilters: function() {
 		var type = this.model.get('type'),
 			types = wp.media.view.settings.mimeTypes,
+			uid = window.userSettings ? parseInt( window.userSettings.uid, 10 ) : 0,
 			text;
 
 		if ( types && type ) {
@@ -7049,7 +7035,8 @@ Uploaded = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attac
 				props: {
 					uploadedTo: null,
 					orderby: 'date',
-					order:   'DESC'
+					order:   'DESC',
+					author:	 null
 				},
 				priority: 10
 			},
@@ -7059,7 +7046,8 @@ Uploaded = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attac
 				props: {
 					uploadedTo: wp.media.view.settings.post.id,
 					orderby: 'menuOrder',
-					order:   'ASC'
+					order:   'ASC',
+					author:	 null
 				},
 				priority: 20
 			},
@@ -7069,11 +7057,24 @@ Uploaded = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attac
 				props: {
 					uploadedTo: 0,
 					orderby: 'menuOrder',
-					order:   'ASC'
+					order:   'ASC',
+					author:	 null
 				},
 				priority: 50
 			}
 		};
+
+		if ( uid ) {
+			this.filters.mine = {
+				text:  l10n.mine,
+				props: {
+					orderby: 'date',
+					order:   'DESC',
+					author:  uid
+				},
+				priority: 50
+			};
+		}
 	}
 });
 
@@ -7100,7 +7101,8 @@ var l10n = wp.media.view.l10n,
  */
 All = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.AttachmentFilters.All.prototype */{
 	createFilters: function() {
-		var filters = {};
+		var filters = {},
+			uid = window.userSettings ? parseInt( window.userSettings.uid, 10 ) : 0;
 
 		_.each( wp.media.view.settings.mimeTypes || {}, function( text, key ) {
 			filters[ key ] = {
@@ -7110,7 +7112,8 @@ All = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attachment
 					type:    key,
 					uploadedTo: null,
 					orderby: 'date',
-					order:   'DESC'
+					order:   'DESC',
+					author:  null
 				}
 			};
 		});
@@ -7122,7 +7125,8 @@ All = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attachment
 				type:    null,
 				uploadedTo: null,
 				orderby: 'date',
-				order:   'DESC'
+				order:   'DESC',
+				author:  null
 			},
 			priority: 10
 		};
@@ -7135,7 +7139,8 @@ All = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attachment
 					type:    null,
 					uploadedTo: wp.media.view.settings.post.id,
 					orderby: 'menuOrder',
-					order:   'ASC'
+					order:   'ASC',
+					author:  null
 				},
 				priority: 20
 			};
@@ -7148,10 +7153,26 @@ All = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attachment
 				uploadedTo: 0,
 				type:       null,
 				orderby:    'menuOrder',
-				order:      'ASC'
+				order:      'ASC',
+				author:     null
 			},
 			priority: 50
 		};
+
+		if ( uid ) {
+			filters.mine = {
+				text:  l10n.mine,
+				props: {
+					status:		null,
+					type:		null,
+					uploadedTo:	null,
+					orderby:	'date',
+					order:		'DESC',
+					author:		uid
+				},
+				priority: 50
+			};
+		}
 
 		if ( wp.media.view.settings.mediaTrash &&
 			this.controller.isModeActive( 'grid' ) ) {
@@ -7163,7 +7184,8 @@ All = wp.media.view.AttachmentFilters.extend(/** @lends wp.media.view.Attachment
 					status:     'trash',
 					type:       null,
 					orderby:    'date',
-					order:      'DESC'
+					order:      'DESC',
+					author:     null
 				},
 				priority: 50
 			};
