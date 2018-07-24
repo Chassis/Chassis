@@ -44,6 +44,9 @@ echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0
 
 vagrant halt
 
+# The version number of the base box.
+VERSION=1.0.0
+
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
 
@@ -52,7 +55,7 @@ echo "\033[0;32mWe now need you to copy and paste your Vagrant Cloud authenicati
 read -sp 'Token: ' TOKEN
 
 # We need to get an upload path from the Vagrant Cloud API.
-RESPONSE=$(curl --silent --header "Authorization: Bearer $TOKEN" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/1.0.0/provider/virtualbox/upload)
+RESPONSE=$(curl --silent --header "Authorization: Bearer $TOKEN" https://app.vagrantup.com/api/v1/box/chassis/chassis/version/$VERSION/provider/virtualbox/upload)
 
 # Requires the jq command.
 UPLOAD_PATH=$(echo "$RESPONSE" | jq -r .upload_path)
