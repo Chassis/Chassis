@@ -38,6 +38,10 @@ working. However, further configuration is required.</p>
 
 <p>There is a chance that a provision was not completed correctly. Please try running <code>vagrant provision</code> in a Terminal window to see if this resolves your issue.<p>
 
+<h3>Have you tried provisioning your Chassis box without an extensions?</h3>
+
+<p>Chassis gives you the ability to install <a href="http://docs.chassis.io/en/latest/config/#extensions">extensions</a> and sometimes there might be an issue with an extension that causes Chassis to fail during provisioning. Try deleting any extensions you have installed in <code>extensions</code> and also delete any extensions that you have specified in your <a href="http://docs.chassis.io/en/latest/config/">configuration files</a>. Once you have done this please run <code>vagrant provision</code> in a Terminal window.</p>
+
 <h3>Log an issue</h3>
 
 <p>If none of the troubleshooting tips resolve your problem please <a href="https://github.com/Chassis/Chassis/issues/new">open a new issue</a> in the Chassis GitHub repository and one of the Chassis maintainers or core contributors will try and assist you within 7 - 10 days.</p>
