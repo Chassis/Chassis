@@ -11,7 +11,8 @@ require_once( dirname( __FILE__ ) . '/admin.php' );
 
 wp_enqueue_script( 'underscore' );
 
-$title = __( 'About' );
+/* translators: Page title of the About WordPress page in the admin. */
+$title = _x( 'About', 'page title' );
 
 list( $display_version ) = explode( '-', get_bloginfo( 'version' ) );
 
@@ -35,7 +36,27 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 			<p>
 				<?php
 				printf(
-				/* translators: 1: WordPress version number, 2: plural number of bugs. */
+					/* translators: 1: WordPress version number, 2: plural number of bugs. */
+					_n(
+						'<strong>Version %1$s</strong> addressed %2$s bug.',
+						'<strong>Version %1$s</strong> addressed %2$s bugs.',
+						46
+					),
+					'4.9.8',
+					number_format_i18n( 46 )
+				);
+
+				printf(
+					/* translators: %s: Codex URL */
+					__( 'For more information, see <a href="%s">the release notes</a>.' ),
+					'https://codex.wordpress.org/Version_4.9.8'
+				);
+				?>
+			</p>
+			<p>
+				<?php
+				printf(
+					/* translators: 1: WordPress version number, 2: plural number of bugs. */
 					_n(
 						'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug.',
 						'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs.',

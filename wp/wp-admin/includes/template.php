@@ -337,6 +337,16 @@ function get_inline_data($post) {
 	if ( post_type_supports( $post->post_type, 'post-formats' ) )
 		echo '<div class="post_format">' . esc_html( get_post_format( $post->ID ) ) . '</div>';
 
+	/**
+	 * Fires after outputting the fields for the inline editor for posts and pages.
+	 *
+	 * @since 4.9.8
+	 *
+	 * @param WP_Post      $post             The current post object.
+	 * @param WP_Post_Type $post_type_object The current post's post type object.
+	 */
+	do_action( 'add_inline_data', $post, $post_type_object );
+
 	echo '</div>';
 }
 
@@ -1763,6 +1773,10 @@ function _post_states($post) {
 		if ( intval( get_option( 'page_for_posts' ) ) === $post->ID ) {
 			$post_states['page_for_posts'] = __( 'Posts Page' );
 		}
+	}
+
+	if ( intval( get_option( 'wp_page_for_privacy_policy' ) ) === $post->ID ) {
+		$post_states['page_for_privacy_policy'] = __( 'Privacy Policy Page' );
 	}
 
 	/**
