@@ -2657,11 +2657,7 @@ function send_confirmation_on_profile_email() {
 		);
 		update_user_meta( $current_user->ID, '_new_email', $new_user_email );
 
-		if ( is_multisite() ) {
-			$sitename = get_site_option( 'site_name' );
-		} else {
-			$sitename = get_option( 'blogname' );
-		}
+		$sitename = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
 
 		/* translators: Do not translate USERNAME, ADMIN_URL, EMAIL, SITENAME, SITEURL: those are placeholders. */
 		$email_text = __( 'Howdy ###USERNAME###,
@@ -2706,10 +2702,10 @@ All at ###SITENAME###
 		$content = str_replace( '###USERNAME###', $current_user->user_login, $content );
 		$content = str_replace( '###ADMIN_URL###', esc_url( admin_url( 'profile.php?newuseremail=' . $hash ) ), $content );
 		$content = str_replace( '###EMAIL###', $_POST['email'], $content );
-		$content = str_replace( '###SITENAME###', wp_specialchars_decode( $sitename, ENT_QUOTES ), $content );
-		$content = str_replace( '###SITEURL###', network_home_url(), $content );
+		$content = str_replace( '###SITENAME###', $sitename, $content );
+		$content = str_replace( '###SITEURL###', home_url(), $content );
 
-		wp_mail( $_POST['email'], sprintf( __( '[%s] New Email Address' ), wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) ), $content );
+		wp_mail( $_POST['email'], sprintf( __( '[%s] New Email Address' ), $sitename ), $content );
 
 		$_POST['email'] = $current_user->user_email;
 	}
@@ -2895,13 +2891,8 @@ function _wp_privacy_send_request_confirmation_notification( $request_id ) {
 		return;
 	}
 
-	$subject = sprintf(
-		/* translators: %s Site name. */
-		__( '[%s] Action Confirmed' ),
-		wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES )
-	);
-
-	$manage_url = add_query_arg( 'page', $request_data->action_name, admin_url( 'tools.php' ) );
+	$manage_url         = add_query_arg( 'page', $request_data->action_name, admin_url( 'tools.php' ) );
+	$action_description = wp_user_request_action_description( $request_data->action_name );
 
 	/**
 	 * Filters the recipient of the data request confirmation notification.
@@ -2922,9 +2913,9 @@ function _wp_privacy_send_request_confirmation_notification( $request_id ) {
 	$email_data = array(
 		'request'     => $request_data,
 		'user_email'  => $request_data->email,
-		'description' => wp_user_request_action_description( $request_data->action_name ),
+		'description' => $action_description,
 		'manage_url'  => $manage_url,
-		'sitename'    => get_option( 'blogname' ),
+		'sitename'    => wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ),
 		'siteurl'     => home_url(),
 		'admin_email' => $admin_email,
 	);
@@ -2971,15 +2962,44 @@ All at ###SITENAME###
 	 *     @type string          $manage_url  The link to click manage privacy requests of this type.
 	 *     @type string          $sitename    The site name sending the mail.
 	 *     @type string          $siteurl     The site URL sending the mail.
+	 *     @type string          $admin_email The administrator email receiving the mail.
 	 * }
 	 */
 	$content = apply_filters( 'user_confirmed_action_email_content', $email_text, $email_data );
 
-	$content = str_replace( '###SITENAME###', wp_specialchars_decode( $email_data['sitename'], ENT_QUOTES ), $content );
+	$content = str_replace( '###SITENAME###', $email_data['sitename'], $content );
 	$content = str_replace( '###USER_EMAIL###', $email_data['user_email'], $content );
 	$content = str_replace( '###DESCRIPTION###', $email_data['description'], $content );
 	$content = str_replace( '###MANAGE_URL###', esc_url_raw( $email_data['manage_url'] ), $content );
 	$content = str_replace( '###SITEURL###', esc_url_raw( $email_data['siteurl'] ), $content );
+
+	$subject = sprintf(
+		/* translators: 1: Site name. 2: Name of the confirmed action. */
+		__( '[%1$s] Action Confirmed: %2$s' ),
+		$email_data['sitename'],
+		$action_description
+	);
+
+	/**
+	 * Filters the subject of the user request confirmation email.
+	 *
+	 * @since 4.9.8
+	 *
+	 * @param string $subject    The email subject.
+	 * @param string $sitename   The name of the site.
+	 * @param array  $email_data {
+	 *     Data relating to the account action email.
+	 *
+	 *     @type WP_User_Request $request     User request object.
+	 *     @type string          $user_email  The email address confirming a request
+	 *     @type string          $description Description of the action being performed so the user knows what the email is for.
+	 *     @type string          $manage_url  The link to click manage privacy requests of this type.
+	 *     @type string          $sitename    The site name sending the mail.
+	 *     @type string          $siteurl     The site URL sending the mail.
+	 *     @type string          $admin_email The administrator email receiving the mail.
+	 * }
+	 */
+	$subject = apply_filters( 'user_request_confirmed_email_subject', $subject, $email_data['sitename'], $email_data );
 
 	$email_sent = wp_mail( $email_data['admin_email'], $subject, $content );
 
@@ -3010,12 +3030,6 @@ function _wp_privacy_send_erasure_fulfillment_notification( $request_id ) {
 		return;
 	}
 
-	$subject = sprintf(
-		/* translators: %s Site name. */
-		__( '[%s] Erasure Request Fulfilled' ),
-		wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES )
-	);
-
 	/**
 	 * Filters the recipient of the data erasure fulfillment notification.
 	 *
@@ -3030,9 +3044,36 @@ function _wp_privacy_send_erasure_fulfillment_notification( $request_id ) {
 		'request'            => $request_data,
 		'message_recipient'  => $user_email,
 		'privacy_policy_url' => get_privacy_policy_url(),
-		'sitename'           => get_option( 'blogname' ),
+		'sitename'           => wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ),
 		'siteurl'            => home_url(),
 	);
+
+	$subject  = sprintf(
+		/* translators: %s: Site name. */
+		__( '[%s] Erasure Request Fulfilled' ),
+		$email_data['sitename']
+	);
+
+	/**
+	 * Filters the subject of the email sent when an erasure request is completed.
+	 *
+	 * @since 4.9.8
+	 *
+	 * @param string $subject    The email subject.
+	 * @param string $sitename   The name of the site.
+	 * @param array  $email_data {
+	 *     Data relating to the account action email.
+	 *
+	 *     @type WP_User_Request $request            User request object.
+	 *     @type string          $message_recipient  The address that the email will be sent to. Defaults
+	 *                                               to the value of `$request->email`, but can be changed
+	 *                                               by the `user_erasure_fulfillment_email_to` filter.
+	 *     @type string          $privacy_policy_url Privacy policy URL.
+	 *     @type string          $sitename           The site name sending the mail.
+	 *     @type string          $siteurl            The site URL sending the mail.
+	 * }
+	 */
+	$subject = apply_filters( 'user_erasure_complete_email_subject', $subject, $email_data['sitename'], $email_data );
 
 	if ( empty( $email_data['privacy_policy_url'] ) ) {
 		/* translators: Do not translate SITENAME, SITEURL; those are placeholders. */
@@ -3093,7 +3134,7 @@ All at ###SITENAME###
 	 */
 	$content = apply_filters( 'user_confirmed_action_email_content', $email_text, $email_data );
 
-	$content = str_replace( '###SITENAME###', wp_specialchars_decode( $email_data['sitename'], ENT_QUOTES ), $content );
+	$content = str_replace( '###SITENAME###', $email_data['sitename'], $content );
 	$content = str_replace( '###PRIVACY_POLICY_URL###', $email_data['privacy_policy_url'], $content );
 	$content = str_replace( '###SITEURL###', esc_url_raw( $email_data['siteurl'] ), $content );
 
@@ -3249,15 +3290,16 @@ function wp_send_user_request( $request_id ) {
 	}
 
 	$email_data = array(
+		'request'     => $request,
 		'email'       => $request->email,
 		'description' => wp_user_request_action_description( $request->action_name ),
 		'confirm_url' => add_query_arg( array(
 			'action'      => 'confirmaction',
 			'request_id'  => $request_id,
 			'confirm_key' => wp_generate_user_request_key( $request_id ),
-		), site_url( 'wp-login.php' ) ),
-		'sitename'    => is_multisite() ? get_site_option( 'site_name' ) : get_option( 'blogname' ),
-		'siteurl'     => network_home_url(),
+		), wp_login_url() ),
+		'sitename'    => wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ),
+		'siteurl'     => home_url(),
 	);
 
 	/* translators: Do not translate DESCRIPTION, CONFIRM_URL, SITENAME, SITEURL: those are placeholders. */
@@ -3308,13 +3350,11 @@ All at ###SITENAME###
 	$content = str_replace( '###DESCRIPTION###', $email_data['description'], $content );
 	$content = str_replace( '###CONFIRM_URL###', esc_url_raw( $email_data['confirm_url'] ), $content );
 	$content = str_replace( '###EMAIL###', $email_data['email'], $content );
-	$content = str_replace( '###SITENAME###', wp_specialchars_decode( $email_data['sitename'], ENT_QUOTES ), $content );
+	$content = str_replace( '###SITENAME###', $email_data['sitename'], $content );
 	$content = str_replace( '###SITEURL###', esc_url_raw( $email_data['siteurl'] ), $content );
 
-	$blogname = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
-
 	/* translators: Privacy data request subject. 1: Site name, 2: Name of the action */
-	$subject = sprintf( __( '[%1$s] Confirm Action: %2$s' ), $blogname, $email_data['description'] );
+	$subject = sprintf( __( '[%1$s] Confirm Action: %2$s' ), $email_data['sitename'], $email_data['description'] );
 
 	/**
 	 * Filters the subject of the email sent when an account action is attempted.
@@ -3322,7 +3362,7 @@ All at ###SITENAME###
 	 * @since 4.9.6
 	 *
 	 * @param string $subject    The email subject.
-	 * @param string $blogname   The name of the site.
+	 * @param string $sitename   The name of the site.
 	 * @param array  $email_data {
 	 *     Data relating to the account action email.
 	 *
@@ -3334,7 +3374,7 @@ All at ###SITENAME###
 	 *     @type string          $siteurl     The site URL sending the mail.
 	 * }
 	 */
-	$subject = apply_filters( 'user_request_action_email_subject', $subject, $blogname, $email_data );
+	$subject = apply_filters( 'user_request_action_email_subject', $subject, $email_data['sitename'], $email_data );
 
 	return wp_mail( $email_data['email'], $subject, $content );
 }

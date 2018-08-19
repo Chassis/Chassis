@@ -118,11 +118,7 @@ class chassis::php (
 				notify => Service["${php_package}-fpm"],
 			}
 		}
-		default: {
-			chassis::php::remove_php_fpm { [ 'old', '5.5', '5.6' ]:
-				notify => Service["${php_package}-fpm"],
-			}
-		}
+		default: {}
 	}
 
 	# Install the extensions we need
