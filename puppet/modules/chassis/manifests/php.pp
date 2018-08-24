@@ -27,15 +27,27 @@ class chassis::php (
 	$php_package = "php${short_ver}"
 	$php_dir = "php/${short_ver}"
 
-	# Prepare our array of PHP packages
-	$packages = [
-		"${php_package}-fpm",
-		"${php_package}-cli",
-		"${php_package}-common",
-		"${php_package}-xml",
-		"${php_package}-mbstring",
-		"${php_package}-zip"
-	]
+	# Allow the ability to install versions of php-cli in extensions.
+	if ! defined( Package["${php_package}-cli"] ) {
+		$packages = [
+			"${php_package}-fpm",
+			"${php_package}-cli",
+			"${php_package}-common",
+			"${php_package}-xml",
+			"${php_package}-mbstring",
+			"${php_package}-zip"
+		]
+	} else {
+		$packages = [
+			"${php_package}-fpm",
+			"${php_package}-common",
+			"${php_package}-xml",
+			"${php_package}-mbstring",
+			"${php_package}-zip"
+		]
+	}
+
+	notice( $packages )
 
 	$prefixed_extensions = prefix($extensions, "${php_package}-")
 
