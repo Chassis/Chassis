@@ -47,8 +47,6 @@ class chassis::php (
 		]
 	}
 
-	notice( $packages )
-
 	$prefixed_extensions = prefix($extensions, "${php_package}-")
 
 	# Hold the packages at the necessary version.
