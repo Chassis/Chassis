@@ -55,6 +55,7 @@ chassis::wp { $config['hosts'][0]:
 	admin_user        => $config[admin][user],
 	admin_email       => $config[admin][email],
 	admin_password    => $config[admin][password],
+	sitename          => $config[site][name],
 
 	extensions        => $extensions,
 

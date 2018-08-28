@@ -343,6 +343,18 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
 
 .. _extension-format-ref:
 
+Site Title
+----------
+
+**Key**: ``site``
+
+You can customize the title Chassis uses when installing your local WordPress site.
+
+.. code-block:: yaml
+
+   site:
+      name: My Local WordPress Site
+
 Extensions
 ----------
 
