@@ -28,16 +28,21 @@ class chassis::php (
 	$php_dir = "php/${short_ver}"
 
 	# Prepare our array of PHP packages
-	$packages = [
+	$common_packages = [
 		"${php_package}-fpm",
-		"${php_package}-cli",
 		"${php_package}-common",
 		"${php_package}-xml",
 		"${php_package}-mbstring",
 		"${php_package}-zip"
 	]
 
-	$prefixed_extensions = prefix($extensions, "${php_package}-")
+	if ! defined( Package["${php_package}-cli"] ) {
+		$packages = concat( $common_packages, [ "${php_package}-cli" ] )
+	} else {
+		$packages = $common_packages
+	}
+
+	$prefixed_extensions = prefix( $extensions, "${php_package}-" )
 
 	# Hold the packages at the necessary version.
 	apt::pin { $packages:
