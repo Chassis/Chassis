@@ -27,27 +27,22 @@ class chassis::php (
 	$php_package = "php${short_ver}"
 	$php_dir = "php/${short_ver}"
 
-	# Allow the ability to install versions of php-cli in extensions.
+	# Prepare our array of PHP packages
+	$common_packages = [
+		"${php_package}-fpm",
+		"${php_package}-common",
+		"${php_package}-xml",
+		"${php_package}-mbstring",
+		"${php_package}-zip"
+	]
+
 	if ! defined( Package["${php_package}-cli"] ) {
-		$packages = [
-			"${php_package}-fpm",
-			"${php_package}-cli",
-			"${php_package}-common",
-			"${php_package}-xml",
-			"${php_package}-mbstring",
-			"${php_package}-zip"
-		]
+		$packages = concat( $common_packages, [ "${php_package}-cli" ] )
 	} else {
-		$packages = [
-			"${php_package}-fpm",
-			"${php_package}-common",
-			"${php_package}-xml",
-			"${php_package}-mbstring",
-			"${php_package}-zip"
-		]
+		$packages = $common_packages
 	}
 
-	$prefixed_extensions = prefix($extensions, "${php_package}-")
+	$prefixed_extensions = prefix( $extensions, "${php_package}-" )
 
 	# Hold the packages at the necessary version.
 	apt::pin { $packages:
