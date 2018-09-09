@@ -162,4 +162,13 @@ module Chassis
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 	end
+
+	def self.make_relative(base, paths)
+		# Convert to relative from Vagrantfile
+		base = Pathname.new(base)
+		paths.map do |path|
+			pathname = Pathname.new(path)
+			pathname.relative_path_from(base).to_s
+		end
+	end
 end

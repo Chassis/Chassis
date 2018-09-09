@@ -33,10 +33,7 @@ module_paths = [ base_path.to_s + "/puppet/modules" ]
 module_paths.concat Dir.glob( base_path.to_s + "/extensions/*/modules" )
 
 # Convert to relative from Vagrantfile
-module_paths.map! do |path|
-	pathname = Pathname.new(path)
-	pathname.relative_path_from(base_path).to_s
-end
+module_paths = Chassis.make_relative(base_path, module_paths)
 
 Vagrant.configure("2") do |config|
 	# Set up potential providers.
