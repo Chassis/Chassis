@@ -4,7 +4,14 @@ import "/vagrant/extensions/*/chassis.pp"
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $loadable_extensions = sz_extensions('/vagrant/extensions', 2)
+$global_extensions = sz_extensions('/vagrant/extensions/_global', 2)
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
+
+if $global_extensions {
+	class { $global_extensions:
+		config => $config,
+	}
+}
 
 if $loadable_extensions {
 	class { $loadable_extensions:
