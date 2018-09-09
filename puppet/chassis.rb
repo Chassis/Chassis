@@ -23,6 +23,9 @@ module Chassis
 	def self.get_extensions_for_dir(ext_dir, version = nil)
 		all = Dir.glob(ext_dir + '/*').map { |directory| File.basename( directory ) }
 
+		# Remove dummy _global if found
+		all.delete("_global")
+
 		return all if ! version
 
 		all.select { |extension|
