@@ -64,6 +64,7 @@ chassis::wp { $config['hosts'][0]:
 	admin_password    => $config[admin][password],
 
 	extensions        => $extensions,
+	global_extensions => $global_extensions,
 
 	require => [
 		Class['chassis::php'],
