@@ -30,6 +30,21 @@ To install the memcached extension you would do the following:
 3. `vagrant provision`.
 
 
+Globally installing extensions
+------------------------------
+
+In addition to per-project, extensions can be globally installed. This is useful
+for development tools that you want to apply to all your Chassis boxes, which
+aren't specific to any project.
+
+Chassis loads global extensions from ``~/.chassis/extensions`` in the same way
+that it loads project-specific extensions.
+
+If a project includes an extension of the same name in its ``extensions/``
+directory, the project's extension will be loaded instead of the
+globally-installed extension.
+
+
 Creating your own
 -----------------
 
