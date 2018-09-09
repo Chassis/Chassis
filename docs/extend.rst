@@ -21,7 +21,7 @@ as extensions, so extensions can be downloaded into this directory.
 
 
 Example: Installing The Memcached Extension
--------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To install the memcached extension you would do the following:
 
