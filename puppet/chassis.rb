@@ -29,13 +29,17 @@ module Chassis
 		return all if ! version
 
 		all.select { |extension|
-			config = get_extension_config(extension)
+			config = get_extension_config(extension, ext_dir)
 			config['version'] == version
 		}
 	end
 
 	def self.get_extensions(version = nil)
 		self.get_extensions_for_dir(@@extension_dir, version)
+	end
+
+	def self.get_global_extensions(version = nil)
+		self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
 	end
 
 	def self.load_config()
