@@ -83,8 +83,8 @@ Vagrant.configure("2") do |config|
 		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
 		## puppet.module_path    = module_paths
 		# Workaround:
-		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
-		puppet.options = "--modulepath " +  module_paths.join( ':' ).inspect
+		machine_rel_module_paths = module_paths.map { |rel_path| "/vagrant/" + rel_path }
+		puppet.options = "--modulepath " +  machine_rel_module_paths.join( ':' ).inspect
 
 		# Disable Hiera configuration file
 		puppet.options += " --hiera_config /dev/null"
