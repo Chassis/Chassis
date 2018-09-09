@@ -20,8 +20,8 @@ module Chassis
 		end
 	end
 
-	def self.get_extensions(version = nil)
-		all = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
+	def self.get_extensions_for_dir(ext_dir, version = nil)
+		all = Dir.glob(ext_dir + '/*').map { |directory| File.basename( directory ) }
 
 		return all if ! version
 
@@ -29,6 +29,10 @@ module Chassis
 			config = get_extension_config(extension)
 			config['version'] == version
 		}
+	end
+
+	def self.get_extensions(version = nil)
+		self.get_extensions_for_dir(@@extension_dir, version)
 	end
 
 	def self.load_config()
