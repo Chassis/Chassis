@@ -6,11 +6,11 @@ module Chassis
 	@@extension_dir = File.join(@@dir, 'extensions')
 	@@extension_config = {}
 
-	def self.get_extension_config(extension)
+	def self.get_extension_config(extension, base_dir = @@extension_dir)
 		# Use cache if we can.
 		return @@extension_config[extension] if @@extension_config.key?(extension)
 
-		path = File.join(@@extension_dir, extension, 'chassis.yaml')
+		path = File.join(base_dir, extension, 'chassis.yaml')
 
 		begin
 			YAML.load_file(path)
