@@ -39,7 +39,13 @@ module Chassis
 	end
 
 	def self.get_global_extensions(version = nil)
-		self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
+		global = self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
+
+		# Remove extensions which are installed locally
+		regular = self.get_extensions(version)
+		global.reject { |item|
+			regular.include?( item )
+		}
 	end
 
 	def self.load_config()
