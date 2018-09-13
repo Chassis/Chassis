@@ -40,6 +40,12 @@ aren't specific to any project.
 Chassis loads global extensions from ``~/.chassis/extensions`` in the same way
 that it loads project-specific extensions.
 
+To install a global extension clone it into ``~/.chassis/extensions``. For
+example, if you'd like to make the mailhog extension global then you would run
+the following command in a terminal.
+
+``git clone https://github.com/Chassis/Mailhog ~/.chassis/extensions/mailhog``
+
 If a project includes an extension of the same name in its ``extensions/``
 directory, the project's extension will be loaded instead of the
 globally-installed extension.
