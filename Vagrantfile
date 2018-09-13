@@ -33,9 +33,19 @@ module_paths = [ base_path.to_s + "/puppet/modules" ]
 module_paths.concat Dir.glob( base_path.to_s + "/extensions/*/modules" )
 
 # Convert to relative from Vagrantfile
-module_paths.map! do |path|
-	pathname = Pathname.new(path)
-	pathname.relative_path_from(base_path).to_s
+module_paths = Chassis.make_relative(base_path, module_paths)
+
+# Add global extensions, if they exist
+global_ext_path = File.join(Dir.home, ".chassis", "extensions")
+use_global_ext = Dir.exist?(global_ext_path) && ! Dir.empty?(global_ext_path)
+if use_global_ext
+	global_ext_modules = Dir.glob(global_ext_path + "/*/modules")
+	global_ext_modules.delete_if { |path|
+		ext_name = path.split("/")[-2]
+		# Search for the ext_name in the regular extensions
+		module_paths.include?("extensions/" + ext_name + "/modules")
+	}
+	global_ext_modules = Chassis.make_relative(global_ext_path, global_ext_modules)
 end
 
 Vagrant.configure("2") do |config|
@@ -86,8 +96,12 @@ Vagrant.configure("2") do |config|
 		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
 		## puppet.module_path    = module_paths
 		# Workaround:
-		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
-		puppet.options = "--modulepath " +  module_paths.join( ':' ).inspect
+		machine_rel_module_paths = module_paths.map { |rel_path| "/vagrant/" + rel_path }
+		if use_global_ext
+			prefixed_global = global_ext_modules.map { |rel_path| "/vagrant/extensions/_global/" + rel_path }
+			machine_rel_module_paths.concat prefixed_global
+		end
+		puppet.options = "--modulepath " +  machine_rel_module_paths.join( ':' ).inspect
 
 		# Disable Hiera configuration file
 		puppet.options += " --hiera_config /dev/null"
@@ -116,6 +130,10 @@ Vagrant.configure("2") do |config|
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
 	synced_folders["."] = "/vagrant"
+
+	if use_global_ext
+		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
+	end
 
 	# Ensure that WordPress can install/update plugins, themes and core
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]

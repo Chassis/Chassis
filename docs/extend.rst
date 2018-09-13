@@ -21,13 +21,34 @@ as extensions, so extensions can be downloaded into this directory.
 
 
 Example: Installing The Memcached Extension
--------------------------------------------
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
 
 To install the memcached extension you would do the following:
 
 1. Open your terminal and navigate to your root Chassis folder.
 2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
 3. `vagrant provision`.
+
+
+Globally installing extensions
+------------------------------
+
+In addition to per-project, extensions can be globally installed. This is useful
+for development tools that you want to apply to all your Chassis boxes, which
+aren't specific to any project.
+
+Chassis loads global extensions from ``~/.chassis/extensions`` in the same way
+that it loads project-specific extensions.
+
+To install a global extension clone it into ``~/.chassis/extensions``. For
+example, if you'd like to make the mailhog extension global then you would run
+the following command in a terminal.
+
+``git clone https://github.com/Chassis/Mailhog ~/.chassis/extensions/mailhog``
+
+If a project includes an extension of the same name in its ``extensions/``
+directory, the project's extension will be loaded instead of the
+globally-installed extension.
 
 
 Creating your own
