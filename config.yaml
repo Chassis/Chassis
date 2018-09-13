@@ -17,6 +17,11 @@
 hosts:
     - vagrant.local
 
+# Site Configuration
+# (When overriding, include all values)
+site:
+    name: Chassis Site
+
 # IP address to use on the private network
 #
 # DHCP is used by default to assign IP addresses dynamically, override only if
