@@ -22,7 +22,7 @@ if not File.exist?(File.join(File.dirname(__FILE__), "puppet", "modules", "apt",
 end
 
 require_relative "puppet/chassis.rb"
-CONF = Chassis.config
+CONF ||= Chassis.config
 
 # Install extensions defined in config file
 Chassis.install_extensions(CONF)
