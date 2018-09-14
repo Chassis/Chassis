@@ -57,7 +57,7 @@ Global extensions can also be disabled in the same way local extensions are
    disabled_extensions:
       - chassis/mailhog
 
-.. _disabled: http://docs.chassis.io/en/latest/config/?highlight=disabled#extensions
+.. _disabled: http://docs.chassis.io/en/latest/config/?highlight=disabled_extensions#extensions
 
 Creating your own
 -----------------
