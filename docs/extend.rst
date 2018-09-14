@@ -51,6 +51,14 @@ directory, the project's extension will be loaded instead of the
 globally-installed extension.
 
 
+Global extensions can also be disabled in the same way local extensions are
+`disabled`_. e.g.
+
+   disabled_extensions:
+      - chassis/mailhog
+
+.. _disabled: http://docs.chassis.io/en/latest/config/?highlight=disabled#extensions
+
 Creating your own
 -----------------
 
