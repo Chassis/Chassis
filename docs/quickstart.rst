@@ -98,6 +98,22 @@ Installing
 5. Browse to http://vagrant.local and you should see your site! The default
    login credentials are ``admin`` and ``password`` and the login URL is http://vagrant.local/wp/wp-admin.
 
+Installing via Composer
+-----------------------
+
+The easiest way to add Chassis to an existing theme or plugin project is using
+Composer:
+
+   composer require chassis/chassis --dev
+
+which will place the Chassis repository under ``vendor/chassis/chassis``.
+
+To allow running local ``vagrant`` commands without specifying the
+``VAGRANT_VAGRANTFILE`` environmental variable, create a new ``Vagrantfile`` in
+the root of your repository with the following content:
+
+   load "vendor/chassis/chassis/Vagrantfile"
+
 
 What's in the box?
 ------------------
@@ -143,6 +159,6 @@ If you ever want to update Chassis, here's a quick two-step procedure::
 
    # Update submodules (Puppet modules)
    git submodule update --init
-   
+
    # Update WP
    git pull
