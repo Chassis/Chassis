@@ -1,0 +1,15 @@
+{
+    "name": "chassis/chassis",
+    "description": "A virtual server for your WordPress site, built using Vagrant",
+    "keywords": [
+        "wordpress",
+        "vagrant",
+        "virtualbox"
+    ],
+    "homepage": "http://docs.chassis.io",
+    "support": {
+        "issues": "https://github.com/Chassis/Chassis/issues",
+        "source": "https://github.com/Chassis/Chassis"
+    },
+    "require": {}
+}
