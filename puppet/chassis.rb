@@ -3,6 +3,7 @@ require "yaml"
 
 module Chassis
 	@@dir = File.dirname(File.dirname(__FILE__))
+	@@config_dir = @@dir
 	@@extension_dir = File.join(@@dir, 'extensions')
 	@@extension_config = {}
 
@@ -56,7 +57,7 @@ module Chassis
 		# Load other configuration files
 		config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
 		config_files.each do |filename|
-			path = File.join(@@dir, filename)
+			path = File.join(@@config_dir, filename)
 
 			begin
 				confvars = YAML.load_file(path)
