@@ -22,6 +22,12 @@ if not File.exist?(File.join(File.dirname(__FILE__), "puppet", "modules", "apt",
 end
 
 require_relative "puppet/chassis.rb"
+
+# Update the working directory reference if called from a custom location
+unless ENV['VAGRANT_OLD_ENV_PWD'].nil?
+	Chassis.class_variable_set(:@@config_dir, ENV['VAGRANT_OLD_ENV_PWD'])
+end
+
 CONF = Chassis.config
 
 # Install extensions defined in config file
