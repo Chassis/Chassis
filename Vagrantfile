@@ -92,11 +92,11 @@ Vagrant.configure("2") do |config|
 		CONF['apt_mirror'].to_s,
 		CONF['database']['has_custom_prefix'] ? "" : "check_prefix"
 	]
-	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
+	config.vm.provision :shell, :path => File.expand_path("puppet/preprovision.sh", base_path), :args => preprovision_args
 
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
-		puppet.manifests_path = "puppet/manifests"
+		puppet.manifests_path = File.expand_path("puppet/manifests", base_path)
 		puppet.manifest_file  = "development.pp"
 
 		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
@@ -120,7 +120,7 @@ Vagrant.configure("2") do |config|
 
 	# Help the user out the first time they provision
 	config.vm.provision :shell do |shell|
-		shell.path = "puppet/postprovision.sh"
+		shell.path = File.expand_path("puppet/postprovision.sh", base_path)
 		shell.args = [
 			# 0 = hostname
 			CONF['hosts'][0],
