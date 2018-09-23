@@ -96,21 +96,10 @@ module Chassis
 
 		# Set up the paths as needed
 		config["mapped_paths"] = {}
-		base = config["paths"]["base"] = File.expand_path(config["paths"]["base"], @@dir)
-		base_path = Pathname.new base
 
-		if not base.start_with? @@dir
-			# Base isn't under the Chassis directory, so mount it separately
-			config["synced_folders"][base] = "/chassis"
-			config["mapped_paths"]["base"] = "/chassis"
-		else
-			rel_path = base_path.relative_path_from( Pathname.new @@dir )
-			if rel_path.to_s != "."
-				config["mapped_paths"]["base"] = "/vagrant/" + rel_path.to_s
-			else
-				config["mapped_paths"]["base"] = "/vagrant"
-			end
-		end
+		base = config["paths"]["base"] = File.expand_path(config["paths"]["base"], @@dir)
+
+		config["mapped_paths"]["base"] = "/chassis"
 
 		# Grab each of our expected paths
 		["wp", "content"].each do |path|
@@ -123,18 +112,8 @@ module Chassis
 
 			fullpath = config["paths"][path]
 
-			if not fullpath.start_with? base
-				# Directory isn't under our base, so needs to manually be mapped
-				config["synced_folders"][fullpath] = "/chassis/#{path}"
-				config["mapped_paths"][path] = "/chassis/#{path}"
-			else
-				rel_path = Pathname.new(fullpath).relative_path_from( base_path )
-				if rel_path.to_s != "."
-					config["mapped_paths"][path] = config["mapped_paths"]["base"] + "/" + rel_path.to_s
-				else
-					config["mapped_paths"][path] = config["mapped_paths"]["base"]
-				end
-			end
+			config["synced_folders"][fullpath] = "/chassis/#{path}"
+			config["mapped_paths"][path] = "/chassis/#{path}"
 		end
 
 		# Cast config as needed
