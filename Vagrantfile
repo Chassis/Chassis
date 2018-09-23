@@ -145,7 +145,7 @@ Vagrant.configure("2") do |config|
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
 
 	synced_folders.each do |from, to|
-		config.vm.synced_folder File.expand_path(from, base_path), to, :mount_options => mount_opts, :nfs => CONF['nfs']
+		config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs']
 
 		# Automatically use bindfs if we can.
 		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
