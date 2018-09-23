@@ -23,10 +23,8 @@ end
 
 require_relative "puppet/chassis.rb"
 
-# Update the working directory reference if called from a custom location
-unless ENV['VAGRANT_OLD_ENV_PWD'].nil?
-	Chassis.class_variable_set(:@@config_dir, ENV['VAGRANT_OLD_ENV_PWD'])
-end
+# Load config overrides from the current working directory which might be outside the Chassis root.
+Chassis.class_variable_set(:@@config_dir, ENV['PWD'])
 
 CONF = Chassis.config
 
