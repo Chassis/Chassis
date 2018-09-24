@@ -23,8 +23,10 @@ end
 
 require_relative "puppet/chassis.rb"
 
-# Load config overrides from the current working directory which might be outside the Chassis root.
-Chassis.class_variable_set(:@@config_dir, ENV['PWD'])
+# Load config overrides from a custom directory.
+unless ENV['CHASSIS_CWD'].nil?
+	Chassis.class_variable_set(:@@config_dir, ENV['CHASSIS_CWD'])
+end
 
 CONF = Chassis.config
 
