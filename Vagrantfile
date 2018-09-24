@@ -146,6 +146,9 @@ Vagrant.configure("2") do |config|
 	# Always sync Chassis root to /chassis.
 	synced_folders[chassis_dir] = "/chassis"
 
+	# Sync the project directory with config overrides to /vagrant.
+	synced_folders[chassis_config_dir + '/'] = "/vagrant"
+
 	if use_global_ext
 		synced_folders[global_ext_path] = "/chassis/extensions/_global"
 	end
