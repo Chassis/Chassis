@@ -89,9 +89,6 @@ module Chassis
 	def self.normalize_config(config)
 		config["synced_folders"] = {} unless config["synced_folders"]
 
-		# Sync the project directory with config overrides to /vagrant.
-		config["synced_folders"][@@config_dir] = "/vagrant"
-
 		# Sync extensions to a /vagrant subdirectory for compatability.
 		config["synced_folders"][@@extension_dir] = "/vagrant/extensions"
 
@@ -104,7 +101,6 @@ module Chassis
 
 		# Set up the paths as needed
 		config["mapped_paths"] = {}
-
 		config["mapped_paths"]["base"] = "/chassis"
 
 		# Grab each of our expected paths
