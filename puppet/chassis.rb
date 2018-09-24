@@ -94,6 +94,12 @@ module Chassis
 			config["paths"]["wp"] = config["wpdir"]
 		end
 
+		# Always sync Chassis root to /chassis.
+		synced_folders[@@dir] = "/chassis"
+
+		# Sync the project directory with config overrides to /vagrant.
+		synced_folders[@@config_dir] = "/vagrant"
+
 		# Set up the paths as needed
 		config["mapped_paths"] = {}
 
