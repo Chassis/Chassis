@@ -10,7 +10,7 @@ if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
 end
 
 # Path to the root of the Chassis directory.
-chassis_dir = File.dirname(__FILE__)
+chassis_dir = File.dirname(File.expand_path(__FILE__))
 
 # Load Chassis config from the Chassis root by default.
 chassis_config_dir = chassis_dir
