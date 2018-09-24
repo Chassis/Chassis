@@ -143,6 +143,9 @@ Vagrant.configure("2") do |config|
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
 
+	# Always sync Chassis root to /chassis.
+	synced_folders['.'] = "/chassis"
+
 	if use_global_ext
 		synced_folders[global_ext_path] = "/chassis/extensions/_global"
 	end

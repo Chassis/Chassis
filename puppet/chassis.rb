@@ -89,9 +89,6 @@ module Chassis
 	def self.normalize_config(config)
 		config["synced_folders"] = {} unless config["synced_folders"]
 
-		# Always sync Chassis root to /chassis.
-		config["synced_folders"][@@dir] = "/chassis"
-
 		# Sync the project directory with config overrides to /vagrant.
 		config["synced_folders"][@@config_dir] = "/vagrant"
 
