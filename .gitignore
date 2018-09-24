@@ -6,13 +6,11 @@
 /local-config-extensions.php
 /sql-dump-*.sql
 /db-sync
-/content
 .DS_Store
 .idea
 config.local.yaml
 /.wp-cli
 /wp-cli.local.yml
-/extensions
 /phpmyadmin
 /vendor
 /*.cert
