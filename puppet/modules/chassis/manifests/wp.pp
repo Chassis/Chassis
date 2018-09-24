@@ -52,15 +52,15 @@ define chassis::wp (
 		}
 	}
 
-	file { '/vagrant/index.php':
+	file { '/chassis/index.php':
 		content => template('chassis/index.php.erb')
 	}
 
-	file { '/vagrant/local-config-db.php':
+	file { '/chassis/local-config-db.php':
 		content => template('chassis/local-config-db.php.erb')
 	}
 
-	file { '/vagrant/local-config-extensions.php':
+	file { '/chassis/local-config-extensions.php':
 		content => template('chassis/local-config-extensions.php.erb')
 	}
 
