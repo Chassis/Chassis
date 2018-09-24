@@ -89,21 +89,24 @@ module Chassis
 	def self.normalize_config(config)
 		config["synced_folders"] = {} unless config["synced_folders"]
 
-		if config["wpdir"]
-			puts "WARNING: wpdir is deprecated, use paths.wp instead"
-			config["paths"]["wp"] = config["wpdir"]
-		end
-
 		# Always sync Chassis root to /chassis.
 		config["synced_folders"][@@dir] = "/chassis"
 
 		# Sync the project directory with config overrides to /vagrant.
 		config["synced_folders"][@@config_dir] = "/vagrant"
 
-		# Set up the paths as needed
-		config["mapped_paths"] = {}
+		# Sync extensions to a /vagrant subdirectory for compatability.
+		config["synced_folders"][@@extension_dir] = "/vagrant/extensions"
+
+		if config["wpdir"]
+			puts "WARNING: wpdir is deprecated, use paths.wp instead"
+			config["paths"]["wp"] = config["wpdir"]
+		end
 
 		base = config["paths"]["base"] = File.expand_path(config["paths"]["base"], @@dir)
+
+		# Set up the paths as needed
+		config["mapped_paths"] = {}
 
 		config["mapped_paths"]["base"] = "/chassis"
 
