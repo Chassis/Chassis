@@ -95,10 +95,10 @@ module Chassis
 		end
 
 		# Always sync Chassis root to /chassis.
-		synced_folders[@@dir] = "/chassis"
+		config["synced_folders"][@@dir] = "/chassis"
 
 		# Sync the project directory with config overrides to /vagrant.
-		synced_folders[@@config_dir] = "/vagrant"
+		config["synced_folders"][@@config_dir] = "/vagrant"
 
 		# Set up the paths as needed
 		config["mapped_paths"] = {}

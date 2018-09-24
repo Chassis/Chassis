@@ -9,11 +9,22 @@ if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
 	exit 1
 end
 
+# Path to the root of the Chassis directory.
+chassis_dir = File.dirname(__FILE__)
+
+# Load Chassis config from the Chassis root by default.
+chassis_config_dir = chassis_dir
+
+# Load Chassis config overrides from a custom directory, if configured.
+unless ENV['CHASSIS_CWD'].nil?
+	chassis_config_dir = ENV['CHASSIS_CWD']
+end
+
 # Check that submodules have been loaded
-if not File.exist?(File.join(File.dirname(__FILE__), "puppet", "modules", "apt", ".git"))
+if not File.exist?(File.join(chassis_dir, "puppet", "modules", "apt", ".git"))
 	puts "NOTICE: Submodules not found, updating for you"
 
-	if not system("git submodule update --init", :chdir => File.dirname(__FILE__))
+	if not system("git submodule update --init", :chdir => chassis_dir)
 		puts "WARNING: Submodules may be missing, and could not automatically\ndownload them for you."
 	end
 
@@ -23,10 +34,7 @@ end
 
 require_relative "puppet/chassis.rb"
 
-# Load config overrides from a custom directory.
-unless ENV['CHASSIS_CWD'].nil?
-	Chassis.class_variable_set(:@@config_dir, ENV['CHASSIS_CWD'])
-end
+Chassis.class_variable_set(:@@config_dir, chassis_config_dir)
 
 CONF = Chassis.config
 
@@ -34,12 +42,11 @@ CONF = Chassis.config
 Chassis.install_extensions(CONF)
 
 # Add extra extension modules
-base_path = Pathname.new( File.dirname( __FILE__ ) )
-module_paths = [ base_path.to_s + "/puppet/modules" ]
-module_paths.concat Dir.glob( base_path.to_s + "/extensions/*/modules" )
+module_paths = [ chassis_dir + "/puppet/modules" ]
+module_paths.concat Dir.glob( chassis_dir + "/extensions/*/modules" )
 
 # Convert to relative from Vagrantfile
-module_paths = Chassis.make_relative(base_path, module_paths)
+module_paths = Chassis.make_relative(chassis_dir, module_paths)
 
 # Add global extensions, if they exist
 global_ext_path = File.join(Dir.home, ".chassis", "extensions")
@@ -92,11 +99,11 @@ Vagrant.configure("2") do |config|
 		CONF['apt_mirror'].to_s,
 		CONF['database']['has_custom_prefix'] ? "" : "check_prefix"
 	]
-	config.vm.provision :shell, :path => File.expand_path("puppet/preprovision.sh", base_path), :args => preprovision_args
+	config.vm.provision :shell, :path => File.expand_path("puppet/preprovision.sh", chassis_dir), :args => preprovision_args
 
 	# Provision our setup with Puppet
 	config.vm.provision :puppet do |puppet|
-		puppet.manifests_path = File.expand_path("puppet/manifests", base_path)
+		puppet.manifests_path = File.expand_path("puppet/manifests", chassis_dir)
 		puppet.manifest_file  = "development.pp"
 
 		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
@@ -120,7 +127,7 @@ Vagrant.configure("2") do |config|
 
 	# Help the user out the first time they provision
 	config.vm.provision :shell do |shell|
-		shell.path = File.expand_path("puppet/postprovision.sh", base_path)
+		shell.path = File.expand_path("puppet/postprovision.sh", chassis_dir)
 		shell.args = [
 			# 0 = hostname
 			CONF['hosts'][0],
