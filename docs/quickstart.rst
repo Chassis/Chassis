@@ -109,7 +109,7 @@ Composer:
 which will place the Chassis repository under ``vendor/chassis/chassis``.
 
 To allow running local ``vagrant`` commands without specifying the
-``VAGRANT_VAGRANTFILE`` environmental variable, create a new ``Vagrantfile`` in
+``VAGRANT_CWD`` environmental variable, create a new ``Vagrantfile`` in
 the root of your repository with the following content:
 
    ENV['CHASSIS_CWD'] = File.dirname(__FILE__)
