@@ -34,6 +34,7 @@ end
 
 require_relative "puppet/chassis.rb"
 
+# Set the Chassis config override directory.
 Chassis.class_variable_set(:@@config_dir, chassis_config_dir)
 
 CONF = Chassis.config
@@ -42,8 +43,8 @@ CONF = Chassis.config
 Chassis.install_extensions(CONF)
 
 # Add extra extension modules
-module_paths = [ chassis_dir + "/puppet/modules" ]
-module_paths.concat Dir.glob( chassis_dir + "/extensions/*/modules" )
+module_paths = [chassis_dir + "/puppet/modules"]
+module_paths.concat Dir.glob(chassis_dir + "/extensions/*/modules")
 
 # Convert to relative from Vagrantfile
 module_paths = Chassis.make_relative(chassis_dir, module_paths)
@@ -109,9 +110,9 @@ Vagrant.configure("2") do |config|
 		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
 		## puppet.module_path    = module_paths
 		# Workaround:
-		machine_rel_module_paths = module_paths.map { |rel_path| "/chassis/" + rel_path }
+		machine_rel_module_paths = module_paths.map { |rel_path| "/vagrant/" + rel_path }
 		if use_global_ext
-			prefixed_global = global_ext_modules.map { |rel_path| "/chassis/extensions/_global/" + rel_path }
+			prefixed_global = global_ext_modules.map { |rel_path| "/vagrant/extensions/_global/" + rel_path }
 			machine_rel_module_paths.concat prefixed_global
 		end
 		puppet.options = "--modulepath " +  machine_rel_module_paths.join( ':' ).inspect
@@ -143,14 +144,15 @@ Vagrant.configure("2") do |config|
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
 
-	# Always sync Chassis root to /chassis.
-	synced_folders[chassis_dir] = "/chassis"
+	# Always sync Chassis root to /vagrant.
+	synced_folders[chassis_dir] = "/vagrant"
 
-	# Sync the project directory with config overrides to /vagrant.
-	synced_folders[chassis_config_dir + '/'] = "/vagrant"
+	# Sync the project directory with config overrides to /chassis. Add the
+	# trailing slash in case the chassis_dir is the same as chassis_config_dir.
+	synced_folders[chassis_config_dir + '/'] = "/chassis"
 
 	if use_global_ext
-		synced_folders[global_ext_path] = "/chassis/extensions/_global"
+		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
 	end
 
 	# Ensure that WordPress can install/update plugins, themes and core

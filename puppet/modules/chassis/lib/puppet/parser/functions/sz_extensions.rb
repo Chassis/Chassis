@@ -1,4 +1,4 @@
-require "/chassis/puppet/chassis"
+require "/vagrant/puppet/chassis"
 
 module Puppet::Parser::Functions
 	newfunction(:sz_extensions, :type => :rvalue) do |args|
