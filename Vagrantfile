@@ -32,6 +32,10 @@ if not File.exist?(File.join(chassis_dir, "puppet", "modules", "apt", ".git"))
 	puts
 end
 
+# Ensure we have a content directory to sync.
+chassis_content_dir = File.join(chassis_dir, "content")
+Dir.mkdir(chassis_content_dir) unless File.exists?(chassis_content_dir)
+
 require_relative "puppet/chassis.rb"
 
 # Set the Chassis config override directory.
