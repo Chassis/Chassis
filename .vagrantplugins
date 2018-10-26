@@ -6,15 +6,16 @@ module Chassis
 	def self.load_extension_plugins()
 		subplugins = Dir.glob(File.join(@@dir, "extensions", "*", ".vagrantplugins"))
 		# We also need to check the global plugins for .vagrantplugins as well.
-			global_ext_path = File.join(Dir.home, ".chassis", "extensions")
-			use_global_ext = Dir.exist?(global_ext_path) && ! Dir.empty?(global_ext_path)
-			if use_global_ext
-				global_ext_plugins = Dir.glob(global_ext_path + "/*/.vagrantplugins")
-				# If we have global extensions that have .vagrantplugins then combine the arrays
-				if ! global_ext_plugins.empty?
-					subplugins += global_ext_plugins
-				end
+		global_ext_path = File.join(Dir.home, ".chassis", "extensions")
+		use_global_ext = Dir.exist?(global_ext_path) && ! Dir.empty?(global_ext_path)
+
+		if use_global_ext
+			global_ext_plugins = Dir.glob(global_ext_path + "/*/.vagrantplugins")
+			# If we have global extensions that have .vagrantplugins then combine the arrays
+			if ! global_ext_plugins.empty?
+				subplugins += global_ext_plugins
 			end
+		end
 		subplugins.each {|pluginfile| load pluginfile}
 	end
 end
