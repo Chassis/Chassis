@@ -274,7 +274,7 @@ Paths
 
 **Key**: ``paths``
 
-If you're transplanting Chassis into an existing project, you can manually set some paths manually.
+If you're transplanting Chassis into an existing project, you can manually set some paths.
 These can be set to absolute paths, or relative paths.
 
 .. code-block:: yaml
