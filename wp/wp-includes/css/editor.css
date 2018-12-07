@@ -361,6 +361,15 @@ div.mce-toolbar-grp > div {
 	margin: 0;
 }
 
+/* Classic block hide/show toolbars */
+.block-library-classic__toolbar .mce-toolbar-grp .mce-toolbar:not(:first-child) {
+	display: none;
+}
+
+.block-library-classic__toolbar.has-advanced-toolbar .mce-toolbar-grp .mce-toolbar {
+	display: block;
+}
+
 div.mce-statusbar {
 	border-top: 1px solid #e5e5e5;
 }
@@ -693,7 +702,6 @@ div.mce-menu .mce-menu-item-sep,
 	background: #eee;
 	border-color: #999;
 	box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
-	-webkit-transform: translateY(1px);
 	transform: translateY(1px);
 }
 
@@ -704,7 +712,6 @@ div.mce-menu .mce-menu-item-sep,
 	box-shadow: none !important;
 	text-shadow: 0 1px 0 #fff !important;
 	cursor: default;
-	-webkit-transform: none !important;
 	transform: none !important;
 }
 

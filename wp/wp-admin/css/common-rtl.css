@@ -764,7 +764,6 @@ img.emoji {
 
 /* @todo can we combine these into a class or use an existing dashicon one? */
 .welcome-panel .welcome-panel-close:before,
-.try-gutenberg-panel .try-gutenberg-panel-close:before,
 .tagchecklist .ntdelbutton .remove-tag-icon:before,
 #bulk-titles div a:before,
 .notice-dismiss:before {
@@ -1117,7 +1116,6 @@ th.action-links {
 .wp-filter .button.drawer-toggle:active {
 	background: transparent;
 	box-shadow: none;
-	-webkit-transform: none;
 	transform: none;
 }
 
@@ -1508,7 +1506,6 @@ div.error {
 .import-php .updating-message:before,
 .button.updating-message:before,
 .button.installing:before {
-	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
 }
 
@@ -1681,7 +1678,6 @@ form.upgrade .hint {
 
 #screen-meta-links .show-settings:active {
 	box-shadow: none;
-	-webkit-transform: none;
 	transform: none;
 }
 
@@ -2470,7 +2466,6 @@ div.star-holder .star-rating {
 }
 
 .rtl .star-rating .star-half {
-	-webkit-transform: rotateY(180deg);
 	transform: rotateY(180deg);
 }
 
@@ -2919,7 +2914,6 @@ div.action-links {
 	margin: -10px -10px 0 0;
 	background: #fcfcfc url(../images/spinner.gif) no-repeat center;
 	background-size: 20px 20px;
-	-webkit-transform: translateZ(0);
 	transform: translateZ(0);
 }
 

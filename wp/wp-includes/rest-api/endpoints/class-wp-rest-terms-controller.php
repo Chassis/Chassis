@@ -418,7 +418,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 			if ( $term_id = $term->get_error_data( 'term_exists' ) ) {
 				$existing_term = get_term( $term_id, $this->taxonomy );
 				$term->add_data( $existing_term->term_id, 'term_exists' );
-				$term->add_data( array( 'status' => 409, 'term_id' => $term_id ) );
+				$term->add_data( array( 'status' => 400, 'term_id' => $term_id ) );
 			}
 
 			return $term;
@@ -441,7 +441,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 
 		$schema = $this->get_item_schema();
 		if ( ! empty( $schema['properties']['meta'] ) && isset( $request['meta'] ) ) {
-			$meta_update = $this->meta->update_value( $request['meta'], (int) $request['id'] );
+			$meta_update = $this->meta->update_value( $request['meta'], $term->term_id );
 
 			if ( is_wp_error( $meta_update ) ) {
 				return $meta_update;
@@ -455,6 +455,19 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 		}
 
 		$request->set_param( 'context', 'view' );
+
+		/**
+		 * Fires after a single term is completely created or updated via the REST API.
+		 *
+		 * The dynamic portion of the hook name, `$this->taxonomy`, refers to the taxonomy slug.
+		 *
+		 * @since 5.0.0
+		 *
+		 * @param WP_Term         $term     Inserted or updated term object.
+		 * @param WP_REST_Request $request  Request object.
+		 * @param bool            $creating True when creating a term, false when updating.
+		 */
+		do_action( "rest_after_insert_{$this->taxonomy}", $term, $request, true );
 
 		$response = $this->prepare_item_for_response( $term, $request );
 		$response = rest_ensure_response( $response );
@@ -544,6 +557,9 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 		}
 
 		$request->set_param( 'context', 'view' );
+
+		/** This action is documented in wp-includes/rest-api/endpoints/class-wp-rest-terms-controller.php */
+		do_action( "rest_after_insert_{$this->taxonomy}", $term, $request, false );
 
 		$response = $this->prepare_item_for_response( $term, $request );
 

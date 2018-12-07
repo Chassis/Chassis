@@ -182,6 +182,14 @@ final class WP_Screen {
 	private $_screen_settings;
 
 	/**
+	 * Whether the screen is using the block editor.
+	 *
+	 * @since 5.0.0
+	 * @var bool
+	 */
+	public $is_block_editor = false;
+
+	/**
 	 * Fetches a screen object.
 	 *
 	 * @since 3.3.0
@@ -397,6 +405,22 @@ final class WP_Screen {
 			return (bool) $this->in_admin;
 
 		return ( $admin == $this->in_admin );
+	}
+
+	/**
+	 * Sets or returns whether the block editor is loading on the current screen.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param bool $set Optional. Sets whether the block editor is loading on the current screen or not.
+	 * @return bool True if the block editor is being loaded, false otherwise.
+	 */
+	public function is_block_editor( $set = null ) {
+		if ( $set !== null ) {
+			$this->is_block_editor = (bool) $set;
+		}
+
+		return $this->is_block_editor;
 	}
 
 	/**
@@ -1032,23 +1056,6 @@ final class WP_Screen {
 				echo _x( 'Welcome', 'Welcome panel' ) . "</label>\n";
 			}
 
-			if ( 'dashboard' === $this->id && has_action( 'try_gutenberg_panel' ) ) {
-				if ( isset( $_GET['try_gutenberg'] ) ) {
-					$try_gutenberg_checked = empty( $_GET['try_gutenberg'] ) ? 0 : 1;
-					update_user_meta( get_current_user_id(), 'show_try_gutenberg_panel', $try_gutenberg_checked );
-				} else {
-					$try_gutenberg_checked = get_user_meta( get_current_user_id(), 'show_try_gutenberg_panel', true );
-					if ( '' === $try_gutenberg_checked ) {
-						$try_gutenberg_checked = '1';
-					}
-					if ( '2' === $try_gutenberg_checked && wp_get_current_user()->user_email != get_option( 'admin_email' ) ) {
-						$try_gutenberg_checked = false;
-					}
-				}
-				echo '<label for="wp_try_gutenberg_panel-hide">';
-				echo '<input type="checkbox" id="wp_try_gutenberg_panel-hide"' . checked( (bool) $try_gutenberg_checked, true, false ) . ' />';
-				echo __( 'New Editor' ) . "</label>\n";
-			}
 		?>
 		</fieldset>
 		<?php

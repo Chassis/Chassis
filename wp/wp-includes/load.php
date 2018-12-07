@@ -333,7 +333,7 @@ function wp_debug_mode() {
 		error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	}
 
-	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) || wp_doing_ajax() ) {
+	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) || wp_doing_ajax() || wp_is_json_request() ) {
 		@ini_set( 'display_errors', 0 );
 	}
 }
@@ -401,7 +401,12 @@ function require_wp_db() {
 		return;
 	}
 
-	$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
+	$dbuser     = defined( 'DB_USER' ) ? DB_USER : '';
+	$dbpassword = defined( 'DB_PASSWORD' ) ? DB_PASSWORD : '';
+	$dbname     = defined( 'DB_NAME' ) ? DB_NAME : '';
+	$dbhost     = defined( 'DB_HOST' ) ? DB_HOST : '';
+
+	$wpdb = new wpdb( $dbuser, $dbpassword, $dbname, $dbhost );
 }
 
 /**
@@ -696,10 +701,14 @@ function wp_clone( $object ) {
 }
 
 /**
- * Whether the current request is for an administrative interface page.
+ * Determines whether the current request is for an administrative interface page.
  *
  * Does not check if the user is an administrator; current_user_can()
  * for checking roles and capabilities.
+ *
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook. 
  *
  * @since 1.5.1
  *
@@ -1156,4 +1165,25 @@ function wp_finalize_scraping_edited_file_errors( $scrape_key ) {
 		echo wp_json_encode( true );
 	}
 	echo "\n###### wp_scraping_result_end:$scrape_key ######\n";
+}
+
+/**
+ * Checks whether current request is a JSON request, or is expecting a JSON response.
+ *
+ * @since 5.0.0
+ *
+ * @return bool True if Accepts or Content-Type headers contain application/json, false otherwise.
+ */
+function wp_is_json_request() {
+
+	if ( isset( $_SERVER['HTTP_ACCEPT'] ) && false !== strpos( $_SERVER['HTTP_ACCEPT'], 'application/json' ) ) {
+		return true;
+	}
+
+	if ( isset( $_SERVER['CONTENT_TYPE'] ) && 'application/json' === $_SERVER['CONTENT_TYPE'] ) {
+		return true;
+	}
+
+	return false;
+
 }
