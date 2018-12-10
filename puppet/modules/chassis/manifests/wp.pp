@@ -68,7 +68,6 @@ define chassis::wp (
 
 	file { '/home/vagrant/.wp-cli':
 		ensure => directory,
-		owner  => 'vagrant',
 	}
 
 	file { '/home/vagrant/.wp-cli/config.yml':

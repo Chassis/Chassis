@@ -5,6 +5,7 @@ FROM phusion/baseimage:0.9.22
 RUN apt-get update
 RUN apt-get install -q -y wget #ca-certificates
 RUN apt-get install sudo -q -y
+RUN mkdir -p /home/vagrant
 
 # Add everything we need for prerequisites.
 ADD puppet/preprovision.sh /vagrant/puppet/preprovision.sh
