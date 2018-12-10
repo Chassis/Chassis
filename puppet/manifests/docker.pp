@@ -104,8 +104,10 @@ chassis::wp { 'localhost':
 	admin_password    => $config[admin][password],
 	plugins           => $config[plugins],
 	themes            => $config[themes],
+	sitename          => $config[site][name],
 
 	extensions        => [],
+	global_extensions => [],
 
 	require  => [
 		Class['chassis::php'],
