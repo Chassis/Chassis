@@ -12,7 +12,7 @@ Service {
 file { [
 	'/etc/service/mysql',
 	'/etc/service/nginx',
-	'/etc/service/php7.0-fpm',
+	'/etc/service/php7.2-fpm',
 	'/run/php',
 ]:
 	ensure => directory,
@@ -21,7 +21,7 @@ file { [
 # Dependency chains, to ensure service dirs aren't created early
 Package['nginx'] -> File['/etc/service/nginx'] -> File['/etc/service/nginx/run'] -> Service['nginx']
 Package['mysql-server'] -> File['/etc/service/mysql'] -> File['/etc/service/mysql/run'] -> Service['mysqld']
-Package['php7.0-fpm'] -> File['/etc/service/php7.0-fpm'] -> File['/etc/service/php7.0-fpm/run'] -> Service['php7.0-fpm']
+Package['php7.2-fpm'] -> File['/etc/service/php7.2-fpm'] -> File['/etc/service/php7.2-fpm/run'] -> Service['php7.2-fpm']
 
 file { '/var/run/mysqld':
 	ensure  => directory,
@@ -31,9 +31,9 @@ file { '/var/run/mysqld':
 	before  => File['/etc/service/mysql/run'],
 }
 
-file { '/etc/service/php7.0-fpm/run':
+file { '/etc/service/php7.2-fpm/run':
 	ensure  => file,
-	content => "#!/bin/bash\nexec /usr/sbin/php-fpm7.0 --nodaemonize --fpm-config /etc/php/7.0/fpm/php-fpm.conf -g /run/php7.0-fpm.pid",
+	content => "#!/bin/bash\nexec /usr/sbin/php-fpm7.2 --nodaemonize --fpm-config /etc/php/7.2/fpm/php-fpm.conf -g /run/php7.2-fpm.pid",
 	mode    => 0755,
 }
 
