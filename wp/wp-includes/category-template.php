@@ -20,7 +20,7 @@ function get_category_link( $category ) {
 	if ( ! is_object( $category ) )
 		$category = (int) $category;
 
-	$category = get_term_link( $category, 'category' );
+	$category = get_term_link( $category );
 
 	if ( is_wp_error( $category ) )
 		return '';
@@ -104,7 +104,7 @@ function get_the_category( $id = false ) {
  */
 function get_the_category_by_ID( $cat_ID ) {
 	$cat_ID = (int) $cat_ID;
-	$category = get_term( $cat_ID, 'category' );
+	$category = get_term( $cat_ID );
 
 	if ( is_wp_error( $category ) )
 		return $category;
@@ -212,7 +212,7 @@ function get_the_category_list( $separator = '', $parents = '', $post_id = false
 }
 
 /**
- * Check if the current post is within any of the given categories.
+ * Checks if the current post is within any of the given categories.
  *
  * The given categories are checked against the post's categories' term_ids, names and slugs.
  * Categories given as integers will only be checked against the post's categories' term_ids.
@@ -222,6 +222,10 @@ function get_the_category_list( $separator = '', $parents = '', $post_id = false
  * Prior to v2.7, only one category could be compared: in_category( $single_category ).
  * Prior to v2.7, this function could only be used in the WordPress Loop.
  * As of 2.7, the function can be used anywhere if it is provided a post ID or post object.
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
  *
  * @since 1.2.0
  *
@@ -275,23 +279,17 @@ function category_description( $category = 0 ) {
  * @since 4.6.0 Introduced the `required` argument.
  *
  * @param string|array $args {
- *     Optional. Array or string of arguments to generate a categories drop-down element.
+ *     Optional. Array or string of arguments to generate a categories drop-down element. See WP_Term_Query::__construct()
+ *     for information on additional accepted arguments.
  *
  *     @type string       $show_option_all   Text to display for showing all categories. Default empty.
  *     @type string       $show_option_none  Text to display for showing no categories. Default empty.
  *     @type string       $option_none_value Value to use when no category is selected. Default empty.
  *     @type string       $orderby           Which column to use for ordering categories. See get_terms() for a list
  *                                           of accepted values. Default 'id' (term_id).
- *     @type string       $order             Whether to order terms in ascending or descending order. Accepts 'ASC'
- *                                           or 'DESC'. Default 'ASC'.
  *     @type bool         $pad_counts        See get_terms() for an argument description. Default false.
  *     @type bool|int     $show_count        Whether to include post counts. Accepts 0, 1, or their bool equivalents.
  *                                           Default 0.
- *     @type bool|int     $hide_empty        Whether to hide categories that don't have any posts. Accepts 0, 1, or
- *                                           their bool equivalents. Default 1.
- *     @type int          $child_of          Term ID to retrieve child terms of. See get_terms(). Default 0.
- *     @type array|string $exclude           Array or comma/space-separated string of term ids to exclude.
- *                                           If `$include` is non-empty, `$exclude` is ignored. Default empty array.
  *     @type bool|int     $echo              Whether to echo or return the generated markup. Accepts 0, 1, or their
  *                                           bool equivalents. Default 1.
  *     @type bool|int     $hierarchical      Whether to traverse the taxonomy hierarchy. Accepts 0, 1, or their bool
@@ -397,9 +395,10 @@ function wp_dropdown_categories( $args = '' ) {
 		 *
 		 * @see wp_dropdown_categories()
 		 *
-		 * @param string $element Taxonomy element to list.
+		 * @param string       $element  Category name.
+		 * @param WP_Term|null $category The category object, or null if there's no corresponding category.
 		 */
-		$show_option_none = apply_filters( 'list_cats', $r['show_option_none'] );
+		$show_option_none = apply_filters( 'list_cats', $r['show_option_none'], null );
 		$output .= "\t<option value='" . esc_attr( $option_none_value ) . "' selected='selected'>$show_option_none</option>\n";
 	}
 
@@ -408,7 +407,7 @@ function wp_dropdown_categories( $args = '' ) {
 		if ( $r['show_option_all'] ) {
 
 			/** This filter is documented in wp-includes/category-template.php */
-			$show_option_all = apply_filters( 'list_cats', $r['show_option_all'] );
+			$show_option_all = apply_filters( 'list_cats', $r['show_option_all'], null );
 			$selected = ( '0' === strval($r['selected']) ) ? " selected='selected'" : '';
 			$output .= "\t<option value='0'$selected>$show_option_all</option>\n";
 		}
@@ -416,7 +415,7 @@ function wp_dropdown_categories( $args = '' ) {
 		if ( $r['show_option_none'] ) {
 
 			/** This filter is documented in wp-includes/category-template.php */
-			$show_option_none = apply_filters( 'list_cats', $r['show_option_none'] );
+			$show_option_none = apply_filters( 'list_cats', $r['show_option_none'], null );
 			$selected = selected( $option_none_value, $r['selected'], false );
 			$output .= "\t<option value='" . esc_attr( $option_none_value ) . "'$selected>$show_option_none</option>\n";
 		}
@@ -482,7 +481,7 @@ function wp_dropdown_categories( $args = '' ) {
  *                                               See get_terms(). Default true.
  *     @type string       $order                 Which direction to order categories. Accepts 'ASC' or 'DESC'.
  *                                               Default 'ASC'.
- *     @type string       $orderby               The column to use for ordering categories. Default 'ID'.
+ *     @type string       $orderby               The column to use for ordering categories. Default 'name'.
  *     @type string       $separator             Separator between links. Default '<br />'.
  *     @type bool|int     $show_count            Whether to show how many posts are in the category. Default 0.
  *     @type string       $show_option_all       Text to display for showing all categories. Default empty string.
@@ -1070,15 +1069,7 @@ function walk_category_dropdown_tree() {
  * @return string Link on success, empty string if tag does not exist.
  */
 function get_tag_link( $tag ) {
-	if ( ! is_object( $tag ) )
-		$tag = (int) $tag;
-
-	$tag = get_term_link( $tag, 'post_tag' );
-
-	if ( is_wp_error( $tag ) )
-		return '';
-
-	return $tag;
+	return get_category_link( $tag );
 }
 
 /**
@@ -1166,20 +1157,20 @@ function tag_description( $tag = 0 ) {
  * Retrieve term description.
  *
  * @since 2.8.0
+ * @since 4.9.2 The `$taxonomy` parameter was deprecated.
  *
- * @param int $term Optional. Term ID. Will use global term ID by default.
- * @param string $taxonomy Optional taxonomy name. Defaults to 'post_tag'.
+ * @param int  $term       Optional. Term ID. Will use global term ID by default.
+ * @param null $deprecated Deprecated argument.
  * @return string Term description, available.
  */
-function term_description( $term = 0, $taxonomy = 'post_tag' ) {
+function term_description( $term = 0, $deprecated = null ) {
 	if ( ! $term && ( is_tax() || is_tag() || is_category() ) ) {
 		$term = get_queried_object();
 		if ( $term ) {
-			$taxonomy = $term->taxonomy;
 			$term = $term->term_id;
 		}
 	}
-	$description = get_term_field( 'description', $term, $taxonomy );
+	$description = get_term_field( 'description', $term );
 	return is_wp_error( $description ) ? '' : $description;
 }
 
@@ -1380,7 +1371,7 @@ function has_category( $category = '', $post = null ) {
 }
 
 /**
- * Check if the current post has any of given tags.
+ * Checks if the current post has any of given tags.
  *
  * The given tags are checked against the post's tags' term_ids, names and slugs.
  * Tags given as integers will only be checked against the post's tags' term_ids.
@@ -1389,6 +1380,10 @@ function has_category( $category = '', $post = null ) {
  * Prior to v2.7 of WordPress, tags given as integers would also be checked against the post's tags' names and slugs (in addition to term_ids)
  * Prior to v2.7, this function could only be used in the WordPress Loop.
  * As of 2.7, the function can be used anywhere if it is provided a post ID or post object.
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
  *
  * @since 2.6.0
  *

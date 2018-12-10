@@ -1,8 +1,6 @@
 /* Include margin and padding in the width calculation of input and textarea. */
 input,
 textarea {
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 }
 
@@ -26,12 +24,10 @@ input[type="week"],
 select,
 textarea {
 	border: 1px solid #ddd;
-	-webkit-box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
 	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
 	background-color: #fff;
 	color: #32373c;
 	outline: none;
-	-webkit-transition: 0.05s border-color ease-in-out;
 	transition: 0.05s border-color ease-in-out;
 }
 
@@ -55,7 +51,6 @@ input[type="radio"]:focus,
 select:focus,
 textarea:focus {
 	border-color: #5b9dd9;
-	-webkit-box-shadow: 0 0 2px rgba( 30, 140, 190, 0.8 );
 	box-shadow: 0 0 2px rgba( 30, 140, 190, 0.8 );
 }
 
@@ -89,9 +84,7 @@ input[type="radio"] {
 	width: 16px;
 	min-width: 16px;
 	-webkit-appearance: none;
-	-webkit-box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.1 );
 	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.1 );
-	-webkit-transition: .05s border-color ease-in-out;
 	transition: .05s border-color ease-in-out;
 }
 
@@ -119,7 +112,6 @@ td > input[type="checkbox"],
 }
 
 input[type="radio"] {
-	-webkit-border-radius: 50%;
 	border-radius: 50%;
 	margin-right: 4px;
 	line-height: 10px;
@@ -146,7 +138,6 @@ input[type="checkbox"]:checked:before {
 input[type="radio"]:checked:before {
 	content: "\2022";
 	text-indent: -9999px;
-	-webkit-border-radius: 50px;
 	border-radius: 50px;
 	font-size: 24px;
 	width: 6px;
@@ -191,7 +182,6 @@ input,
 select {
 	font-size: 14px;
 	padding: 3px 5px;
-	-webkit-border-radius: 0;
 	border-radius: 0; /* Reset mobile webkit's default element styling */
 }
 
@@ -249,8 +239,7 @@ textarea[readonly] {
 .form-invalid input, .form-invalid input:focus,
 .form-invalid select, .form-invalid select:focus {
 	border-color: #dc3232 !important;
-	-webkit-box-shadow: 0 0 2px rgba( 204, 0, 0, 0.8 );
- 	box-shadow: 0 0 2px rgba( 204, 0, 0, 0.8 );
+ box-shadow: 0 0 2px rgba( 204, 0, 0, 0.8 );
 }
 
 .form-table .form-required.form-invalid td:after {
@@ -286,7 +275,6 @@ textarea:disabled,
 textarea.disabled {
 	background: rgba( 255, 255, 255, 0.5 );
 	border-color: rgba( 222, 222, 222, 0.75 );
-	-webkit-box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.04 );
 	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.04 );
 	color: rgba( 51, 51, 51, 0.5 );
 }
@@ -296,7 +284,6 @@ input[type="file"].disabled,
 input[type="range"]:disabled,
 input[type="range"].disabled {
 	background: none;
-	-webkit-box-shadow: none;
 	box-shadow: none;
 	cursor: default;
 }
@@ -340,9 +327,7 @@ input[type="radio"].disabled:checked:before {
 .submit {
 	padding: 1.5em 0;
 	margin: 5px 0;
-	-webkit-border-bottom-left-radius: 3px;
 	border-bottom-left-radius: 3px;
-	-webkit-border-bottom-right-radius: 3px;
 	border-bottom-right-radius: 3px;
 	border: none;
 }
@@ -453,7 +438,15 @@ fieldset label,
 	vertical-align: middle;
 }
 
-.options-media-php label[for*="_size_"],
+.options-media-php [for*="_size_"] {
+	min-width: 10em;
+	vertical-align: baseline;
+}
+
+.options-media-php .small-text[name*="_size_"] {
+	margin: 0 0 1em;
+}
+
 #misc-publishing-actions label {
 	vertical-align: baseline;
 }
@@ -466,8 +459,6 @@ fieldset label,
 	padding: 3px 5px;
 	text-align: center;
 	width: 25em;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	opacity: 0;
 }
@@ -584,7 +575,6 @@ ul#add-to-blog-users {
 	position: absolute;
 	z-index: 10000;
 	border: 1px solid #5b9dd9;
-	-webkit-box-shadow: 0 1px 2px rgba( 30, 140, 190, 0.8 );
 	box-shadow: 0 1px 2px rgba( 30, 140, 190, 0.8 );
 	background-color: #fff;
 }
@@ -732,8 +722,6 @@ table.form-table td .updated p {
 	display: inline-block;
 	width: 24%;
 	padding: 5px 15px 15px;
-	-webkit-box-sizing: border-box;
-	-moz-box-sizing: border-box;
 	box-sizing: border-box;
 	margin-bottom: 3px;
 }
@@ -790,7 +778,6 @@ table.form-table td .updated p {
 	min-width: 255px;
 	max-width: 520px;
 	border: 1px solid #e5e5e5;
-	-webkit-box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
 	background: #fff;
 }
@@ -826,7 +813,6 @@ table.form-table td .updated p {
 	cursor: move;
 	color: #32373c;
 	background: #e5e5e5;
-	-webkit-border-radius: 5px;
 	border-radius: 5px;
 	border: 1px solid #b4b9be;
 	font-style: normal;
@@ -848,18 +834,12 @@ table.form-table td .updated p {
 	right: 10px;
 	bottom: 9px;
 	background: transparent;
-	-webkit-transform: skew(20deg) rotate(6deg);
-	-ms-transform: skew(20deg) rotate(6deg);
 	transform: skew(20deg) rotate(6deg);
-	-webkit-box-shadow: 0 10px 8px rgba(0, 0, 0, 0.6);
 	box-shadow: 0 10px 8px rgba(0, 0, 0, 0.6);
 }
 
 .pressthis-bookmarklet:hover:after {
-	-webkit-transform: skew(20deg) rotate(9deg);
-	-ms-transform: skew(20deg) rotate(9deg);
 	transform: skew(20deg) rotate(9deg);
-	-webkit-box-shadow: 0 10px 8px rgba(0, 0, 0, 0.7);
 	box-shadow: 0 10px 8px rgba(0, 0, 0, 0.7);
 }
 
@@ -923,7 +903,7 @@ table.form-table td .updated p {
 
 .options-general-php .spinner {
 	float: none;
-	margin: 0 3px;
+	margin: -3px 3px 0;
 }
 
 .settings-php .language-install-spinner,
@@ -932,6 +912,11 @@ table.form-table td .updated p {
 	float: none;
 	margin: -3px 5px 0;
 	vertical-align: middle;
+}
+
+.form-table.permalink-structure .available-structure-tags li {
+	float: left;
+	margin-right: 5px;
 }
 
 /*------------------------------------------------------------------------------
@@ -973,6 +958,8 @@ table.form-table td .updated p {
 
 .request-filesystem-credentials-dialog {
 	display: none;
+	/* The customizer uses visibility: hidden on the body for full-overlays. */
+	visibility: visible;
 }
 
 .request-filesystem-credentials-dialog .notification-dialog {
@@ -1087,6 +1074,142 @@ table.form-table td .updated p {
 	clear: both;
 }
 
+/*------------------------------------------------------------------------------
+   Privacy Policy settings screen
+------------------------------------------------------------------------------*/
+.tools-privacy-policy-page form {
+	margin-bottom: 1.3em;
+}
+
+.tools-privacy-policy-page input.button,
+.tools-privacy-policy-page select {
+	margin-left: 6px;
+}
+
+.tools-privacy-edit {
+	margin: 1.5em 0;
+}
+
+.tools-privacy-policy-page span {
+	line-height: 2em;
+}
+
+.privacy_requests .column-email {
+	width: 40%;
+}
+
+.privacy_requests .column-type {
+	text-align: center;
+}
+
+.privacy_requests thead td:first-child,
+.privacy_requests tfoot td:first-child {
+	border-left: 4px solid #fff;
+}
+
+.privacy_requests tbody th {
+	border-left: 4px solid #fff;
+	background: #fff;
+	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+}
+
+.privacy_requests tbody .has-request-results th {
+	box-shadow: none;
+}
+
+.privacy_requests tbody .request-results th .notice {
+	margin: 0 0 5px;
+}
+
+.privacy_requests tbody td {
+	background: #fff;
+	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+}
+
+.privacy_requests tbody .has-request-results td {
+	box-shadow: none;
+}
+
+.privacy_requests .next_steps .button {
+	height: auto;
+	line-height: 1.5;
+	padding: 4px 10px;
+	word-break: break-all;
+	white-space: unset;
+}
+
+.privacy_requests .status-request-confirmed th,
+.privacy_requests .status-request-confirmed td {
+	background-color: #f7fcfe;
+	border-left-color: #00a0d2;
+}
+
+.privacy_requests .status-request-failed th,
+.privacy_requests .status-request-failed td {
+	background-color: #fef7f1;
+	border-left-color: #d64d21;
+}
+
+.privacy_requests .export_personal_data_failed a {
+	vertical-align: baseline;
+}
+
+.status-label {
+	font-weight: bold;
+}
+
+.status-label.status-request-pending {
+	font-weight: normal;
+	font-style: italic;
+	color: #6c7781;
+}
+
+.status-label.status-request-failed {
+	color: #aa0000;
+	font-weight: bold;
+}
+
+.wp-privacy-request-form {
+	clear: both;
+}
+
+.wp-privacy-request-form-field {
+	margin: 1.5em 0;
+}
+
+.wp-privacy-request-form label {
+	font-weight: bold;
+	line-height: 1.5;
+	padding-bottom: .5em;
+	display: block;
+}
+
+.wp-privacy-request-form input {
+	line-height: 1.5;
+	margin: 0;
+}
+
+.email-personal-data::before {
+	display: inline-block;
+	font: normal 20px/1 dashicons;
+	margin: 3px 5px 0 -2px;
+	speak: none;
+	-webkit-font-smoothing: antialiased;
+	-moz-osx-font-smoothing: grayscale;
+	vertical-align: top;
+}
+
+.email-personal-data--sending::before {
+	color: #f56e28;
+	content: "\f463";
+	animation: rotation 2s infinite linear;
+}
+
+.email-personal-data--sent::before {
+	color: #79ba49;
+	content: "\f147";
+}
+
 
 /* =Media Queries
 -------------------------------------------------------------- */
@@ -1176,8 +1299,6 @@ table.form-table td .updated p {
 	}
 
 	.form-table {
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
 		box-sizing: border-box;
 	}
 
@@ -1224,8 +1345,6 @@ table.form-table td .updated p {
 		padding: 7px 10px;
 		display: block;
 		max-width: none;
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
 		box-sizing: border-box;
 	}
 
@@ -1245,7 +1364,7 @@ table.form-table td .updated p {
 	input[type="number"].small-text,
 	.form-table input[type="text"].small-text {
 		width: auto;
-		max-width: 55px;
+		max-width: 4.375em; /* 70px, enough for 4 digits to fit comfortably */
 		display: inline;
 		padding: 3px 6px;
 		margin: 0 3px;
@@ -1253,8 +1372,6 @@ table.form-table td .updated p {
 
 	#pass-strength-result {
 		width: 100%;
-		-webkit-box-sizing: border-box;
-		-moz-box-sizing: border-box;
 		box-sizing: border-box;
 		padding: 8px;
 	}
@@ -1347,7 +1464,6 @@ table.form-table td .updated p {
 	.wp-pwd button.button {
 		background: transparent;
 		border: none;
-		-webkit-box-shadow: none;
 		box-shadow: none;
 		line-height: 2;
 		margin: 0;
@@ -1368,8 +1484,36 @@ table.form-table td .updated p {
 	}
 
 	.options-general-php input[type="text"].small-text {
-		max-width: 60px;
+		max-width: 6.25em;
 		margin: 0;
+	}
+
+	/* Privacy Policy settings screen */
+	.tools-privacy-policy-page form.wp-create-privacy-page {
+	    margin-bottom: 1em;
+	}
+
+ 	.tools-privacy-policy-page input#set-page,
+	.tools-privacy-policy-page select {
+		margin: 10px 0 0;
+	}
+
+	.tools-privacy-policy-page .wp-create-privacy-page span {
+	    display: block;
+	    margin-bottom: 1em;
+	}
+
+	.tools-privacy-policy-page .wp-create-privacy-page .button {
+	    margin-left: 0;
+	}
+
+	.wp-list-table.privacy_requests tr:not(.inline-edit-row):not(.no-items) td.column-primary:not(.check-column) {
+		display: table-cell;
+	}
+
+	.wp-list-table.privacy_requests.widefat th input,
+	.wp-list-table.privacy_requests.widefat thead td input {
+		margin-left: 5px;
 	}
 }
 
@@ -1393,9 +1537,10 @@ table.form-table td .updated p {
 	}
 }
 
-@media only screen and (max-height: 480px) {
-	/*  Request Credentials */
-	.request-filesystem-credentials-dialog .notification-dialog{
+@media only screen and (max-height: 480px), screen and (max-width: 450px) {
+	/*  Request Credentials / File Editor Warning */
+	.request-filesystem-credentials-dialog .notification-dialog,
+	.file-editor-warning .notification-dialog {
 		width: 100%;
 		height: 100%;
 		max-height: 100%;
@@ -1418,5 +1563,14 @@ table.form-table td .updated p {
 	.options-general-php .date-time-text.date-time-custom-text {
 		min-width: 0;
 		margin-right: 0.5em;
+	}
+}
+
+@keyframes rotation {
+	0% {
+		transform: rotate(0deg);
+	}
+	100% {
+		transform: rotate(359deg);
 	}
 }

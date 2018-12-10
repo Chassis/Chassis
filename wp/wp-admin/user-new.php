@@ -12,14 +12,14 @@ require_once( dirname( __FILE__ ) . '/admin.php' );
 if ( is_multisite() ) {
 	if ( ! current_user_can( 'create_users' ) && ! current_user_can( 'promote_users' ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to add users to this network.' ) . '</p>',
 			403
 		);
 	}
 } elseif ( ! current_user_can( 'create_users' ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to create users.' ) . '</p>',
 		403
 	);
@@ -52,7 +52,7 @@ if ( isset($_REQUEST['action']) && 'adduser' == $_REQUEST['action'] ) {
 
 	if ( ! current_user_can( 'promote_user', $user_details->ID ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to add users to this network.' ) . '</p>',
 			403
 		);
@@ -67,10 +67,15 @@ if ( isset($_REQUEST['action']) && 'adduser' == $_REQUEST['action'] ) {
 		$redirect = add_query_arg( array('update' => 'addexisting'), 'user-new.php' );
 	} else {
 		if ( isset( $_POST[ 'noconfirmation' ] ) && current_user_can( 'manage_network_users' ) ) {
-			add_existing_user_to_blog( array( 'user_id' => $user_id, 'role' => $_REQUEST[ 'role' ] ) );
-			$redirect = add_query_arg( array( 'update' => 'addnoconfirmation' , 'user_id' => $user_id ), 'user-new.php' );
+			$result = add_existing_user_to_blog( array( 'user_id' => $user_id, 'role' => $_REQUEST[ 'role' ] ) );
+
+			if ( ! is_wp_error( $result ) ) {
+				$redirect = add_query_arg( array( 'update' => 'addnoconfirmation', 'user_id' => $user_id ), 'user-new.php' );
+			} else {
+				$redirect = add_query_arg( array( 'update' => 'could_not_add' ), 'user-new.php' );
+			}
 		} else {
-			$newuser_key = substr( md5( $user_id ), 0, 5 );
+			$newuser_key = wp_generate_password( 20, false );
 			add_option( 'new_user_' . $newuser_key, array( 'user_id' => $user_id, 'email' => $user_details->user_email, 'role' => $_REQUEST[ 'role' ] ) );
 
 			$roles = get_editable_roles();
@@ -113,7 +118,7 @@ Please click the following link to confirm the invite:
 
 	if ( ! current_user_can( 'create_users' ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to create users.' ) . '</p>',
 			403
 		);
@@ -151,12 +156,14 @@ Please click the following link to confirm the invite:
 				add_filter( 'wpmu_signup_user_notification', '__return_false' ); // Disable confirmation email
 				add_filter( 'wpmu_welcome_user_notification', '__return_false' ); // Disable welcome email
 			}
-			wpmu_signup_user( $new_user_login, $new_user_email, array( 'add_to_blog' => $wpdb->blogid, 'new_role' => $_REQUEST['role'] ) );
+			wpmu_signup_user( $new_user_login, $new_user_email, array( 'add_to_blog' => get_current_blog_id(), 'new_role' => $_REQUEST['role'] ) );
 			if ( isset( $_POST[ 'noconfirmation' ] ) && current_user_can( 'manage_network_users' ) ) {
 				$key = $wpdb->get_var( $wpdb->prepare( "SELECT activation_key FROM {$wpdb->signups} WHERE user_login = %s AND user_email = %s", $new_user_login, $new_user_email ) );
 				$new_user = wpmu_activate_signup( $key );
 				if ( is_wp_error( $new_user ) ) {
 					$redirect = add_query_arg( array( 'update' => 'addnoconfirmation' ), 'user-new.php' );
+				} elseif ( ! is_user_member_of_blog( $new_user['user_id'] ) ) {
+					$redirect = add_query_arg( array( 'update' => 'created_could_not_add' ), 'user-new.php' );
 				} else {
 					$redirect = add_query_arg( array( 'update' => 'addnoconfirmation', 'user_id' => $new_user['user_id'] ), 'user-new.php' );
 				}
@@ -261,11 +268,17 @@ if ( isset($_GET['update']) ) {
 			case "addexisting":
 				$messages[] = __('That user is already a member of this site.');
 				break;
+			case "could_not_add":
+				$add_user_errors = new WP_Error( 'could_not_add', __( 'That user could not be added to this site.' ) );
+				break;
+			case "created_could_not_add":
+				$add_user_errors = new WP_Error( 'created_could_not_add', __( 'User has been created, but could not be added to this site.' ) );
+				break;
 			case "does_not_exist":
-				$messages[] = __('The requested user does not exist.');
+				$add_user_errors = new WP_Error( 'does_not_exist', __( 'The requested user does not exist.' ) );
 				break;
 			case "enter_email":
-				$messages[] = __('Please enter a valid email address.');
+				$add_user_errors = new WP_Error( 'enter_email', __( 'Please enter a valid email address.' ) );
 				break;
 		}
 	} else {
@@ -310,7 +323,7 @@ if ( ! empty( $messages ) ) {
 <div id="ajax-response"></div>
 
 <?php
-if ( is_multisite() ) {
+if ( is_multisite() && current_user_can( 'promote_users' ) ) {
 	if ( $do_both )
 		echo '<h2 id="add-existing-user">' . __( 'Add Existing User' ) . '</h2>';
 	if ( ! current_user_can( 'manage_network_users' ) ) {

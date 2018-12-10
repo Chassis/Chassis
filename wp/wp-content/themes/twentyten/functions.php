@@ -75,6 +75,41 @@ function twentyten_setup() {
 	// This theme styles the visual editor with editor-style.css to match the theme style.
 	add_editor_style();
 
+	// Load regular editor styles into the new block-based editor.
+	add_theme_support( 'editor-styles' );
+
+	// Load default block styles.
+	add_theme_support( 'wp-block-styles' );
+
+		// Add support for custom color scheme.
+	add_theme_support( 'editor-color-palette', array(
+		array(
+			'name'  => __( 'Blue', 'twentyten' ),
+			'slug'  => 'blue',
+			'color' => '#0066cc',
+		),
+		array(
+			'name'  => __( 'Black', 'twentyten' ),
+			'slug'  => 'black',
+			'color' => '#000',
+		),
+		array(
+			'name'  => __( 'Medium Gray', 'twentyten' ),
+			'slug'  => 'medium-gray',
+			'color' => '#666',
+		),
+		array(
+			'name'  => __( 'Light Gray', 'twentyten' ),
+			'slug'  => 'light-gray',
+			'color' => '#f1f1f1',
+		),
+		array(
+			'name'  => __( 'White', 'twentyten' ),
+			'slug'  => 'white',
+			'color' => '#fff',
+		),
+	) );
+
 	// Post Format support. You can also use the legacy "gallery" or "asides" (note the plural) categories.
 	add_theme_support( 'post-formats', array( 'aside', 'gallery' ) );
 
@@ -536,7 +571,7 @@ if ( ! function_exists( 'twentyten_posted_in' ) ) :
 function twentyten_posted_in() {
 	// Retrieves tag list of current post, separated by commas.
 	$tag_list = get_the_tag_list( '', ', ' );
-	if ( $tag_list ) {
+	if ( $tag_list && ! is_wp_error( $tag_list ) ) {
 		$posted_in = __( 'This entry was posted in %1$s and tagged %2$s. Bookmark the <a href="%3$s" title="Permalink to %4$s" rel="bookmark">permalink</a>.', 'twentyten' );
 	} elseif ( is_object_in_taxonomy( get_post_type(), 'category' ) ) {
 		$posted_in = __( 'This entry was posted in %1$s. Bookmark the <a href="%3$s" title="Permalink to %4$s" rel="bookmark">permalink</a>.', 'twentyten' );
@@ -593,3 +628,46 @@ function twentyten_get_gallery_images() {
 
 	return $images;
 }
+
+/**
+ * Modifies tag cloud widget arguments to display all tags in the same font size
+ * and use list format for better accessibility.
+ *
+ * @since Twenty Ten 2.4
+ *
+ * @param array $args Arguments for tag cloud widget.
+ * @return array The filtered arguments for tag cloud widget.
+ */
+function twentyten_widget_tag_cloud_args( $args ) {
+	$args['largest']  = 22;
+	$args['smallest'] = 8;
+	$args['unit']     = 'pt';
+	$args['format']   = 'list';
+
+	return $args;
+}
+add_filter( 'widget_tag_cloud_args', 'twentyten_widget_tag_cloud_args' );
+
+/**
+ * Enqueue scripts and styles for front end.
+ *
+ * @since Twenty Ten 2.6
+ */
+function twentyten_scripts_styles() {
+	// Theme block stylesheet.
+	wp_enqueue_style( 'twentyten-block-style', get_template_directory_uri() . '/blocks.css', array(), '20181018' );
+}
+add_action( 'wp_enqueue_scripts', 'twentyten_scripts_styles' );
+
+/**
+ * Enqueue editor styles for Gutenberg
+ *
+ * @since Twenty Ten 2.6
+ */
+function twentyten_block_editor_styles() {
+	// Block styles.
+	wp_enqueue_style( 'twentyten-block-editor-style', get_template_directory_uri() . '/editor-blocks.css' );
+}
+add_action( 'enqueue_block_editor_assets', 'twentyten_block_editor_styles' );
+
+

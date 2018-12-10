@@ -217,6 +217,7 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
 		 * @since 4.7.0
 		 *
 		 * @param array $fallback_sizes An array of image size names.
+		 * @param array $metadata       Current attachment metadata.
 		 */
 		$fallback_sizes = apply_filters( 'fallback_intermediate_image_sizes', $fallback_sizes, $metadata );
 
@@ -240,7 +241,7 @@ function wp_generate_attachment_metadata( $attachment_id, $file ) {
 				$sizes[ $s ]['crop'] = $_wp_additional_image_sizes[ $s ]['crop'];
 			} else {
 				// Force thumbnails to be soft crops.
-				if ( ! 'thumbnail' === $s ) {
+				if ( 'thumbnail' !== $s ) {
 					$sizes[ $s ]['crop'] = get_option( "{$s}_crop" );
 				}
 			}
@@ -342,7 +343,7 @@ function wp_read_image_metadata( $file ) {
 	if ( ! file_exists( $file ) )
 		return false;
 
-	list( , , $sourceImageType ) = getimagesize( $file );
+	list( , , $image_type ) = @getimagesize( $file );
 
 	/*
 	 * EXIF contains a bunch of data we'll probably never need formatted in ways
@@ -371,10 +372,10 @@ function wp_read_image_metadata( $file ) {
 	 * as caption, description etc.
 	 */
 	if ( is_callable( 'iptcparse' ) ) {
-		getimagesize( $file, $info );
+		@getimagesize( $file, $info );
 
 		if ( ! empty( $info['APP13'] ) ) {
-			$iptc = iptcparse( $info['APP13'] );
+			$iptc = @iptcparse( $info['APP13'] );
 
 			// Headline, "A brief synopsis of the caption."
 			if ( ! empty( $iptc['2#105'][0] ) ) {
@@ -419,6 +420,8 @@ function wp_read_image_metadata( $file ) {
 		 }
 	}
 
+	$exif = array(); 
+
 	/**
 	 * Filters the image types to check for exif data.
 	 *
@@ -426,7 +429,9 @@ function wp_read_image_metadata( $file ) {
 	 *
 	 * @param array $image_types Image types to check for exif data.
 	 */
-	if ( is_callable( 'exif_read_data' ) && in_array( $sourceImageType, apply_filters( 'wp_read_image_metadata_types', array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) ) ) ) {
+	$exif_image_types = apply_filters( 'wp_read_image_metadata_types', array( IMAGETYPE_JPEG, IMAGETYPE_TIFF_II, IMAGETYPE_TIFF_MM ) );
+
+	if ( is_callable( 'exif_read_data' ) && in_array( $image_type, $exif_image_types ) ) {
 		$exif = @exif_read_data( $file );
 
 		if ( ! empty( $exif['ImageDescription'] ) ) {
@@ -504,13 +509,15 @@ function wp_read_image_metadata( $file ) {
 	 *
 	 * @since 2.5.0
 	 * @since 4.4.0 The `$iptc` parameter was added.
+	 * @since 5.0.0 The `$exif` parameter was added.
 	 *
-	 * @param array  $meta            Image meta data.
-	 * @param string $file            Path to image file.
-	 * @param int    $sourceImageType Type of image.
-	 * @param array  $iptc            IPTC data.
+	 * @param array  $meta       Image meta data.
+	 * @param string $file       Path to image file.
+	 * @param int    $image_type Type of image, one of the `IMAGETYPE_XXX` constants.
+	 * @param array  $iptc       IPTC data.
+	 * @param array  $exif       EXIF data.
 	 */
-	return apply_filters( 'wp_read_image_metadata', $meta, $file, $sourceImageType, $iptc );
+	return apply_filters( 'wp_read_image_metadata', $meta, $file, $image_type, $iptc, $exif );
 
 }
 

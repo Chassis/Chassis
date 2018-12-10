@@ -144,22 +144,28 @@ case 'edit':
 		$post_new_file = "post-new.php?post_type=$post_type";
 	}
 
+	/**
+	 * Allows replacement of the editor.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param boolean      Whether to replace the editor. Default false.
+	 * @param object $post Post object.
+	 */
+	if ( apply_filters( 'replace_editor', false, $post ) === true ) {
+		break;
+	}
+
+	if ( use_block_editor_for_post( $post ) ) {
+		include( ABSPATH . 'wp-admin/edit-form-blocks.php' );
+		break;
+	}
+
 	if ( ! wp_check_post_lock( $post->ID ) ) {
 		$active_post_lock = wp_set_post_lock( $post->ID );
 
 		if ( 'attachment' !== $post_type )
 			wp_enqueue_script('autosave');
-	}
-
-	if ( is_multisite() ) {
-		add_action( 'admin_footer', '_admin_notice_post_locked' );
-	} else {
-		$check_users = get_users( array( 'fields' => 'ID', 'number' => 2 ) );
-
-		if ( count( $check_users ) > 1 )
-			add_action( 'admin_footer', '_admin_notice_post_locked' );
-
-		unset( $check_users );
 	}
 
 	$title = $post_type_object->labels->edit_item;
@@ -272,6 +278,18 @@ case 'preview':
 	$url = post_preview();
 
 	wp_redirect($url);
+	exit();
+
+case 'toggle-custom-fields':
+	check_admin_referer( 'toggle-custom-fields' );
+
+	$current_user_id = get_current_user_id();
+	if ( $current_user_id ) {
+		$enable_custom_fields = (bool) get_user_meta( $current_user_id, 'enable_custom_fields', true );
+		update_user_meta( $current_user_id, 'enable_custom_fields', ! $enable_custom_fields );
+	}
+
+	wp_safe_redirect( wp_get_referer() );
 	exit();
 
 default:

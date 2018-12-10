@@ -190,33 +190,28 @@ function _get_plugin_data_markup_translate( $plugin_file, $plugin_data, $markup 
  * @param string $plugin Path to the main plugin file from plugins directory.
  * @return array List of files relative to the plugin root.
  */
-function get_plugin_files($plugin) {
+function get_plugin_files( $plugin ) {
 	$plugin_file = WP_PLUGIN_DIR . '/' . $plugin;
-	$dir = dirname($plugin_file);
-	$plugin_files = array($plugin);
-	if ( is_dir($dir) && $dir != WP_PLUGIN_DIR ) {
-		$plugins_dir = @ opendir( $dir );
-		if ( $plugins_dir ) {
-			while (($file = readdir( $plugins_dir ) ) !== false ) {
-				if ( substr($file, 0, 1) == '.' )
-					continue;
-				if ( is_dir( $dir . '/' . $file ) ) {
-					$plugins_subdir = @ opendir( $dir . '/' . $file );
-					if ( $plugins_subdir ) {
-						while (($subfile = readdir( $plugins_subdir ) ) !== false ) {
-							if ( substr($subfile, 0, 1) == '.' )
-								continue;
-							$plugin_files[] = plugin_basename("$dir/$file/$subfile");
-						}
-						@closedir( $plugins_subdir );
-					}
-				} else {
-					if ( plugin_basename("$dir/$file") != $plugin )
-						$plugin_files[] = plugin_basename("$dir/$file");
-				}
-			}
-			@closedir( $plugins_dir );
-		}
+	$dir = dirname( $plugin_file );
+
+	$plugin_files = array( plugin_basename( $plugin_file ) );
+
+	if ( is_dir( $dir ) && WP_PLUGIN_DIR !== $dir ) {
+
+		/**
+		 * Filters the array of excluded directories and files while scanning the folder.
+		 *
+		 * @since 4.9.0
+		 *
+		 * @param array $exclusions Array of excluded directories and files.
+		 */
+		$exclusions = (array) apply_filters( 'plugin_files_exclusions', array( 'CVS', 'node_modules', 'vendor', 'bower_components' ) );
+
+		$list_files = list_files( $dir, 100, $exclusions );
+		$list_files = array_map( 'plugin_basename', $list_files );
+
+		$plugin_files = array_merge( $plugin_files, $list_files );
+		$plugin_files = array_values( array_unique( $plugin_files ) );
 	}
 
 	return $plugin_files;
@@ -419,7 +414,7 @@ function _get_dropins() {
 		'advanced-cache.php' => array( __( 'Advanced caching plugin.'       ), 'WP_CACHE' ), // WP_CACHE
 		'db.php'             => array( __( 'Custom database class.'         ), true ), // auto on load
 		'db-error.php'       => array( __( 'Custom database error message.' ), true ), // auto on error
-		'install.php'        => array( __( 'Custom install script.'         ), true ), // auto on install
+		'install.php'        => array( __( 'Custom installation script.'    ), true ), // auto on installation
 		'maintenance.php'    => array( __( 'Custom maintenance message.'    ), true ), // auto on maintenance
 		'object-cache.php'   => array( __( 'External object cache.'         ), true ), // auto on load
 	);
@@ -435,13 +430,17 @@ function _get_dropins() {
 }
 
 /**
- * Check whether a plugin is active.
+ * Determines whether a plugin is active.
  *
  * Only plugins installed in the plugins/ folder can be active.
  *
  * Plugins in the mu-plugins/ folder can't be "activated," so this function will
  * return false for those plugins.
- *
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
+ * 
  * @since 2.5.0
  *
  * @param string $plugin Path to the main plugin file from plugins directory.
@@ -452,10 +451,14 @@ function is_plugin_active( $plugin ) {
 }
 
 /**
- * Check whether the plugin is inactive.
+ * Determines whether the plugin is inactive.
  *
  * Reverse of is_plugin_active(). Used as a callback.
- *
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
+ * 
  * @since 3.1.0
  * @see is_plugin_active()
  *
@@ -467,17 +470,21 @@ function is_plugin_inactive( $plugin ) {
 }
 
 /**
- * Check whether the plugin is active for the entire network.
+ * Determines whether the plugin is active for the entire network.
  *
  * Only plugins installed in the plugins/ folder can be active.
  *
  * Plugins in the mu-plugins/ folder can't be "activated," so this function will
  * return false for those plugins.
- *
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
+ * 
  * @since 3.0.0
  *
  * @param string $plugin Path to the main plugin file from plugins directory.
- * @return bool True, if active for the network, otherwise false.
+ * @return bool True if active for the network, otherwise false.
  */
 function is_plugin_active_for_network( $plugin ) {
 	if ( !is_multisite() )
@@ -893,8 +900,17 @@ function delete_plugins( $plugins, $deprecated = '' ) {
 		set_site_transient( 'update_plugins', $current );
 	}
 
-	if ( ! empty($errors) )
-		return new WP_Error('could_not_remove_plugin', sprintf(__('Could not fully remove the plugin(s) %s.'), implode(', ', $errors)) );
+	if ( ! empty( $errors ) ) {
+		if ( 1 === count( $errors ) ) {
+			/* translators: %s: plugin filename */
+			$message = __( 'Could not fully remove the plugin %s.' );
+		} else {
+			/* translators: %s: comma-separated list of plugin filenames */
+			$message = __( 'Could not fully remove the plugins %s.' );
+		}
+
+		return new WP_Error( 'could_not_remove_plugin', sprintf( $message, implode( ', ', $errors ) ) );
+	}
 
 	return true;
 }
@@ -1060,7 +1076,9 @@ function uninstall_plugin($plugin) {
  * @param string   $page_title The text to be displayed in the title tags of the page when the menu is selected.
  * @param string   $menu_title The text to be used for the menu.
  * @param string   $capability The capability required for this menu to be displayed to the user.
- * @param string   $menu_slug  The slug name to refer to this menu by (should be unique for this menu).
+ * @param string   $menu_slug  The slug name to refer to this menu by. Should be unique for this menu page and only
+ *                             include lowercase alphanumeric, dashes, and underscores characters to be compatible
+ *                             with sanitize_key().
  * @param callable $function   The function to be called to output the content for this page.
  * @param string   $icon_url   The URL to the icon to be used for this menu.
  *                             * Pass a base64-encoded SVG using a data URI, which will be colored to match
@@ -1126,11 +1144,15 @@ function add_menu_page( $page_title, $menu_title, $capability, $menu_slug, $func
  * @global array $_registered_pages
  * @global array $_parent_pages
  *
- * @param string   $parent_slug The slug name for the parent menu (or the file name of a standard WordPress admin page).
- * @param string   $page_title  The text to be displayed in the title tags of the page when the menu is selected.
+ * @param string   $parent_slug The slug name for the parent menu (or the file name of a standard
+ *                              WordPress admin page).
+ * @param string   $page_title  The text to be displayed in the title tags of the page when the menu
+ *                              is selected.
  * @param string   $menu_title  The text to be used for the menu.
  * @param string   $capability  The capability required for this menu to be displayed to the user.
- * @param string   $menu_slug   The slug name to refer to this menu by (should be unique for this menu).
+ * @param string   $menu_slug   The slug name to refer to this menu by. Should be unique for this menu
+ *                              and only include lowercase alphanumeric, dashes, and underscores characters
+ *                              to be compatible with sanitize_key().
  * @param callable $function    The function to be called to output the content for this page.
  * @return false|string The resulting page's hook_suffix, or false if the user does not have the capability required.
  */
@@ -1875,9 +1897,66 @@ function wp_clean_plugins_cache( $clear_update_cache = true ) {
 }
 
 /**
- * @param string $plugin
+ * Load a given plugin attempt to generate errors.
+ *
+ * @since 3.0.0
+ * @since 4.4.0 Function was moved into the `wp-admin/includes/plugin.php` file.
+ *
+ * @param string $plugin Plugin file to load.
  */
 function plugin_sandbox_scrape( $plugin ) {
 	wp_register_plugin_realpath( WP_PLUGIN_DIR . '/' . $plugin );
 	include( WP_PLUGIN_DIR . '/' . $plugin );
+}
+
+/**
+ * Helper function for adding content to the Privacy Policy Guide.
+ *
+ * Plugins and themes should suggest text for inclusion in the site's privacy policy.
+ * The suggested text should contain information about any functionality that affects user privacy,
+ * and will be shown on the Privacy Policy Guide screen.
+ *
+ * A plugin or theme can use this function multiple times as long as it will help to better present
+ * the suggested policy content. For example modular plugins such as WooCommerse or Jetpack
+ * can add or remove suggested content depending on the modules/extensions that are enabled.
+ * For more information see the Plugin Handbook:
+ * https://developer.wordpress.org/plugins/privacy/suggesting-text-for-the-site-privacy-policy/.
+ *
+ * Intended for use with the `'admin_init'` action.
+ *
+ * @since 4.9.6
+ *
+ * @param string $plugin_name The name of the plugin or theme that is suggesting content for the site's privacy policy.
+ * @param string $policy_text The suggested content for inclusion in the policy.
+ */
+function wp_add_privacy_policy_content( $plugin_name, $policy_text ) {
+	if ( ! is_admin() ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: admin_init */
+				__( 'The suggested privacy policy content should be added only in wp-admin by using the %s (or later) action.' ),
+				'<code>admin_init</code>'
+			),
+			'4.9.7'
+		);
+		return;
+	} elseif ( ! doing_action( 'admin_init' ) && ! did_action( 'admin_init' ) ) {
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: %s: admin_init */
+				__( 'The suggested privacy policy content should be added by using the %s (or later) action. Please see the inline documentation.' ),
+				'<code>admin_init</code>'
+			),
+			'4.9.7'
+		);
+		return;
+	}
+
+	if ( ! class_exists( 'WP_Privacy_Policy_Content' ) ) {
+		require_once( ABSPATH . 'wp-admin/includes/misc.php' );
+	}
+
+	WP_Privacy_Policy_Content::add( $plugin_name, $policy_text );
 }

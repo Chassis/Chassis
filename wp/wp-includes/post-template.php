@@ -398,7 +398,11 @@ function get_the_excerpt( $post = null ) {
 }
 
 /**
- * Whether the post has a custom excerpt.
+ * Determines whether the post has a custom excerpt.
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
  *
  * @since 2.3.0
  *
@@ -722,6 +726,10 @@ function get_body_class( $class = '' ) {
 		$classes[] = 'wp-custom-logo';
 	}
 
+	if ( current_theme_supports( 'responsive-embeds' ) ) {
+		$classes[] = 'wp-embed-responsive';
+	}
+
 	$page = $wp_query->get( 'page' );
 
 	if ( ! $page || $page < 2 )
@@ -784,12 +792,12 @@ function post_password_required( $post = null ) {
 	$post = get_post($post);
 
 	if ( empty( $post->post_password ) ) {
-		/** This filter is documented in wp-includes/post.php */
+		/** This filter is documented in wp-includes/post-template.php */
 		return apply_filters( 'post_password_required', false, $post );
 	}
 
 	if ( ! isset( $_COOKIE[ 'wp-postpass_' . COOKIEHASH ] ) ) {
-		/** This filter is documented in wp-includes/post.php */
+		/** This filter is documented in wp-includes/post-template.php */
 		return apply_filters( 'post_password_required', true, $post );
 	}
 
@@ -1018,11 +1026,19 @@ function the_meta() {
 	if ( $keys = get_post_custom_keys() ) {
 		echo "<ul class='post-meta'>\n";
 		foreach ( (array) $keys as $key ) {
-			$keyt = trim($key);
-			if ( is_protected_meta( $keyt, 'post' ) )
+			$keyt = trim( $key );
+			if ( is_protected_meta( $keyt, 'post' ) ) {
 				continue;
-			$values = array_map('trim', get_post_custom_values($key));
-			$value = implode($values,', ');
+			}
+
+			$values = array_map( 'trim', get_post_custom_values( $key ) );
+			$value = implode( $values, ', ' );
+
+			$html = sprintf( "<li><span class='post-meta-key'>%s</span> %s</li>\n",
+				/* translators: %s: Post custom field name */
+				sprintf( _x( '%s:', 'Post custom field name' ), $key ),
+				$value
+			);
 
 			/**
 			 * Filters the HTML output of the li element in the post custom fields list.
@@ -1033,7 +1049,7 @@ function the_meta() {
 			 * @param string $key   Meta key.
 			 * @param string $value Meta value.
 			 */
-			echo apply_filters( 'the_meta_key', "<li><span class='post-meta-key'>$key:</span> $value</li>\n", $key, $value );
+			echo apply_filters( 'the_meta_key', $html, $key, $value );
 		}
 		echo "</ul>\n";
 	}
@@ -1267,7 +1283,7 @@ function wp_list_pages( $args = '' ) {
  * @param array|string $args {
  *     Optional. Arguments to generate a page menu. See wp_list_pages() for additional arguments.
  *
- *     @type string          $sort_column  How to short the list of pages. Accepts post column names.
+ *     @type string          $sort_column  How to sort the list of pages. Accepts post column names.
  *                                         Default 'menu_order, post_title'.
  *     @type string          $menu_id      ID for the div containing the page list. Default is empty string.
  *     @type string          $menu_class   Class to use for the element containing the page list. Default 'menu'.
@@ -1618,12 +1634,16 @@ function get_the_password_form( $post = 0 ) {
 }
 
 /**
- * Whether currently in a page template.
+ * Determines whether currently in a page template.
  *
  * This template tag allows you to determine if you are in a page template.
  * You can optionally provide a template name or array of template names
  * and then the check will be specific to that template.
- *
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
+ * 
  * @since 2.5.0
  * @since 4.2.0 The `$template` parameter was changed to also accept an array of page templates.
  * @since 4.7.0 Now works with any post type, not just pages.

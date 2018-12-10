@@ -32,7 +32,7 @@ function get_locale() {
 
 	if ( isset( $locale ) ) {
 		/**
-		 * Filters WordPress install's locale ID.
+		 * Filters the locale ID of the WordPress installation.
 		 *
 		 * @since 1.5.0
 		 *
@@ -102,6 +102,54 @@ function get_user_locale( $user_id = 0 ) {
 
 	$locale = $user->locale;
 	return $locale ? $locale : get_locale();
+}
+
+/**
+ * Determine the current locale desired for the request.
+ *
+ * @since 5.0.0
+ *
+ * @global string $pagenow
+ *
+ * @return string The determined locale.
+ */
+function determine_locale() {
+	/**
+	 * Filters the locale for the current request prior to the default determination process.
+	 *
+	 * Using this filter allows to override the default logic, effectively short-circuiting the function.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param string|null The locale to return and short-circuit, or null as default.
+	 */
+	$determined_locale = apply_filters( 'pre_determine_locale', null );
+	if ( ! empty( $determined_locale ) && is_string( $determined_locale ) ) {
+		return $determined_locale;
+	}
+
+	$determined_locale = get_locale();
+
+	if ( is_admin() ) {
+		$determined_locale = get_user_locale();
+	}
+
+	if ( isset( $_GET['_locale'] ) && 'user' === $_GET['_locale'] && wp_is_json_request() ) {
+		$determined_locale = get_user_locale();
+	}
+
+	if ( ! empty( $_GET['wp_lang'] ) && 'wp-login.php' === $GLOBALS['pagenow'] ) {
+		$determined_locale = sanitize_text_field( $_GET['wp_lang'] );
+	}
+
+	/**
+	 * Filters the locale for the current request.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param string $locale The locale.
+	 */
+	return apply_filters( 'determine_locale', $determined_locale );
 }
 
 /**
@@ -221,7 +269,8 @@ function esc_attr__( $text, $domain = 'default' ) {
 /**
  * Retrieve the translation of $text and escapes it for safe use in HTML output.
  *
- * If there is no translation, or the text domain isn't loaded, the original text is returned.
+ * If there is no translation, or the text domain isn't loaded, the original text
+ * is escaped and returned..
  *
  * @since 2.8.0
  *
@@ -662,7 +711,7 @@ function unload_textdomain( $domain ) {
  */
 function load_default_textdomain( $locale = null ) {
 	if ( null === $locale ) {
-		$locale = is_admin() ? get_user_locale() : get_locale();
+		$locale = determine_locale();
 	}
 
 	// Unload previously loaded strings so we can switch translations.
@@ -710,7 +759,7 @@ function load_plugin_textdomain( $domain, $deprecated = false, $plugin_rel_path 
 	 * @param string $locale The plugin's current locale.
 	 * @param string $domain Text domain. Unique identifier for retrieving translated strings.
 	 */
-	$locale = apply_filters( 'plugin_locale', is_admin() ? get_user_locale() : get_locale(), $domain );
+	$locale = apply_filters( 'plugin_locale', determine_locale(), $domain );
 
 	$mofile = $domain . '-' . $locale . '.mo';
 
@@ -744,7 +793,7 @@ function load_plugin_textdomain( $domain, $deprecated = false, $plugin_rel_path 
  */
 function load_muplugin_textdomain( $domain, $mu_plugin_rel_path = '' ) {
 	/** This filter is documented in wp-includes/l10n.php */
-	$locale = apply_filters( 'plugin_locale', is_admin() ? get_user_locale() : get_locale(), $domain );
+	$locale = apply_filters( 'plugin_locale', determine_locale(), $domain );
 
 	$mofile = $domain . '-' . $locale . '.mo';
 
@@ -783,7 +832,7 @@ function load_theme_textdomain( $domain, $path = false ) {
 	 * @param string $locale The theme's current locale.
 	 * @param string $domain Text domain. Unique identifier for retrieving translated strings.
 	 */
-	$locale = apply_filters( 'theme_locale', is_admin() ? get_user_locale() : get_locale(), $domain );
+	$locale = apply_filters( 'theme_locale', determine_locale(), $domain );
 
 	$mofile = $domain . '-' . $locale . '.mo';
 
@@ -818,6 +867,91 @@ function load_child_theme_textdomain( $domain, $path = false ) {
 	if ( ! $path )
 		$path = get_stylesheet_directory();
 	return load_theme_textdomain( $domain, $path );
+}
+
+/**
+ * Load the script translated strings.
+ *
+ * @see WP_Scripts::set_translations()
+ * @link https://core.trac.wordpress.org/ticket/45103
+ * @global WP_Scripts $wp_scripts The WP_Scripts object for printing scripts.
+ *
+ * @since 5.0.0
+ *
+ * @param string $handle Name of the script to register a translation domain to.
+ * @param string $domain The textdomain.
+ * @param string $path   Optional. The full file path to the directory containing translation files.
+ *
+ * @return false|string False if the script textdomain could not be loaded, the translated strings
+ *                      in JSON encoding otherwise.
+ */
+function load_script_textdomain( $handle, $domain, $path = null ) {
+	global $wp_scripts;
+
+	$path   = untrailingslashit( $path );
+	$locale = determine_locale();
+
+	// If a path was given and the handle file exists simply return it.
+	$file_base       = $domain === 'default' ? $locale : $domain . '-' . $locale;
+	$handle_filename = $file_base . '-' . $handle . '.json';
+	if ( $path && file_exists( $path . '/' . $handle_filename ) ) {
+		return file_get_contents( $path . '/' . $handle_filename );
+	}
+
+	$obj = $wp_scripts->registered[ $handle ];
+
+	/** This filter is documented in wp-includes/class.wp-scripts.php */
+	$src = esc_url( apply_filters( 'script_loader_src', $obj->src, $handle ) );
+
+	$relative       = false;
+	$languages_path = WP_LANG_DIR;
+
+	$src_url     = wp_parse_url( $src );
+	$content_url = wp_parse_url( content_url() );
+	$site_url    = wp_parse_url( site_url() );
+
+	// If the host is the same or it's a relative URL.
+	if (
+		strpos( $src_url['path'], $content_url['path'] ) === 0 &&
+		( ! isset( $src_url['host'] ) || $src_url['host'] !== $content_url['host'] )
+	) {
+		// Make the src relative the specific plugin or theme.
+		$relative = trim( substr( $src, strlen( $content_url['path'] ) ), '/' );
+		$relative = explode( '/', $relative );
+
+		$languages_path = WP_LANG_DIR . '/' . $relative[0];
+
+		$relative = array_slice( $relative, 2 );
+		$relative = implode( '/', $relative );
+	} elseif ( ! isset( $src_url['host'] ) || $src_url['host'] !== $site_url['host'] ) {
+		if ( ! isset( $site_url['path'] ) ) {
+			$relative = trim( $src_url['path'], '/' );
+		} elseif ( ( strpos( $src_url['path'], $site_url['path'] ) === 0 ) ) {
+			// Make the src relative to the WP root.
+			$relative = substr( $src, strlen( $site_url['path'] ) );
+			$relative = trim( $relative, '/' );
+		}
+	}
+
+	// If the source is not from WP.
+	if ( false === $relative ) {
+		return false;
+	}
+
+	// Translations are always based on the unminified filename.
+	if ( substr( $relative, -7 ) === '.min.js' ) {
+		$relative = substr( $relative, 0, -7 ) . '.js';
+	}
+
+	$md5_filename = $file_base . '-' . md5( $relative ) . '.json';
+	if ( $path && file_exists( $path . '/' . $md5_filename ) ) {
+		return file_get_contents( $path . '/' . $md5_filename );
+	}
+	if ( file_exists( $languages_path . '/' . $md5_filename ) ) {
+		return file_get_contents( $languages_path . '/' . $md5_filename );
+	}
+
+	return false;
 }
 
 /**
@@ -914,7 +1048,7 @@ function _get_path_to_translation_from_lang_dir( $domain ) {
 		}
 	}
 
-	$locale = is_admin() ? get_user_locale() : get_locale();
+	$locale = determine_locale();
 	$mofile = "{$domain}-{$locale}.mo";
 
 	$path = WP_LANG_DIR . '/plugins/' . $mofile;
@@ -978,9 +1112,9 @@ function is_textdomain_loaded( $domain ) {
  * are dummy gettext calls to get them into the POT file and this function
  * properly translates them back.
  *
- * The before_last_bar() call is needed, because older installs keep the roles
+ * The before_last_bar() call is needed, because older installations keep the roles
  * using the old context format: 'Role name|User role' and just skipping the
- * content after the last bar is easier than fixing them in the DB. New installs
+ * content after the last bar is easier than fixing them in the DB. New installations
  * won't suffer from that problem.
  *
  * @since 2.8.0
@@ -1116,8 +1250,8 @@ function wp_get_pomo_file_data( $po_file ) {
  * @param string|array $args {
  *     Optional. Array or string of arguments for outputting the language selector.
  *
- *     @type string   $id                           ID attribute of the select element. Default empty.
- *     @type string   $name                         Name attribute of the select element. Default empty.
+ *     @type string   $id                           ID attribute of the select element. Default 'locale'.
+ *     @type string   $name                         Name attribute of the select element. Default 'locale'.
  *     @type array    $languages                    List of installed languages, contain only the locales.
  *                                                  Default empty array.
  *     @type array    $translations                 List of available translations. Default result of
@@ -1132,9 +1266,9 @@ function wp_get_pomo_file_data( $po_file ) {
  */
 function wp_dropdown_languages( $args = array() ) {
 
-	$args = wp_parse_args( $args, array(
-		'id'           => '',
-		'name'         => '',
+	$parsed_args = wp_parse_args( $args, array(
+		'id'           => 'locale',
+		'name'         => 'locale',
 		'languages'    => array(),
 		'translations' => array(),
 		'selected'     => '',
@@ -1143,23 +1277,28 @@ function wp_dropdown_languages( $args = array() ) {
 		'show_option_site_default'    => false,
 	) );
 
-	// English (United States) uses an empty string for the value attribute.
-	if ( 'en_US' === $args['selected'] ) {
-		$args['selected'] = '';
+	// Bail if no ID or no name.
+	if ( ! $parsed_args['id'] || ! $parsed_args['name'] ) {
+		return;
 	}
 
-	$translations = $args['translations'];
+	// English (United States) uses an empty string for the value attribute.
+	if ( 'en_US' === $parsed_args['selected'] ) {
+		$parsed_args['selected'] = '';
+	}
+
+	$translations = $parsed_args['translations'];
 	if ( empty( $translations ) ) {
 		require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
 		$translations = wp_get_available_translations();
 	}
 
 	/*
-	 * $args['languages'] should only contain the locales. Find the locale in
+	 * $parsed_args['languages'] should only contain the locales. Find the locale in
 	 * $translations to get the native name. Fall back to locale.
 	 */
 	$languages = array();
-	foreach ( $args['languages'] as $locale ) {
+	foreach ( $parsed_args['languages'] as $locale ) {
 		if ( isset( $translations[ $locale ] ) ) {
 			$translation = $translations[ $locale ];
 			$languages[] = array(
@@ -1179,9 +1318,7 @@ function wp_dropdown_languages( $args = array() ) {
 		}
 	}
 
-	$translations_available = ( ! empty( $translations ) && $args['show_available_translations'] );
-
-	$output = sprintf( '<select name="%s" id="%s">', esc_attr( $args['name'] ), esc_attr( $args['id'] ) );
+	$translations_available = ( ! empty( $translations ) && $parsed_args['show_available_translations'] );
 
 	// Holds the HTML markup.
 	$structure = array();
@@ -1191,25 +1328,28 @@ function wp_dropdown_languages( $args = array() ) {
 		$structure[] = '<optgroup label="' . esc_attr_x( 'Installed', 'translations' ) . '">';
 	}
 
-	if ( $args['show_option_site_default'] ) {
+	// Site default.
+	if ( $parsed_args['show_option_site_default'] ) {
 		$structure[] = sprintf(
 			'<option value="site-default" data-installed="1"%s>%s</option>',
-			selected( 'site-default', $args['selected'], false ),
+			selected( 'site-default', $parsed_args['selected'], false ),
 			_x( 'Site Default', 'default site language' )
 		);
 	}
 
+	// Always show English.
 	$structure[] = sprintf(
 		'<option value="" lang="en" data-installed="1"%s>English (United States)</option>',
-		selected( '', $args['selected'], false )
+		selected( '', $parsed_args['selected'], false )
 	);
 
+	// List installed languages.
 	foreach ( $languages as $language ) {
 		$structure[] = sprintf(
 			'<option value="%s" lang="%s"%s data-installed="1">%s</option>',
 			esc_attr( $language['language'] ),
 			esc_attr( $language['lang'] ),
-			selected( $language['language'], $args['selected'], false ),
+			selected( $language['language'], $parsed_args['selected'], false ),
 			esc_html( $language['native_name'] )
 		);
 	}
@@ -1225,18 +1365,19 @@ function wp_dropdown_languages( $args = array() ) {
 				'<option value="%s" lang="%s"%s>%s</option>',
 				esc_attr( $translation['language'] ),
 				esc_attr( current( $translation['iso'] ) ),
-				selected( $translation['language'], $args['selected'], false ),
+				selected( $translation['language'], $parsed_args['selected'], false ),
 				esc_html( $translation['native_name'] )
 			);
 		}
 		$structure[] = '</optgroup>';
 	}
 
+	// Combine the output string.
+	$output  = sprintf( '<select name="%s" id="%s">', esc_attr( $parsed_args['name'] ), esc_attr( $parsed_args['id'] ) );
 	$output .= join( "\n", $structure );
-
 	$output .= '</select>';
 
-	if ( $args['echo'] ) {
+	if ( $parsed_args['echo'] ) {
 		echo $output;
 	}
 
@@ -1244,7 +1385,11 @@ function wp_dropdown_languages( $args = array() ) {
 }
 
 /**
- * Checks if current locale is RTL.
+ * Determines whether the current locale is right-to-left (RTL).
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
  *
  * @since 3.0.0
  *

@@ -12,7 +12,8 @@
  *
  * @since 3.0.0
  *
- * @global int $blog_id
+ * @global int    $blog_id    The current site ID.
+ * @global string $wp_version The WordPress version string.
  */
 function wp_initial_constants() {
 	global $blog_id;
@@ -349,7 +350,7 @@ function wp_templating_constants() {
 	define('STYLESHEETPATH', get_stylesheet_directory());
 
 	/**
-	 * Slug of the default theme for this install.
+	 * Slug of the default theme for this installation.
 	 * Used as the default theme when installing new sites.
 	 * It will be used as the fallback if the current theme doesn't exist.
 	 *
@@ -357,6 +358,6 @@ function wp_templating_constants() {
 	 * @see WP_Theme::get_core_default_theme()
 	 */
 	if ( !defined('WP_DEFAULT_THEME') )
-		define( 'WP_DEFAULT_THEME', 'twentyseventeen' );
+		define( 'WP_DEFAULT_THEME', 'twentynineteen' );
 
 }

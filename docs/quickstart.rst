@@ -96,7 +96,7 @@ Installing
 4. Make a copy of ``local-config-sample.php`` and rename to ``local-config.php``
 
 5. Browse to http://vagrant.local and you should see your site! The default
-   login credentials are ``admin`` and ``password``.
+   login credentials are ``admin`` and ``password`` and the login URL is http://vagrant.local/wp/wp-admin.
 
 
 What's in the box?

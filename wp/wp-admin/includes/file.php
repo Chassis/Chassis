@@ -35,7 +35,7 @@ $wp_file_descriptions = array(
 	'singular.php'          => __( 'Singular Template' ),
 	'single.php'            => __( 'Single Post' ),
 	'page.php'              => __( 'Single Page' ),
-	'front-page.php'        => __( 'Static Front Page' ),
+	'front-page.php'        => __( 'Homepage' ),
 	// Attachments
 	'attachment.php'        => __( 'Attachment Template' ),
 	'image.php'             => __( 'Image Attachment Template' ),
@@ -69,7 +69,8 @@ $wp_file_descriptions = array(
  *
  * @since 1.5.0
  *
- * @global array $wp_file_descriptions
+ * @global array $wp_file_descriptions Theme file descriptions.
+ * @global array $allowed_files        List of allowed files.
  * @param string $file Filesystem path or filename
  * @return string Description of file from $wp_file_descriptions or basename of $file if description doesn't exist.
  *                Appends 'Page Template' to basename of $file if the file is a page template
@@ -119,37 +120,491 @@ function get_home_path() {
  * The depth of the recursiveness can be controlled by the $levels param.
  *
  * @since 2.6.0
+ * @since 4.9.0 Added the `$exclusions` parameter.
  *
  * @param string $folder Optional. Full path to folder. Default empty.
  * @param int    $levels Optional. Levels of folders to follow, Default 100 (PHP Loop limit).
+ * @param array  $exclusions Optional. List of folders and files to skip.
  * @return bool|array False on failure, Else array of files
  */
-function list_files( $folder = '', $levels = 100 ) {
-	if ( empty($folder) )
+function list_files( $folder = '', $levels = 100, $exclusions = array() ) {
+	if ( empty( $folder ) ) {
 		return false;
+	}
 
-	if ( ! $levels )
+	$folder = trailingslashit( $folder );
+
+	if ( ! $levels ) {
 		return false;
+	}
 
 	$files = array();
-	if ( $dir = @opendir( $folder ) ) {
-		while (($file = readdir( $dir ) ) !== false ) {
-			if ( in_array($file, array('.', '..') ) )
+
+	$dir = @opendir( $folder );
+	if ( $dir ) {
+		while ( ( $file = readdir( $dir ) ) !== false ) {
+			// Skip current and parent folder links.
+			if ( in_array( $file, array( '.', '..' ), true ) ) {
 				continue;
-			if ( is_dir( $folder . '/' . $file ) ) {
-				$files2 = list_files( $folder . '/' . $file, $levels - 1);
-				if ( $files2 )
+			}
+
+			// Skip hidden and excluded files.
+			if ( '.' === $file[0] || in_array( $file, $exclusions, true ) ) {
+				continue;
+			}
+
+			if ( is_dir( $folder . $file ) ) {
+				$files2 = list_files( $folder . $file, $levels - 1 );
+				if ( $files2 ) {
 					$files = array_merge($files, $files2 );
-				else
-					$files[] = $folder . '/' . $file . '/';
+				} else {
+					$files[] = $folder . $file . '/';
+				}
 			} else {
-				$files[] = $folder . '/' . $file;
+				$files[] = $folder . $file;
 			}
 		}
 	}
 	@closedir( $dir );
+
 	return $files;
 }
+
+/**
+ * Get list of file extensions that are editable in plugins.
+ *
+ * @since 4.9.0
+ *
+ * @param string $plugin Plugin.
+ * @return array File extensions.
+ */
+function wp_get_plugin_file_editable_extensions( $plugin ) {
+
+	$editable_extensions = array(
+		'bash',
+		'conf',
+		'css',
+		'diff',
+		'htm',
+		'html',
+		'http',
+		'inc',
+		'include',
+		'js',
+		'json',
+		'jsx',
+		'less',
+		'md',
+		'patch',
+		'php',
+		'php3',
+		'php4',
+		'php5',
+		'php7',
+		'phps',
+		'phtml',
+		'sass',
+		'scss',
+		'sh',
+		'sql',
+		'svg',
+		'text',
+		'txt',
+		'xml',
+		'yaml',
+		'yml',
+	);
+
+	/**
+	 * Filters file type extensions editable in the plugin editor.
+	 *
+	 * @since 2.8.0
+	 * @since 4.9.0 Adds $plugin param.
+	 *
+	 * @param string $plugin Plugin file.
+	 * @param array $editable_extensions An array of editable plugin file extensions.
+	 */
+	$editable_extensions = (array) apply_filters( 'editable_extensions', $editable_extensions, $plugin );
+
+	return $editable_extensions;
+}
+
+/**
+ * Get list of file extensions that are editable for a given theme.
+ *
+ * @param WP_Theme $theme Theme.
+ * @return array File extensions.
+ */
+function wp_get_theme_file_editable_extensions( $theme ) {
+
+	$default_types = array(
+		'bash',
+		'conf',
+		'css',
+		'diff',
+		'htm',
+		'html',
+		'http',
+		'inc',
+		'include',
+		'js',
+		'json',
+		'jsx',
+		'less',
+		'md',
+		'patch',
+		'php',
+		'php3',
+		'php4',
+		'php5',
+		'php7',
+		'phps',
+		'phtml',
+		'sass',
+		'scss',
+		'sh',
+		'sql',
+		'svg',
+		'text',
+		'txt',
+		'xml',
+		'yaml',
+		'yml',
+	);
+
+	/**
+	 * Filters the list of file types allowed for editing in the Theme editor.
+	 *
+	 * @since 4.4.0
+	 *
+	 * @param array    $default_types List of file types. Default types include 'php' and 'css'.
+	 * @param WP_Theme $theme         The current Theme object.
+	 */
+	$file_types = apply_filters( 'wp_theme_editor_filetypes', $default_types, $theme );
+
+	// Ensure that default types are still there.
+	return array_unique( array_merge( $file_types, $default_types ) );
+}
+
+/**
+ * Print file editor templates (for plugins and themes).
+ *
+ * @since 4.9.0
+ */
+function wp_print_file_editor_templates() {
+	?>
+	<script type="text/html" id="tmpl-wp-file-editor-notice">
+		<div class="notice inline notice-{{ data.type || 'info' }} {{ data.alt ? 'notice-alt' : '' }} {{ data.dismissible ? 'is-dismissible' : '' }} {{ data.classes || '' }}">
+			<# if ( 'php_error' === data.code ) { #>
+				<p>
+					<?php
+					printf(
+						/* translators: %$1s is line number and %1$s is file path. */
+						__( 'Your PHP code changes were rolled back due to an error on line %1$s of file %2$s. Please fix and try saving again.' ),
+						'{{ data.line }}',
+						'{{ data.file }}'
+					);
+					?>
+				</p>
+				<pre>{{ data.message }}</pre>
+			<# } else if ( 'file_not_writable' === data.code ) { #>
+				<p><?php _e( 'You need to make this file writable before you can save your changes. See <a href="https://codex.wordpress.org/Changing_File_Permissions">the Codex</a> for more information.' ); ?></p>
+			<# } else { #>
+				<p>{{ data.message || data.code }}</p>
+
+				<# if ( 'lint_errors' === data.code ) { #>
+					<p>
+						<# var elementId = 'el-' + String( Math.random() ); #>
+						<input id="{{ elementId }}"  type="checkbox">
+						<label for="{{ elementId }}"><?php _e( 'Update anyway, even though it might break your site?' ); ?></label>
+					</p>
+				<# } #>
+			<# } #>
+			<# if ( data.dismissible ) { #>
+				<button type="button" class="notice-dismiss"><span class="screen-reader-text"><?php _e( 'Dismiss' ); ?></span></button>
+			<# } #>
+		</div>
+	</script>
+	<?php
+}
+
+/**
+ * Attempt to edit a file for a theme or plugin.
+ *
+ * When editing a PHP file, loopback requests will be made to the admin and the homepage
+ * to attempt to see if there is a fatal error introduced. If so, the PHP change will be
+ * reverted.
+ *
+ * @since 4.9.0
+ *
+ * @param array $args {
+ *     Args. Note that all of the arg values are already unslashed. They are, however,
+ *     coming straight from $_POST and are not validated or sanitized in any way.
+ *
+ *     @type string $file       Relative path to file.
+ *     @type string $plugin     Plugin being edited.
+ *     @type string $theme      Theme being edited.
+ *     @type string $newcontent New content for the file.
+ *     @type string $nonce      Nonce.
+ * }
+ * @return true|WP_Error True on success or `WP_Error` on failure.
+ */
+function wp_edit_theme_plugin_file( $args ) {
+	if ( empty( $args['file'] ) ) {
+		return new WP_Error( 'missing_file' );
+	}
+	$file = $args['file'];
+	if ( 0 !== validate_file( $file ) ) {
+		return new WP_Error( 'bad_file' );
+	}
+
+	if ( ! isset( $args['newcontent'] ) ) {
+		return new WP_Error( 'missing_content' );
+	}
+	$content = $args['newcontent'];
+
+	if ( ! isset( $args['nonce'] ) ) {
+		return new WP_Error( 'missing_nonce' );
+	}
+
+	$plugin = null;
+	$theme = null;
+	$real_file = null;
+	if ( ! empty( $args['plugin'] ) ) {
+		$plugin = $args['plugin'];
+
+		if ( ! current_user_can( 'edit_plugins' ) ) {
+			return new WP_Error( 'unauthorized', __( 'Sorry, you are not allowed to edit plugins for this site.' ) );
+		}
+
+		if ( ! wp_verify_nonce( $args['nonce'], 'edit-plugin_' . $file ) ) {
+			return new WP_Error( 'nonce_failure' );
+		}
+
+		if ( ! array_key_exists( $plugin, get_plugins() ) ) {
+			return new WP_Error( 'invalid_plugin' );
+		}
+
+		if ( 0 !== validate_file( $file, get_plugin_files( $plugin ) ) ) {
+			return new WP_Error( 'bad_plugin_file_path', __( 'Sorry, that file cannot be edited.' ) );
+		}
+
+		$editable_extensions = wp_get_plugin_file_editable_extensions( $plugin );
+
+		$real_file = WP_PLUGIN_DIR . '/' . $file;
+
+		$is_active = in_array(
+			$plugin,
+			(array) get_option( 'active_plugins', array() ),
+			true
+		);
+
+	} elseif ( ! empty( $args['theme'] ) ) {
+		$stylesheet = $args['theme'];
+		if ( 0 !== validate_file( $stylesheet ) ) {
+			return new WP_Error( 'bad_theme_path' );
+		}
+
+		if ( ! current_user_can( 'edit_themes' ) ) {
+			return new WP_Error( 'unauthorized', __( 'Sorry, you are not allowed to edit templates for this site.' ) );
+		}
+
+		$theme = wp_get_theme( $stylesheet );
+		if ( ! $theme->exists() ) {
+			return new WP_Error( 'non_existent_theme', __( 'The requested theme does not exist.' ) );
+		}
+
+		$real_file = $theme->get_stylesheet_directory() . '/' . $file;
+		if ( ! wp_verify_nonce( $args['nonce'], 'edit-theme_' . $real_file . $stylesheet ) ) {
+			return new WP_Error( 'nonce_failure' );
+		}
+
+		if ( $theme->errors() && 'theme_no_stylesheet' === $theme->errors()->get_error_code() ) {
+			return new WP_Error(
+				'theme_no_stylesheet',
+				__( 'The requested theme does not exist.' ) . ' ' . $theme->errors()->get_error_message()
+			);
+		}
+
+		$editable_extensions = wp_get_theme_file_editable_extensions( $theme );
+
+		$allowed_files = array();
+		foreach ( $editable_extensions as $type ) {
+			switch ( $type ) {
+				case 'php':
+					$allowed_files = array_merge( $allowed_files, $theme->get_files( 'php', -1 ) );
+					break;
+				case 'css':
+					$style_files = $theme->get_files( 'css', -1 );
+					$allowed_files['style.css'] = $style_files['style.css'];
+					$allowed_files = array_merge( $allowed_files, $style_files );
+					break;
+				default:
+					$allowed_files = array_merge( $allowed_files, $theme->get_files( $type, -1 ) );
+					break;
+			}
+		}
+
+		// Compare based on relative paths
+		if ( 0 !== validate_file( $file, array_keys( $allowed_files ) ) ) {
+			return new WP_Error( 'disallowed_theme_file', __( 'Sorry, that file cannot be edited.' ) );
+		}
+
+		$is_active = ( get_stylesheet() === $stylesheet || get_template() === $stylesheet );
+	} else {
+		return new WP_Error( 'missing_theme_or_plugin' );
+	}
+
+	// Ensure file is real.
+	if ( ! is_file( $real_file ) ) {
+		return new WP_Error( 'file_does_not_exist', __( 'No such file exists! Double check the name and try again.' ) );
+	}
+
+	// Ensure file extension is allowed.
+	$extension = null;
+	if ( preg_match( '/\.([^.]+)$/', $real_file, $matches ) ) {
+		$extension = strtolower( $matches[1] );
+		if ( ! in_array( $extension, $editable_extensions, true ) ) {
+			return new WP_Error( 'illegal_file_type', __( 'Files of this type are not editable.' ) );
+		}
+	}
+
+	$previous_content = file_get_contents( $real_file );
+
+	if ( ! is_writeable( $real_file ) ) {
+		return new WP_Error( 'file_not_writable' );
+	}
+
+	$f = fopen( $real_file, 'w+' );
+	if ( false === $f ) {
+		return new WP_Error( 'file_not_writable' );
+	}
+
+	$written = fwrite( $f, $content );
+	fclose( $f );
+	if ( false === $written ) {
+		return new WP_Error( 'unable_to_write', __( 'Unable to write to file.' ) );
+	}
+	if ( 'php' === $extension && function_exists( 'opcache_invalidate' ) ) {
+		opcache_invalidate( $real_file, true );
+	}
+
+	if ( $is_active && 'php' === $extension ) {
+
+		$scrape_key = md5( rand() );
+		$transient = 'scrape_key_' . $scrape_key;
+		$scrape_nonce = strval( rand() );
+		set_transient( $transient, $scrape_nonce, 60 ); // It shouldn't take more than 60 seconds to make the two loopback requests.
+
+		$cookies = wp_unslash( $_COOKIE );
+		$scrape_params = array(
+			'wp_scrape_key' => $scrape_key,
+			'wp_scrape_nonce' => $scrape_nonce,
+		);
+		$headers = array(
+			'Cache-Control' => 'no-cache',
+		);
+
+		// Include Basic auth in loopback requests.
+		if ( isset( $_SERVER['PHP_AUTH_USER'] ) && isset( $_SERVER['PHP_AUTH_PW'] ) ) {
+			$headers['Authorization'] = 'Basic ' . base64_encode( wp_unslash( $_SERVER['PHP_AUTH_USER'] ) . ':' . wp_unslash( $_SERVER['PHP_AUTH_PW'] ) );
+		}
+
+		// Make sure PHP process doesn't die before loopback requests complete.
+		@set_time_limit( 300 );
+
+		// Time to wait for loopback requests to finish.
+		$timeout = 100;
+
+		$needle_start = "###### wp_scraping_result_start:$scrape_key ######";
+		$needle_end = "###### wp_scraping_result_end:$scrape_key ######";
+
+		// Attempt loopback request to editor to see if user just whitescreened themselves.
+		if ( $plugin ) {
+			$url = add_query_arg( compact( 'plugin', 'file' ), admin_url( 'plugin-editor.php' ) );
+		} elseif ( isset( $stylesheet ) ) {
+			$url = add_query_arg(
+				array(
+					'theme' => $stylesheet,
+					'file' => $file,
+				),
+				admin_url( 'theme-editor.php' )
+			);
+		} else {
+			$url = admin_url();
+		}
+		$url = add_query_arg( $scrape_params, $url );
+		$r = wp_remote_get( $url, compact( 'cookies', 'headers', 'timeout' ) );
+		$body = wp_remote_retrieve_body( $r );
+		$scrape_result_position = strpos( $body, $needle_start );
+
+		$loopback_request_failure = array(
+			'code' => 'loopback_request_failed',
+			'message' => __( 'Unable to communicate back with site to check for fatal errors, so the PHP change was reverted. You will need to upload your PHP file change by some other means, such as by using SFTP.' ),
+		);
+		$json_parse_failure = array(
+			'code' => 'json_parse_error',
+		);
+
+		$result = null;
+		if ( false === $scrape_result_position ) {
+			$result = $loopback_request_failure;
+		} else {
+			$error_output = substr( $body, $scrape_result_position + strlen( $needle_start ) );
+			$error_output = substr( $error_output, 0, strpos( $error_output, $needle_end ) );
+			$result = json_decode( trim( $error_output ), true );
+			if ( empty( $result ) ) {
+				$result = $json_parse_failure;
+			}
+		}
+
+		// Try making request to homepage as well to see if visitors have been whitescreened.
+		if ( true === $result ) {
+			$url = home_url( '/' );
+			$url = add_query_arg( $scrape_params, $url );
+			$r = wp_remote_get( $url, compact( 'cookies', 'headers', 'timeout' ) );
+			$body = wp_remote_retrieve_body( $r );
+			$scrape_result_position = strpos( $body, $needle_start );
+
+			if ( false === $scrape_result_position ) {
+				$result = $loopback_request_failure;
+			} else {
+				$error_output = substr( $body, $scrape_result_position + strlen( $needle_start ) );
+				$error_output = substr( $error_output, 0, strpos( $error_output, $needle_end ) );
+				$result = json_decode( trim( $error_output ), true );
+				if ( empty( $result ) ) {
+					$result = $json_parse_failure;
+				}
+			}
+		}
+
+		delete_transient( $transient );
+
+		if ( true !== $result ) {
+
+			// Roll-back file change.
+			file_put_contents( $real_file, $previous_content );
+			if ( function_exists( 'opcache_invalidate' ) ) {
+				opcache_invalidate( $real_file, true );
+			}
+
+			if ( ! isset( $result['message'] ) ) {
+				$message = __( 'Something went wrong.' );
+			} else {
+				$message = $result['message'];
+				unset( $result['message'] );
+			}
+			return new WP_Error( 'php_error', $message, $result );
+		}
+	}
+
+	if ( $theme instanceof WP_Theme ) {
+		$theme->cache_delete();
+	}
+
+	return true;
+}
+
 
 /**
  * Returns a filename of a Temporary unique file.
@@ -199,17 +654,17 @@ function wp_tempnam( $filename = '', $dir = '' ) {
 }
 
 /**
- * Make sure that the file that was requested to edit, is allowed to be edited
+ * Makes sure that the file that was requested to be edited is allowed to be edited.
  *
- * Function will die if you are not allowed to edit the file
+ * Function will die if you are not allowed to edit the file.
  *
  * @since 1.5.0
  *
- * @param string $file file the users is attempting to edit
- * @param array $allowed_files Array of allowed files to edit, $file must match an entry exactly
+ * @param string $file          File the user is attempting to edit.
+ * @param array  $allowed_files Optional. Array of allowed files to edit, $file must match an entry exactly.
  * @return string|null
  */
-function validate_file_to_edit( $file, $allowed_files = '' ) {
+function validate_file_to_edit( $file, $allowed_files = array() ) {
 	$code = validate_file( $file, $allowed_files );
 
 	if (!$code )
@@ -370,21 +825,39 @@ function _wp_handle_upload( &$file, $overrides, $time, $action ) {
 
 	// Move the file to the uploads dir.
 	$new_file = $uploads['path'] . "/$filename";
-	if ( 'wp_handle_upload' === $action ) {
-		$move_new_file = @ move_uploaded_file( $file['tmp_name'], $new_file );
-	} else {
-		// use copy and unlink because rename breaks streams.
-		$move_new_file = @ copy( $file['tmp_name'], $new_file );
-		unlink( $file['tmp_name'] );
-	}
 
-	if ( false === $move_new_file ) {
-		if ( 0 === strpos( $uploads['basedir'], ABSPATH ) ) {
-			$error_path = str_replace( ABSPATH, '', $uploads['basedir'] ) . $uploads['subdir'];
+ 	/**
+	 * Filters whether to short-circuit moving the uploaded file after passing all checks.
+	 *
+	 * If a non-null value is passed to the filter, moving the file and any related error
+	 * reporting will be completely skipped.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param string $move_new_file If null (default) move the file after the upload.
+	 * @param string $file          An array of data for a single file.
+	 * @param string $new_file      Filename of the newly-uploaded file.
+	 * @param string $type          File type.
+	 */
+	$move_new_file = apply_filters( 'pre_move_uploaded_file', null, $file, $new_file, $type );
+
+	if ( null === $move_new_file ) {
+		if ( 'wp_handle_upload' === $action ) {
+			$move_new_file = @ move_uploaded_file( $file['tmp_name'], $new_file );
 		} else {
-			$error_path = basename( $uploads['basedir'] ) . $uploads['subdir'];
+			// use copy and unlink because rename breaks streams.
+			$move_new_file = @ copy( $file['tmp_name'], $new_file );
+			unlink( $file['tmp_name'] );
 		}
-		return $upload_error_handler( $file, sprintf( __('The uploaded file could not be moved to %s.' ), $error_path ) );
+
+		if ( false === $move_new_file ) {
+			if ( 0 === strpos( $uploads['basedir'], ABSPATH ) ) {
+				$error_path = str_replace( ABSPATH, '', $uploads['basedir'] ) . $uploads['subdir'];
+			} else {
+				$error_path = basename( $uploads['basedir'] ) . $uploads['subdir'];
+			}
+			return $upload_error_handler( $file, sprintf( __('The uploaded file could not be moved to %s.' ), $error_path ) );
+		}
 	}
 
 	// Set correct file permissions.
@@ -647,8 +1120,9 @@ function _unzip_file_ziparchive($file, $to, $needed_dirs = array() ) {
 		if ( '__MACOSX/' === substr($info['name'], 0, 9) ) // Skip the OS X-created __MACOSX directory
 			continue;
 
+		// Don't extract invalid files:
 		if ( 0 !== validate_file( $info['name'] ) ) {
-			return new WP_Error( 'invalid_file_ziparchive', __( 'Could not extract file from archive.' ), $info['name'] );
+			continue;
 		}
 
 		$uncompressed_size += $info['size'];
@@ -707,6 +1181,11 @@ function _unzip_file_ziparchive($file, $to, $needed_dirs = array() ) {
 
 		if ( '__MACOSX/' === substr($info['name'], 0, 9) ) // Don't extract the OS X-created __MACOSX directory files
 			continue;
+
+		// Don't extract invalid files:
+		if ( 0 !== validate_file( $info['name'] ) ) {
+			continue;
+		}
 
 		$contents = $z->getFromIndex($i);
 		if ( false === $contents )
@@ -811,8 +1290,9 @@ function _unzip_file_pclzip($file, $to, $needed_dirs = array()) {
 		if ( '__MACOSX/' === substr($file['filename'], 0, 9) ) // Don't extract the OS X-created __MACOSX directory files
 			continue;
 
+		// Don't extract invalid files:
 		if ( 0 !== validate_file( $file['filename'] ) ) {
-			return new WP_Error( 'invalid_file_pclzip', __( 'Could not extract file from archive.' ), $file['filename'] );
+			continue;
 		}
 
 		if ( ! $wp_filesystem->put_contents( $to . $file['filename'], $file['content'], FS_CHMOD_FILE) )
@@ -1316,4 +1796,455 @@ function wp_print_request_filesystem_credentials_modal() {
 		</div>
 	</div>
 	<?php
+}
+
+/**
+ * Generate a single group for the personal data export report.
+ *
+ * @since 4.9.6
+ *
+ * @param array $group_data {
+ *     The group data to render.
+ *
+ *     @type string $group_label  The user-facing heading for the group, e.g. 'Comments'.
+ *     @type array  $items        {
+ *         An array of group items.
+ *
+ *         @type array  $group_item_data  {
+ *             An array of name-value pairs for the item.
+ *
+ *             @type string $name   The user-facing name of an item name-value pair, e.g. 'IP Address'.
+ *             @type string $value  The user-facing value of an item data pair, e.g. '50.60.70.0'.
+ *         }
+ *     }
+ * }
+ * @return string The HTML for this group and its items.
+ */
+function wp_privacy_generate_personal_data_export_group_html( $group_data ) {
+	$allowed_tags      = array(
+		'a' => array(
+			'href'   => array(),
+			'target' => array()
+		),
+		'br' => array()
+	);
+	$allowed_protocols = array( 'http', 'https' );
+	$group_html        = '';
+
+	$group_html .= '<h2>' . esc_html( $group_data['group_label'] ) . '</h2>';
+	$group_html .= '<div>';
+
+	foreach ( (array) $group_data['items'] as $group_item_id => $group_item_data ) {
+		$group_html .= '<table>';
+		$group_html .= '<tbody>';
+
+		foreach ( (array) $group_item_data as $group_item_datum ) {
+			$value = $group_item_datum['value'];
+			// If it looks like a link, make it a link
+			if ( false === strpos( $value, ' ' ) && ( 0 === strpos( $value, 'http://' ) || 0 === strpos( $value, 'https://' ) ) ) {
+				$value = '<a href="' . esc_url( $value ) . '">' . esc_html( $value ) . '</a>';
+			}
+
+			$group_html .= '<tr>';
+			$group_html .= '<th>' . esc_html( $group_item_datum['name'] ) . '</th>';
+			$group_html .= '<td>' . wp_kses( $value, $allowed_tags, $allowed_protocols ) . '</td>';
+			$group_html .= '</tr>';
+		}
+
+		$group_html .= '</tbody>';
+		$group_html .= '</table>';
+	}
+
+	$group_html .= '</div>';
+
+	return $group_html;
+}
+
+/**
+ * Generate the personal data export file.
+ *
+ * @since 4.9.6
+ *
+ * @param int $request_id The export request ID.
+ */
+function wp_privacy_generate_personal_data_export_file( $request_id ) {
+	if ( ! class_exists( 'ZipArchive' ) ) {
+		wp_send_json_error( __( 'Unable to generate export file. ZipArchive not available.' ) );
+	}
+
+	// Get the request data.
+	$request = wp_get_user_request_data( $request_id );
+
+	if ( ! $request || 'export_personal_data' !== $request->action_name ) {
+		wp_send_json_error( __( 'Invalid request ID when generating export file.' ) );
+	}
+
+	$email_address = $request->email;
+
+	if ( ! is_email( $email_address ) ) {
+		wp_send_json_error( __( 'Invalid email address when generating export file.' ) );
+	}
+
+	// Create the exports folder if needed.
+	$exports_dir = wp_privacy_exports_dir();
+	$exports_url = wp_privacy_exports_url();
+
+	if ( ! wp_mkdir_p( $exports_dir ) ) {
+		wp_send_json_error( __( 'Unable to create export folder.' ) );
+	}
+
+	// Protect export folder from browsing.
+	$index_pathname = $exports_dir . 'index.html';
+	if ( ! file_exists( $index_pathname ) ) {
+		$file = fopen( $index_pathname, 'w' );
+		if ( false === $file ) {
+			wp_send_json_error( __( 'Unable to protect export folder from browsing.' ) );
+		}
+		fwrite( $file, '<!-- Silence is golden. -->' );
+		fclose( $file );
+	}
+
+	$stripped_email       = str_replace( '@', '-at-', $email_address );
+	$stripped_email       = sanitize_title( $stripped_email ); // slugify the email address
+	$obscura              = wp_generate_password( 32, false, false );
+	$file_basename        = 'wp-personal-data-file-' . $stripped_email . '-' . $obscura;
+	$html_report_filename = $file_basename . '.html';
+	$html_report_pathname = wp_normalize_path( $exports_dir . $html_report_filename );
+	$file = fopen( $html_report_pathname, 'w' );
+	if ( false === $file ) {
+		wp_send_json_error( __( 'Unable to open export file (HTML report) for writing.' ) );
+	}
+
+	$title = sprintf(
+		/* translators: %s: user's e-mail address */
+		__( 'Personal Data Export for %s' ),
+		$email_address
+	);
+
+	// Open HTML.
+	fwrite( $file, "<!DOCTYPE html>\n" );
+	fwrite( $file, "<html>\n" );
+
+	// Head.
+	fwrite( $file, "<head>\n" );
+	fwrite( $file, "<meta http-equiv='Content-Type' content='text/html; charset=UTF-8' />\n" );
+	fwrite( $file, "<style type='text/css'>" );
+	fwrite( $file, "body { color: black; font-family: Arial, sans-serif; font-size: 11pt; margin: 15px auto; width: 860px; }" );
+	fwrite( $file, "table { background: #f0f0f0; border: 1px solid #ddd; margin-bottom: 20px; width: 100%; }" );
+	fwrite( $file, "th { padding: 5px; text-align: left; width: 20%; }" );
+	fwrite( $file, "td { padding: 5px; }" );
+	fwrite( $file, "tr:nth-child(odd) { background-color: #fafafa; }" );
+	fwrite( $file, "</style>" );
+	fwrite( $file, "<title>" );
+	fwrite( $file, esc_html( $title ) );
+	fwrite( $file, "</title>" );
+	fwrite( $file, "</head>\n" );
+
+	// Body.
+	fwrite( $file, "<body>\n" );
+
+	// Heading.
+	fwrite( $file, "<h1>" . esc_html__( 'Personal Data Export' ) . "</h1>" );
+
+	// And now, all the Groups.
+	$groups = get_post_meta( $request_id, '_export_data_grouped', true );
+
+	// First, build an "About" group on the fly for this report.
+	$about_group = array(
+		/* translators: Header for the About section in a personal data export. */
+		'group_label' => _x( 'About', 'personal data group label' ),
+		'items'       => array(
+			'about-1' => array(
+				array(
+					'name'  => _x( 'Report generated for', 'email address' ),
+					'value' => $email_address,
+				),
+				array(
+					'name'  => _x( 'For site', 'website name' ),
+					'value' => get_bloginfo( 'name' ),
+				),
+				array(
+					'name'  => _x( 'At URL', 'website URL' ),
+					'value' => get_bloginfo( 'url' ),
+				),
+				array(
+					'name'  => _x( 'On', 'date/time' ),
+					'value' => current_time( 'mysql' ),
+				),
+			),
+		),
+	);
+
+	// Merge in the special about group.
+	$groups = array_merge( array( 'about' => $about_group ), $groups );
+
+	// Now, iterate over every group in $groups and have the formatter render it in HTML.
+	foreach ( (array) $groups as $group_id => $group_data ) {
+		fwrite( $file, wp_privacy_generate_personal_data_export_group_html( $group_data ) );
+	}
+
+	fwrite( $file, "</body>\n" );
+
+	// Close HTML.
+	fwrite( $file, "</html>\n" );
+	fclose( $file );
+
+	/*
+	 * Now, generate the ZIP.
+	 *
+	 * If an archive has already been generated, then remove it and reuse the
+	 * filename, to avoid breaking any URLs that may have been previously sent
+	 * via email.
+	 */
+	$error            = false;
+	$archive_url      = get_post_meta( $request_id, '_export_file_url', true );
+	$archive_pathname = get_post_meta( $request_id, '_export_file_path', true );
+
+	if ( empty( $archive_pathname ) || empty( $archive_url ) ) {
+		$archive_filename = $file_basename . '.zip';
+		$archive_pathname = $exports_dir . $archive_filename;
+		$archive_url      = $exports_url . $archive_filename;
+
+		update_post_meta( $request_id, '_export_file_url', $archive_url );
+		update_post_meta( $request_id, '_export_file_path', wp_normalize_path( $archive_pathname ) );
+	}
+
+	if ( ! empty( $archive_pathname ) && file_exists( $archive_pathname ) ) {
+		wp_delete_file( $archive_pathname );
+	}
+
+	$zip = new ZipArchive;
+	if ( true === $zip->open( $archive_pathname, ZipArchive::CREATE ) ) {
+		if ( ! $zip->addFile( $html_report_pathname, 'index.html' ) ) {
+			$error = __( 'Unable to add data to export file.' );
+		}
+
+		$zip->close();
+
+		if ( ! $error ) {
+			/**
+			 * Fires right after all personal data has been written to the export file.
+			 *
+			 * @since 4.9.6
+			 *
+			 * @param string $archive_pathname     The full path to the export file on the filesystem.
+			 * @param string $archive_url          The URL of the archive file.
+			 * @param string $html_report_pathname The full path to the personal data report on the filesystem.
+			 * @param int    $request_id           The export request ID.
+			 */
+			do_action( 'wp_privacy_personal_data_export_file_created', $archive_pathname, $archive_url, $html_report_pathname, $request_id );
+		}
+	} else {
+		$error = __( 'Unable to open export file (archive) for writing.' );
+	}
+
+	// And remove the HTML file.
+	unlink( $html_report_pathname );
+
+	if ( $error ) {
+		wp_send_json_error( $error );
+	}
+}
+
+/**
+ * Send an email to the user with a link to the personal data export file
+ *
+ * @since 4.9.6
+ *
+ * @param int $request_id The request ID for this personal data export.
+ * @return true|WP_Error True on success or `WP_Error` on failure.
+ */
+function wp_privacy_send_personal_data_export_email( $request_id ) {
+	// Get the request data.
+	$request = wp_get_user_request_data( $request_id );
+
+	if ( ! $request || 'export_personal_data' !== $request->action_name ) {
+		return new WP_Error( 'invalid', __( 'Invalid request ID when sending personal data export email.' ) );
+	}
+
+	/** This filter is documented in wp-includes/functions.php */
+	$expiration      = apply_filters( 'wp_privacy_export_expiration', 3 * DAY_IN_SECONDS );
+	$expiration_date = date_i18n( get_option( 'date_format' ), time() + $expiration );
+
+/* translators: Do not translate EXPIRATION, LINK, SITENAME, SITEURL: those are placeholders. */
+$email_text = __(
+'Howdy,
+
+Your request for an export of personal data has been completed. You may
+download your personal data by clicking on the link below. For privacy
+and security, we will automatically delete the file on ###EXPIRATION###,
+so please download it before then.
+
+###LINK###
+
+Regards,
+All at ###SITENAME###
+###SITEURL###'
+);
+
+	/**
+	 * Filters the text of the email sent with a personal data export file.
+	 *
+	 * The following strings have a special meaning and will get replaced dynamically:
+	 * ###EXPIRATION###         The date when the URL will be automatically deleted.
+	 * ###LINK###               URL of the personal data export file for the user.
+	 * ###SITENAME###           The name of the site.
+	 * ###SITEURL###            The URL to the site.
+	 *
+	 * @since 4.9.6
+	 *
+	 * @param string $email_text     Text in the email.
+	 * @param int    $request_id     The request ID for this personal data export.
+	 */
+	$content = apply_filters( 'wp_privacy_personal_data_email_content', $email_text, $request_id );
+
+	$email_address = $request->email;
+	$export_file_url = get_post_meta( $request_id, '_export_file_url', true );
+	$site_name = wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES );
+	$site_url = home_url();
+
+	$content = str_replace( '###EXPIRATION###', $expiration_date, $content );
+	$content = str_replace( '###LINK###', esc_url_raw( $export_file_url ), $content );
+	$content = str_replace( '###EMAIL###', $email_address, $content );
+	$content = str_replace( '###SITENAME###', $site_name, $content );
+	$content = str_replace( '###SITEURL###', esc_url_raw( $site_url ), $content );
+
+	$mail_success = wp_mail(
+		$email_address,
+		sprintf(
+			__( '[%s] Personal Data Export' ),
+			$site_name
+		),
+		$content
+	);
+
+	if ( ! $mail_success ) {
+		return new WP_Error( 'error', __( 'Unable to send personal data export email.' ) );
+	}
+
+	return true;
+}
+
+/**
+ * Intercept personal data exporter page ajax responses in order to assemble the personal data export file.
+ * @see wp_privacy_personal_data_export_page
+ * @since 4.9.6
+ *
+ * @param array  $response        The response from the personal data exporter for the given page.
+ * @param int    $exporter_index  The index of the personal data exporter. Begins at 1.
+ * @param string $email_address   The email address of the user whose personal data this is.
+ * @param int    $page            The page of personal data for this exporter. Begins at 1.
+ * @param int    $request_id      The request ID for this personal data export.
+ * @param bool   $send_as_email   Whether the final results of the export should be emailed to the user.
+ * @param string $exporter_key    The slug (key) of the exporter.
+ * @return array The filtered response.
+ */
+function wp_privacy_process_personal_data_export_page( $response, $exporter_index, $email_address, $page, $request_id, $send_as_email, $exporter_key ) {
+	/* Do some simple checks on the shape of the response from the exporter.
+	 * If the exporter response is malformed, don't attempt to consume it - let it
+	 * pass through to generate a warning to the user by default ajax processing.
+	 */
+	if ( ! is_array( $response ) ) {
+		return $response;
+	}
+
+	if ( ! array_key_exists( 'done', $response ) ) {
+		return $response;
+	}
+
+	if ( ! array_key_exists( 'data', $response ) ) {
+		return $response;
+	}
+
+	if ( ! is_array( $response['data'] ) ) {
+		return $response;
+	}
+
+	// Get the request data.
+	$request = wp_get_user_request_data( $request_id );
+
+	if ( ! $request || 'export_personal_data' !== $request->action_name ) {
+		wp_send_json_error( __( 'Invalid request ID when merging exporter data.' ) );
+	}
+
+	$export_data = array();
+
+	// First exporter, first page? Reset the report data accumulation array.
+	if ( 1 === $exporter_index && 1 === $page ) {
+		update_post_meta( $request_id, '_export_data_raw', $export_data );
+	} else {
+		$export_data = get_post_meta( $request_id, '_export_data_raw', true );
+	}
+
+	// Now, merge the data from the exporter response into the data we have accumulated already.
+	$export_data = array_merge( $export_data, $response['data'] );
+	update_post_meta( $request_id, '_export_data_raw', $export_data );
+
+	// If we are not yet on the last page of the last exporter, return now.
+	/** This filter is documented in wp-admin/includes/ajax-actions.php */
+	$exporters = apply_filters( 'wp_privacy_personal_data_exporters', array() );
+	$is_last_exporter = $exporter_index === count( $exporters );
+	$exporter_done = $response['done'];
+	if ( ! $is_last_exporter || ! $exporter_done ) {
+		return $response;
+	}
+
+	// Last exporter, last page - let's prepare the export file.
+
+	// First we need to re-organize the raw data hierarchically in groups and items.
+	$groups = array();
+	foreach ( (array) $export_data as $export_datum ) {
+		$group_id    = $export_datum['group_id'];
+		$group_label = $export_datum['group_label'];
+		if ( ! array_key_exists( $group_id, $groups ) ) {
+			$groups[ $group_id ] = array(
+				'group_label' => $group_label,
+				'items'       => array(),
+			);
+		}
+
+		$item_id = $export_datum['item_id'];
+		if ( ! array_key_exists( $item_id, $groups[ $group_id ]['items'] ) ) {
+			$groups[ $group_id ]['items'][ $item_id ] = array();
+		}
+
+		$old_item_data = $groups[ $group_id ]['items'][ $item_id ];
+		$merged_item_data = array_merge( $export_datum['data'], $old_item_data );
+		$groups[ $group_id ]['items'][ $item_id ] = $merged_item_data;
+	}
+
+	// Then save the grouped data into the request.
+	delete_post_meta( $request_id, '_export_data_raw' );
+	update_post_meta( $request_id, '_export_data_grouped', $groups );
+
+	/**
+	 * Generate the export file from the collected, grouped personal data.
+	 *
+	 * @since 4.9.6
+	 *
+	 * @param int $request_id The export request ID.
+	 */
+	do_action( 'wp_privacy_personal_data_export_file', $request_id );
+
+	// Clear the grouped data now that it is no longer needed.
+	delete_post_meta( $request_id, '_export_data_grouped' );
+
+	// If the destination is email, send it now.
+	if ( $send_as_email ) {
+		$mail_success = wp_privacy_send_personal_data_export_email( $request_id );
+		if ( is_wp_error( $mail_success ) ) {
+			wp_send_json_error( $mail_success->get_error_message() );
+		}
+	} else {
+		// Modify the response to include the URL of the export file so the browser can fetch it.
+		$export_file_url = get_post_meta( $request_id, '_export_file_url', true );
+		if ( ! empty( $export_file_url ) ) {
+			$response['url'] = $export_file_url;
+		}
+	}
+
+	// Update the request to completed state.
+	_wp_privacy_completed_request( $request_id );
+
+	return $response;
 }

@@ -333,7 +333,7 @@ function wp_debug_mode() {
 		error_reporting( E_CORE_ERROR | E_CORE_WARNING | E_COMPILE_ERROR | E_ERROR | E_WARNING | E_PARSE | E_USER_ERROR | E_USER_WARNING | E_RECOVERABLE_ERROR );
 	}
 
-	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) || wp_doing_ajax() ) {
+	if ( defined( 'XMLRPC_REQUEST' ) || defined( 'REST_REQUEST' ) || ( defined( 'WP_INSTALLING' ) && WP_INSTALLING ) || wp_doing_ajax() || wp_is_json_request() ) {
 		@ini_set( 'display_errors', 0 );
 	}
 }
@@ -401,7 +401,12 @@ function require_wp_db() {
 		return;
 	}
 
-	$wpdb = new wpdb( DB_USER, DB_PASSWORD, DB_NAME, DB_HOST );
+	$dbuser     = defined( 'DB_USER' ) ? DB_USER : '';
+	$dbpassword = defined( 'DB_PASSWORD' ) ? DB_PASSWORD : '';
+	$dbname     = defined( 'DB_NAME' ) ? DB_NAME : '';
+	$dbhost     = defined( 'DB_HOST' ) ? DB_HOST : '';
+
+	$wpdb = new wpdb( $dbuser, $dbpassword, $dbname, $dbhost );
 }
 
 /**
@@ -470,6 +475,8 @@ function wp_using_ext_object_cache( $using = null ) {
  *
  * @since 3.0.0
  * @access private
+ *
+ * @global array $wp_filter Stores all of the filters.
  */
 function wp_start_object_cache() {
 	global $wp_filter;
@@ -694,10 +701,14 @@ function wp_clone( $object ) {
 }
 
 /**
- * Whether the current request is for an administrative interface page.
+ * Determines whether the current request is for an administrative interface page.
  *
  * Does not check if the user is an administrator; current_user_can()
  * for checking roles and capabilities.
+ *
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook. 
  *
  * @since 1.5.1
  *
@@ -1012,6 +1023,8 @@ function wp_convert_hr_to_bytes( $value ) {
  *
  * @since 4.6.0
  *
+ * @staticvar array $ini_all
+ *
  * @link https://secure.php.net/manual/en/function.ini-get-all.php
  *
  * @param string $setting The name of the ini setting to check.
@@ -1109,4 +1122,68 @@ function wp_is_file_mod_allowed( $context ) {
 	 * @param string $context          The usage context.
 	 */
 	return apply_filters( 'file_mod_allowed', ! defined( 'DISALLOW_FILE_MODS' ) || ! DISALLOW_FILE_MODS, $context );
+}
+
+/**
+ * Start scraping edited file errors.
+ *
+ * @since 4.9.0
+ */
+function wp_start_scraping_edited_file_errors() {
+	if ( ! isset( $_REQUEST['wp_scrape_key'] ) || ! isset( $_REQUEST['wp_scrape_nonce'] ) ) {
+		return;
+	}
+	$key = substr( sanitize_key( wp_unslash( $_REQUEST['wp_scrape_key'] ) ), 0, 32 );
+	$nonce = wp_unslash( $_REQUEST['wp_scrape_nonce'] );
+
+	if ( get_transient( 'scrape_key_' . $key ) !== $nonce ) {
+		echo "###### wp_scraping_result_start:$key ######";
+		echo wp_json_encode( array(
+			'code' => 'scrape_nonce_failure',
+			'message' => __( 'Scrape nonce check failed. Please try again.' ),
+		) );
+		echo "###### wp_scraping_result_end:$key ######";
+		die();
+	}
+	register_shutdown_function( 'wp_finalize_scraping_edited_file_errors', $key );
+}
+
+/**
+ * Finalize scraping for edited file errors.
+ *
+ * @since 4.9.0
+ *
+ * @param string $scrape_key Scrape key.
+ */
+function wp_finalize_scraping_edited_file_errors( $scrape_key ) {
+	$error = error_get_last();
+	echo "\n###### wp_scraping_result_start:$scrape_key ######\n";
+	if ( ! empty( $error ) && in_array( $error['type'], array( E_CORE_ERROR, E_COMPILE_ERROR, E_ERROR, E_PARSE, E_USER_ERROR, E_RECOVERABLE_ERROR ), true ) ) {
+		$error = str_replace( ABSPATH, '', $error );
+		echo wp_json_encode( $error );
+	} else {
+		echo wp_json_encode( true );
+	}
+	echo "\n###### wp_scraping_result_end:$scrape_key ######\n";
+}
+
+/**
+ * Checks whether current request is a JSON request, or is expecting a JSON response.
+ *
+ * @since 5.0.0
+ *
+ * @return bool True if Accepts or Content-Type headers contain application/json, false otherwise.
+ */
+function wp_is_json_request() {
+
+	if ( isset( $_SERVER['HTTP_ACCEPT'] ) && false !== strpos( $_SERVER['HTTP_ACCEPT'], 'application/json' ) ) {
+		return true;
+	}
+
+	if ( isset( $_SERVER['CONTENT_TYPE'] ) && 'application/json' === $_SERVER['CONTENT_TYPE'] ) {
+		return true;
+	}
+
+	return false;
+
 }

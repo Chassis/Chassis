@@ -35,6 +35,750 @@ require( ABSPATH . WPINC . '/class.wp-styles.php' );
 require( ABSPATH . WPINC . '/functions.wp-styles.php' );
 
 /**
+ * Registers TinyMCE scripts.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Scripts $scripts WP_Scripts object.
+ */
+function wp_register_tinymce_scripts( &$scripts, $force_uncompressed = false ) {
+	global $tinymce_version, $concatenate_scripts, $compress_scripts;
+	$suffix     = wp_scripts_get_suffix();
+	$dev_suffix = wp_scripts_get_suffix( 'dev' );
+
+	script_concat_settings();
+
+	$compressed = $compress_scripts && $concatenate_scripts && isset( $_SERVER['HTTP_ACCEPT_ENCODING'] )
+	              && false !== stripos( $_SERVER['HTTP_ACCEPT_ENCODING'], 'gzip' ) && ! $force_uncompressed;
+
+	// Load tinymce.js when running from /src, otherwise load wp-tinymce.js.gz (in production) or
+	// tinymce.min.js (when SCRIPT_DEBUG is true).
+	if ( $compressed ) {
+		$scripts->add( 'wp-tinymce', includes_url( 'js/tinymce/' ) . 'wp-tinymce.php', array(), $tinymce_version );
+	} else {
+		$scripts->add( 'wp-tinymce-root', includes_url( 'js/tinymce/' ) . "tinymce$dev_suffix.js", array(), $tinymce_version );
+		$scripts->add( 'wp-tinymce', includes_url( 'js/tinymce/' ) . "plugins/compat3x/plugin$dev_suffix.js", array( 'wp-tinymce-root' ), $tinymce_version );
+	}
+
+	$scripts->add( 'wp-tinymce-lists', includes_url( "js/tinymce/plugins/lists/plugin$suffix.js", array( 'wp-tinymce' ), $tinymce_version ) );
+}
+
+/**
+ * Registers all the WordPress vendor scripts that are in the standardized
+ * `js/dist/vendor/` location.
+ *
+ * For the order of `$scripts->add` see `wp_default_scripts`.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Scripts $scripts WP_Scripts object.
+ */
+function wp_default_packages_vendor( &$scripts ) {
+	global $wp_locale;
+
+	$dev_suffix = wp_scripts_get_suffix( 'dev' );
+
+	$vendor_scripts = array(
+		'react' => array( 'wp-polyfill' ),
+		'react-dom' => array( 'react' ),
+		'moment',
+		'lodash',
+		'wp-polyfill-fetch',
+		'wp-polyfill-formdata',
+		'wp-polyfill-node-contains',
+		'wp-polyfill-element-closest',
+		'wp-polyfill',
+	);
+
+	$vendor_scripts_versions = array(
+		'react' => '16.6.3',
+		'react-dom' => '16.6.3',
+		'moment' => '2.22.2',
+		'lodash' => '4.17.11',
+		'wp-polyfill-fetch' => '3.0.0',
+		'wp-polyfill-formdata' => '3.0.12',
+		'wp-polyfill-node-contains' => '3.26.0-0',
+		'wp-polyfill-element-closest' => '2.0.2',
+		'wp-polyfill' => '7.0.0',
+	);
+
+	foreach ( $vendor_scripts as $handle => $dependencies ) {
+		if ( is_string( $dependencies ) ) {
+			$handle = $dependencies;
+			$dependencies = array();
+		}
+
+		$path = "/wp-includes/js/dist/vendor/$handle$dev_suffix.js";
+		$version = $vendor_scripts_versions[ $handle ];
+
+		$scripts->add( $handle, $path, $dependencies, $version, 1 );
+	}
+
+	$scripts->add( 'wp-polyfill', null, array( 'wp-polyfill' ) );
+	did_action( 'init' ) && $scripts->add_inline_script(
+		'wp-polyfill',
+		wp_get_script_polyfill(
+			$scripts,
+			array(
+				'\'fetch\' in window' => 'wp-polyfill-fetch',
+				'document.contains'   => 'wp-polyfill-node-contains',
+				'window.FormData && window.FormData.prototype.keys' => 'wp-polyfill-formdata',
+				'Element.prototype.matches && Element.prototype.closest' => 'wp-polyfill-element-closest',
+			),
+			'after'
+		)
+	);
+
+	did_action( 'init' ) && $scripts->add_inline_script( 'lodash', 'window.lodash = _.noConflict();' );
+
+	did_action( 'init' ) && $scripts->add_inline_script(
+		'moment',
+		sprintf(
+			"moment.locale( '%s', %s );",
+			get_user_locale(),
+			wp_json_encode(
+				array(
+					'months'         => array_values( $wp_locale->month ),
+					'monthsShort'    => array_values( $wp_locale->month_abbrev ),
+					'weekdays'       => array_values( $wp_locale->weekday ),
+					'weekdaysShort'  => array_values( $wp_locale->weekday_abbrev ),
+					'week'           => array(
+						'dow' => (int) get_option( 'start_of_week', 0 ),
+					),
+					'longDateFormat' => array(
+						'LT'   => get_option( 'time_format', __( 'g:i a', 'default' ) ),
+						'LTS'  => null,
+						'L'    => null,
+						'LL'   => get_option( 'date_format', __( 'F j, Y', 'default' ) ),
+						'LLL'  => __( 'F j, Y g:i a', 'default' ),
+						'LLLL' => null,
+					),
+				)
+			)
+		),
+		'after'
+	);
+}
+
+/**
+ * Returns contents of an inline script used in appending polyfill scripts for
+ * browsers which fail the provided tests. The provided array is a mapping from
+ * a condition to verify feature support to its polyfill script handle.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Scripts $scripts WP_Scripts object.
+ * @param array      $tests   Features to detect.
+ * @return string Conditional polyfill inline script.
+ */
+function wp_get_script_polyfill( &$scripts, $tests ) {
+	$polyfill = '';
+	foreach ( $tests as $test => $handle ) {
+		if ( ! array_key_exists( $handle, $scripts->registered ) ) {
+			continue;
+		}
+
+		$src = $scripts->registered[ $handle ]->src;
+		$ver = $scripts->registered[ $handle ]->ver;
+
+		if ( ! preg_match( '|^(https?:)?//|', $src ) && ! ( $scripts->content_url && 0 === strpos( $src, $scripts->content_url ) ) ) {
+			$src = $scripts->base_url . $src;
+		}
+
+		if ( ! empty( $ver ) ) {
+			$src = add_query_arg( 'ver', $ver, $src );
+		}
+
+		/** This filter is documented in wp-includes/class.wp-scripts.php */
+		$src = esc_url( apply_filters( 'script_loader_src', $src, $handle ) );
+
+		if ( ! $src ) {
+			continue;
+		}
+
+		$polyfill .= (
+			// Test presence of feature...
+			'( ' . $test . ' ) || ' .
+			// ...appending polyfill on any failures. Cautious viewers may balk
+			// at the `document.write`. Its caveat of synchronous mid-stream
+			// blocking write is exactly the behavior we need though.
+			'document.write( \'<script src="' .
+			$src .
+			'"></scr\' + \'ipt>\' );'
+		);
+	}
+
+	return $polyfill;
+}
+
+/**
+ * Registers all the WordPress packages scripts that are in the standardized
+ * `js/dist/` location.
+ *
+ * For the order of `$scripts->add` see `wp_default_scripts`.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Scripts $scripts WP_Scripts object.
+ */
+function wp_default_packages_scripts( &$scripts ) {
+	$suffix = wp_scripts_get_suffix();
+
+	$packages_versions = array(
+		'api-fetch' => '2.2.5',
+		'a11y' => '2.0.2',
+		'annotations' => '1.0.3',
+		'autop' => '2.0.2',
+		'blob' => '2.1.0',
+		'block-library' => '2.2.9',
+		'block-serialization-default-parser' => '2.0.1',
+		'blocks' => '6.0.3',
+		'components' => '7.0.3',
+		'compose' => '3.0.0',
+		'core-data' => '2.0.14',
+		'data' => '4.0.1',
+		'date' => '3.0.0',
+		'deprecated' => '2.0.3',
+		'dom' => '2.0.7',
+		'dom-ready' => '2.0.2',
+		'edit-post' => '3.1.4',
+		'editor' => '9.0.4',
+		'element' => '2.1.8',
+		'escape-html' => '1.0.1',
+		'format-library' => '1.2.7',
+		'hooks' => '2.0.3',
+		'html-entities' => '2.0.3',
+		'i18n' => '3.1.0',
+		'is-shallow-equal' => '1.1.4',
+		'keycodes' => '2.0.5',
+		'list-reusable-blocks' => '1.1.16',
+		'notices' => '1.1.0',
+		'nux' => '3.0.4',
+		'plugins' => '2.0.9',
+		'redux-routine' => '3.0.3',
+		'rich-text' => '3.0.2',
+		'shortcode' => '2.0.2',
+		'token-list' => '1.1.0',
+		'url' => '2.3.1',
+		'viewport' => '2.0.12',
+		'wordcount' => '2.0.3',
+	);
+
+	$packages_dependencies = array(
+		'api-fetch' => array( 'wp-polyfill', 'wp-hooks', 'wp-i18n', 'wp-url' ),
+		'a11y' => array( 'wp-dom-ready', 'wp-polyfill' ),
+		'annotations' => array(
+			'wp-data',
+			'wp-hooks',
+			'wp-i18n',
+			'wp-polyfill',
+			'wp-rich-text',
+		),
+		'autop' => array( 'wp-polyfill' ),
+		'blob' => array( 'wp-polyfill' ),
+		'blocks' => array(
+			'wp-autop',
+			'wp-blob',
+			'wp-block-serialization-default-parser',
+			'wp-data',
+			'wp-dom',
+			'wp-element',
+			'wp-hooks',
+			'wp-html-entities',
+			'wp-i18n',
+			'wp-is-shallow-equal',
+			'wp-polyfill',
+			'wp-shortcode',
+			'lodash',
+		),
+		'block-library' => array(
+			'editor',
+			'lodash',
+			'wp-api-fetch',
+			'wp-autop',
+			'wp-blob',
+			'wp-blocks',
+			'wp-components',
+			'wp-compose',
+			'wp-core-data',
+			'wp-data',
+			'wp-date',
+			'wp-editor',
+			'wp-element',
+			'wp-html-entities',
+			'wp-i18n',
+			'wp-keycodes',
+			'wp-polyfill',
+			'wp-url',
+			'wp-viewport',
+			'wp-rich-text',
+		),
+		'block-serialization-default-parser' => array(),
+		'components' => array(
+			'lodash',
+			'moment',
+			'wp-a11y',
+			'wp-api-fetch',
+			'wp-compose',
+			'wp-dom',
+			'wp-element',
+			'wp-hooks',
+			'wp-html-entities',
+			'wp-i18n',
+			'wp-is-shallow-equal',
+			'wp-keycodes',
+			'wp-polyfill',
+			'wp-rich-text',
+			'wp-url',
+		),
+		'compose' => array(
+			'lodash',
+			'wp-element',
+			'wp-is-shallow-equal',
+			'wp-polyfill'
+		),
+		'core-data' => array( 'wp-data', 'wp-api-fetch', 'wp-polyfill', 'wp-url', 'lodash' ),
+		'data' => array(
+			'lodash',
+			'wp-compose',
+			'wp-element',
+			'wp-is-shallow-equal',
+			'wp-polyfill',
+			'wp-redux-routine',
+		),
+		'date' => array( 'moment', 'wp-polyfill' ),
+		'deprecated' => array( 'wp-polyfill', 'wp-hooks' ),
+		'dom' => array( 'lodash', 'wp-polyfill', 'wp-tinymce' ),
+		'dom-ready' => array( 'wp-polyfill' ),
+		'edit-post' => array(
+			'jquery',
+			'lodash',
+			'postbox',
+			'media-models',
+			'media-views',
+			'wp-a11y',
+			'wp-api-fetch',
+			'wp-block-library',
+			'wp-blocks',
+			'wp-components',
+			'wp-compose',
+			'wp-core-data',
+			'wp-data',
+			'wp-dom-ready',
+			'wp-editor',
+			'wp-element',
+			'wp-embed',
+			'wp-i18n',
+			'wp-keycodes',
+			'wp-notices',
+			'wp-nux',
+			'wp-plugins',
+			'wp-polyfill',
+			'wp-url',
+			'wp-viewport',
+		),
+		'editor' => array(
+			'jquery',
+			'lodash',
+			'wp-tinymce-lists',
+			'wp-a11y',
+			'wp-api-fetch',
+			'wp-blob',
+			'wp-blocks',
+			'wp-components',
+			'wp-compose',
+			'wp-core-data',
+			'wp-data',
+			'wp-date',
+			'wp-deprecated',
+			'wp-dom',
+			'wp-element',
+			'wp-hooks',
+			'wp-html-entities',
+			'wp-i18n',
+			'wp-is-shallow-equal',
+			'wp-keycodes',
+			'wp-notices',
+			'wp-nux',
+			'wp-polyfill',
+			'wp-tinymce',
+			'wp-token-list',
+			'wp-url',
+			'wp-viewport',
+			'wp-wordcount',
+			'wp-rich-text',
+		),
+		'element' => array( 'wp-polyfill', 'react', 'react-dom', 'lodash', 'wp-escape-html' ),
+		'escape-html' => array( 'wp-polyfill' ),
+		'format-library' => array(
+			'wp-components',
+			'wp-dom',
+			'wp-editor',
+			'wp-element',
+			'wp-i18n',
+			'wp-keycodes',
+			'wp-polyfill',
+			'wp-rich-text',
+			'wp-url',
+		),
+		'hooks' => array( 'wp-polyfill' ),
+		'html-entities' => array( 'wp-polyfill' ),
+		'i18n' => array( 'wp-polyfill' ),
+		'is-shallow-equal' => array( 'wp-polyfill' ),
+		'keycodes' => array( 'lodash', 'wp-polyfill', 'wp-i18n' ),
+		'list-reusable-blocks' => array(
+			'lodash',
+			'wp-api-fetch',
+			'wp-components',
+			'wp-compose',
+			'wp-element',
+			'wp-i18n',
+			'wp-polyfill',
+		),
+		'notices' => array(
+			'lodash',
+			'wp-a11y',
+			'wp-data',
+			'wp-polyfill',
+		),
+		'nux' => array(
+			'wp-element',
+			'lodash',
+			'wp-components',
+			'wp-compose',
+			'wp-data',
+			'wp-i18n',
+			'wp-polyfill',
+			'lodash',
+		),
+		'plugins' => array( 'lodash', 'wp-compose', 'wp-element', 'wp-hooks', 'wp-polyfill' ),
+		'redux-routine' => array( 'wp-polyfill' ),
+		'rich-text' => array(
+			'lodash',
+			'wp-data',
+			'wp-escape-html',
+			'wp-polyfill',
+		),
+		'shortcode' => array( 'wp-polyfill', 'lodash' ),
+		'token-list' => array( 'lodash', 'wp-polyfill' ),
+		'url' => array( 'wp-polyfill' ),
+		'viewport' => array( 'wp-polyfill', 'wp-element', 'wp-data', 'wp-compose', 'lodash' ),
+		'wordcount' => array( 'wp-polyfill' ),
+	);
+
+	$package_translations = array(
+		'api-fetch' => 'default',
+		'blocks' => 'default',
+		'block-library' => 'default',
+		'components' => 'default',
+		'edit-post' => 'default',
+		'editor' => 'default',
+		'format-library' => 'default',
+		'keycodes' => 'default',
+		'list-reusable-blocks' => 'default',
+		'nux' => 'default',
+	);
+
+	foreach ( $packages_dependencies as $package => $dependencies ) {
+		$handle  = 'wp-' . $package;
+		$path    = "/wp-includes/js/dist/$package$suffix.js";
+		$version = $packages_versions[ $package ];
+
+		$scripts->add( $handle, $path, $dependencies, $version, 1 );
+
+		if ( isset( $package_translations[ $package ] ) ) {
+			$scripts->set_translations( $handle, $package_translations[ $package ] );
+		}
+	}
+}
+
+/**
+ * Adds inline scripts required for the WordPress JavaScript packages.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Scripts $scripts WP_Scripts object.
+ */
+function wp_default_packages_inline_scripts( &$scripts ) {
+	global $wp_locale;
+
+	$scripts->add_inline_script(
+		'wp-api-fetch',
+		sprintf(
+			'wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( "%s" ) );',
+			( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
+		),
+		'after'
+	);
+	$scripts->add_inline_script(
+		'wp-api-fetch',
+		sprintf(
+			'wp.apiFetch.use( wp.apiFetch.createRootURLMiddleware( "%s" ) );',
+			esc_url_raw( get_rest_url() )
+		),
+		'after'
+	);
+
+	$scripts->add_inline_script(
+		'wp-data',
+		implode(
+			"\n",
+			array(
+				'( function() {',
+				'	var userId = ' . get_current_user_ID() . ';',
+				'	var storageKey = "WP_DATA_USER_" + userId;',
+				'	wp.data',
+				'		.use( wp.data.plugins.persistence, { storageKey: storageKey } )',
+				'		.use( wp.data.plugins.controls );',
+				'} )()',
+			)
+		)
+	);
+
+	$scripts->add_inline_script(
+		'wp-date',
+		sprintf(
+			'wp.date.setSettings( %s );',
+			wp_json_encode(
+				array(
+					'l10n'     => array(
+						'locale'        => get_user_locale(),
+						'months'        => array_values( $wp_locale->month ),
+						'monthsShort'   => array_values( $wp_locale->month_abbrev ),
+						'weekdays'      => array_values( $wp_locale->weekday ),
+						'weekdaysShort' => array_values( $wp_locale->weekday_abbrev ),
+						'meridiem'      => (object) $wp_locale->meridiem,
+						'relative'      => array(
+							/* translators: %s: duration */
+							'future' => __( '%s from now' ),
+							/* translators: %s: duration */
+							'past'   => __( '%s ago' ),
+						),
+					),
+					'formats'  => array(
+						/* translators: Time format, see https://secure.php.net/date */
+						'time'                => get_option( 'time_format', __( 'g:i a' ) ),
+						/* translators: Date format, see https://secure.php.net/date */
+						'date'                => get_option( 'date_format', __( 'F j, Y' ) ),
+						/* translators: Date/Time format, see https://secure.php.net/date */
+						'datetime'            => __( 'F j, Y g:i a' ),
+						/* translators: Abbreviated date/time format, see https://secure.php.net/date */
+						'datetimeAbbreviated' => __( 'M j, Y g:i a' ),
+					),
+					'timezone' => array(
+						'offset' => get_option( 'gmt_offset', 0 ),
+						'string' => get_option( 'timezone_string', 'UTC' ),
+					),
+				)
+			)
+		),
+		'after'
+	);
+
+	// Loading the old editor and its config to ensure the classic block works as expected.
+	$scripts->add_inline_script(
+		'editor',
+		'window.wp.oldEditor = window.wp.editor;',
+		'after'
+	);
+}
+
+/**
+ * Adds inline scripts required for the TinyMCE in the block editor.
+ *
+ * These TinyMCE init settings are used to extend and override the default settings
+ * from `_WP_Editors::default_settings()` for the Classic block.
+ *
+ * @since 5.0.0
+ *
+ * @global WP_Scripts $wp_scripts
+ */
+function wp_tinymce_inline_scripts() {
+	global $wp_scripts;
+
+	/** This filter is documented in wp-includes/class-wp-editor.php */
+	$editor_settings = apply_filters( 'wp_editor_settings', array( 'tinymce' => true ), 'classic-block' );
+
+	$tinymce_plugins = array(
+		'charmap',
+		'colorpicker',
+		'hr',
+		'lists',
+		'media',
+		'paste',
+		'tabfocus',
+		'textcolor',
+		'fullscreen',
+		'wordpress',
+		'wpautoresize',
+		'wpeditimage',
+		'wpemoji',
+		'wpgallery',
+		'wplink',
+		'wpdialogs',
+		'wptextpattern',
+		'wpview',
+	);
+
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$tinymce_plugins = apply_filters( 'tiny_mce_plugins', $tinymce_plugins, 'classic-block' );
+	$tinymce_plugins = array_unique( $tinymce_plugins );
+
+	$disable_captions = false;
+	// Runs after `tiny_mce_plugins` but before `mce_buttons`.
+	/** This filter is documented in wp-admin/includes/media.php */
+	if ( apply_filters( 'disable_captions', '' ) ) {
+		$disable_captions = true;
+	}
+
+	$toolbar1 = array(
+		'formatselect',
+		'bold',
+		'italic',
+		'bullist',
+		'numlist',
+		'blockquote',
+		'alignleft',
+		'aligncenter',
+		'alignright',
+		'link',
+		'unlink',
+		'wp_more',
+		'spellchecker',
+		'wp_add_media',
+		'wp_adv',
+	);
+
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$toolbar1 = apply_filters( 'mce_buttons', $toolbar1, 'classic-block' );
+
+	$toolbar2 = array(
+		'strikethrough',
+		'hr',
+		'forecolor',
+		'pastetext',
+		'removeformat',
+		'charmap',
+		'outdent',
+		'indent',
+		'undo',
+		'redo',
+		'wp_help',
+	);
+
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$toolbar2 = apply_filters( 'mce_buttons_2', $toolbar2, 'classic-block' );
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$toolbar3 = apply_filters( 'mce_buttons_3', array(), 'classic-block' );
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$toolbar4 = apply_filters( 'mce_buttons_4', array(), 'classic-block' );
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$external_plugins = apply_filters( 'mce_external_plugins', array(), 'classic-block' );
+
+	$tinymce_settings = array(
+		'plugins'  => implode( ',', $tinymce_plugins ),
+		'toolbar1' => implode( ',', $toolbar1 ),
+		'toolbar2' => implode( ',', $toolbar2 ),
+		'toolbar3' => implode( ',', $toolbar3 ),
+		'toolbar4' => implode( ',', $toolbar4 ),
+		'external_plugins' => wp_json_encode( $external_plugins ),
+		'classic_block_editor' => true,
+	);
+
+	if ( $disable_captions ) {
+		$tinymce_settings['wpeditimage_disable_captions'] = true;
+	}
+
+	if ( ! empty( $editor_settings['tinymce'] ) && is_array( $editor_settings['tinymce'] ) ) {
+		array_merge( $tinymce_settings, $editor_settings['tinymce'] );
+	}
+
+	/* This filter is documented in wp-includes/class-wp-editor.php */
+	$tinymce_settings = apply_filters( 'tiny_mce_before_init', $tinymce_settings, 'classic-block' );
+
+	// Do "by hand" translation from PHP array to js object.
+	// Prevents breakage in some custom settings.
+	$init_obj = '';
+	foreach ( $tinymce_settings as $key => $value ) {
+		if ( is_bool( $value ) ) {
+			$val = $value ? 'true' : 'false';
+			$init_obj .= $key . ':' . $val . ',';
+			continue;
+		} elseif ( ! empty( $value ) && is_string( $value ) && (
+			( '{' == $value{0} && '}' == $value{strlen( $value ) - 1} ) ||
+			( '[' == $value{0} && ']' == $value{strlen( $value ) - 1} ) ||
+			preg_match( '/^\(?function ?\(/', $value ) ) ) {
+			$init_obj .= $key . ':' . $value . ',';
+			continue;
+		}
+		$init_obj .= $key . ':"' . $value . '",';
+	}
+
+	$init_obj = '{' . trim( $init_obj, ' ,' ) . '}';
+
+	$script = 'window.wpEditorL10n = {
+		tinymce: {
+			baseURL: ' . wp_json_encode( includes_url( 'js/tinymce' ) ) . ',
+			suffix: ' . ( SCRIPT_DEBUG ? '""' : '".min"' ) . ',
+			settings: ' . $init_obj . ',
+		}
+	}';
+
+	$wp_scripts->add_inline_script( 'wp-block-library', $script, 'before' );
+}
+
+/**
+ * Registers all the WordPress packages scripts.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Scripts $scripts WP_Scripts object.
+ */
+function wp_default_packages( &$scripts ) {
+	wp_default_packages_vendor( $scripts );
+	wp_register_tinymce_scripts( $scripts );
+	wp_default_packages_scripts( $scripts );
+
+	if ( did_action( 'init' ) ) {
+		wp_default_packages_inline_scripts( $scripts );
+	}
+}
+
+/**
+ * Returns the suffix that can be used for the scripts.
+ *
+ * There are two suffix types, the normal one and the dev suffix.
+ *
+ * @since 5.0.0
+ *
+ * @param string $type The type of suffix to retrieve.
+ * @return string The script suffix.
+ */
+function wp_scripts_get_suffix( $type = '' ) {
+	static $suffixes;
+
+	if ( $suffixes === null ) {
+		include( ABSPATH . WPINC . '/version.php' ); // include an unmodified $wp_version
+
+		$develop_src = false !== strpos( $wp_version, '-src' );
+
+		if ( ! defined( 'SCRIPT_DEBUG' ) ) {
+			define( 'SCRIPT_DEBUG', $develop_src );
+		}
+		$suffix = SCRIPT_DEBUG ? '' : '.min';
+		$dev_suffix = $develop_src ? '' : '.min';
+
+		$suffixes = array( 'suffix' => $suffix, 'dev_suffix' => $dev_suffix );
+	}
+
+	if ( $type === 'dev' ) {
+		return $suffixes['dev_suffix'];
+	}
+
+	return $suffixes['suffix'];
+}
+
+/**
  * Register all WordPress scripts.
  *
  * Localizes some of them.
@@ -46,13 +790,8 @@ require( ABSPATH . WPINC . '/functions.wp-styles.php' );
  * @param WP_Scripts $scripts WP_Scripts object.
  */
 function wp_default_scripts( &$scripts ) {
-	include( ABSPATH . WPINC . '/version.php' ); // include an unmodified $wp_version
-
-	$develop_src = false !== strpos( $wp_version, '-src' );
-
-	if ( ! defined( 'SCRIPT_DEBUG' ) ) {
-		define( 'SCRIPT_DEBUG', $develop_src );
-	}
+	$suffix = wp_scripts_get_suffix();
+	$dev_suffix = wp_scripts_get_suffix( 'dev' );
 
 	if ( ! $guessurl = site_url() ) {
 		$guessed_url = true;
@@ -64,8 +803,6 @@ function wp_default_scripts( &$scripts ) {
 	$scripts->default_version = get_bloginfo( 'version' );
 	$scripts->default_dirs = array('/wp-admin/js/', '/wp-includes/js/');
 
-	$suffix = SCRIPT_DEBUG ? '' : '.min';
-	$dev_suffix = $develop_src ? '' : '.min';
 
 	$scripts->add( 'utils', "/wp-includes/js/utils$suffix.js" );
 	did_action( 'init' ) && $scripts->localize( 'utils', 'userSettings', array(
@@ -130,7 +867,15 @@ function wp_default_scripts( &$scripts ) {
 	$scripts->add( 'wp-ajax-response', "/wp-includes/js/wp-ajax-response$suffix.js", array('jquery'), false, 1 );
 	did_action( 'init' ) && $scripts->localize( 'wp-ajax-response', 'wpAjax', array(
 		'noPerm' => __('Sorry, you are not allowed to do that.'),
-		'broken' => __('An unidentified error has occurred.')
+		'broken' => __('Something went wrong.')
+	) );
+
+	$scripts->add( 'wp-api-request', "/wp-includes/js/api-request$suffix.js", array( 'jquery' ), false, 1 );
+	// `wpApiSettings` is also used by `wp-api`, which depends on this script.
+	did_action( 'init' ) && $scripts->localize( 'wp-api-request', 'wpApiSettings', array(
+		'root'          => esc_url_raw( get_rest_url() ),
+		'nonce'         => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
+		'versionString' => 'wp/v2/',
 	) );
 
 	$scripts->add( 'wp-pointer', "/wp-includes/js/wp-pointer$suffix.js", array( 'jquery-ui-widget', 'jquery-ui-position' ), '20111129a', 1 );
@@ -140,7 +885,7 @@ function wp_default_scripts( &$scripts ) {
 
 	$scripts->add( 'autosave', "/wp-includes/js/autosave$suffix.js", array('heartbeat'), false, 1 );
 
-	$scripts->add( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array('jquery'), false, 1 );
+	$scripts->add( 'heartbeat', "/wp-includes/js/heartbeat$suffix.js", array( 'jquery', 'wp-hooks' ), false, 1 );
 	did_action( 'init' ) && $scripts->localize( 'heartbeat', 'heartbeatSettings',
 		/**
 		 * Filters the Heartbeat settings.
@@ -240,7 +985,7 @@ function wp_default_scripts( &$scripts ) {
 	) );
 
 	// deprecated, not used in core, most functionality is included in jQuery 1.3
-	$scripts->add( 'jquery-form', "/wp-includes/js/jquery/jquery.form$suffix.js", array('jquery'), '3.37.0', 1 );
+	$scripts->add( 'jquery-form', "/wp-includes/js/jquery/jquery.form$suffix.js", array('jquery'), '4.2.1', 1 );
 
 	// jQuery plugins
 	$scripts->add( 'jquery-color', "/wp-includes/js/jquery/jquery.color.min.js", array('jquery'), '2.1.1', 1 );
@@ -275,7 +1020,7 @@ function wp_default_scripts( &$scripts ) {
 
 	$scripts->add( 'swfobject', "/wp-includes/js/swfobject.js", array(), '2.2-20120417');
 
-	// error message for both plupload and swfupload
+	// Error messages for Plupload.
 	$uploader_l10n = array(
 		'queue_limit_exceeded' => __('You have attempted to queue too many files.'),
 		'file_exceeds_size_limit' => __('%s exceeds the maximum upload size for this site.'),
@@ -302,7 +1047,8 @@ function wp_default_scripts( &$scripts ) {
 		'error_uploading' => __('&#8220;%s&#8221; has failed to upload.')
 	);
 
-	$scripts->add( 'plupload', '/wp-includes/js/plupload/plupload.full.min.js', array(), '2.1.8' );
+	$scripts->add( 'moxiejs', "/wp-includes/js/plupload/moxie$suffix.js", array(), '1.3.5' );
+	$scripts->add( 'plupload', "/wp-includes/js/plupload/plupload$suffix.js", array( 'moxiejs' ), '2.1.9' );
 	// Back compat handles:
 	foreach ( array( 'all', 'html5', 'flash', 'silverlight', 'html4' ) as $handle ) {
 		$scripts->add( "plupload-$handle", false, array( 'plupload' ), '2.1.1' );
@@ -316,10 +1062,7 @@ function wp_default_scripts( &$scripts ) {
 
 	// keep 'swfupload' for back-compat.
 	$scripts->add( 'swfupload', '/wp-includes/js/swfupload/swfupload.js', array(), '2201-20110113');
-	$scripts->add( 'swfupload-swfobject', '/wp-includes/js/swfupload/plugins/swfupload.swfobject.js', array('swfupload', 'swfobject'), '2201a');
-	$scripts->add( 'swfupload-queue', '/wp-includes/js/swfupload/plugins/swfupload.queue.js', array('swfupload'), '2201');
-	$scripts->add( 'swfupload-speed', '/wp-includes/js/swfupload/plugins/swfupload.speed.js', array('swfupload'), '2201');
-	$scripts->add( 'swfupload-all', false, array('swfupload', 'swfupload-swfobject', 'swfupload-queue'), '2201');
+	$scripts->add( 'swfupload-all', false, array( 'swfupload' ), '2201' );
 	$scripts->add( 'swfupload-handlers', "/wp-includes/js/swfupload/handlers$suffix.js", array('swfupload-all', 'jquery'), '2201-20110524');
 	did_action( 'init' ) && $scripts->localize( 'swfupload-handlers', 'swfuploadL10n', $uploader_l10n );
 
@@ -338,44 +1081,115 @@ function wp_default_scripts( &$scripts ) {
 		),
 	) );
 
+	$scripts->add( 'wp-sanitize', "/wp-includes/js/wp-sanitize$suffix.js", array('jquery'), false, 1 );
+
 	$scripts->add( 'wp-backbone', "/wp-includes/js/wp-backbone$suffix.js", array('backbone', 'wp-util'), false, 1 );
 
 	$scripts->add( 'revisions', "/wp-admin/js/revisions$suffix.js", array( 'wp-backbone', 'jquery-ui-slider', 'hoverIntent' ), false, 1 );
 
 	$scripts->add( 'imgareaselect', "/wp-includes/js/imgareaselect/jquery.imgareaselect$suffix.js", array('jquery'), false, 1 );
 
-	$scripts->add( 'mediaelement', "/wp-includes/js/mediaelement/mediaelement-and-player.min.js", array('jquery'), '2.22.0', 1 );
-	did_action( 'init' ) && $scripts->localize( 'mediaelement', 'mejsL10n', array(
-		'language' => get_bloginfo( 'language' ),
+	$scripts->add( 'mediaelement', false, array( 'jquery', 'mediaelement-core', 'mediaelement-migrate' ), '4.2.6-78496d1' );
+	$scripts->add( 'mediaelement-core', "/wp-includes/js/mediaelement/mediaelement-and-player$suffix.js", array(), '4.2.6-78496d1', 1 );
+	$scripts->add( 'mediaelement-migrate', "/wp-includes/js/mediaelement/mediaelement-migrate$suffix.js", array(), false, 1);
+
+	did_action( 'init' ) && $scripts->add_inline_script( 'mediaelement-core', sprintf( 'var mejsL10n = %s;', wp_json_encode( array(
+		'language' => strtolower( strtok( determine_locale(), '_-' ) ),
 		'strings'  => array(
-			'Close'                   => __( 'Close' ),
-			'Fullscreen'              => __( 'Fullscreen' ),
-			'Turn off Fullscreen'     => __( 'Turn off Fullscreen' ),
-			'Go Fullscreen'           => __( 'Go Fullscreen' ),
-			'Download File'           => __( 'Download File' ),
-			'Download Video'          => __( 'Download Video' ),
-			'Play'                    => __( 'Play' ),
-			'Pause'                   => __( 'Pause' ),
-			'Captions/Subtitles'      => __( 'Captions/Subtitles' ),
-			'None'                    => _x( 'None', 'no captions/subtitles' ),
-			'Time Slider'             => __( 'Time Slider' ),
-			/* translators: %1: number of seconds (30 by default) */
-			'Skip back %1 seconds'    => __( 'Skip back %1 seconds' ),
-			'Video Player'            => __( 'Video Player' ),
-			'Audio Player'            => __( 'Audio Player' ),
-			'Volume Slider'           => __( 'Volume Slider' ),
-			'Mute Toggle'             => __( 'Mute Toggle' ),
-			'Unmute'                  => __( 'Unmute' ),
-			'Mute'                    => __( 'Mute' ),
-			'Use Up/Down Arrow keys to increase or decrease volume.' => __( 'Use Up/Down Arrow keys to increase or decrease volume.' ),
-			'Use Left/Right Arrow keys to advance one second, Up/Down arrows to advance ten seconds.' => __( 'Use Left/Right Arrow keys to advance one second, Up/Down arrows to advance ten seconds.' ),
-		),
-	) );
+			'mejs.install-flash'       => __( 'You are using a browser that does not have Flash player enabled or installed. Please turn on your Flash player plugin or download the latest version from https://get.adobe.com/flashplayer/' ),
+			'mejs.fullscreen-off'      => __( 'Turn off Fullscreen' ),
+			'mejs.fullscreen-on'       => __( 'Go Fullscreen' ),
+			'mejs.download-video'      => __( 'Download Video' ),
+			'mejs.fullscreen'          => __( 'Fullscreen' ),
+			'mejs.time-jump-forward'   => array( __( 'Jump forward 1 second' ), __( 'Jump forward %1 seconds' ) ),
+			'mejs.loop'                => __( 'Toggle Loop' ),
+			'mejs.play'                => __( 'Play' ),
+			'mejs.pause'               => __( 'Pause' ),
+			'mejs.close'               => __( 'Close' ),
+			'mejs.time-slider'         => __( 'Time Slider' ),
+			'mejs.time-help-text'      => __( 'Use Left/Right Arrow keys to advance one second, Up/Down arrows to advance ten seconds.' ),
+			'mejs.time-skip-back'      => array( __( 'Skip back 1 second' ), __( 'Skip back %1 seconds' ) ),
+			'mejs.captions-subtitles'  => __( 'Captions/Subtitles' ),
+			'mejs.captions-chapters'   => __( 'Chapters' ),
+			'mejs.none'                => __( 'None' ),
+			'mejs.mute-toggle'         => __( 'Mute Toggle' ),
+			'mejs.volume-help-text'    => __( 'Use Up/Down Arrow keys to increase or decrease volume.' ),
+			'mejs.unmute'              => __( 'Unmute' ),
+			'mejs.mute'                => __( 'Mute' ),
+			'mejs.volume-slider'       => __( 'Volume Slider' ),
+			'mejs.video-player'        => __( 'Video Player' ),
+			'mejs.audio-player'        => __( 'Audio Player' ),
+			'mejs.ad-skip'             => __( 'Skip ad' ),
+			'mejs.ad-skip-info'        => array( __( 'Skip in 1 second' ), __( 'Skip in %1 seconds' ) ),
+			'mejs.source-chooser'      => __( 'Source Chooser' ),
+			'mejs.stop'                => __( 'Stop' ),
+			'mejs.speed-rate'          => __( 'Speed Rate' ),
+			'mejs.live-broadcast'      => __( 'Live Broadcast' ),
+			'mejs.afrikaans'           => __( 'Afrikaans' ),
+			'mejs.albanian'            => __( 'Albanian' ),
+			'mejs.arabic'              => __( 'Arabic' ),
+			'mejs.belarusian'          => __( 'Belarusian' ),
+			'mejs.bulgarian'           => __( 'Bulgarian' ),
+			'mejs.catalan'             => __( 'Catalan' ),
+			'mejs.chinese'             => __( 'Chinese' ),
+			'mejs.chinese-simplified'  => __( 'Chinese (Simplified)' ),
+			'mejs.chinese-traditional' => __( 'Chinese (Traditional)' ),
+			'mejs.croatian'            => __( 'Croatian' ),
+			'mejs.czech'               => __( 'Czech' ),
+			'mejs.danish'              => __( 'Danish' ),
+			'mejs.dutch'               => __( 'Dutch' ),
+			'mejs.english'             => __( 'English' ),
+			'mejs.estonian'            => __( 'Estonian' ),
+			'mejs.filipino'            => __( 'Filipino' ),
+			'mejs.finnish'             => __( 'Finnish' ),
+			'mejs.french'              => __( 'French' ),
+			'mejs.galician'            => __( 'Galician' ),
+			'mejs.german'              => __( 'German' ),
+			'mejs.greek'               => __( 'Greek' ),
+			'mejs.haitian-creole'      => __( 'Haitian Creole' ),
+			'mejs.hebrew'              => __( 'Hebrew' ),
+			'mejs.hindi'               => __( 'Hindi' ),
+			'mejs.hungarian'           => __( 'Hungarian' ),
+			'mejs.icelandic'           => __( 'Icelandic' ),
+			'mejs.indonesian'          => __( 'Indonesian' ),
+			'mejs.irish'               => __( 'Irish' ),
+			'mejs.italian'             => __( 'Italian' ),
+			'mejs.japanese'            => __( 'Japanese' ),
+			'mejs.korean'              => __( 'Korean' ),
+			'mejs.latvian'             => __( 'Latvian' ),
+			'mejs.lithuanian'          => __( 'Lithuanian' ),
+			'mejs.macedonian'          => __( 'Macedonian' ),
+			'mejs.malay'               => __( 'Malay' ),
+			'mejs.maltese'             => __( 'Maltese' ),
+			'mejs.norwegian'           => __( 'Norwegian' ),
+			'mejs.persian'             => __( 'Persian' ),
+			'mejs.polish'              => __( 'Polish' ),
+			'mejs.portuguese'          => __( 'Portuguese' ),
+			'mejs.romanian'            => __( 'Romanian' ),
+			'mejs.russian'             => __( 'Russian' ),
+			'mejs.serbian'             => __( 'Serbian' ),
+			'mejs.slovak'              => __( 'Slovak' ),
+			'mejs.slovenian'           => __( 'Slovenian' ),
+			'mejs.spanish'             => __( 'Spanish' ),
+			'mejs.swahili'             => __( 'Swahili' ),
+			'mejs.swedish'             => __( 'Swedish' ),
+			'mejs.tagalog'             => __( 'Tagalog' ),
+			'mejs.thai'                => __( 'Thai' ),
+			'mejs.turkish'             => __( 'Turkish' ),
+			'mejs.ukrainian'           => __( 'Ukrainian' ),
+			'mejs.vietnamese'          => __( 'Vietnamese' ),
+			'mejs.welsh'               => __( 'Welsh' ),
+			'mejs.yiddish'             => __( 'Yiddish' ),
+			),
+		) ) ), 'before' );
 
 
+	$scripts->add( 'mediaelement-vimeo', "/wp-includes/js/mediaelement/renderers/vimeo.min.js", array('mediaelement'), '4.2.6-78496d1', 1 );
 	$scripts->add( 'wp-mediaelement', "/wp-includes/js/mediaelement/wp-mediaelement$suffix.js", array('mediaelement'), false, 1 );
 	$mejs_settings = array(
-		'pluginPath' => includes_url( 'js/mediaelement/', 'relative' ),
+		'pluginPath'    => includes_url( 'js/mediaelement/', 'relative' ),
+		'classPrefix'   => 'mejs-',
+		'stretching'    => 'responsive',
 	);
 	did_action( 'init' ) && $scripts->localize( 'mediaelement', '_wpmejsSettings',
 		/**
@@ -388,7 +1202,25 @@ function wp_default_scripts( &$scripts ) {
 		apply_filters( 'mejs_settings', $mejs_settings )
 	);
 
-	$scripts->add( 'froogaloop',  "/wp-includes/js/mediaelement/froogaloop.min.js", array(), '2.0' );
+	$scripts->add( 'wp-codemirror', '/wp-includes/js/codemirror/codemirror.min.js', array(), '5.29.1-alpha-ee20357' );
+	$scripts->add( 'csslint', '/wp-includes/js/codemirror/csslint.js', array(), '1.0.5' );
+	$scripts->add( 'jshint', '/wp-includes/js/codemirror/jshint.js', array(), '2.9.5.999' );
+	$scripts->add( 'jsonlint', '/wp-includes/js/codemirror/jsonlint.js', array(), '1.6.2' );
+	$scripts->add( 'htmlhint', '/wp-includes/js/codemirror/htmlhint.js', array(), '0.9.14-xwp' );
+	$scripts->add( 'htmlhint-kses', '/wp-includes/js/codemirror/htmlhint-kses.js', array( 'htmlhint' ) );
+	$scripts->add( 'code-editor', "/wp-admin/js/code-editor$suffix.js", array( 'jquery', 'wp-codemirror', 'underscore' ) );
+	$scripts->add( 'wp-theme-plugin-editor', "/wp-admin/js/theme-plugin-editor$suffix.js", array( 'wp-util', 'wp-sanitize', 'jquery', 'jquery-ui-core', 'wp-a11y', 'underscore' ) );
+	did_action( 'init' ) && $scripts->add_inline_script( 'wp-theme-plugin-editor', sprintf( 'wp.themePluginEditor.l10n = %s;', wp_json_encode( array(
+		'saveAlert' => __( 'The changes you made will be lost if you navigate away from this page.' ),
+		'saveError' => __( 'Something went wrong. Your change may not have been saved. Please try again. There is also a chance that you may need to manually fix and upload the file over FTP.' ),
+		'lintError' => array(
+			/* translators: %d: error count */
+			'singular' => _n( 'There is %d error which must be fixed before you can update this file.', 'There are %d errors which must be fixed before you can update this file.', 1 ),
+			/* translators: %d: error count */
+			'plural' => _n( 'There is %d error which must be fixed before you can update this file.', 'There are %d errors which must be fixed before you can update this file.', 2 ), // @todo This is lacking, as some languages have a dedicated dual form. For proper handling of plurals in JS, see #20491.
+		),
+	) ) ) );
+
 	$scripts->add( 'wp-playlist', "/wp-includes/js/mediaelement/wp-playlist$suffix.js", array( 'wp-util', 'backbone', 'mediaelement' ), false, 1 );
 
 	$scripts->add( 'zxcvbn-async', "/wp-includes/js/zxcvbn-async$suffix.js", array(), '1.0' );
@@ -437,15 +1269,6 @@ function wp_default_scripts( &$scripts ) {
 	$scripts->add( 'wpdialogs', "/wp-includes/js/wpdialog$suffix.js", array( 'jquery-ui-dialog' ), false, 1 );
 
 	$scripts->add( 'word-count', "/wp-admin/js/word-count$suffix.js", array(), false, 1 );
-	did_action( 'init' ) && $scripts->localize( 'word-count', 'wordCountL10n', array(
-		/*
-		 * translators: If your word count is based on single characters (e.g. East Asian characters),
-		 * enter 'characters_excluding_spaces' or 'characters_including_spaces'. Otherwise, enter 'words'.
-		 * Do not translate into your own language.
-		 */
-		'type' => _x( 'words', 'Word count type. Do not translate!' ),
-		'shortcodes' => ! empty( $GLOBALS['shortcode_tags'] ) ? array_keys( $GLOBALS['shortcode_tags'] ) : array()
-	) );
 
 	$scripts->add( 'media-upload', "/wp-admin/js/media-upload$suffix.js", array( 'thickbox', 'shortcode' ), false, 1 );
 
@@ -456,23 +1279,69 @@ function wp_default_scripts( &$scripts ) {
 	$scripts->add( 'customize-preview',  "/wp-includes/js/customize-preview$suffix.js",  array( 'wp-a11y', 'customize-base' ), false, 1 );
 	$scripts->add( 'customize-models',   "/wp-includes/js/customize-models.js", array( 'underscore', 'backbone' ), false, 1 );
 	$scripts->add( 'customize-views',    "/wp-includes/js/customize-views.js",  array( 'jquery', 'underscore', 'imgareaselect', 'customize-models', 'media-editor', 'media-views' ), false, 1 );
-	$scripts->add( 'customize-controls', "/wp-admin/js/customize-controls$suffix.js", array( 'customize-base', 'wp-a11y', 'wp-util' ), false, 1 );
+	$scripts->add( 'customize-controls', "/wp-admin/js/customize-controls$suffix.js", array( 'customize-base', 'wp-a11y', 'wp-util', 'jquery-ui-core' ), false, 1 );
 	did_action( 'init' ) && $scripts->localize( 'customize-controls', '_wpCustomizeControlsL10n', array(
-		'activate'           => __( 'Save &amp; Activate' ),
-		'save'               => __( 'Save &amp; Publish' ),
+		'activate'           => __( 'Activate &amp; Publish' ),
+		'save'               => __( 'Save &amp; Publish' ), // @todo Remove as not required.
+		'publish'            => __( 'Publish' ),
+		'published'          => __( 'Published' ),
+		'saveDraft'          => __( 'Save Draft' ),
+		'draftSaved'         => __( 'Draft Saved' ),
+		'updating'           => __( 'Updating' ),
+		'schedule'           => _x( 'Schedule', 'customizer changeset action/button label' ),
+		'scheduled'          => _x( 'Scheduled', 'customizer changeset status' ),
+		'invalid'            => __( 'Invalid' ),
+		'saveBeforeShare'    => __( 'Please save your changes in order to share the preview.' ),
+		'futureDateError'    => __( 'You must supply a future date to schedule.' ),
 		'saveAlert'          => __( 'The changes you made will be lost if you navigate away from this page.' ),
 		'saved'              => __( 'Saved' ),
 		'cancel'             => __( 'Cancel' ),
 		'close'              => __( 'Close' ),
-		'cheatin'            => __( 'Cheatin&#8217; uh?' ),
+		'action'             => __( 'Action' ),
+		'discardChanges'     => __( 'Discard changes' ),
+		'cheatin'            => __( 'Something went wrong.' ),
+		'notAllowedHeading'  => __( 'You need a higher level of permission.' ),
 		'notAllowed'         => __( 'Sorry, you are not allowed to customize this site.' ),
 		'previewIframeTitle' => __( 'Site Preview' ),
 		'loginIframeTitle'   => __( 'Session expired' ),
 		'collapseSidebar'    => _x( 'Hide Controls', 'label for hide controls button without length constraints' ),
 		'expandSidebar'      => _x( 'Show Controls', 'label for hide controls button without length constraints' ),
 		'untitledBlogName'   => __( '(Untitled)' ),
+		'unknownRequestFail' => __( 'Looks like something&#8217;s gone wrong. Wait a couple seconds, and then try again.' ),
+		'themeDownloading'   => __( 'Downloading your new theme&hellip;' ),
+		'themePreviewWait'   => __( 'Setting up your live preview. This may take a bit.' ),
+		'revertingChanges'   => __( 'Reverting unpublished changes&hellip;' ),
+		'trashConfirm'       => __( 'Are you sure you&#8217;d like to discard your unpublished changes?' ),
+		/* translators: %s: Display name of the user who has taken over the changeset in customizer. */
+		'takenOverMessage'   => __( '%s has taken over and is currently customizing.' ),
+		/* translators: %s: URL to the Customizer to load the autosaved version */
+		'autosaveNotice'     => __( 'There is a more recent autosave of your changes than the one you are previewing. <a href="%s">Restore the autosave</a>' ),
+		'videoHeaderNotice'  => __( 'This theme doesn&#8217;t support video headers on this page. Navigate to the front page or another page that supports video headers.' ),
 		// Used for overriding the file types allowed in plupload.
 		'allowedFiles'       => __( 'Allowed Files' ),
+		'customCssError'     => array(
+			/* translators: %d: error count */
+			'singular' => _n( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 1 ),
+			/* translators: %d: error count */
+			'plural'   => _n( 'There is %d error which must be fixed before you can save.', 'There are %d errors which must be fixed before you can save.', 2 ), // @todo This is lacking, as some languages have a dedicated dual form. For proper handling of plurals in JS, see #20491.
+		),
+		'pageOnFrontError' => __( 'Homepage and posts page must be different.' ),
+		'saveBlockedError' => array(
+			/* translators: %s: number of invalid settings */
+			'singular' => _n( 'Unable to save due to %s invalid setting.', 'Unable to save due to %s invalid settings.', 1 ),
+			/* translators: %s: number of invalid settings */
+			'plural'   => _n( 'Unable to save due to %s invalid setting.', 'Unable to save due to %s invalid settings.', 2 ), // @todo This is lacking, as some languages have a dedicated dual form. For proper handling of plurals in JS, see #20491.
+		),
+		'scheduleDescription' => __( 'Schedule your customization changes to publish ("go live") at a future date.' ),
+		'themePreviewUnavailable' => __( 'Sorry, you can&#8217;t preview new themes when you have changes scheduled or saved as a draft. Please publish your changes, or wait until they publish to preview new themes.' ),
+		'themeInstallUnavailable' => sprintf(
+			/* translators: %s: URL to Add Themes admin screen */
+			__( 'You won&#8217;t be able to install new themes from here yet since your install requires SFTP credentials. For now, please <a href="%s">add themes in the admin</a>.' ),
+			esc_url( admin_url( 'theme-install.php' ) )
+		),
+		'publishSettings' => __( 'Publish Settings' ),
+		'invalidDate'     => __( 'Invalid date.' ),
+		'invalidValue'    => __( 'Invalid value.' ),
 	) );
 	$scripts->add( 'customize-selective-refresh', "/wp-includes/js/customize-selective-refresh$suffix.js", array( 'jquery', 'wp-util', 'customize-preview' ), false, 1 );
 
@@ -499,23 +1368,18 @@ function wp_default_scripts( &$scripts ) {
 
 	// To enqueue media-views or media-editor, call wp_enqueue_media().
 	// Both rely on numerous settings, styles, and templates to operate correctly.
-	$scripts->add( 'media-views',  "/wp-includes/js/media-views$suffix.js",  array( 'utils', 'media-models', 'wp-plupload', 'jquery-ui-sortable', 'wp-mediaelement' ), false, 1 );
+	$scripts->add( 'media-views',  "/wp-includes/js/media-views$suffix.js",  array( 'utils', 'media-models', 'wp-plupload', 'jquery-ui-sortable', 'wp-mediaelement', 'wp-api-request' ), false, 1 );
 	$scripts->add( 'media-editor', "/wp-includes/js/media-editor$suffix.js", array( 'shortcode', 'media-views' ), false, 1 );
 	$scripts->add( 'media-audiovideo', "/wp-includes/js/media-audiovideo$suffix.js", array( 'media-editor' ), false, 1 );
 	$scripts->add( 'mce-view', "/wp-includes/js/mce-view$suffix.js", array( 'shortcode', 'jquery', 'media-views', 'media-audiovideo' ), false, 1 );
 
-	$scripts->add( 'wp-api', "/wp-includes/js/wp-api$suffix.js", array( 'jquery', 'backbone', 'underscore' ), false, 1 );
-	did_action( 'init' ) && $scripts->localize( 'wp-api', 'wpApiSettings', array(
-		'root'          => esc_url_raw( get_rest_url() ),
-		'nonce'         => ( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' ),
-		'versionString' => 'wp/v2/',
-	) );
+	$scripts->add( 'wp-api', "/wp-includes/js/wp-api$suffix.js", array( 'jquery', 'backbone', 'underscore', 'wp-api-request' ), false, 1 );
 
 	if ( is_admin() ) {
 		$scripts->add( 'admin-tags', "/wp-admin/js/tags$suffix.js", array( 'jquery', 'wp-ajax-response' ), false, 1 );
 		did_action( 'init' ) && $scripts->localize( 'admin-tags', 'tagsl10n', array(
 			'noPerm' => __('Sorry, you are not allowed to do that.'),
-			'broken' => __('An unidentified error has occurred.')
+			'broken' => __('Something went wrong.')
 		));
 
 		$scripts->add( 'admin-comments', "/wp-admin/js/edit-comments$suffix.js", array('wp-lists', 'quicktags', 'jquery-query'), false, 1 );
@@ -532,6 +1396,17 @@ function wp_default_scripts( &$scripts ) {
 		) );
 
 		$scripts->add( 'xfn', "/wp-admin/js/xfn$suffix.js", array('jquery'), false, 1 );
+		did_action( 'init' ) && $scripts->localize(
+			'xfn', 'privacyToolsL10n', array(
+				'noDataFound'     => __( 'No personal data was found for this user.' ),
+				'foundAndRemoved' => __( 'All of the personal data found for this user was erased.' ),
+				'noneRemoved'     => __( 'Personal data was found for this user but was not erased.' ),
+				'someNotRemoved'  => __( 'Personal data was found for this user but some of the personal data found was not erased.' ),
+				'removalError'    => __( 'An error occurred while attempting to find and erase personal data.' ),
+				'noExportFile'    => __( 'No personal data export file was generated.' ),
+				'exportError'     => __( 'An error occurred while attempting to export personal data.' ),
+			)
+		);
 
 		$scripts->add( 'postbox', "/wp-admin/js/postbox$suffix.js", array('jquery-ui-sortable'), false, 1 );
 		did_action( 'init' ) && $scripts->localize( 'postbox', 'postBoxL10n', array(
@@ -561,7 +1436,7 @@ function wp_default_scripts( &$scripts ) {
 			'showcomm' => __('Show more comments'),
 			'endcomm' => __('No more comments found.'),
 			'publish' => __('Publish'),
-			'schedule' => __('Schedule'),
+			'schedule' => _x('Schedule', 'post action/button label'),
 			'update' => __('Update'),
 			'savePending' => __('Save as Pending'),
 			'saveDraft' => __('Save Draft'),
@@ -574,17 +1449,6 @@ function wp_default_scripts( &$scripts ) {
 			'saveAlert' => __('The changes you made will be lost if you navigate away from this page.'),
 			'savingText' => __('Saving Draft&#8230;'),
 			'permalinkSaved' => __( 'Permalink saved' ),
-		) );
-
-		$scripts->add( 'press-this', "/wp-admin/js/press-this$suffix.js", array( 'jquery', 'tags-box' ), false, 1 );
-		did_action( 'init' ) && $scripts->localize( 'press-this', 'pressThisL10n', array(
-			'newPost' => __( 'Title' ),
-			'serverError' => __( 'Connection lost or the server is busy. Please try again later.' ),
-			'saveAlert' => __( 'The changes you made will be lost if you navigate away from this page.' ),
-			/* translators: %d: nth embed found in a post */
-			'suggestedEmbedAlt' => __( 'Suggested embed #%d' ),
-			/* translators: %d: nth image found in a post */
-			'suggestedImgAlt' => __( 'Suggested image #%d' ),
 		) );
 
 		$scripts->add( 'editor-expand', "/wp-admin/js/editor-expand$suffix.js", array( 'jquery', 'underscore' ), false, 1 );
@@ -602,16 +1466,23 @@ function wp_default_scripts( &$scripts ) {
 		$scripts->add( 'admin-gallery', "/wp-admin/js/gallery$suffix.js", array( 'jquery-ui-sortable' ) );
 
 		$scripts->add( 'admin-widgets', "/wp-admin/js/widgets$suffix.js", array( 'jquery-ui-sortable', 'jquery-ui-draggable', 'jquery-ui-droppable' ), false, 1 );
-		$scripts->add( 'media-widgets', "/wp-admin/js/widgets/media-widgets$suffix.js", array( 'jquery', 'media-models', 'media-views' ) );
+		did_action( 'init' ) && $scripts->add_inline_script( 'admin-widgets', sprintf( 'wpWidgets.l10n = %s;', wp_json_encode( array(
+			'save' => __( 'Save' ),
+			'saved' => __( 'Saved' ),
+			'saveAlert' => __( 'The changes you made will be lost if you navigate away from this page.' ),
+		) ) ) );
+
+		$scripts->add( 'media-widgets', "/wp-admin/js/widgets/media-widgets$suffix.js", array( 'jquery', 'media-models', 'media-views', 'wp-api-request' ) );
 		$scripts->add_inline_script( 'media-widgets', 'wp.mediaWidgets.init();', 'after' );
 
 		$scripts->add( 'media-audio-widget', "/wp-admin/js/widgets/media-audio-widget$suffix.js", array( 'media-widgets', 'media-audiovideo' ) );
 		$scripts->add( 'media-image-widget', "/wp-admin/js/widgets/media-image-widget$suffix.js", array( 'media-widgets' ) );
-		$scripts->add( 'media-video-widget', "/wp-admin/js/widgets/media-video-widget$suffix.js", array( 'media-widgets', 'media-audiovideo' ) );
+		$scripts->add( 'media-gallery-widget', "/wp-admin/js/widgets/media-gallery-widget$suffix.js", array( 'media-widgets' ) );
+		$scripts->add( 'media-video-widget', "/wp-admin/js/widgets/media-video-widget$suffix.js", array( 'media-widgets', 'media-audiovideo', 'wp-api-request' ) );
 		$scripts->add( 'text-widgets', "/wp-admin/js/widgets/text-widgets$suffix.js", array( 'jquery', 'backbone', 'editor', 'wp-util', 'wp-a11y' ) );
-		$scripts->add_inline_script( 'text-widgets', 'wp.textWidgets.init();', 'after' );
+		$scripts->add( 'custom-html-widgets', "/wp-admin/js/widgets/custom-html-widgets$suffix.js", array( 'jquery', 'backbone', 'wp-util', 'jquery-ui-core', 'wp-a11y' ) );
 
-		$scripts->add( 'theme', "/wp-admin/js/theme$suffix.js", array( 'wp-backbone', 'wp-a11y' ), false, 1 );
+		$scripts->add( 'theme', "/wp-admin/js/theme$suffix.js", array( 'wp-backbone', 'wp-a11y', 'customize-base' ), false, 1 );
 
 		$scripts->add( 'inline-edit-post', "/wp-admin/js/inline-edit-post$suffix.js", array( 'jquery', 'tags-suggest', 'wp-a11y' ), false, 1 );
 		did_action( 'init' ) && $scripts->localize( 'inline-edit-post', 'inlineEditL10n', array(
@@ -673,7 +1544,7 @@ function wp_default_scripts( &$scripts ) {
 				'installing'                 => __( 'Installing...' ),
 				'pluginInstalled'            => _x( 'Installed!', 'plugin' ),
 				'themeInstalled'             => _x( 'Installed!', 'theme' ),
-				'installFailedShort'         => __( 'Install Failed!' ),
+				'installFailedShort'         => __( 'Installation Failed!' ),
 				/* translators: %s: Error string for a failed installation */
 				'installFailed'              => __( 'Installation failed: %s' ),
 				/* translators: %s: Plugin name and version */
@@ -713,7 +1584,7 @@ function wp_default_scripts( &$scripts ) {
 				'activateImporter'           => __( 'Run Importer' ),
 				/* translators: %s: Importer name */
 				'activateImporterLabel'      => __( 'Run %s' ),
-				'unknownError'               => __( 'An unknown error occurred' ),
+				'unknownError'               => __( 'Something went wrong.' ),
 				'connectionError'            => __( 'Connection lost or the server is busy. Please try again later.' ),
 				'nonceError'                 => __( 'An error has occurred. Please reload the page and try again.' ),
 				'pluginsFound'               => __( 'Number of plugins found: %d' ),
@@ -726,10 +1597,12 @@ function wp_default_scripts( &$scripts ) {
 		$scripts->add( 'iris', '/wp-admin/js/iris.min.js', array( 'jquery-ui-draggable', 'jquery-ui-slider', 'jquery-touch-punch' ), '1.0.7', 1 );
 		$scripts->add( 'wp-color-picker', "/wp-admin/js/color-picker$suffix.js", array( 'iris' ), false, 1 );
 		did_action( 'init' ) && $scripts->localize( 'wp-color-picker', 'wpColorPickerL10n', array(
-			'clear' => __( 'Clear' ),
-			'defaultString' => __( 'Default' ),
-			'pick' => __( 'Select Color' ),
-			'current' => __( 'Current Color' ),
+			'clear'            => __( 'Clear' ),
+			'clearAriaLabel'   => __( 'Clear color' ),
+			'defaultString'    => __( 'Default' ),
+			'defaultAriaLabel' => __( 'Select default color' ),
+			'pick'             => __( 'Select Color' ),
+			'defaultLabel'     => __( 'Color value' ),
 		) );
 
 		$scripts->add( 'dashboard', "/wp-admin/js/dashboard$suffix.js", array( 'jquery', 'admin-comments', 'postbox', 'wp-util', 'wp-a11y' ), false, 1 );
@@ -848,6 +1721,7 @@ function wp_default_styles( &$styles ) {
 	$styles->add( 'widgets',             "/wp-admin/css/widgets$suffix.css", array( 'wp-pointer' ) );
 	$styles->add( 'site-icon',           "/wp-admin/css/site-icon$suffix.css" );
 	$styles->add( 'l10n',                "/wp-admin/css/l10n$suffix.css" );
+	$styles->add( 'code-editor',         "/wp-admin/css/code-editor$suffix.css", array( 'wp-codemirror' ) );
 
 	$styles->add( 'wp-admin', false, array( 'dashicons', 'common', 'forms', 'admin-menu', 'dashboard', 'list-tables', 'edit', 'revisions', 'media', 'themes', 'about', 'nav-menus', 'widgets', 'site-icon', 'l10n' ) );
 
@@ -857,7 +1731,6 @@ function wp_default_styles( &$styles ) {
 	$styles->add( 'customize-controls',  "/wp-admin/css/customize-controls$suffix.css", array( 'wp-admin', 'colors', 'ie', 'imgareaselect' ) );
 	$styles->add( 'customize-widgets',   "/wp-admin/css/customize-widgets$suffix.css", array( 'wp-admin', 'colors' ) );
 	$styles->add( 'customize-nav-menus', "/wp-admin/css/customize-nav-menus$suffix.css", array( 'wp-admin', 'colors' ) );
-	$styles->add( 'press-this',          "/wp-admin/css/press-this$suffix.css", array( 'buttons' ) );
 
 	$styles->add( 'ie', "/wp-admin/css/ie$suffix.css" );
 	$styles->add_data( 'ie', 'conditional', 'lte IE 7' );
@@ -879,9 +1752,10 @@ function wp_default_styles( &$styles ) {
 	// External libraries and friends
 	$styles->add( 'imgareaselect',       '/wp-includes/js/imgareaselect/imgareaselect.css', array(), '0.9.8' );
 	$styles->add( 'wp-jquery-ui-dialog', "/wp-includes/css/jquery-ui-dialog$suffix.css", array( 'dashicons' ) );
-	$styles->add( 'mediaelement',        "/wp-includes/js/mediaelement/mediaelementplayer.min.css", array(), '2.22.0' );
+	$styles->add( 'mediaelement',        "/wp-includes/js/mediaelement/mediaelementplayer-legacy.min.css", array(), '4.2.6-78496d1' );
 	$styles->add( 'wp-mediaelement',     "/wp-includes/js/mediaelement/wp-mediaelement$suffix.css", array( 'mediaelement' ) );
 	$styles->add( 'thickbox',            '/wp-includes/js/thickbox/thickbox.css', array( 'dashicons' ) );
+	$styles->add( 'wp-codemirror',       '/wp-includes/js/codemirror/codemirror.min.css', array(), '5.29.1-alpha-ee20357' );
 
 	// Deprecated CSS
 	$styles->add( 'deprecated-media', "/wp-admin/css/deprecated-media$suffix.css" );
@@ -895,7 +1769,7 @@ function wp_default_styles( &$styles ) {
 		// wp-admin
 		'common', 'forms', 'admin-menu', 'dashboard', 'list-tables', 'edit', 'revisions', 'media', 'themes', 'about', 'nav-menus',
 		'widgets', 'site-icon', 'l10n', 'install', 'wp-color-picker', 'customize-controls', 'customize-widgets', 'customize-nav-menus', 'customize-preview',
-		'ie', 'login', 'press-this',
+		'ie', 'login',
 		// wp-includes
 		'buttons', 'admin-bar', 'wp-auth-check', 'editor-buttons', 'media-views', 'wp-pointer',
 		'wp-jquery-ui-dialog',
@@ -908,6 +1782,53 @@ function wp_default_styles( &$styles ) {
 		if ( $suffix ) {
 			$styles->add_data( $rtl_style, 'suffix', $suffix );
 		}
+	}
+
+	// Packages styles
+	$fonts_url = '';
+
+	/*
+	 * Translators: Use this to specify the proper Google Font name and variants
+	 * to load that is supported by your language. Do not translate.
+	 * Set to 'off' to disable loading.
+	 */
+	$font_family = _x( 'Noto Serif:400,400i,700,700i', 'Google Font Name and Variants' );
+	if ( 'off' !== $font_family ) {
+		$fonts_url  =  'https://fonts.googleapis.com/css?family=' . urlencode( $font_family );
+	}
+	$styles->add( 'wp-editor-font', $fonts_url );
+
+	$styles->add( 'wp-block-library-theme', "/wp-includes/css/dist/block-library/theme$suffix.css" );
+	$styles->add_data( 'wp-block-library-theme', 'rtl', 'replace' );
+
+	$styles->add(
+		'wp-edit-blocks',
+		"/wp-includes/css/dist/block-library/editor$suffix.css",
+		array(
+			'wp-components',
+			'wp-editor',
+			// Always include visual styles so the editor never appears broken.
+			'wp-block-library-theme',
+		)
+	);
+	$styles->add_data( 'wp-edit-blocks', 'rtl', 'replace' );
+
+	$package_styles = array(
+		'block-library' => array(),
+		'components' => array(),
+		'edit-post' => array( 'wp-components', 'wp-editor', 'wp-edit-blocks', 'wp-block-library', 'wp-nux' ),
+		'editor' => array( 'wp-components', 'wp-editor-font', 'wp-nux' ),
+		'format-library' => array(),
+		'list-reusable-blocks' => array( 'wp-components' ),
+		'nux' => array( 'wp-components' ),
+	);
+
+	foreach ( $package_styles as $package => $dependencies ) {
+		$handle  = 'wp-' . $package;
+		$path     = "/wp-includes/css/dist/$package/style$suffix.css";
+
+		$styles->add( $handle, $path, $dependencies );
+		$styles->add_data( $handle, 'rtl', 'replace' );
 	}
 }
 
@@ -953,6 +1874,16 @@ function wp_just_in_time_script_localization() {
 	wp_localize_script( 'mce-view', 'mceViewL10n', array(
 		'shortcodes' => ! empty( $GLOBALS['shortcode_tags'] ) ? array_keys( $GLOBALS['shortcode_tags'] ) : array()
 	) );
+
+	wp_localize_script( 'word-count', 'wordCountL10n', array(
+		/*
+		 * translators: If your word count is based on single characters (e.g. East Asian characters),
+		 * enter 'characters_excluding_spaces' or 'characters_including_spaces'. Otherwise, enter 'words'.
+		 * Do not translate into your own language.
+		 */
+		'type' => _x( 'words', 'Word count type. Do not translate!' ),
+		'shortcodes' => ! empty( $GLOBALS['shortcode_tags'] ) ? array_keys( $GLOBALS['shortcode_tags'] ) : array()
+	) );
 }
 
 /**
@@ -960,7 +1891,7 @@ function wp_just_in_time_script_localization() {
  *
  * @since 4.6.0
  *
- * @link http://api.jqueryui.com/datepicker/#options
+ * @link https://api.jqueryui.com/datepicker/#options
  *
  * @global WP_Locale $wp_locale The WordPress date and time locale object.
  */
@@ -1062,7 +1993,7 @@ function wp_localize_community_events() {
 			'could_not_locate_city' => __( 'We couldn&#8217;t locate %s. Please try another nearby city. For example: Kansas City; Springfield; Portland.' ),
 
 			// This one is only used with wp.a11y.speak(), so it can/should be more brief.
-			/* translators: %s is the name of a city. */
+			/* translators: %s: the name of a city */
 			'city_updated' => __( 'City updated. Listing events near %s.' ),
 		)
 	) );
@@ -1437,5 +2368,76 @@ function script_concat_settings() {
 		$compress_css = defined('COMPRESS_CSS') ? COMPRESS_CSS : true;
 		if ( $compress_css && ( ! get_site_option('can_compress_scripts') || $compressed_output ) )
 			$compress_css = false;
+	}
+}
+
+/**
+ * Handles the enqueueing of block scripts and styles that are common to both
+ * the editor and the front-end.
+ *
+ * @since 5.0.0
+ *
+ * @global WP_Screen $current_screen
+ */
+function wp_common_block_scripts_and_styles() {
+	global $current_screen;
+
+	if ( is_admin() && ( $current_screen instanceof WP_Screen ) && ! $current_screen->is_block_editor() ) {
+		return;
+	}
+
+	wp_enqueue_style( 'wp-block-library' );
+
+	if ( current_theme_supports( 'wp-block-styles' ) ) {
+		wp_enqueue_style( 'wp-block-library-theme' );
+	}
+
+	/**
+ 	 * Fires after enqueuing block assets for both editor and front-end.
+ 	 *
+ 	 * Call `add_action` on any hook before 'wp_enqueue_scripts'.
+ 	 *
+ 	 * In the function call you supply, simply use `wp_enqueue_script` and
+ 	 * `wp_enqueue_style` to add your functionality to the Gutenberg editor.
+ 	 *
+ 	 * @since 5.0.0
+ 	 */
+	  do_action( 'enqueue_block_assets' );
+}
+
+/**
+ * Enqueues registered block scripts and styles, depending on current rendered
+ * context (only enqueuing editor scripts while in context of the editor).
+ *
+ * @since 5.0.0
+ *
+ * @global WP_Screen $current_screen
+ */
+function wp_enqueue_registered_block_scripts_and_styles() {
+	global $current_screen;
+
+	$is_editor = ( ( $current_screen instanceof WP_Screen ) && $current_screen->is_block_editor() );
+
+	$block_registry = WP_Block_Type_Registry::get_instance();
+	foreach ( $block_registry->get_all_registered() as $block_name => $block_type ) {
+		// Front-end styles.
+		if ( ! empty( $block_type->style ) ) {
+			wp_enqueue_style( $block_type->style );
+		}
+
+		// Front-end script.
+		if ( ! empty( $block_type->script ) ) {
+			wp_enqueue_script( $block_type->script );
+		}
+
+		// Editor styles.
+		if ( $is_editor && ! empty( $block_type->editor_style ) ) {
+			wp_enqueue_style( $block_type->editor_style );
+		}
+
+		// Editor script.
+		if ( $is_editor && ! empty( $block_type->editor_script ) ) {
+			wp_enqueue_script( $block_type->editor_script );
+		}
 	}
 }

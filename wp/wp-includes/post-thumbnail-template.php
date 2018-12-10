@@ -10,7 +10,11 @@
  */
 
 /**
- * Check if post has an image attached.
+ * Determines whether a post has an image attached.
+ * 
+ * For more information on this and similar theme functions, check out
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * Conditional Tags} article in the Theme Developer Handbook.
  *
  * @since 2.9.0
  * @since 4.4.0 `$post` can be a post ID or WP_Post object.
@@ -122,11 +126,13 @@ function get_the_post_thumbnail( $post = null, $size = 'post-thumbnail', $attr =
 	 * Filters the post thumbnail size.
 	 *
 	 * @since 2.9.0
+	 * @since 4.9.0 Added the `$post_id` parameter.
 	 *
-	 * @param string|array $size The post thumbnail size. Image size or array of width and height
-	 *                           values (in that order). Default 'post-thumbnail'.
+	 * @param string|array $size    The post thumbnail size. Image size or array of width and height
+	 *                              values (in that order). Default 'post-thumbnail'.
+	 * @param int          $post_id The post ID.
 	 */
-	$size = apply_filters( 'post_thumbnail_size', $size );
+	$size = apply_filters( 'post_thumbnail_size', $size, $post->ID );
 
 	if ( $post_thumbnail_id ) {
 

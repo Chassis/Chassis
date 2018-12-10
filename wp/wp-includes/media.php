@@ -1203,7 +1203,7 @@ function wp_calculate_image_srcset( $size_array, $image_src, $image_meta, $attac
 	$sources = apply_filters( 'wp_calculate_image_srcset', $sources, $size_array, $image_src, $image_meta, $attachment_id );
 
 	// Only return a 'srcset' value if there is more than one source.
-	if ( ! $src_matched || count( $sources ) < 2 ) {
+	if ( ! $src_matched || ! is_array( $sources ) || count( $sources ) < 2 ) {
 		return false;
 	}
 
@@ -1335,12 +1335,10 @@ function wp_make_content_images_responsive( $content ) {
 
 	if ( count( $attachment_ids ) > 1 ) {
 		/*
-		 * Warm object cache for use with 'get_post_meta()'.
-		 *
-		 * To avoid making a database call for each image, a single query
-		 * warms the object cache with the meta information for all images.
+		 * Warm the object cache with post and meta information for all found
+		 * images to avoid making individual database calls.
 		 */
-		update_meta_cache( 'post', array_keys( $attachment_ids ) );
+		_prime_post_caches( array_keys( $attachment_ids ), false, true );
 	}
 
 	foreach ( $selected_images as $image => $attachment_id ) {
@@ -2159,9 +2157,9 @@ function wp_get_audio_extensions() {
 	 * @since 3.6.0
 	 *
 	 * @param array $extensions An array of support audio formats. Defaults are
-	 *                          'mp3', 'ogg', 'm4a', 'wav'.
+	 *                          'mp3', 'ogg', 'flac', 'm4a', 'wav'.
 	 */
-	return apply_filters( 'wp_audio_extensions', array( 'mp3', 'ogg', 'm4a', 'wav' ) );
+	return apply_filters( 'wp_audio_extensions', array( 'mp3', 'ogg', 'flac', 'm4a', 'wav' ) );
 }
 
 /**
@@ -2313,10 +2311,12 @@ function wp_audio_shortcode( $attr, $content = '' ) {
 	 * Filters the class attribute for the audio shortcode output container.
 	 *
 	 * @since 3.6.0
+	 * @since 4.9.0 The `$atts` parameter was added.
 	 *
 	 * @param string $class CSS class or list of space-separated classes.
+	 * @param array  $atts  Array of audio shortcode attributes.
 	 */
-	$atts['class'] = apply_filters( 'wp_audio_shortcode_class', $atts['class'] );
+	$atts['class'] = apply_filters( 'wp_audio_shortcode_class', $atts['class'], $atts );
 
 	$html_atts = array(
 		'class'    => $atts['class'],
@@ -2443,7 +2443,7 @@ function wp_video_shortcode( $attr, $content = '' ) {
 	 * @see wp_video_shortcode()
 	 *
 	 * @param string $html     Empty variable to be replaced with shortcode markup.
-	 * @param array  $attr     Attributes of the video shortcode.
+	 * @param array  $attr     Attributes of the shortcode. @see wp_video_shortcode()
 	 * @param string $content  Video shortcode content.
 	 * @param int    $instance Unique numeric ID of this video shortcode instance.
 	 */
@@ -2502,7 +2502,7 @@ function wp_video_shortcode( $attr, $content = '' ) {
 		}
 
 		if ( $is_vimeo ) {
-			wp_enqueue_script( 'froogaloop' );
+		    wp_enqueue_script( 'mediaelement-vimeo' );
 		}
 
 		$primary = true;
@@ -2544,6 +2544,7 @@ function wp_video_shortcode( $attr, $content = '' ) {
 	if ( 'mediaelement' === $library && did_action( 'init' ) ) {
 		wp_enqueue_style( 'wp-mediaelement' );
 		wp_enqueue_script( 'wp-mediaelement' );
+		wp_enqueue_script( 'mediaelement-vimeo' );
 	}
 
 	// Mediaelement has issues with some URL formats for Vimeo and YouTube, so
@@ -2568,10 +2569,12 @@ function wp_video_shortcode( $attr, $content = '' ) {
 	 * Filters the class attribute for the video shortcode output container.
 	 *
 	 * @since 3.6.0
+	 * @since 4.9.0 The `$atts` parameter was added.
 	 *
 	 * @param string $class CSS class or list of space-separated classes.
+	 * @param array  $atts  Array of video shortcode attributes.
 	 */
-	$atts['class'] = apply_filters( 'wp_video_shortcode_class', $atts['class'] );
+	$atts['class'] = apply_filters( 'wp_video_shortcode_class', $atts['class'], $atts );
 
 	$html_atts = array(
 		'class'    => $atts['class'],
@@ -2999,12 +3002,13 @@ function wp_plupload_default_settings() {
 		$extensions = array_merge( $extensions, explode( '|', $extension ) );
 	}
 
+	/*
+	 * Since 4.9 the `runtimes` setting is hardcoded in our version of Plupload to `html5,html4`,
+	 * and the `flash_swf_url` and `silverlight_xap_url` are not used.
+	 */
 	$defaults = array(
-		'runtimes'            => 'html5,flash,silverlight,html4',
 		'file_data_name'      => 'async-upload', // key passed to $_FILE.
 		'url'                 => admin_url( 'async-upload.php', 'relative' ),
-		'flash_swf_url'       => includes_url( 'js/plupload/plupload.flash.swf' ),
-		'silverlight_xap_url' => includes_url( 'js/plupload/plupload.silverlight.xap' ),
 		'filters' => array(
 			'max_file_size'   => $max_upload_size . 'b',
 			'mime_types'      => array( array( 'extensions' => implode( ',', $extensions ) ) ),
@@ -3154,6 +3158,9 @@ function wp_prepare_attachment_for_js( $attachment ) {
 		$response['filesizeInBytes'] = $bytes;
 		$response['filesizeHumanReadable'] = size_format( $bytes );
 	}
+
+	$context = get_post_meta( $attachment->ID, '_wp_attachment_context', true );
+	$response['context'] = ( $context ) ? $context : '';
 
 	if ( current_user_can( 'edit_post', $attachment->ID ) ) {
 		$response['nonces']['update'] = wp_create_nonce( 'update-post_' . $attachment->ID );
@@ -3436,7 +3443,6 @@ function wp_enqueue_media( $args = array() ) {
 		'captions'  => ! apply_filters( 'disable_captions', '' ),
 		'nonce'     => array(
 			'sendToEditor' => wp_create_nonce( 'media-send-to-editor' ),
-			'wpRestApi'    => wp_create_nonce( 'wp_rest' ),
 		),
 		'post'    => array(
 			'id' => 0,
@@ -3507,7 +3513,7 @@ function wp_enqueue_media( $args = array() ) {
 
 		// Library
 		'mediaLibraryTitle'      => __( 'Media Library' ),
-		'insertMediaTitle'       => __( 'Insert Media' ),
+		'insertMediaTitle'       => __( 'Add Media' ),
 		'createNewGallery'       => __( 'Create a new gallery' ),
 		'createNewPlaylist'      => __( 'Create a new playlist' ),
 		'createNewVideoPlaylist' => __( 'Create a new video playlist' ),
@@ -3517,6 +3523,7 @@ function wp_enqueue_media( $args = array() ) {
 		'noItemsFound'           => __( 'No items found.' ),
 		'insertIntoPost'         => $post_type_object->labels->insert_into_item,
 		'unattached'             => __( 'Unattached' ),
+		'mine'                   => _x( 'Mine', 'media items' ),
 		'trash'                  => _x( 'Trash', 'noun' ),
 		'uploadedToThisPost'     => $post_type_object->labels->uploaded_to_this_item,
 		'warnDelete'             => __( "You are about to permanently delete this item from your site.\nThis action cannot be undone.\n 'Cancel' to stop, 'OK' to delete." ),
@@ -3945,8 +3952,84 @@ function attachment_url_to_postid( $url ) {
  */
 function wpview_media_sandbox_styles() {
  	$version = 'ver=' . get_bloginfo( 'version' );
- 	$mediaelement = includes_url( "js/mediaelement/mediaelementplayer.min.css?$version" );
+ 	$mediaelement = includes_url( "js/mediaelement/mediaelementplayer-legacy.min.css?$version" );
  	$wpmediaelement = includes_url( "js/mediaelement/wp-mediaelement.css?$version" );
 
 	return array( $mediaelement, $wpmediaelement );
+}
+
+/**
+ * Registers the personal data exporter for media
+ *
+ * @param array   $exporters   An array of personal data exporters.
+ * @return array  An array of personal data exporters.
+ */
+function wp_register_media_personal_data_exporter( $exporters ) {
+	$exporters['wordpress-media'] = array(
+		'exporter_friendly_name' => __( 'WordPress Media' ),
+		'callback'               => 'wp_media_personal_data_exporter',
+	);
+
+	return $exporters;
+}
+
+/**
+ * Finds and exports attachments associated with an email address.
+ *
+ * @since 4.9.6
+ *
+ * @param  string $email_address The attachment owner email address.
+ * @param  int    $page          Attachment page.
+ * @return array  $return        An array of personal data.
+ */
+function wp_media_personal_data_exporter( $email_address, $page = 1 ) {
+	// Limit us to 50 attachments at a time to avoid timing out.
+	$number = 50;
+	$page   = (int) $page;
+
+	$data_to_export = array();
+
+	$user = get_user_by( 'email' , $email_address );
+	if ( false === $user ) {
+		return array(
+			'data' => $data_to_export,
+			'done' => true,
+		);
+	}
+
+	$post_query = new WP_Query(
+		array(
+			'author'         => $user->ID,
+			'posts_per_page' => $number,
+			'paged'          => $page,
+			'post_type'      => 'attachment',
+			'post_status'    => 'any',
+			'orderby'        => 'ID',
+			'order'          => 'ASC',
+		)
+	);
+
+	foreach ( (array) $post_query->posts as $post ) {
+		$attachment_url = wp_get_attachment_url( $post->ID );
+
+		if ( $attachment_url ) {
+			$post_data_to_export = array(
+				array( 'name'  => __( 'URL' ), 'value' => $attachment_url ),
+			);
+
+			$data_to_export[] = array(
+				'group_id'    => 'media',
+				'group_label' => __( 'Media' ),
+				'item_id'     => "post-{$post->ID}",
+				'data'        => $post_data_to_export,
+			);
+		}
+	}
+
+	$done = $post_query->max_num_pages <= $page;
+
+	return array(
+		'data' => $data_to_export,
+		'done' => $done,
+	);
 }

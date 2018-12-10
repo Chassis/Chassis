@@ -12,7 +12,7 @@
  *
  * @since 3.0.0
  *
- * @param int|string|WP_Term $menu Menu ID, slug, or name - or the menu object.
+ * @param int|string|WP_Term $menu Menu ID, slug, name, or object.
  * @return WP_Term|false False if $menu param isn't supplied or term does not exist, menu object if successful.
  */
 function wp_get_nav_menu_object( $menu ) {
@@ -43,8 +43,8 @@ function wp_get_nav_menu_object( $menu ) {
 	 *
 	 * @since 4.3.0
 	 *
-	 * @param object|false $menu_obj Term from nav_menu taxonomy, or false if nothing had been found.
-	 * @param string       $menu     The menu ID, slug, or name passed to wp_get_nav_menu_object().
+	 * @param WP_Term|false      $menu_obj Term from nav_menu taxonomy, or false if nothing had been found.
+	 * @param int|string|WP_Term $menu     The menu ID, slug, name, or object passed to wp_get_nav_menu_object().
 	 */
 	return apply_filters( 'wp_get_nav_menu_object', $menu_obj, $menu );
 }
@@ -56,7 +56,7 @@ function wp_get_nav_menu_object( $menu ) {
  *
  * @since 3.0.0
  *
- * @param int|string $menu The menu to check (ID, slug, or name).
+ * @param int|string|WP_Term $menu Menu ID, slug, name, or object of menu to check.
  * @return bool Whether the menu exists.
  */
 function is_nav_menu( $menu ) {
@@ -185,6 +185,38 @@ function has_nav_menu( $location ) {
 }
 
 /**
+ * Returns the name of a navigation menu.
+ *
+ * @since 4.9.0
+ *
+ * @param string $location Menu location identifier.
+ * @return string Menu name.
+ */
+function wp_get_nav_menu_name( $location ) {
+	$menu_name = '';
+
+	$locations = get_nav_menu_locations();
+
+	if ( isset( $locations[ $location ] ) ) {
+		$menu = wp_get_nav_menu_object( $locations[ $location ] );
+
+		if ( $menu && $menu->name ) {
+			$menu_name = $menu->name;
+		}
+	}
+
+	/**
+	 * Filters the navigation menu name being returned.
+	 *
+	 * @since 4.9.0
+	 *
+	 * @param string $menu_name Menu name.
+	 * @param string $location  Menu location identifier.
+	 */
+	return apply_filters( 'wp_get_nav_menu_name', $menu_name, $location );
+}
+
+/**
  * Determines whether the given ID is a nav menu item.
  *
  * @since 3.0.0
@@ -216,7 +248,7 @@ function wp_create_nav_menu( $menu_name ) {
  *
  * @since 3.0.0
  *
- * @param string $menu Menu ID, slug, or name.
+ * @param int|string|WP_Term $menu Menu ID, slug, name, or object.
  * @return bool|WP_Error True on success, false or WP_Error object on failure.
  */
 function wp_delete_nav_menu( $menu ) {
@@ -574,15 +606,35 @@ function _is_valid_nav_menu_item( $item ) {
 }
 
 /**
- * Return all menu items of a navigation menu.
+ * Retrieves all menu items of a navigation menu.
+ *
+ * Note: Most arguments passed to the `$args` parameter – save for 'output_key' – are
+ * specifically for retrieving nav_menu_item posts from get_posts() and may only
+ * indirectly affect the ultimate ordering and content of the resulting nav menu
+ * items that get returned from this function.
  *
  * @since 3.0.0
  *
  * @global string $_menu_item_sort_prop
  * @staticvar array $fetched
  *
- * @param string $menu Menu name, ID, or slug.
- * @param array  $args Optional. Arguments to pass to get_posts().
+ * @param int|string|WP_Term $menu Menu ID, slug, name, or object.
+ * @param array              $args {
+ *     Optional. Arguments to pass to get_posts().
+ *
+ *     @type string $order       How to order nav menu items as queried with get_posts(). Will be ignored
+ *                               if 'output' is ARRAY_A. Default 'ASC'.
+ *     @type string $orderby     Field to order menu items by as retrieved from get_posts(). Supply an orderby
+ *                               field via 'output_key' to affect the output order of nav menu items.
+ *                               Default 'menu_order'.
+ *     @type string $post_type   Menu items post type. Default 'nav_menu_item'.
+ *     @type string $post_status Menu items post status. Default 'publish'.
+ *     @type string $output      How to order outputted menu items. Default ARRAY_A.
+ *     @type string $output_key  Key to use for ordering the actual menu items that get returned. Note that
+ *                               that is not a get_posts() argument and will only affect output of menu items
+ *                               processed in this function. Default 'menu_order'.
+ *     @type bool   $nopaging    Whether to retrieve all menu items (true) or paginate (false). Default true.
+ * }
  * @return false|array $items Array of menu items, otherwise false.
  */
 function wp_get_nav_menu_items( $menu, $args = array() ) {
@@ -611,7 +663,7 @@ function wp_get_nav_menu_items( $menu, $args = array() ) {
 	}
 
 	// Get all posts and terms at once to prime the caches
-	if ( empty( $fetched[$menu->term_id] ) || wp_using_ext_object_cache() ) {
+	if ( empty( $fetched[ $menu->term_id ] ) && ! wp_using_ext_object_cache() ) {
 		$fetched[$menu->term_id] = true;
 		$posts = array();
 		$terms = array();
@@ -999,10 +1051,130 @@ function _wp_delete_customize_changeset_dependent_auto_drafts( $post_id ) {
 		return;
 	}
 	remove_action( 'delete_post', '_wp_delete_customize_changeset_dependent_auto_drafts' );
-	foreach ( $data['nav_menus_created_posts']['value'] as $post_id ) {
-		if ( ! empty( $post_id ) && 'auto-draft' === get_post_status( $post_id ) ) {
-			wp_delete_post( $post_id, true );
+	foreach ( $data['nav_menus_created_posts']['value'] as $stub_post_id ) {
+		if ( empty( $stub_post_id ) ) {
+			continue;
+		}
+		if ( 'auto-draft' === get_post_status( $stub_post_id ) ) {
+			wp_delete_post( $stub_post_id, true );
+		} elseif ( 'draft' === get_post_status( $stub_post_id ) ) {
+			wp_trash_post( $stub_post_id );
+			delete_post_meta( $stub_post_id, '_customize_changeset_uuid' );
 		}
 	}
 	add_action( 'delete_post', '_wp_delete_customize_changeset_dependent_auto_drafts' );
+}
+
+/**
+ * Handle menu config after theme change.
+ *
+ * @access private
+ * @since 4.9.0
+ */
+function _wp_menus_changed() {
+	$old_nav_menu_locations    = get_option( 'theme_switch_menu_locations', array() );
+	$new_nav_menu_locations    = get_nav_menu_locations();
+	$mapped_nav_menu_locations = wp_map_nav_menu_locations( $new_nav_menu_locations, $old_nav_menu_locations );
+
+	set_theme_mod( 'nav_menu_locations', $mapped_nav_menu_locations );
+	delete_option( 'theme_switch_menu_locations' );
+}
+
+/**
+ * Maps nav menu locations according to assignments in previously active theme.
+ *
+ * @since 4.9.0
+ *
+ * @param array $new_nav_menu_locations New nav menu locations assignments.
+ * @param array $old_nav_menu_locations Old nav menu locations assignments.
+ * @return array Nav menus mapped to new nav menu locations.
+ */
+function wp_map_nav_menu_locations( $new_nav_menu_locations, $old_nav_menu_locations ) {
+	$registered_nav_menus   = get_registered_nav_menus();
+	$new_nav_menu_locations = array_intersect_key( $new_nav_menu_locations, $registered_nav_menus );
+
+	// Short-circuit if there are no old nav menu location assignments to map.
+	if ( empty( $old_nav_menu_locations ) ) {
+		return $new_nav_menu_locations;
+	}
+
+	// If old and new theme have just one location, map it and we're done.
+	if ( 1 === count( $old_nav_menu_locations ) && 1 === count( $registered_nav_menus ) ) {
+		$new_nav_menu_locations[ key( $registered_nav_menus ) ] = array_pop( $old_nav_menu_locations );
+		return $new_nav_menu_locations;
+	}
+
+	$old_locations = array_keys( $old_nav_menu_locations );
+
+	// Map locations with the same slug.
+	foreach ( $registered_nav_menus as $location => $name ) {
+		if ( in_array( $location, $old_locations, true ) ) {
+			$new_nav_menu_locations[ $location ] = $old_nav_menu_locations[ $location ];
+			unset( $old_nav_menu_locations[ $location ] );
+		}
+	}
+
+	// If there are no old nav menu locations left, then we're done.
+	if ( empty( $old_nav_menu_locations ) ) {
+		return $new_nav_menu_locations;
+	}
+
+	/*
+	 * If old and new theme both have locations that contain phrases
+	 * from within the same group, make an educated guess and map it.
+	 */
+	$common_slug_groups = array(
+		array( 'primary', 'menu-1', 'main', 'header', 'navigation', 'top' ),
+		array( 'secondary', 'menu-2', 'footer', 'subsidiary', 'bottom' ),
+		array( 'social' ),
+	);
+
+	// Go through each group...
+	foreach ( $common_slug_groups as $slug_group ) {
+
+		// ...and see if any of these slugs...
+		foreach ( $slug_group as $slug ) {
+
+			// ...and any of the new menu locations...
+			foreach ( $registered_nav_menus as $new_location => $name ) {
+
+				// ...actually match!
+				if ( is_string( $new_location ) && false === stripos( $new_location, $slug ) && false === stripos( $slug, $new_location ) ) {
+					continue;
+				} elseif ( is_numeric( $new_location ) && $new_location !== $slug ) {
+					continue;
+				}
+
+				// Then see if any of the old locations...
+				foreach ( $old_nav_menu_locations as $location => $menu_id ) {
+
+					// ...and any slug in the same group...
+					foreach ( $slug_group as $slug ) {
+
+						// ... have a match as well.
+						if ( is_string( $location ) && false === stripos( $location, $slug ) && false === stripos( $slug, $location ) ) {
+							continue;
+						} elseif ( is_numeric( $location ) && $location !== $slug ) {
+							continue;
+						}
+
+						// Make sure this location wasn't mapped and removed previously.
+						if ( ! empty( $old_nav_menu_locations[ $location ] ) ) {
+
+							// We have a match that can be mapped!
+							$new_nav_menu_locations[ $new_location ] = $old_nav_menu_locations[ $location ];
+
+							// Remove the mapped location so it can't be mapped again.
+							unset( $old_nav_menu_locations[ $location ] );
+
+							// Go back and check the next new menu location.
+							continue 3;
+						}
+					} // endforeach ( $slug_group as $slug )
+				} // endforeach ( $old_nav_menu_locations as $location => $menu_id )
+			} // endforeach foreach ( $registered_nav_menus as $new_location => $name )
+		} // endforeach ( $slug_group as $slug )
+	} // endforeach ( $common_slug_groups as $slug_group )
+
+	return $new_nav_menu_locations;
 }

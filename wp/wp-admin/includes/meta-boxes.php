@@ -223,6 +223,26 @@ if ( $can_publish ) : // Contributors don't get to choose the date of publish ?>
 </div><?php // /misc-pub-section ?>
 <?php endif; ?>
 
+<?php if ( 'draft' === $post->post_status && get_post_meta( $post->ID, '_customize_changeset_uuid', true ) ) : ?>
+	<div class="notice notice-info notice-alt inline">
+		<p>
+			<?php
+			echo sprintf(
+				/* translators: %s: URL to the Customizer */
+				__( 'This draft comes from your <a href="%s">unpublished customization changes</a>. You can edit, but there&#8217;s no need to publish now. It will be published automatically with those changes.' ),
+				esc_url(
+					add_query_arg(
+						'changeset_uuid',
+						rawurlencode( get_post_meta( $post->ID, '_customize_changeset_uuid', true ) ),
+						admin_url( 'customize.php' )
+					)
+				)
+			);
+			?>
+		</p>
+	</div>
+<?php endif; ?>
+
 <?php
 /**
  * Fires after the post time/date setting in the Publish meta box.
@@ -244,8 +264,12 @@ do_action( 'post_submitbox_misc_actions', $post );
  * Fires at the beginning of the publishing actions section of the Publish meta box.
  *
  * @since 2.7.0
+ * @since 4.9.0 Added the `$post` parameter.
+ *
+ * @param WP_Post|null $post WP_Post object for the current post on Edit Post screen,
+ *                           null on Edit Link screen.
  */
-do_action( 'post_submitbox_start' );
+do_action( 'post_submitbox_start', $post );
 ?>
 <div id="delete-action">
 <?php
@@ -265,8 +289,8 @@ if ( current_user_can( "delete_post", $post->ID ) ) {
 if ( !in_array( $post->post_status, array('publish', 'future', 'private') ) || 0 == $post->ID ) {
 	if ( $can_publish ) :
 		if ( !empty($post->post_date_gmt) && time() < strtotime( $post->post_date_gmt . ' +0000' ) ) : ?>
-		<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e('Schedule') ?>" />
-		<?php submit_button( __( 'Schedule' ), 'primary large', 'publish', false ); ?>
+		<input name="original_publish" type="hidden" id="original_publish" value="<?php echo esc_attr_x( 'Schedule', 'post action/button label' ); ?>" />
+		<?php submit_button( _x( 'Schedule', 'post action/button label' ), 'primary large', 'publish', false ); ?>
 <?php	else : ?>
 		<input name="original_publish" type="hidden" id="original_publish" value="<?php esc_attr_e('Publish') ?>" />
 		<?php submit_button( __( 'Publish' ), 'primary large', 'publish', false ); ?>
@@ -309,15 +333,19 @@ function attachment_submit_meta_box( $post ) {
 
 
 <div id="misc-publishing-actions">
-	<?php
-	/* translators: Publish box date format, see https://secure.php.net/date */
-	$datef = __( 'M j, Y @ H:i' );
-	/* translators: Attachment information. 1: Date the attachment was uploaded */
-	$stamp = __('Uploaded on: <b>%1$s</b>');
-	$date = date_i18n( $datef, strtotime( $post->post_date ) );
-	?>
 	<div class="misc-pub-section curtime misc-pub-curtime">
-		<span id="timestamp"><?php printf($stamp, $date); ?></span>
+		<span id="timestamp"><?php
+			$date = date_i18n(
+				/* translators: Publish box date format, see https://secure.php.net/date */
+				__( 'M j, Y @ H:i' ),
+				strtotime( $post->post_date )
+			);
+			printf(
+				/* translators: Attachment information. %s: Date the attachment was uploaded */
+				__( 'Uploaded on: %s' ),
+				'<b>' . $date . '</b>'
+			);
+		?></span>
 	</div><!-- .misc-pub-section -->
 
 	<?php
@@ -326,8 +354,11 @@ function attachment_submit_meta_box( $post ) {
 	 * in the attachment editing screen.
 	 *
 	 * @since 3.5.0
+	 * @since 4.9.0 Added the `$post` parameter.
+	 *
+	 * @param WP_Post $post WP_Post object for the current attachment. 
 	 */
-	do_action( 'attachment_submitbox_misc_actions' );
+	do_action( 'attachment_submitbox_misc_actions', $post );
 	?>
 </div><!-- #misc-publishing-actions -->
 <div class="clear"></div>
@@ -453,7 +484,7 @@ function post_tags_meta_box( $post, $box ) {
 		<p><?php echo $taxonomy->labels->no_terms; ?></p>
 	<?php endif; ?>
 	</div>
-	<div class="tagchecklist"></div>
+	<ul class="tagchecklist" role="list"></ul>
 </div>
 <?php if ( $user_can_assign_terms ) : ?>
 <p class="hide-if-no-js"><button type="button" class="button-link tagcloud-link" id="link-<?php echo $tax_name; ?>" aria-expanded="false"><?php echo $taxonomy->labels->choose_from_most_used; ?></button></p>
@@ -496,7 +527,7 @@ function post_categories_meta_box( $post, $box ) {
 	<div id="taxonomy-<?php echo $tax_name; ?>" class="categorydiv">
 		<ul id="<?php echo $tax_name; ?>-tabs" class="category-tabs">
 			<li class="tabs"><a href="#<?php echo $tax_name; ?>-all"><?php echo $taxonomy->labels->all_items; ?></a></li>
-			<li class="hide-if-no-js"><a href="#<?php echo $tax_name; ?>-pop"><?php _e( 'Most Used' ); ?></a></li>
+			<li class="hide-if-no-js"><a href="#<?php echo $tax_name; ?>-pop"><?php echo esc_html( $taxonomy->labels->most_used ); ?></a></li>
 		</ul>
 
 		<div id="<?php echo $tax_name; ?>-pop" class="tabs-panel" style="display: none;">
@@ -821,7 +852,7 @@ function page_attributes_meta_box($post) {
 		 * @see wp_dropdown_pages()
 		 *
 		 * @param array   $dropdown_args Array of arguments used to generate the pages drop-down.
-		 * @param WP_Post $post          The current WP_Post object.
+		 * @param WP_Post $post          The current post.
 		 */
 		$dropdown_args = apply_filters( 'page_attributes_dropdown_pages_args', $dropdown_args, $post );
 		$pages = wp_dropdown_pages( $dropdown_args );
@@ -868,6 +899,16 @@ $default_title = apply_filters( 'default_page_template_title',  __( 'Default Tem
 <?php if ( post_type_supports( $post->post_type, 'page-attributes' ) ) : ?>
 <p class="post-attributes-label-wrapper"><label class="post-attributes-label" for="menu_order"><?php _e( 'Order' ); ?></label></p>
 <input name="menu_order" type="text" size="4" id="menu_order" value="<?php echo esc_attr( $post->menu_order ); ?>" />
+<?php
+/**
+ * Fires before the help hint text in the 'Page Attributes' meta box.
+ *
+ * @since 4.9.0
+ *
+ * @param WP_Post $post The current post.
+ */
+do_action( 'page_attributes_misc_attributes', $post );
+?>
 <?php if ( 'page' == $post->post_type && get_current_screen()->get_help_tabs() ) : ?>
 <p><?php _e( 'Need help? Use the Help tab above the screen title.' ); ?></p>
 <?php endif;
@@ -914,7 +955,7 @@ function link_submit_meta_box($link) {
 <div id="major-publishing-actions">
 <?php
 /** This action is documented in wp-admin/includes/meta-boxes.php */
-do_action( 'post_submitbox_start' );
+do_action( 'post_submitbox_start', null );
 ?>
 <div id="delete-action">
 <?php
@@ -957,7 +998,7 @@ function link_categories_meta_box($link) {
 <div id="taxonomy-linkcategory" class="categorydiv">
 	<ul id="category-tabs" class="category-tabs">
 		<li class="tabs"><a href="#categories-all"><?php _e( 'All Categories' ); ?></a></li>
-		<li class="hide-if-no-js"><a href="#categories-pop"><?php _e( 'Most Used' ); ?></a></li>
+		<li class="hide-if-no-js"><a href="#categories-pop"><?php _ex( 'Most Used', 'categories' ); ?></a></li>
 	</ul>
 
 	<div id="categories-all" class="tabs-panel">
@@ -1240,4 +1281,165 @@ function attachment_id3_data_meta_box( $post ) {
 	</p>
 	<?php
 	endforeach;
+}
+
+/**
+ * Registers the default post meta boxes, and runs the `do_meta_boxes` actions.
+ *
+ * @since 5.0.0
+ *
+ * @param WP_Post $post The post object that these meta boxes are being generated for.
+ */
+function register_and_do_post_meta_boxes( $post ) {
+	$post_type = $post->post_type;
+	$post_type_object = get_post_type_object( $post_type );
+
+	$thumbnail_support = current_theme_supports( 'post-thumbnails', $post_type ) && post_type_supports( $post_type, 'thumbnail' );
+	if ( ! $thumbnail_support && 'attachment' === $post_type && $post->post_mime_type ) {
+		if ( wp_attachment_is( 'audio', $post ) ) {
+			$thumbnail_support = post_type_supports( 'attachment:audio', 'thumbnail' ) || current_theme_supports( 'post-thumbnails', 'attachment:audio' );
+		} elseif ( wp_attachment_is( 'video', $post ) ) {
+			$thumbnail_support = post_type_supports( 'attachment:video', 'thumbnail' ) || current_theme_supports( 'post-thumbnails', 'attachment:video' );
+		}
+	}
+
+	$publish_callback_args = array( '__back_compat_meta_box' => true );
+	if ( post_type_supports($post_type, 'revisions') && 'auto-draft' != $post->post_status ) {
+		$revisions = wp_get_post_revisions( $post->ID );
+
+		// We should aim to show the revisions meta box only when there are revisions.
+		if ( count( $revisions ) > 1 ) {
+			reset( $revisions ); // Reset pointer for key()
+			$publish_callback_args = array( 'revisions_count' => count( $revisions ), 'revision_id' => key( $revisions ), '__back_compat_meta_box' => true );
+			add_meta_box('revisionsdiv', __('Revisions'), 'post_revisions_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+		}
+	}
+
+	if ( 'attachment' == $post_type ) {
+		wp_enqueue_script( 'image-edit' );
+		wp_enqueue_style( 'imgareaselect' );
+		add_meta_box( 'submitdiv', __('Save'), 'attachment_submit_meta_box', null, 'side', 'core', array( '__back_compat_meta_box' => true ) );
+		add_action( 'edit_form_after_title', 'edit_form_image_editor' );
+
+		if ( wp_attachment_is( 'audio', $post ) ) {
+			add_meta_box( 'attachment-id3', __( 'Metadata' ), 'attachment_id3_data_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+		}
+	} else {
+		add_meta_box( 'submitdiv', __( 'Publish' ), 'post_submit_meta_box', null, 'side', 'core', $publish_callback_args );
+	}
+
+	if ( current_theme_supports( 'post-formats' ) && post_type_supports( $post_type, 'post-formats' ) )
+		add_meta_box( 'formatdiv', _x( 'Format', 'post format' ), 'post_format_meta_box', null, 'side', 'core', array( '__back_compat_meta_box' => true ) );
+
+	// all taxonomies
+	foreach ( get_object_taxonomies( $post ) as $tax_name ) {
+		$taxonomy = get_taxonomy( $tax_name );
+		if ( ! $taxonomy->show_ui || false === $taxonomy->meta_box_cb )
+			continue;
+
+		$label = $taxonomy->labels->name;
+
+		if ( ! is_taxonomy_hierarchical( $tax_name ) )
+			$tax_meta_box_id = 'tagsdiv-' . $tax_name;
+		else
+			$tax_meta_box_id = $tax_name . 'div';
+
+		add_meta_box( $tax_meta_box_id, $label, $taxonomy->meta_box_cb, null, 'side', 'core', array( 'taxonomy' => $tax_name, '__back_compat_meta_box' => true ) );
+	}
+
+	if ( post_type_supports( $post_type, 'page-attributes' ) || count( get_page_templates( $post ) ) > 0 ) {
+		add_meta_box( 'pageparentdiv', $post_type_object->labels->attributes, 'page_attributes_meta_box', null, 'side', 'core', array( '__back_compat_meta_box' => true ) );
+	}
+
+	if ( $thumbnail_support && current_user_can( 'upload_files' ) )
+		add_meta_box('postimagediv', esc_html( $post_type_object->labels->featured_image ), 'post_thumbnail_meta_box', null, 'side', 'low', array( '__back_compat_meta_box' => true ) );
+
+	if ( post_type_supports($post_type, 'excerpt') )
+		add_meta_box('postexcerpt', __('Excerpt'), 'post_excerpt_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+
+	if ( post_type_supports($post_type, 'trackbacks') )
+		add_meta_box('trackbacksdiv', __('Send Trackbacks'), 'post_trackback_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+
+	if ( post_type_supports($post_type, 'custom-fields') ) {
+		$args = array(
+			'__back_compat_meta_box' => ! (bool) get_user_meta( get_current_user_id(), 'enable_custom_fields', true ),
+			'__block_editor_compatible_meta_box' => true
+		);
+		add_meta_box('postcustom', __('Custom Fields'), 'post_custom_meta_box', null, 'normal', 'core', $args );
+	}
+
+	/**
+	 * Fires in the middle of built-in meta box registration.
+	 *
+	 * @since 2.1.0
+	 * @deprecated 3.7.0 Use 'add_meta_boxes' instead.
+	 *
+	 * @param WP_Post $post Post object.
+	 */
+	do_action( 'dbx_post_advanced', $post );
+
+	// Allow the Discussion meta box to show up if the post type supports comments,
+	// or if comments or pings are open.
+	if ( comments_open( $post ) || pings_open( $post ) || post_type_supports( $post_type, 'comments' ) ) {
+		add_meta_box( 'commentstatusdiv', __( 'Discussion' ), 'post_comment_status_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+	}
+
+	$stati = get_post_stati( array( 'public' => true ) );
+	if ( empty( $stati ) ) {
+		$stati = array( 'publish' );
+	}
+	$stati[] = 'private';
+
+	if ( in_array( get_post_status( $post ), $stati ) ) {
+		// If the post type support comments, or the post has comments, allow the
+		// Comments meta box.
+		if ( comments_open( $post ) || pings_open( $post ) || $post->comment_count > 0 || post_type_supports( $post_type, 'comments' ) ) {
+			add_meta_box( 'commentsdiv', __( 'Comments' ), 'post_comment_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+		}
+	}
+
+	if ( ! ( 'pending' == get_post_status( $post ) && ! current_user_can( $post_type_object->cap->publish_posts ) ) )
+		add_meta_box('slugdiv', __('Slug'), 'post_slug_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+
+	if ( post_type_supports( $post_type, 'author' ) && current_user_can( $post_type_object->cap->edit_others_posts ) ) {
+		add_meta_box( 'authordiv', __( 'Author' ), 'post_author_meta_box', null, 'normal', 'core', array( '__back_compat_meta_box' => true ) );
+	}
+
+	/**
+	 * Fires after all built-in meta boxes have been added.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string  $post_type Post type.
+	 * @param WP_Post $post      Post object.
+	 */
+	do_action( 'add_meta_boxes', $post_type, $post );
+
+	/**
+	 * Fires after all built-in meta boxes have been added, contextually for the given post type.
+	 *
+	 * The dynamic portion of the hook, `$post_type`, refers to the post type of the post.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param WP_Post $post Post object.
+	 */
+	do_action( "add_meta_boxes_{$post_type}", $post );
+
+	/**
+	 * Fires after meta boxes have been added.
+	 *
+	 * Fires once for each of the default meta box contexts: normal, advanced, and side.
+	 *
+	 * @since 3.0.0
+	 *
+	 * @param string  $post_type Post type of the post.
+	 * @param string  $context   string  Meta box context.
+	 * @param WP_Post $post      Post object.
+	 */
+	do_action( 'do_meta_boxes', $post_type, 'normal', $post );
+	/** This action is documented in wp-admin/includes/meta-boxes.php */
+	do_action( 'do_meta_boxes', $post_type, 'advanced', $post );
+	/** This action is documented in wp-admin/includes/meta-boxes.php */
+	do_action( 'do_meta_boxes', $post_type, 'side', $post );
 }

@@ -21,7 +21,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 *
 	 * @since 4.4.0
 	 * @var array
-	 * @access protected
 	 */
 	protected $comment_pending_count = array();
 
@@ -33,7 +32,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Constructor.
 	 *
 	 * @since 3.1.0
-	 * @access public
 	 *
 	 * @see WP_List_Table::__construct() for more information on default arguments.
 	 *
@@ -121,7 +119,14 @@ class WP_Media_List_Table extends WP_List_Table {
 				$label[0]
 			);
 		}
+
 		$type_links['detached'] = '<option value="detached"' . ( $this->detached ? ' selected="selected"' : '' ) . '>' . __( 'Unattached' ) . '</option>';
+
+		$type_links['mine'] = sprintf(
+			'<option value="mine"%s>%s</option>',
+			selected( 'mine' === $filter, true, false ),
+			_x( 'Mine', 'media items' )
+		);
 
 		if ( $this->is_trash || ( defined( 'MEDIA_TRASH') && MEDIA_TRASH ) ) {
 			$type_links['trash'] = sprintf(
@@ -130,6 +135,7 @@ class WP_Media_List_Table extends WP_List_Table {
 				_x( 'Trash', 'attachment filter' )
 			);
 		}
+
 		return $type_links;
 	}
 
@@ -210,7 +216,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * @access public
 	 */
 	public function no_items() {
 		_e( 'No media files found.' );
@@ -341,7 +346,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the checkbox column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -358,7 +362,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the title column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -405,7 +408,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the author column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -420,7 +422,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the description column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -432,7 +433,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the date column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -460,7 +460,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the parent column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -521,7 +520,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles the comments column output.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post The current WP_Post object.
 	 */
@@ -543,7 +541,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Handles output for the default column.
 	 *
 	 * @since 4.3.0
-	 * @access public
 	 *
 	 * @param WP_Post $post        The current WP_Post object.
 	 * @param string  $column_name Current column name.
@@ -629,7 +626,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Gets the name of the default primary column.
 	 *
 	 * @since 4.3.0
-	 * @access protected
 	 *
 	 * @return string Name of the default primary column, in this case, 'title'.
 	 */
@@ -764,7 +760,6 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * Generates and displays row action links.
 	 *
 	 * @since 4.3.0
-	 * @access protected
 	 *
 	 * @param object $post        Attachment being acted upon.
 	 * @param string $column_name Current column name.

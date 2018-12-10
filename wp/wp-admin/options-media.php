@@ -51,13 +51,15 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 <table class="form-table">
 <tr>
 <th scope="row"><?php _e('Thumbnail size') ?></th>
-<td>
-<label for="thumbnail_size_w"><?php _e('Width'); ?></label>
-<input name="thumbnail_size_w" type="number" step="1" min="0" id="thumbnail_size_w" value="<?php form_option('thumbnail_size_w'); ?>" class="small-text" />
-<label for="thumbnail_size_h"><?php _e('Height'); ?></label>
-<input name="thumbnail_size_h" type="number" step="1" min="0" id="thumbnail_size_h" value="<?php form_option('thumbnail_size_h'); ?>" class="small-text" /><br />
-<input name="thumbnail_crop" type="checkbox" id="thumbnail_crop" value="1" <?php checked('1', get_option('thumbnail_crop')); ?>/>
-<label for="thumbnail_crop"><?php _e('Crop thumbnail to exact dimensions (normally thumbnails are proportional)'); ?></label>
+<td><fieldset><legend class="screen-reader-text"><span><?php _e( 'Thumbnail size' ); ?></span></legend>
+<label for="thumbnail_size_w"><?php _e( 'Width' ); ?></label>
+<input name="thumbnail_size_w" type="number" step="1" min="0" id="thumbnail_size_w" value="<?php form_option( 'thumbnail_size_w' ); ?>" class="small-text" />
+<br />
+<label for="thumbnail_size_h"><?php _e( 'Height' ); ?></label>
+<input name="thumbnail_size_h" type="number" step="1" min="0" id="thumbnail_size_h" value="<?php form_option( 'thumbnail_size_h' ); ?>" class="small-text" />
+</fieldset>
+<input name="thumbnail_crop" type="checkbox" id="thumbnail_crop" value="1" <?php checked( '1', get_option( 'thumbnail_crop' ) ); ?>/>
+<label for="thumbnail_crop"><?php _e( 'Crop thumbnail to exact dimensions (normally thumbnails are proportional)' ); ?></label>
 </td>
 </tr>
 
@@ -66,6 +68,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 <td><fieldset><legend class="screen-reader-text"><span><?php _e('Medium size'); ?></span></legend>
 <label for="medium_size_w"><?php _e('Max Width'); ?></label>
 <input name="medium_size_w" type="number" step="1" min="0" id="medium_size_w" value="<?php form_option('medium_size_w'); ?>" class="small-text" />
+<br />
 <label for="medium_size_h"><?php _e('Max Height'); ?></label>
 <input name="medium_size_h" type="number" step="1" min="0" id="medium_size_h" value="<?php form_option('medium_size_h'); ?>" class="small-text" />
 </fieldset></td>
@@ -76,6 +79,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 <td><fieldset><legend class="screen-reader-text"><span><?php _e('Large size'); ?></span></legend>
 <label for="large_size_w"><?php _e('Max Width'); ?></label>
 <input name="large_size_w" type="number" step="1" min="0" id="large_size_w" value="<?php form_option('large_size_w'); ?>" class="small-text" />
+<br />
 <label for="large_size_h"><?php _e('Max Height'); ?></label>
 <input name="large_size_h" type="number" step="1" min="0" id="large_size_h" value="<?php form_option('large_size_h'); ?>" class="small-text" />
 </fieldset></td>

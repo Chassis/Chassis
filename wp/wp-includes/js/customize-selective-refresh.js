@@ -1,5 +1,6 @@
 /* global jQuery, JSON, _customizePartialRefreshExports, console */
 
+/** @namespace wp.customize.selectiveRefresh */
 wp.customize.selectiveRefresh = ( function( $, api ) {
 	'use strict';
 	var self, Partial, Placement;
@@ -24,33 +25,44 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 	 *
 	 * A partial provides a rendering of one or more settings according to a template.
 	 *
+	 * @memberOf wp.customize.selectiveRefresh
+	 *
 	 * @see PHP class WP_Customize_Partial.
 	 *
 	 * @class
 	 * @augments wp.customize.Class
 	 * @since 4.5.0
-	 *
-	 * @param {string} id                              Unique identifier for the control instance.
-	 * @param {object} options                         Options hash for the control instance.
-	 * @param {object} options.params
-	 * @param {string} options.params.type             Type of partial (e.g. nav_menu, widget, etc)
-	 * @param {string} options.params.selector         jQuery selector to find the container element in the page.
-	 * @param {array}  options.params.settings         The IDs for the settings the partial relates to.
-	 * @param {string} options.params.primarySetting   The ID for the primary setting the partial renders.
-	 * @param {bool}   options.params.fallbackRefresh  Whether to refresh the entire preview in case of a partial refresh failure.
 	 */
-	Partial = self.Partial = api.Class.extend({
+	Partial = self.Partial = api.Class.extend(/** @lends wp.customize.SelectiveRefresh.Partial.prototype */{
 
 		id: null,
+
+		/**
+		 * Default params.
+		 *
+		 * @since 4.9.0
+		 * @var {object}
+		 */
+		defaults: {
+			selector: null,
+			primarySetting: null,
+			containerInclusive: false,
+			fallbackRefresh: true // Note this needs to be false in a front-end editing context.
+		},
 
 		/**
 		 * Constructor.
 		 *
 		 * @since 4.5.0
 		 *
-		 * @param {string} id - Partial ID.
-		 * @param {Object} options
-		 * @param {Object} options.params
+		 * @param {string} id                      - Unique identifier for the partial instance.
+		 * @param {object} options                 - Options hash for the partial instance.
+		 * @param {string} options.type            - Type of partial (e.g. nav_menu, widget, etc)
+		 * @param {string} options.selector        - jQuery selector to find the container element in the page.
+		 * @param {array}  options.settings        - The IDs for the settings the partial relates to.
+		 * @param {string} options.primarySetting  - The ID for the primary setting the partial renders.
+		 * @param {bool}   options.fallbackRefresh - Whether to refresh the entire preview in case of a partial refresh failure.
+		 * @param {object} [options.params]        - Deprecated wrapper for the above properties.
 		 */
 		initialize: function( id, options ) {
 			var partial = this;
@@ -59,13 +71,10 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 
 			partial.params = _.extend(
 				{
-					selector: null,
-					settings: [],
-					primarySetting: null,
-					containerInclusive: false,
-					fallbackRefresh: true // Note this needs to be false in a front-end editing context.
+					settings: []
 				},
-				options.params || {}
+				partial.defaults,
+				options.params || options
 			);
 
 			partial.deferred = {};
@@ -467,7 +476,7 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 			partial.createEditShortcutForPlacement( placement );
 			placement.container.removeClass( 'customize-partial-refreshing' );
 
-			// Prevent placement container from being being re-triggered as being rendered among nested partials.
+			// Prevent placement container from being re-triggered as being rendered among nested partials.
 			placement.container.data( 'customize-partial-content-rendered', true );
 
 			/*
@@ -477,6 +486,10 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 			 */
 			if ( wp.mediaelement ) {
 				wp.mediaelement.initialize();
+			}
+
+			if ( wp.playlist ) {
+				wp.playlist.initialize();
 			}
 
 			/**
@@ -508,11 +521,13 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 	 * It also may have information in relation to how a placement may have just changed.
 	 * The placement is conceptually similar to a DOM Range or MutationRecord.
 	 *
-	 * @class
+	 * @memberOf wp.customize.selectiveRefresh
+	 *
+	 * @class Placement
 	 * @augments wp.customize.Class
 	 * @since 4.5.0
 	 */
-	self.Placement = Placement = api.Class.extend({
+	self.Placement = Placement = api.Class.extend(/** @lends wp.customize.selectiveRefresh.prototype */{
 
 		/**
 		 * The partial with which the container is associated.
@@ -872,13 +887,13 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 				partialOptions.constructingContainerContext = containerElement.data( 'customize-partial-placement-context' ) || {};
 				Constructor = self.partialConstructor[ containerElement.data( 'customize-partial-type' ) ] || self.Partial;
 				partial = new Constructor( id, partialOptions );
-				self.partial.add( partial.id, partial );
+				self.partial.add( partial );
 			}
 
 			/*
 			 * Only trigger renders on (nested) partials that have been not been
 			 * handled yet. An example where this would apply is a nav menu
-			 * embedded inside of a custom menu widget. When the widget's title
+			 * embedded inside of a navigation menu widget. When the widget's title
 			 * is updated, the entire widget will re-render and then the event
 			 * will be triggered for the nested nav menu to do any initialization.
 			 */
@@ -912,8 +927,11 @@ wp.customize.selectiveRefresh = ( function( $, api ) {
 			var Constructor, partial = self.partial( id );
 			if ( ! partial ) {
 				Constructor = self.partialConstructor[ data.type ] || self.Partial;
-				partial = new Constructor( id, { params: data } );
-				self.partial.add( id, partial );
+				partial = new Constructor(
+					id,
+					_.extend( { params: data }, data ) // Inclusion of params alias is for back-compat for custom partials that expect to augment this property.
+				);
+				self.partial.add( partial );
 			} else {
 				_.extend( partial.params, data );
 			}

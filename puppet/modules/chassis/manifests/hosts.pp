@@ -31,7 +31,7 @@ class chassis::hosts(
 
 		file { '/etc/chassis-hosts/conf.d/subdomains':
 			ensure => file,
-			owner  => 'www-data',
+			mode   => '0777',
 		}
 
 		file { '/vagrant/local-config-hosts.php':
@@ -41,6 +41,7 @@ class chassis::hosts(
 
 		service { 'chassis-hosts':
 			ensure  => running,
+			enable  => true,
 			require => [
 				Package[ 'avahi-daemon' ],
 				Package[ 'python-avahi' ],

@@ -20,7 +20,6 @@ final class WP_oEmbed_Controller {
 	 * Register the oEmbed REST API route.
 	 *
 	 * @since 4.4.0
-	 * @access public
 	 */
 	public function register_routes() {
 		/**
@@ -101,7 +100,6 @@ final class WP_oEmbed_Controller {
 	 * Returns the JSON object for the post.
 	 *
 	 * @since 4.4.0
-	 * @access public
 	 *
 	 * @param WP_REST_Request $request Full data about the request.
 	 * @return WP_Error|array oEmbed response data or WP_Error on failure.
@@ -132,7 +130,6 @@ final class WP_oEmbed_Controller {
 	 * Checks if current user can make a proxy oEmbed request.
 	 *
 	 * @since 4.8.0
-	 * @access public
 	 *
 	 * @return true|WP_Error True if the request has read access, WP_Error object otherwise.
 	 */
@@ -149,7 +146,6 @@ final class WP_oEmbed_Controller {
 	 * Returns the JSON object for the proxied item.
 	 *
 	 * @since 4.8.0
-	 * @access public
 	 *
 	 * @see WP_oEmbed::get_html()
 	 * @param WP_REST_Request $request Full data about the request.
@@ -177,11 +173,21 @@ final class WP_oEmbed_Controller {
 			$args['height'] = $args['maxheight'];
 		}
 
+		// Short-circuit process for URLs belonging to the current site.
+		$data = get_oembed_response_data_for_url( $url, $args );
+
+		if ( $data ) {
+			return $data;
+		}
+
 		$data = _wp_oembed_get_object()->get_data( $url, $args );
 
 		if ( false === $data ) {
 			return new WP_Error( 'oembed_invalid_url', get_status_header_desc( 404 ), array( 'status' => 404 ) );
 		}
+
+		/** This filter is documented in wp-includes/class-oembed.php */
+		$data->html = apply_filters( 'oembed_result', _wp_oembed_get_object()->data2html( (object) $data, $url ), $url, $args );
 
 		/**
 		 * Filters the oEmbed TTL value (time to live).

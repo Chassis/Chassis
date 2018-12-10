@@ -17,6 +17,11 @@
 hosts:
     - vagrant.local
 
+# Site Configuration
+# (When overriding, include all values)
+site:
+    name: Chassis Site
+
 # IP address to use on the private network
 #
 # DHCP is used by default to assign IP addresses dynamically, override only if
@@ -99,8 +104,8 @@ synced_folders:
 #  - git@github.com:Chassis/memcache.git
 
 # PHP version
-# Values: 5.6, 7.0, 7.1 (or 5.6.30)
-php: 7.0
+# Values: 5.6, 7.0, 7.1, 7.2 (or 5.6.30)
+php: 7.2
 
 # VirtualBox-specific customisations.
 virtualbox:

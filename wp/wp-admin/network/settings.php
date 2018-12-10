@@ -10,7 +10,7 @@
 /** Load WordPress Administration Bootstrap */
 require_once( dirname( __FILE__ ) . '/admin.php' );
 
-/** WordPress Translation Install API */
+/** WordPress Translation Installation API */
 require_once( ABSPATH . 'wp-admin/includes/translation-install.php' );
 
 if ( ! current_user_can( 'manage_network_options' ) )
@@ -18,6 +18,26 @@ if ( ! current_user_can( 'manage_network_options' ) )
 
 $title = __( 'Network Settings' );
 $parent_file = 'settings.php';
+
+// Handle network admin email change requests
+if ( ! empty( $_GET[ 'network_admin_hash' ] ) ) {
+	$new_admin_details = get_site_option( 'network_admin_hash' );
+	$redirect = 'settings.php?updated=false';
+	if ( is_array( $new_admin_details ) && hash_equals( $new_admin_details[ 'hash' ], $_GET[ 'network_admin_hash' ] ) && ! empty( $new_admin_details[ 'newemail' ] ) ) {
+		update_site_option( 'admin_email', $new_admin_details[ 'newemail' ] );
+		delete_site_option( 'network_admin_hash' );
+		delete_site_option( 'new_admin_email' );
+		$redirect = 'settings.php?updated=true';
+	}
+	wp_redirect( network_admin_url( $redirect ) );
+	exit;
+} elseif ( ! empty( $_GET['dismiss'] ) && 'new_network_admin_email' == $_GET['dismiss'] ) {
+	check_admin_referer( 'dismiss_new_network_admin_email' );
+	delete_site_option( 'network_admin_hash' );
+	delete_site_option( 'new_admin_email' );
+	wp_redirect( network_admin_url( 'settings.php?updated=true' ) );
+	exit;
+}
 
 add_action( 'admin_head', 'network_settings_add_js' );
 
@@ -58,12 +78,12 @@ if ( $_POST ) {
 		'upload_space_check_disabled', 'blog_upload_space', 'upload_filetypes', 'site_name',
 		'first_post', 'first_page', 'first_comment', 'first_comment_url', 'first_comment_author',
 		'welcome_email', 'welcome_user_email', 'fileupload_maxk', 'global_terms_enabled',
-		'illegal_names', 'limited_email_domains', 'banned_email_domains', 'WPLANG', 'admin_email',
+		'illegal_names', 'limited_email_domains', 'banned_email_domains', 'WPLANG', 'new_admin_email',
 		'first_comment_email',
 	);
 
-	// Handle translation install.
-	if ( ! empty( $_POST['WPLANG'] ) && wp_can_install_language_pack() ) {  // @todo: Skip if already installed
+	// Handle translation installation.
+	if ( ! empty( $_POST['WPLANG'] ) && current_user_can( 'install_languages' ) && wp_can_install_language_pack() ) {
 		$language = wp_download_language_pack( $_POST['WPLANG'] );
 		if ( $language ) {
 			$_POST['WPLANG'] = $language;
@@ -80,7 +100,7 @@ if ( $_POST ) {
 	/**
 	 * Fires after the network options are updated.
 	 *
-	 * @since MU
+	 * @since MU (3.0.0)
 	 */
 	do_action( 'update_wpmu_options' );
 
@@ -111,10 +131,28 @@ if ( isset( $_GET['updated'] ) ) {
 			<tr>
 				<th scope="row"><label for="admin_email"><?php _e( 'Network Admin Email' ) ?></label></th>
 				<td>
-					<input name="admin_email" type="email" id="admin_email" aria-describedby="admin-email-desc" class="regular-text" value="<?php echo esc_attr( get_site_option( 'admin_email' ) ) ?>" />
+					<input name="new_admin_email" type="email" id="admin_email" aria-describedby="admin-email-desc" class="regular-text" value="<?php echo esc_attr( get_site_option( 'admin_email' ) ) ?>" />
 					<p class="description" id="admin-email-desc">
-						<?php _e( 'This email address will receive notifications. Registration and support emails will also come from this address.' ); ?>
+						<?php _e( 'This address is used for admin purposes. If you change this we will send you an email at your new address to confirm it. <strong>The new address will not become active until confirmed.</strong>' ); ?>
 					</p>
+					<?php
+					$new_admin_email = get_site_option( 'new_admin_email' );
+					if ( $new_admin_email && $new_admin_email != get_site_option( 'admin_email' ) ) : ?>
+						<div class="updated inline">
+						<p><?php
+							printf(
+								/* translators: %s: new network admin email */
+								__( 'There is a pending change of the network admin email to %s.' ),
+								'<code>' . esc_html( $new_admin_email ) . '</code>'
+							);
+							printf(
+								' <a href="%1$s">%2$s</a>',
+								esc_url( wp_nonce_url( network_admin_url( 'settings.php?dismiss=new_network_admin_email' ), 'dismiss_new_network_admin_email' ) ),
+								__( 'Cancel' )
+							);
+						?></p>
+						</div>
+					<?php endif; ?>
 				</td>
 			</tr>
 		</table>
@@ -130,10 +168,10 @@ if ( isset( $_GET['updated'] ) ) {
 				<td>
 					<fieldset>
 					<legend class="screen-reader-text"><?php _e( 'New registrations settings' ) ?></legend>
-					<label><input name="registration" type="radio" id="registration1" value="none"<?php checked( $reg, 'none') ?> /> <?php _e( 'Registration is disabled.' ); ?></label><br />
-					<label><input name="registration" type="radio" id="registration2" value="user"<?php checked( $reg, 'user') ?> /> <?php _e( 'User accounts may be registered.' ); ?></label><br />
-					<label><input name="registration" type="radio" id="registration3" value="blog"<?php checked( $reg, 'blog') ?> /> <?php _e( 'Logged in users may register new sites.' ); ?></label><br />
-					<label><input name="registration" type="radio" id="registration4" value="all"<?php checked( $reg, 'all') ?> /> <?php _e( 'Both sites and user accounts can be registered.' ); ?></label>
+					<label><input name="registration" type="radio" id="registration1" value="none"<?php checked( $reg, 'none') ?> /> <?php _e( 'Registration is disabled' ); ?></label><br />
+					<label><input name="registration" type="radio" id="registration2" value="user"<?php checked( $reg, 'user') ?> /> <?php _e( 'User accounts may be registered' ); ?></label><br />
+					<label><input name="registration" type="radio" id="registration3" value="blog"<?php checked( $reg, 'blog') ?> /> <?php _e( 'Logged in users may register new sites' ); ?></label><br />
+					<label><input name="registration" type="radio" id="registration4" value="all"<?php checked( $reg, 'all') ?> /> <?php _e( 'Both sites and user accounts can be registered' ); ?></label>
 					<?php if ( is_subdomain_install() ) {
 						echo '<p class="description">';
 						/* translators: 1: NOBLOGREDIRECT 2: wp-config.php */
@@ -154,14 +192,14 @@ if ( isset( $_GET['updated'] ) ) {
 					update_site_option( 'registrationnotification', 'yes' );
 				?>
 				<td>
-					<label><input name="registrationnotification" type="checkbox" id="registrationnotification" value="yes"<?php checked( get_site_option( 'registrationnotification' ), 'yes' ) ?> /> <?php _e( 'Send the network admin an email notification every time someone registers a site or user account.' ) ?></label>
+					<label><input name="registrationnotification" type="checkbox" id="registrationnotification" value="yes"<?php checked( get_site_option( 'registrationnotification' ), 'yes' ) ?> /> <?php _e( 'Send the network admin an email notification every time someone registers a site or user account' ) ?></label>
 				</td>
 			</tr>
 
 			<tr id="addnewusers">
 				<th scope="row"><?php _e( 'Add New Users' ) ?></th>
 				<td>
-					<label><input name="add_new_users" type="checkbox" id="add_new_users" value="1"<?php checked( get_site_option( 'add_new_users' ) ) ?> /> <?php _e( 'Allow site administrators to add new users to their site via the "Users &rarr; Add New" page.' ); ?></label>
+					<label><input name="add_new_users" type="checkbox" id="add_new_users" value="1"<?php checked( get_site_option( 'add_new_users' ) ) ?> /> <?php _e( 'Allow site administrators to add new users to their site via the "Users &rarr; Add New" page' ); ?></label>
 				</td>
 			</tr>
 
@@ -336,14 +374,16 @@ if ( isset( $_GET['updated'] ) ) {
 							$lang = '';
 						}
 
-						wp_dropdown_languages( array(
-							'name'         => 'WPLANG',
-							'id'           => 'WPLANG',
-							'selected'     => $lang,
-							'languages'    => $languages,
-							'translations' => $translations,
-							'show_available_translations' => wp_can_install_language_pack(),
-						) );
+						wp_dropdown_languages(
+							array(
+								'name'         => 'WPLANG',
+								'id'           => 'WPLANG',
+								'selected'     => $lang,
+								'languages'    => $languages,
+								'translations' => $translations,
+								'show_available_translations' => current_user_can( 'install_languages' ) && wp_can_install_language_pack(),
+							)
+						);
 						?>
 					</td>
 				</tr>
@@ -370,7 +410,7 @@ if ( isset( $_GET['updated'] ) ) {
 			 * default option, 'plugins' is enabled, site administrators are granted access to the Plugins
 			 * screen in their individual sites' dashboards.
 			 *
-			 * @since MU
+			 * @since MU (3.0.0)
 			 *
 			 * @param array $admin_menus The menu items available.
 			 */
@@ -393,7 +433,7 @@ if ( isset( $_GET['updated'] ) ) {
 		/**
 		 * Fires at the end of the Network Settings form, before the submit button.
 		 *
-		 * @since MU
+		 * @since MU (3.0.0)
 		 */
 		do_action( 'wpmu_options' ); ?>
 		<?php submit_button(); ?>

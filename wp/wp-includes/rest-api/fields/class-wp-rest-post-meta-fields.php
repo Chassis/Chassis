@@ -20,7 +20,6 @@ class WP_REST_Post_Meta_Fields extends WP_REST_Meta_Fields {
 	 * Post type to register fields for.
 	 *
 	 * @since 4.7.0
-	 * @access protected
 	 * @var string
 	 */
 	protected $post_type;
@@ -29,7 +28,6 @@ class WP_REST_Post_Meta_Fields extends WP_REST_Meta_Fields {
 	 * Constructor.
 	 *
 	 * @since 4.7.0
-	 * @access public
 	 *
 	 * @param string $post_type Post type to register fields for.
 	 */
@@ -41,7 +39,6 @@ class WP_REST_Post_Meta_Fields extends WP_REST_Meta_Fields {
 	 * Retrieves the object meta type.
 	 *
 	 * @since 4.7.0
-	 * @access protected
 	 *
 	 * @return string The meta type.
 	 */
@@ -50,10 +47,20 @@ class WP_REST_Post_Meta_Fields extends WP_REST_Meta_Fields {
 	}
 
 	/**
+	 * Retrieves the object meta subtype.
+	 *
+	 * @since 4.9.8
+	 *
+	 * @return string Subtype for the meta type, or empty string if no specific subtype.
+	 */
+	protected function get_meta_subtype() {
+		return $this->post_type;
+	}
+
+	/**
 	 * Retrieves the type for register_rest_field().
 	 *
 	 * @since 4.7.0
-	 * @access public
 	 *
 	 * @see register_rest_field()
 	 *

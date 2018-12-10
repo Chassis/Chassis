@@ -19,8 +19,6 @@ define( 'REST_API_VERSION', '2.0' );
  *
  * @since 4.4.0
  *
- * @global WP_REST_Server $wp_rest_server ResponseHandler instance (usually WP_REST_Server).
- *
  * @param string $namespace The first URL segment after core prefix. Should be unique to your package/plugin.
  * @param string $route     The base URL for route you are adding.
  * @param array  $args      Optional. Either an array of options for the endpoint, or an array of arrays for
@@ -30,9 +28,6 @@ define( 'REST_API_VERSION', '2.0' );
  * @return bool True on success, false on error.
  */
 function register_rest_route( $namespace, $route, $args = array(), $override = false ) {
-	/** @var WP_REST_Server $wp_rest_server */
-	global $wp_rest_server;
-
 	if ( empty( $namespace ) ) {
 		/*
 		 * Non-namespaced routes are not allowed, with the exception of the main
@@ -74,7 +69,7 @@ function register_rest_route( $namespace, $route, $args = array(), $override = f
 	}
 
 	$full_route = '/' . trim( $namespace, '/' ) . '/' . trim( $route, '/' );
-	$wp_rest_server->register_route( $namespace, $full_route, $args, $override );
+	rest_get_server()->register_route( $namespace, $full_route, $args, $override );
 	return true;
 }
 
@@ -170,6 +165,7 @@ function rest_api_default_filters() {
 	// Default serving.
 	add_filter( 'rest_pre_serve_request', 'rest_send_cors_headers' );
 	add_filter( 'rest_post_dispatch', 'rest_send_allow_header', 10, 3 );
+	add_filter( 'rest_post_dispatch', 'rest_filter_response_fields', 10, 3 );
 
 	add_filter( 'rest_pre_dispatch', 'rest_handle_options_request', 10, 3 );
 }
@@ -197,6 +193,12 @@ function create_initial_rest_routes() {
 			$revisions_controller = new WP_REST_Revisions_Controller( $post_type->name );
 			$revisions_controller->register_routes();
 		}
+
+		if ( 'attachment' !== $post_type->name ) {
+			$autosaves_controller = new WP_REST_Autosaves_Controller( $post_type->name );
+			$autosaves_controller->register_routes();
+		}
+
 	}
 
 	// Post types.
@@ -234,9 +236,32 @@ function create_initial_rest_routes() {
 	$controller = new WP_REST_Comments_Controller;
 	$controller->register_routes();
 
+	/**
+	 * Filters the search handlers to use in the REST search controller.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param array $search_handlers List of search handlers to use in the controller. Each search
+	 *                               handler instance must extend the `WP_REST_Search_Handler` class.
+	 *                               Default is only a handler for posts.
+	 */
+	$search_handlers = apply_filters( 'wp_rest_search_handlers', array( new WP_REST_Post_Search_Handler() ) );
+
+	$controller = new WP_REST_Search_Controller( $search_handlers );
+	$controller->register_routes();
+
+	// Block Renderer.
+	$controller = new WP_REST_Block_Renderer_Controller;
+	$controller->register_routes();
+
 	// Settings.
 	$controller = new WP_REST_Settings_Controller;
 	$controller->register_routes();
+
+	// Themes.
+	$controller = new WP_REST_Themes_Controller;
+	$controller->register_routes();
+
 }
 
 /**
@@ -245,7 +270,6 @@ function create_initial_rest_routes() {
  * @since 4.4.0
  *
  * @global WP             $wp             Current WordPress environment instance.
- * @global WP_REST_Server $wp_rest_server ResponseHandler instance (usually WP_REST_Server).
  */
 function rest_api_loaded() {
 	if ( empty( $GLOBALS['wp']->query_vars['rest_route'] ) ) {
@@ -312,6 +336,8 @@ function get_rest_url( $blog_id = null, $path = '/', $scheme = 'rest' ) {
 		$path = '/';
 	}
 
+	$path = '/' . ltrim( $path, '/' );
+
 	if ( is_multisite() && get_blog_option( $blog_id, 'permalink_structure' ) || get_option( 'permalink_structure' ) ) {
 		global $wp_rewrite;
 
@@ -321,7 +347,7 @@ function get_rest_url( $blog_id = null, $path = '/', $scheme = 'rest' ) {
 			$url = get_home_url( $blog_id, rest_get_url_prefix(), $scheme );
 		}
 
-		$url .= '/' . ltrim( $path, '/' );
+		$url .= $path;
 	} else {
 		$url = trailingslashit( get_home_url( $blog_id, '', $scheme ) );
 		// nginx only allows HTTP/1.0 methods when redirecting from / to /index.php
@@ -329,8 +355,6 @@ function get_rest_url( $blog_id = null, $path = '/', $scheme = 'rest' ) {
 		if ( 'index.php' !== substr( $url, 9 ) ) {
 			$url .= 'index.php';
 		}
-
-		$path = '/' . ltrim( $path, '/' );
 
 		$url = add_query_arg( 'rest_route', $path, $url );
 	}
@@ -386,8 +410,6 @@ function rest_url( $path = '', $scheme = 'json' ) {
  * Used primarily to route internal requests through WP_REST_Server.
  *
  * @since 4.4.0
- *
- * @global WP_REST_Server $wp_rest_server ResponseHandler instance (usually WP_REST_Server).
  *
  * @param WP_REST_Request|string $request Request.
  * @return WP_REST_Response REST response.
@@ -641,6 +663,49 @@ function rest_send_allow_header( $response, $server, $request ) {
 }
 
 /**
+ * Filter the API response to include only a white-listed set of response object fields.
+ *
+ * @since 4.8.0
+ *
+ * @param WP_REST_Response $response Current response being served.
+ * @param WP_REST_Server   $server   ResponseHandler instance (usually WP_REST_Server).
+ * @param WP_REST_Request  $request  The request that was used to make current response.
+ *
+ * @return WP_REST_Response Response to be served, trimmed down to contain a subset of fields.
+ */
+function rest_filter_response_fields( $response, $server, $request ) {
+	if ( ! isset( $request['_fields'] ) || $response->is_error() ) {
+		return $response;
+	}
+
+	$data = $response->get_data();
+
+	$fields = is_array( $request['_fields']  ) ? $request['_fields'] : preg_split( '/[\s,]+/', $request['_fields'] );
+
+	if ( 0 === count( $fields ) ) {
+		return $response;
+	}
+
+	// Trim off outside whitespace from the comma delimited list.
+	$fields = array_map( 'trim', $fields );
+
+	$fields_as_keyed = array_combine( $fields, array_fill( 0, count( $fields ), true ) );
+
+	if ( wp_is_numeric_array( $data ) ) {
+		$new_data = array();
+		foreach ( $data as $item ) {
+			$new_data[] = array_intersect_key( $item, $fields_as_keyed );
+		}
+	} else {
+		$new_data = array_intersect_key( $data, $fields_as_keyed );
+	}
+
+	$response->set_data( $new_data );
+
+	return $response;
+}
+
+/**
  * Adds the REST API URL to the WP RSD endpoint.
  *
  * @since 4.4.0
@@ -704,7 +769,6 @@ function rest_output_link_header() {
  * @since 4.4.0
  *
  * @global mixed          $wp_rest_auth_cookie
- * @global WP_REST_Server $wp_rest_server      REST server instance.
  *
  * @param WP_Error|mixed $result Error from another authentication handler,
  *                               null if we should handle it, or another value
@@ -716,7 +780,7 @@ function rest_cookie_check_errors( $result ) {
 		return $result;
 	}
 
-	global $wp_rest_auth_cookie, $wp_rest_server;
+	global $wp_rest_auth_cookie;
 
 	/*
 	 * Is cookie authentication being used? (If we get an auth
@@ -750,7 +814,7 @@ function rest_cookie_check_errors( $result ) {
 	}
 
 	// Send a refreshed nonce in header.
-	$wp_rest_server->send_header( 'X-WP-Nonce', wp_create_nonce( 'wp_rest' ) );
+	rest_get_server()->send_header( 'X-WP-Nonce', wp_create_nonce( 'wp_rest' ) );
 
 	return true;
 }
@@ -1060,6 +1124,28 @@ function rest_validate_value_from_schema( $value, $args, $param = '' ) {
 			}
 		}
 	}
+
+	if ( 'object' === $args['type'] ) {
+		if ( $value instanceof stdClass ) {
+			$value = (array) $value;
+		}
+		if ( ! is_array( $value ) ) {
+			/* translators: 1: parameter, 2: type name */
+			return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not of type %2$s.' ), $param, 'object' ) );
+		}
+
+		foreach ( $value as $property => $v ) {
+			if ( isset( $args['properties'][ $property ] ) ) {
+				$is_valid = rest_validate_value_from_schema( $v, $args['properties'][ $property ], $param . '[' . $property . ']' );
+				if ( is_wp_error( $is_valid ) ) {
+					return $is_valid;
+				}
+			} elseif ( isset( $args['additionalProperties'] ) && false === $args['additionalProperties'] ) {
+				return new WP_Error( 'rest_invalid_param', sprintf( __( '%1$s is not a valid property of Object.' ), $property ) );
+			}
+		}
+	}
+
 	if ( ! empty( $args['enum'] ) ) {
 		if ( ! in_array( $value, $args['enum'], true ) ) {
 			/* translators: 1: parameter, 2: list of valid values */
@@ -1179,6 +1265,26 @@ function rest_sanitize_value_from_schema( $value, $args ) {
 		$value = array_values( $value );
 		return $value;
 	}
+
+	if ( 'object' === $args['type'] ) {
+		if ( $value instanceof stdClass ) {
+			$value = (array) $value;
+		}
+		if ( ! is_array( $value ) ) {
+			return array();
+		}
+
+		foreach ( $value as $property => $v ) {
+			if ( isset( $args['properties'][ $property ] ) ) {
+				$value[ $property ] = rest_sanitize_value_from_schema( $v, $args['properties'][ $property ] );
+			} elseif ( isset( $args['additionalProperties'] ) && false === $args['additionalProperties'] ) {
+				unset( $value[ $property ] );
+			}
+		}
+
+		return $value;
+	}
+
 	if ( 'integer' === $args['type'] ) {
 		return (int) $value;
 	}
@@ -1215,4 +1321,72 @@ function rest_sanitize_value_from_schema( $value, $args ) {
 	}
 
 	return $value;
+}
+
+/**
+ * Append result of internal request to REST API for purpose of preloading data to be attached to a page.
+ * Expected to be called in the context of `array_reduce`.
+ *
+ * @since 5.0.0
+ *
+ * @param  array  $memo Reduce accumulator.
+ * @param  string $path REST API path to preload.
+ * @return array        Modified reduce accumulator.
+ */
+function rest_preload_api_request( $memo, $path ) {
+	// array_reduce() doesn't support passing an array in PHP 5.2, so we need to make sure we start with one.
+	if ( ! is_array( $memo ) ) {
+		$memo = array();
+	}
+
+	if ( empty( $path ) ) {
+		return $memo;
+	}
+
+	$method = 'GET';
+	if ( is_array( $path ) && 2 === count( $path ) ) {
+		$method = end( $path );
+		$path   = reset( $path );
+
+		if ( ! in_array( $method, array( 'GET', 'OPTIONS' ), true ) ) {
+			$method = 'GET';
+		}
+	}
+
+	$path_parts = parse_url( $path );
+	if ( false === $path_parts ) {
+		return $memo;
+	}
+
+	$request = new WP_REST_Request( $method, $path_parts['path'] );
+	if ( ! empty( $path_parts['query'] ) ) {
+		parse_str( $path_parts['query'], $query_params );
+		$request->set_query_params( $query_params );
+	}
+
+	$response = rest_do_request( $request );
+	if ( 200 === $response->status ) {
+		$server = rest_get_server();
+		$data   = (array) $response->get_data();
+		$links  = $server->get_compact_response_links( $response );
+		if ( ! empty( $links ) ) {
+			$data['_links'] = $links;
+		}
+
+		if ( 'OPTIONS' === $method ) {
+			$response = rest_send_allow_header( $response, $server, $request );
+
+			$memo[ $method ][ $path ] = array(
+				'body'    => $data,
+				'headers' => $response->headers,
+			);
+		} else {
+			$memo[ $path ] = array(
+				'body'    => $data,
+				'headers' => $response->headers,
+			);
+		}
+	}
+
+	return $memo;
 }

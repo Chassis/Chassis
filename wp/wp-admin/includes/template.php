@@ -214,7 +214,7 @@ function wp_popular_terms_checklist( $taxonomy, $default = 0, $number = 10, $ech
 				<input id="in-<?php echo $id; ?>" type="checkbox" <?php echo $checked; ?> value="<?php echo (int) $term->term_id; ?>" <?php disabled( ! current_user_can( $tax->cap->assign_terms ) ); ?> />
 				<?php
 				/** This filter is documented in wp-includes/category-template.php */
-				echo esc_html( apply_filters( 'the_category', $term->name ) );
+				echo esc_html( apply_filters( 'the_category', $term->name, '', '' ) );
 				?>
 			</label>
 		</li>
@@ -255,7 +255,7 @@ function wp_link_category_checklist( $link_id = 0 ) {
 		$cat_id = $category->term_id;
 
 		/** This filter is documented in wp-includes/category-template.php */
-		$name = esc_html( apply_filters( 'the_category', $category->name ) );
+		$name = esc_html( apply_filters( 'the_category', $category->name, '', '' ) );
 		$checked = in_array( $cat_id, $checked_categories ) ? ' checked="checked"' : '';
 		echo '<li id="link-category-', $cat_id, '"><label for="in-link-category-', $cat_id, '" class="selectit"><input value="', $cat_id, '" type="checkbox" name="link_category[]" id="in-link-category-', $cat_id, '"', $checked, '/> ', $name, "</label></li>";
 	}
@@ -336,6 +336,16 @@ function get_inline_data($post) {
 
 	if ( post_type_supports( $post->post_type, 'post-formats' ) )
 		echo '<div class="post_format">' . esc_html( get_post_format( $post->ID ) ) . '</div>';
+
+	/**
+	 * Fires after outputting the fields for the inline editor for posts and pages.
+	 *
+	 * @since 4.9.8
+	 *
+	 * @param WP_Post      $post             The current post object.
+	 * @param WP_Post_Type $post_type_object The current post's post type object.
+	 */
+	do_action( 'add_inline_data', $post, $post_type_object );
 
 	echo '</div>';
 }
@@ -423,15 +433,21 @@ function wp_comment_reply( $position = 1, $checkbox = false, $mode = 'single', $
 		</div>
 	</div>
 
-	<p id="replysubmit" class="submit">
-	<a href="#comments-form" class="save button button-primary alignright">
-	<span id="addbtn" style="display:none;"><?php _e('Add Comment'); ?></span>
-	<span id="savebtn" style="display:none;"><?php _e('Update Comment'); ?></span>
-	<span id="replybtn" style="display:none;"><?php _e('Submit Reply'); ?></span></a>
-	<a href="#comments-form" class="cancel button alignleft"><?php _e('Cancel'); ?></a>
-	<span class="waiting spinner"></span>
-	<span class="error" style="display:none;"></span>
-	</p>
+	<div id="replysubmit" class="submit">
+		<p>
+			<a href="#comments-form" class="save button button-primary alignright">
+				<span id="addbtn" style="display: none;"><?php _e( 'Add Comment' ); ?></span>
+				<span id="savebtn" style="display: none;"><?php _e( 'Update Comment' ); ?></span>
+				<span id="replybtn" style="display: none;"><?php _e( 'Submit Reply' ); ?></span>
+			</a>
+			<a href="#comments-form" class="cancel button alignleft"><?php _e( 'Cancel' ); ?></a>
+			<span class="waiting spinner"></span>
+		</p>
+		<br class="clear" />
+		<div class="notice notice-error notice-alt inline hidden">
+			<p class="error"></p>
+		</div>
+	</div>
 
 	<input type="hidden" name="action" id="action" value="" />
 	<input type="hidden" name="comment_ID" id="comment_ID" value="" />
@@ -892,7 +908,10 @@ function wp_import_upload_form( $action ) {
  * @param string|array|WP_Screen $screen        Optional. The screen or screens on which to show the box
  *                                              (such as a post type, 'link', or 'comment'). Accepts a single
  *                                              screen ID, WP_Screen object, or array of screen IDs. Default
- *                                              is the current screen.
+ *                                              is the current screen.  If you have used add_menu_page() or
+ *                                              add_submenu_page() to create a new screen (and hence screen_id),
+ *                                              make sure your menu slug conforms to the limits of sanitize_key()
+ *                                              otherwise the 'screen' menu may not correctly render on your page.
  * @param string                 $context       Optional. The context within the screen where the boxes
  *                                              should display. Available contexts vary from screen to
  *                                              screen. Post edit screen contexts include 'normal', 'side',
@@ -979,6 +998,105 @@ function add_meta_box( $id, $title, $callback, $screen = null, $context = 'advan
 	$wp_meta_boxes[$page][$context][$priority][$id] = array('id' => $id, 'title' => $title, 'callback' => $callback, 'args' => $callback_args);
 }
 
+
+/**
+ * Function that renders a "fake" meta box with an information message,
+ * shown on the block editor, when an incompatible meta box is found.
+ *
+ * @since 5.0.0
+ *
+ * @param mixed $object The data object being rendered on this screen.
+ * @param array $box    {
+ *     Custom formats meta box arguments.
+ *
+ *     @type string   $id           Meta box 'id' attribute.
+ *     @type string   $title        Meta box title.
+ *     @type callable $old_callback The original callback for this meta box.
+ *     @type array    $args         Extra meta box arguments.
+ * }
+ */
+function do_block_editor_incompatible_meta_box( $object, $box ) {
+	$plugin  = _get_plugin_from_callback( $box['old_callback'] );
+	$plugins = get_plugins();
+	echo '<p>';
+	if ( $plugin ) {
+		/* translators: %s: the name of the plugin that generated this meta box. */
+		printf( __( "This meta box, from the %s plugin, isn't compatible with the block editor." ), "<strong>{$plugin['Name']}</strong>" );
+	} else {
+		_e( "This meta box isn't compatible with the block editor." );
+	}
+	echo '</p>';
+
+	if ( empty( $plugins['classic-editor/classic-editor.php'] ) ) {
+		if ( current_user_can( 'install_plugins' ) ) {
+			echo '<p>';
+			/* translators: %s: A link to install the Classic Editor plugin. */
+			printf( __( 'Please install the <a href="%s">Classic Editor plugin</a> to use this meta box.'), esc_url( self_admin_url( 'plugin-install.php?tab=featured' ) ) );
+			echo '</p>';
+		}
+	} elseif ( is_plugin_inactive( 'classic-editor/classic-editor.php' ) ) {
+		if ( current_user_can( 'activate_plugins' ) ) {
+			$activate_url = wp_nonce_url( self_admin_url( 'plugins.php?action=activate&plugin=classic-editor/classic-editor.php' ), 'activate-plugin_classic-editor/classic-editor.php' );
+			echo '<p>';
+			/* translators: %s: A link to activate the Classic Editor plugin. */
+			printf( __( 'Please activate the <a href="%s">Classic Editor plugin</a> to use this meta box.'), esc_url( $activate_url ) );
+			echo '</p>';
+		}
+	} elseif ( $object instanceof WP_Post ) {
+		$edit_url = add_query_arg( 'classic-editor', '', get_edit_post_link( $object ) );
+		echo '<p>';
+		/* translators: %s: An edit post link to use the classic editor. */
+		printf( __( 'Please open the <a href="%s">classic editor</a> to use this meta box.'), esc_url( $edit_url ) );
+		echo '</p>';
+	}
+}
+
+/**
+ * Internal helper function to find the plugin from a meta box callback.
+ *
+ * @since 5.0.0
+ *
+ * @access private
+ *
+ * @param callable $callback The callback function to check.
+ * @return array|null The plugin that the callback belongs to, or null if it doesn't belong to a plugin.
+ */
+function _get_plugin_from_callback( $callback ) {
+	try {
+		if ( is_array( $callback ) ) {
+			$reflection = new ReflectionMethod( $callback[0], $callback[1] );
+		} elseif ( is_string( $callback) && false !== strpos( $callback, '::' ) ) {
+			$reflection = new ReflectionMethod( $callback );
+		} else {
+			$reflection = new ReflectionFunction( $callback );
+		}
+	} catch ( ReflectionException $exception ) {
+		// We could not properly reflect on the callable, so we abort here.
+		return null;
+	}
+
+	// Don't show an error if it's an internal PHP function.
+	if ( ! $reflection->isInternal() ) {
+
+		// Only show errors if the meta box was registered by a plugin.
+		$filename = wp_normalize_path( $reflection->getFileName() );
+		$plugin_dir = wp_normalize_path( WP_PLUGIN_DIR );
+		if ( strpos( $filename, $plugin_dir ) === 0 ) {
+			$filename = str_replace( $plugin_dir, '', $filename );
+			$filename = preg_replace( '|^/([^/]*/).*$|', '\\1', $filename );
+
+			$plugins = get_plugins();
+			foreach ( $plugins as $name => $plugin ) {
+				if ( strpos( $name, $filename ) === 0 ) {
+					return $plugin;
+				}
+			}
+		}
+	}
+
+	return null;
+}
+
 /**
  * Meta-Box template function
  *
@@ -987,7 +1105,11 @@ function add_meta_box( $id, $title, $callback, $screen = null, $context = 'advan
  * @global array $wp_meta_boxes
  *
  * @staticvar bool $already_sorted
- * @param string|WP_Screen $screen  Screen identifier
+ *
+ * @param string|WP_Screen $screen  Screen identifier. If you have used add_menu_page() or
+ *                                  add_submenu_page() to create a new screen (and hence screen_id)
+ *                                  make sure your menu slug conforms to the limits of sanitize_key()
+ *                                  otherwise the 'screen' menu may not correctly render on your page.
  * @param string           $context box context
  * @param mixed            $object  gets passed to the box callback function as first parameter
  * @return int number of meta_boxes
@@ -1005,7 +1127,7 @@ function do_meta_boxes( $screen, $context, $object ) {
 
 	$hidden = get_hidden_meta_boxes( $screen );
 
-	printf('<div id="%s-sortables" class="meta-box-sortables">', htmlspecialchars($context));
+	printf( '<div id="%s-sortables" class="meta-box-sortables">', esc_attr( $context ) );
 
 	// Grab the ones the user has manually sorted. Pull them out of their previous context/priority and into the one the user chose
 	if ( ! $already_sorted && $sorted = get_user_option( "meta-box-order_$page" ) ) {
@@ -1028,8 +1150,34 @@ function do_meta_boxes( $screen, $context, $object ) {
 				foreach ( (array) $wp_meta_boxes[ $page ][ $context ][ $priority ] as $box ) {
 					if ( false == $box || ! $box['title'] )
 						continue;
+
+					$block_compatible = true;
+					if ( is_array( $box[ 'args' ] ) ) {
+						// If a meta box is just here for back compat, don't show it in the block editor.
+						if ( $screen->is_block_editor() && isset( $box['args']['__back_compat_meta_box'] ) && $box['args']['__back_compat_meta_box'] ) {
+							continue;
+						}
+
+						if ( isset( $box['args']['__block_editor_compatible_meta_box'] ) ) {
+							$block_compatible = (bool) $box['args']['__block_editor_compatible_meta_box'];
+							unset( $box['args']['__block_editor_compatible_meta_box'] );
+						}
+
+						// If the meta box is declared as incompatible with the block editor, override the callback function.
+						if ( ! $block_compatible && $screen->is_block_editor() ) {
+							$box['old_callback'] = $box['callback'];
+							$box['callback']     = 'do_block_editor_incompatible_meta_box';
+						}
+
+						if ( isset( $box['args']['__back_compat_meta_box'] ) ) {
+							$block_compatible = $block_compatible || (bool) $box['args']['__back_compat_meta_box'];
+							unset( $box['args']['__back_compat_meta_box'] );
+						}
+					}
+
 					$i++;
-					$hidden_class = in_array($box['id'], $hidden) ? ' hide-if-js' : '';
+					// get_hidden_meta_boxes() doesn't apply in the block editor.
+					$hidden_class = ( ! $screen->is_block_editor() && in_array( $box['id'], $hidden ) ) ? ' hide-if-js' : '';
 					echo '<div id="' . $box['id'] . '" class="postbox ' . postbox_classes($box['id'], $page) . $hidden_class . '" ' . '>' . "\n";
 					if ( 'dashboard_browser_nag' != $box['id'] ) {
 						$widget_title = $box[ 'title' ];
@@ -1047,6 +1195,23 @@ function do_meta_boxes( $screen, $context, $object ) {
 					}
 					echo "<h2 class='hndle'><span>{$box['title']}</span></h2>\n";
 					echo '<div class="inside">' . "\n";
+
+					if ( WP_DEBUG && ! $block_compatible && 'edit' === $screen->parent_base && ! $screen->is_block_editor() && ! isset( $_GET['meta-box-loader'] ) ) {
+						$plugin = _get_plugin_from_callback( $box['callback'] );
+						if ( $plugin ) {
+						?>
+							<div class="error inline">
+								<p>
+									<?php
+										/* translators: %s: the name of the plugin that generated this meta box. */
+										printf( __( "This meta box, from the %s plugin, isn't compatible with the block editor." ), "<strong>{$plugin['Name']}</strong>" );
+									?>
+								</p>
+							</div>
+						<?php
+						}
+					}
+
 					call_user_func($box['callback'], $object, $box);
 					echo "</div>\n";
 					echo "</div>\n";
@@ -1444,8 +1609,9 @@ function get_settings_errors( $setting = '', $sanitize = false ) {
 	}
 
 	// Check global in case errors have been added on this pageload.
-	if ( ! count( $wp_settings_errors ) )
+	if ( empty( $wp_settings_errors ) ) {
 		return array();
+	}
 
 	// Filter the results to those of a specific setting if one was set.
 	if ( $setting ) {
@@ -1723,8 +1889,15 @@ function _post_states($post) {
 		$post_states['protected'] = __('Password protected');
 	if ( 'private' == $post->post_status && 'private' != $post_status )
 		$post_states['private'] = __('Private');
-	if ( 'draft' == $post->post_status && 'draft' != $post_status )
-		$post_states['draft'] = __('Draft');
+	if ( 'draft' === $post->post_status ) {
+		if ( get_post_meta( $post->ID, '_customize_changeset_uuid', true ) ) {
+			$post_states[] = __( 'Customization Draft' );
+		} elseif ( 'draft' !== $post_status ) {
+			$post_states['draft'] = __( 'Draft' );
+		}
+	} elseif ( 'trash' === $post->post_status && get_post_meta( $post->ID, '_customize_changeset_uuid', true ) ) {
+		$post_states[] = __( 'Customization Draft' );
+	}
 	if ( 'pending' == $post->post_status && 'pending' != $post_status )
 		$post_states['pending'] = _x('Pending', 'post status');
 	if ( is_sticky($post->ID) )
@@ -1742,6 +1915,10 @@ function _post_states($post) {
 		if ( intval( get_option( 'page_for_posts' ) ) === $post->ID ) {
 			$post_states['page_for_posts'] = __( 'Posts Page' );
 		}
+	}
+
+	if ( intval( get_option( 'wp_page_for_privacy_policy' ) ) === $post->ID ) {
+		$post_states['page_for_privacy_policy'] = __( 'Privacy Policy Page' );
 	}
 
 	/**
@@ -2047,7 +2224,17 @@ function _wp_admin_html_begin() {
  */
 function convert_to_screen( $hook_name ) {
 	if ( ! class_exists( 'WP_Screen' ) ) {
-		_doing_it_wrong( 'convert_to_screen(), add_meta_box()', __( "Likely direct inclusion of wp-admin/includes/template.php in order to use add_meta_box(). This is very wrong. Hook the add_meta_box() call into the add_meta_boxes action instead." ), '3.3.0' );
+		_doing_it_wrong(
+			'convert_to_screen(), add_meta_box()',
+			sprintf(
+				/* translators: 1: wp-admin/includes/template.php 2: add_meta_box() 3: add_meta_boxes */
+				__( 'Likely direct inclusion of %1$s in order to use %2$s. This is very wrong. Hook the %2$s call into the %3$s action instead.' ),
+				'<code>wp-admin/includes/template.php</code>',
+				'<code>add_meta_box()</code>',
+				'<code>add_meta_boxes</code>'
+			),
+			'3.3.0'
+		);
 		return (object) array( 'id' => '_invalid', 'base' => '_are_belong_to_us' );
 	}
 
@@ -2087,14 +2274,15 @@ function _local_storage_notice() {
  * @param array $args {
  *     Optional. Array of star ratings arguments.
  *
- *     @type int    $rating The rating to display, expressed in either a 0.5 rating increment,
- *                          or percentage. Default 0.
- *     @type string $type   Format that the $rating is in. Valid values are 'rating' (default),
- *                          or, 'percent'. Default 'rating'.
- *     @type int    $number The number of ratings that makes up this rating. Default 0.
- *     @type bool   $echo   Whether to echo the generated markup. False to return the markup instead
- *                          of echoing it. Default true.
+ *     @type int|float $rating The rating to display, expressed in either a 0.5 rating increment,
+ *                             or percentage. Default 0.
+ *     @type string    $type   Format that the $rating is in. Valid values are 'rating' (default),
+ *                             or, 'percent'. Default 'rating'.
+ *     @type int       $number The number of ratings that makes up this rating. Default 0.
+ *     @type bool      $echo   Whether to echo the generated markup. False to return the markup instead
+ *                             of echoing it. Default true.
  * }
+ * @return string Star rating HTML.
  */
 function wp_star_rating( $args = array() ) {
 	$defaults = array(
@@ -2105,11 +2293,11 @@ function wp_star_rating( $args = array() ) {
 	);
 	$r = wp_parse_args( $args, $defaults );
 
-	// Non-english decimal places when the $rating is coming from a string
-	$rating = str_replace( ',', '.', $r['rating'] );
+	// Non-English decimal places when the $rating is coming from a string
+	$rating = (float) str_replace( ',', '.', $r['rating'] );
 
 	// Convert Percentage to star rating, 0..5 in .5 increments
-	if ( 'percent' == $r['type'] ) {
+	if ( 'percent' === $r['type'] ) {
 		$rating = round( $rating / 10, 0 ) / 2;
 	}
 

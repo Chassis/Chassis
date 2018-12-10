@@ -23,7 +23,7 @@ if ( ! in_array( $tax->name, get_taxonomies( array( 'show_ui' => true ) ) ) ) {
 
 if ( ! current_user_can( $tax->cap->manage_terms ) ) {
 	wp_die(
-		'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+		'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 		'<p>' . __( 'Sorry, you are not allowed to manage terms in this taxonomy.' ) . '</p>',
 		403
 	);
@@ -72,7 +72,7 @@ case 'add-tag':
 
 	if ( ! current_user_can( $tax->cap->edit_terms ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to create terms in this taxonomy.' ) . '</p>',
 			403
 		);
@@ -96,7 +96,7 @@ case 'delete':
 
 	if ( ! current_user_can( 'delete_term', $tag_ID ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to delete this item.' ) . '</p>',
 			403
 		);
@@ -116,7 +116,7 @@ case 'bulk-delete':
 
 	if ( ! current_user_can( $tax->cap->delete_terms ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to delete these items.' ) . '</p>',
 			403
 		);
@@ -152,7 +152,7 @@ case 'editedtag':
 
 	if ( ! current_user_can( 'edit_term', $tag_ID ) ) {
 		wp_die(
-			'<h1>' . __( 'Cheatin&#8217; uh?' ) . '</h1>' .
+			'<h1>' . __( 'You need a higher level of permission.' ) . '</h1>' .
 			'<p>' . __( 'Sorry, you are not allowed to edit this item.' ) . '</p>',
 			403
 		);
@@ -527,6 +527,9 @@ do_action( "{$taxonomy}_add_form", $taxonomy );
 
 <div id="col-right">
 <div class="col-wrap">
+
+<?php $wp_list_table->views(); ?>
+
 <form id="posts-filter" method="post">
 <input type="hidden" name="taxonomy" value="<?php echo esc_attr( $taxonomy ); ?>" />
 <input type="hidden" name="post_type" value="<?php echo esc_attr( $post_type ); ?>" />
@@ -544,7 +547,7 @@ do_action( "{$taxonomy}_add_form", $taxonomy );
 		/* translators: %s: default category */
 		__( 'Deleting a category does not delete the posts in that category. Instead, posts that were only assigned to the deleted category are set to the category %s.' ),
 		/** This filter is documented in wp-includes/category-template.php */
-		'<strong>' . apply_filters( 'the_category', get_cat_name( get_option( 'default_category') ) ) . '</strong>'
+		'<strong>' . apply_filters( 'the_category', get_cat_name( get_option( 'default_category') ), '', '' ) . '</strong>'
 	);
 	?>
 </p>
