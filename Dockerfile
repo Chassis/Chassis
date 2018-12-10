@@ -27,6 +27,7 @@ ADD puppet/modules /vagrant/puppet/modules
 ADD wp-config.php /vagrant/wp-config.php
 ADD puppet/manifests/docker.pp /vagrant/puppet/manifests/docker.pp
 ADD puppet/docker-build.sh /vagrant/puppet/docker-build.sh
+ADD puppet/docker-run.sh /vagrant/puppet/docker-run.sh
 ADD wp /vagrant/wp/
 
 # Install via Puppet, while running services.
@@ -34,6 +35,8 @@ RUN ln -s /vagrant /chassis
 RUN chmod u+x /vagrant/puppet/docker-build.sh
 RUN ["/vagrant/puppet/docker-build.sh"]
 RUN rm /chassis
+RUN chmod u+x /vagrant/puppet/docker-run.sh
+RUN ["/vagrant/puppet/docker-run.sh"]
 
 # Clean up.
 RUN apt-get remove -q -y --allow-remove-essential --purge init puppet python3-software-properties systemd systemd-sysv \

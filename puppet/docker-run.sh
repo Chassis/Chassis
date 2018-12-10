@@ -1,6 +1,6 @@
 #!/bin/bash
 
-ID="$(docker run \
+ID="$(sudo docker run \
 	-p 80 \
 	-d \
 	--rm \
@@ -13,8 +13,8 @@ if [ ! $SUCCESS -eq 0 ]; then
 	exit
 fi
 
-NAME=$(docker inspect --format='{{.Name}}' $ID | sed s#/##)
-URL="$(docker port $ID 80 | sed s/0.0.0.0/localhost/)"
+NAME=$(sudo docker inspect --format='{{.Name}}' $ID | sed s#/##)
+URL="$(sudo docker port $ID 80 | sed s/0.0.0.0/localhost/)"
 
 echo "======================================"
 echo "Your Chassis Container is now running!"
