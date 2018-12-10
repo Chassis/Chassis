@@ -4,6 +4,7 @@ FROM phusion/baseimage:0.9.22
 # Install pre-pre-requisites.
 RUN apt-get update
 RUN apt-get install -q -y wget #ca-certificates
+RUN apt-get install sudo -q -y
 
 # Add everything we need for prerequisites.
 ADD puppet/preprovision.sh /vagrant/puppet/preprovision.sh
