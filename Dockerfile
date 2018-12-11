@@ -5,12 +5,6 @@ FROM phusion/baseimage:0.9.22
 RUN apt-get update
 RUN apt-get install -q -y wget #ca-certificates
 RUN apt-get install sudo -q -y
-# Install Docker CE
-RUN curl -fsSL https://download.docker.com/linux/ubuntu/gpg | sudo apt-key add -
-RUN apt-key fingerprint 0EBFCD88
-RUN add-apt-repository "deb [arch=amd64] https://download.docker.com/linux/ubuntu $(lsb_release -cs) \ stable"
-RUN apt-get update
-RUN apt-get install docker-ce -q -y
 RUN mkdir -p /home/vagrant
 
 # Add everything we need for prerequisites.
