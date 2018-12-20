@@ -54,14 +54,6 @@ body {
 	}
 }
 
-/** === Editor Block Toolbar Position === */
-
-// Since 2019 left-aligns wide and fullwide blocks, left align the toolbar too.
-.editor-block-list__block[data-align="wide"] .editor-block-contextual-toolbar .editor-block-toolbar.editor-block-toolbar,
-.editor-block-list__block[data-align="full"] .editor-block-contextual-toolbar .editor-block-toolbar.editor-block-toolbar {
-		max-width: none;
-}
-
 /** === Content Width === */
 
 .wp-block {
@@ -302,12 +294,15 @@ figcaption,
 	.wp-block-cover {
 		width: 100%;
 		max-width: 100%;
-	}
+		padding: calc(1.375 * #{$size__spacing-unit});
 
-	@include media(tablet) {
+		p {
+			padding-left: 0;
+			padding-right: 0;
+		}
 
-		.wp-block-cover {
-			padding: $size__spacing-unit;
+		@include media(tablet) {
+			padding: calc(2.75 * #{$size__spacing-unit}) calc(2.75 * #{$size__spacing-unit}) calc(3.125 * #{$size__spacing-unit});
 		}
 	}
 }
@@ -606,6 +601,13 @@ figcaption,
 		letter-spacing: calc(2 * #{$size__spacing-unit});
 		padding-left: calc(2 * #{$size__spacing-unit});
 	}
+}
+
+/* Remove duplicate rule-line when a separator
+ * is followed by an H1, or H2 */
+.wp-block[data-type="core/separator"] + .wp-block[data-type="core/heading"] h1:before,
+.wp-block[data-type="core/separator"] + .wp-block[data-type="core/heading"] h2:before {
+	display: none;
 }
 
 /** === Latest Posts, Archives, Categories === */

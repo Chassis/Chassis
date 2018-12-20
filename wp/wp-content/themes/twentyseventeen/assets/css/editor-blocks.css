@@ -1,6 +1,6 @@
 /*
 Theme Name: Twenty Seventeen
-Description: Used to style Gutenberg Blocks in the editor.
+Description: Used to style blocks in the editor.
 */
 
 /*--------------------------------------------------------------
@@ -20,12 +20,12 @@ Description: Used to style Gutenberg Blocks in the editor.
 --------------------------------------------------------------*/
 
 .edit-post-visual-editor .editor-block-list__block,
-.editor-default-block-appender input[type="text"].editor-default-block-appender__content {
+.editor-default-block-appender textarea.editor-default-block-appender__content {
 	font-size: 15px;
 	font-size: 0.9375rem;
 }
 
-.editor-default-block-appender input[type="text"].editor-default-block-appender__content {
+.editor-default-block-appender textarea.editor-default-block-appender__content {
 	font-family: "Libre Franklin", "Helvetica Neue", helvetica, arial, sans-serif;
 }
 
@@ -155,9 +155,12 @@ html[lang="ur"] .edit-post-visual-editor h6 {
 
 /* Typography for Chinese Font */
 
-html[lang^="zh-"] .edit-post-visual-editor .editor-block-list__block,
-html[lang="zh-CN"] .edit-post-visual-editor .editor-block-list__block {
+html[lang^="zh-"] .edit-post-visual-editor .editor-block-list__block {
 	font-family: "PingFang TC", "Helvetica Neue", Helvetica, STHeitiTC-Light, Arial, sans-serif;
+}
+
+html[lang="zh-CN"] .edit-post-visual-editor .editor-block-list__block {
+	font-family: "PingFang SC", "Helvetica Neue", Helvetica, STHeitiSC-Light, Arial, sans-serif;
 }
 
 html[lang^="zh-"] .edit-post-visual-editor h1,
@@ -356,12 +359,6 @@ html[lang="th"] .edit-post-visual-editor * {
 
 .wp-block {
 	max-width: 674px; /* Based on one-column post width; 644px + 30px to account for padding. */
-}
-
-/* Background color */
-
-.gutenberg-editor-page .editor-block-list__block {
-	background-color: transparent;
 }
 
 /* Alignments */

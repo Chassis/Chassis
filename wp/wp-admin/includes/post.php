@@ -1029,17 +1029,23 @@ function wp_edit_posts_query( $q = false ) {
 		$post_type = 'post';
 
 	$avail_post_stati = get_available_post_statuses($post_type);
+	$post_status      = '';
+	$perm             = '';
 
 	if ( isset($q['post_status']) && in_array( $q['post_status'], $post_stati ) ) {
 		$post_status = $q['post_status'];
 		$perm = 'readable';
 	}
 
+	$orderby = '';
+
 	if ( isset( $q['orderby'] ) ) {
 		$orderby = $q['orderby'];
 	} elseif ( isset( $q['post_status'] ) && in_array( $q['post_status'], array( 'pending', 'draft' ) ) ) {
 		$orderby = 'modified';
 	}
+
+	$order = '';
 
 	if ( isset( $q['order'] ) ) {
 		$order = $q['order'];
@@ -1080,7 +1086,7 @@ function wp_edit_posts_query( $q = false ) {
 	$query = compact('post_type', 'post_status', 'perm', 'order', 'orderby', 'posts_per_page');
 
 	// Hierarchical types require special args.
-	if ( is_post_type_hierarchical( $post_type ) && !isset($orderby) ) {
+	if ( is_post_type_hierarchical( $post_type ) && empty( $orderby ) ) {
 		$query['orderby'] = 'menu_order title';
 		$query['order'] = 'asc';
 		$query['posts_per_page'] = -1;
@@ -2212,36 +2218,22 @@ function the_block_editor_meta_box_post_form_hidden_fields( $post ) {
 	 * Some meta boxes hook into these actions to add hidden input fields in the classic post form. For backwards
 	 * compatibility, we can capture the output from these actions, and extract the hidden input fields.
 	 */
-	$actions = array(
-		'edit_form_after_title',
-		'edit_form_advanced',
-	);
+	ob_start();
+	/** This filter is documented in wp-admin/edit-form-advanced.php */
+	do_action( 'edit_form_after_title', $post );
+	/** This filter is documented in wp-admin/edit-form-advanced.php */
+	do_action( 'edit_form_advanced', $post );
+	$classic_output = ob_get_clean();
 
-	foreach ( $actions as $action ) {
-		ob_start();
-		do_action_deprecated(
-			$action,
-			array( $post ),
-			'5.0.0',
-			'block_editor_meta_box_hidden_fields',
-			__( 'This action is still supported in the classic editor, but is deprecated in the block editor.' )
-		);
-		$classic_output = ob_get_clean();
-
-		if ( ! $classic_output ) {
+	$classic_elements = wp_html_split( $classic_output );
+	$hidden_inputs    = '';
+	foreach( $classic_elements as $element ) {
+		if ( 0 !== strpos( $element, '<input ') ) {
 			continue;
 		}
 
-		$classic_elements = wp_html_split( $classic_output );
-		$hidden_inputs    = '';
-		foreach( $classic_elements as $element ) {
-			if ( 0 !== strpos( $element, '<input ') ) {
-				continue;
-			}
-
-			if ( preg_match( '/\stype=[\'"]hidden[\'"]\s/', $element ) ) {
-				echo $element;
-			}
+		if ( preg_match( '/\stype=[\'"]hidden[\'"]\s/', $element ) ) {
+			echo $element;
 		}
 	}
 	?>

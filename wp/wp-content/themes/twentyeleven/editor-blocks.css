@@ -1,6 +1,6 @@
 /*
 Theme Name: Twenty Eleven
-Description: Used to style Gutenberg Blocks in the editor.
+Description: Used to style blocks in the editor.
 */
 
 /*--------------------------------------------------------------
@@ -20,10 +20,10 @@ Description: Used to style Gutenberg Blocks in the editor.
 
 .edit-post-visual-editor .editor-block-list__block,
 .edit-post-visual-editor .editor-block-list__block p,
-.editor-default-block-appender input[type="text"].editor-default-block-appender__content {
+.editor-default-block-appender textarea.editor-default-block-appender__content {
 	font-family: "Helvetica Neue", Helvetica, Arial, sans-serif;
 	font-size: 15px;
-	font-size: 300;
+	font-weight: 300;
 	line-height: 1.625;
 }
 
