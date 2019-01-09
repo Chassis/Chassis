@@ -112,7 +112,7 @@
 		currentSubMenu.parentElement.lastElementChild.className += ' expanded-true';
 
 		// Update aria-expanded state
-		toggleAriaExpandedState( currentSubMenu.previousSibling );
+		toggleAriaExpandedState( currentSubMenu );
 	}
 
 	/**
@@ -219,19 +219,9 @@
 
 				var url = event.target.getAttribute( 'href' ) ? event.target.getAttribute( 'href' ) : '';
 
-				// If there’s a link, go to it on touchend
-				if ( '#' !== url && '' !== url ) {
-					window.location = url;
-
 				// Open submenu if url is #
-				} else if ( '#' === url && event.target.nextSibling.matches('.submenu-expand') ) {
-
+				if ( '#' === url && event.target.nextSibling.matches('.submenu-expand') ) {
 					openSubMenu( event.target );
-
-				// Prevent default touch events
-				} else {
-
-					event.preventDefault();
 				}
 			}
 
@@ -240,7 +230,8 @@
 				openSubMenu(event.target);
 
 			// Check if child of .submenu-expand is touched
-			} else if ( null != getCurrentParent( event.target, '.submenu-expand' ) && getCurrentParent( event.target, '.submenu-expand' ).matches( '.submenu-expand' ) ) {
+			} else if ( null != getCurrentParent( event.target, '.submenu-expand' ) &&
+								getCurrentParent( event.target, '.submenu-expand' ).matches( '.submenu-expand' ) ) {
 				openSubMenu( getCurrentParent( event.target, '.submenu-expand' ) );
 
 			// Check if .menu-item-link-return is touched
@@ -264,6 +255,7 @@
 			if ( null != mainNav && hasClass( mainNav, '.main-navigation' ) ) {
 				// Prevent default mouse events
 				event.preventDefault();
+
 			} else if (
 				event.target.matches('.submenu-expand') ||
 				null != getCurrentParent( event.target, '.submenu-expand' ) &&
