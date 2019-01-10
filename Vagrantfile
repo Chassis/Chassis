@@ -73,6 +73,9 @@ Vagrant.configure("2") do |config|
 		config.vbguest.auto_update = false
 	end
 
+	# Add port forwarding for Vagrant Share
+	config.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
+
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp"
 		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
