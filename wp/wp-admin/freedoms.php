@@ -17,6 +17,14 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 
 $is_privacy_notice = isset( $_GET['privacy-notice'] );
 
+if ( $is_privacy_notice ) {
+	$freedoms_class = '';
+	$privacy_class  = ' nav-tab-active';
+} else {
+	$freedoms_class = ' nav-tab-active';
+	$privacy_class  = '';
+}
+
 ?>
 <div class="wrap about-wrap full-width-layout">
 
@@ -29,8 +37,8 @@ $is_privacy_notice = isset( $_GET['privacy-notice'] );
 <h2 class="nav-tab-wrapper wp-clearfix">
 	<a href="about.php" class="nav-tab"><?php _e( 'What&#8217;s New' ); ?></a>
 	<a href="credits.php" class="nav-tab"><?php _e( 'Credits' ); ?></a>
-	<a href="freedoms.php" class="nav-tab<?php if ( ! $is_privacy_notice ) { echo ' nav-tab-active'; } ?>"><?php _e( 'Freedoms' ); ?></a>
-	<a href="freedoms.php?privacy-notice" class="nav-tab<?php if ( $is_privacy_notice ) { echo ' nav-tab-active'; } ?>"><?php _e( 'Privacy' ); ?></a>
+	<a href="freedoms.php" class="nav-tab<?php echo $freedoms_class; ?>"><?php _e( 'Freedoms' ); ?></a>
+	<a href="freedoms.php?privacy-notice" class="nav-tab<?php echo $privacy_class; ?>"><?php _e( 'Privacy' ); ?></a>
 </h2>
 
 <?php if ( $is_privacy_notice ) : ?>
@@ -79,12 +87,14 @@ $is_privacy_notice = isset( $_GET['privacy-notice'] );
 		<div class="col">
 			<p><?php printf( __( 'WordPress grows when people like you tell their friends about it, and the thousands of businesses and services that are built on and around WordPress share that fact with their users. We&#8217;re flattered every time someone spreads the good word, just make sure to <a href="%s">check out our trademark guidelines</a> first.' ), 'https://wordpressfoundation.org/trademark-policy/' ); ?></p>
 
-			<p><?php
+			<p>
+			<?php
+				$plugins_url = current_user_can( 'activate_plugins' ) ? admin_url( 'plugins.php' ) : __( 'https://wordpress.org/plugins/' );
+				$themes_url  = current_user_can( 'switch_themes' ) ? admin_url( 'themes.php' ) : __( 'https://wordpress.org/themes/' );
 
-			$plugins_url = current_user_can( 'activate_plugins' ) ? admin_url( 'plugins.php' ) : __( 'https://wordpress.org/plugins/' );
-			$themes_url = current_user_can( 'switch_themes' ) ? admin_url( 'themes.php' ) : __( 'https://wordpress.org/themes/' );
-
-			printf( __( 'Every plugin and theme in WordPress.org&#8217;s directory is 100%% GPL or a similarly free and compatible license, so you can feel safe finding <a href="%1$s">plugins</a> and <a href="%2$s">themes</a> there. If you get a plugin or theme from another source, make sure to <a href="%3$s">ask them if it&#8217;s GPL</a> first. If they don&#8217;t respect the WordPress license, we don&#8217;t recommend them.' ), $plugins_url, $themes_url, 'https://wordpress.org/about/license/' ); ?></p>
+				printf( __( 'Every plugin and theme in WordPress.org&#8217;s directory is 100%% GPL or a similarly free and compatible license, so you can feel safe finding <a href="%1$s">plugins</a> and <a href="%2$s">themes</a> there. If you get a plugin or theme from another source, make sure to <a href="%3$s">ask them if it&#8217;s GPL</a> first. If they don&#8217;t respect the WordPress license, we don&#8217;t recommend them.' ), $plugins_url, $themes_url, 'https://wordpress.org/about/license/' );
+			?>
+			</p>
 
 			<p><?php _e( 'Don&#8217;t you wish all software came with these freedoms? So do we! For more information, check out the <a href="https://www.fsf.org/">Free Software Foundation</a>.' ); ?></p>
 		</div>

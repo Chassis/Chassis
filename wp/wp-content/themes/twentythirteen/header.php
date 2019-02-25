@@ -23,7 +23,7 @@
 	<meta name="viewport" content="width=device-width">
 	<title><?php wp_title( '|', true, 'right' ); ?></title>
 	<link rel="profile" href="http://gmpg.org/xfn/11">
-	<link rel="pingback" href="<?php bloginfo( 'pingback_url' ); ?>">
+	<link rel="pingback" href="<?php echo esc_url( get_bloginfo( 'pingback_url' ) ); ?>">
 	<!--[if lt IE 9]>
 	<script src="<?php echo get_template_directory_uri(); ?>/js/html5.js"></script>
 	<![endif]-->
@@ -42,7 +42,15 @@
 				<nav id="site-navigation" class="navigation main-navigation" role="navigation">
 					<button class="menu-toggle"><?php _e( 'Menu', 'twentythirteen' ); ?></button>
 					<a class="screen-reader-text skip-link" href="#content" title="<?php esc_attr_e( 'Skip to content', 'twentythirteen' ); ?>"><?php _e( 'Skip to content', 'twentythirteen' ); ?></a>
-					<?php wp_nav_menu( array( 'theme_location' => 'primary', 'menu_class' => 'nav-menu', 'menu_id' => 'primary-menu' ) ); ?>
+					<?php
+					wp_nav_menu(
+						array(
+							'theme_location' => 'primary',
+							'menu_class'     => 'nav-menu',
+							'menu_id'        => 'primary-menu',
+						)
+					);
+					?>
 					<?php get_search_form(); ?>
 				</nav><!-- #site-navigation -->
 			</div><!-- #navbar -->

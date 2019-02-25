@@ -1,19 +1,25 @@
+/**
+ * @output wp-includes/js/wp-emoji-loader.js
+ */
+
 ( function( window, document, settings ) {
 	var src, ready, ii, tests;
 
-	/*
-	 * Create a canvas element for testing native browser support
-	 * of emoji.
-	 */
+	// Create a canvas element for testing native browser support of emoji.
 	var canvas = document.createElement( 'canvas' );
 	var context = canvas.getContext && canvas.getContext( '2d' );
 
 	/**
-	 * Check if two sets of Emoji characters render the same.
+	 * Checks if two sets of Emoji characters render the same visually.
 	 *
-	 * @param set1 array Set of Emoji characters.
-	 * @param set2 array Set of Emoji characters.
-	 * @returns {boolean} True if the two sets render the same.
+	 * @since 4.9.0
+	 *
+	 * @private
+	 *
+	 * @param {number[]} set1 Set of Emoji character codes.
+	 * @param {number[]} set2 Set of Emoji character codes.
+	 *
+	 * @return {boolean} True if the two sets render the same.
 	 */
 	function emojiSetsRenderIdentically( set1, set2 ) {
 		var stringFromCharCode = String.fromCharCode;
@@ -32,13 +38,18 @@
 	}
 
 	/**
-	 * Detect if the browser supports rendering emoji or flag emoji. Flag emoji are a single glyph
-	 * made of two characters, so some browsers (notably, Firefox OS X) don't support them.
+	 * Detects if the browser supports rendering emoji or flag emoji.
+	 *
+	 * Flag emoji are a single glyph made of two characters, so some browsers
+	 * (notably, Firefox OS X) don't support them.
 	 *
 	 * @since 4.2.0
 	 *
-	 * @param type {String} Whether to test for support of "flag" or "emoji".
-	 * @return {Boolean} True if the browser can render emoji, false if it cannot.
+	 * @private
+	 *
+	 * @param {string} type Whether to test for support of "flag" or "emoji".
+	 *
+	 * @return {boolean} True if the browser can render emoji, false if it cannot.
 	 */
 	function browserSupportsEmoji( type ) {
 		var isIdentical;
@@ -92,18 +103,29 @@
 				 *
 				 * To test for support, try to render a new emoji (female superhero),
 				 * then compare it to how it would look if the browser doesn't render it correctly
-				 * (superhero + female sign).
+				 * (superhero + female sign) .
 				 */
 				isIdentical = emojiSetsRenderIdentically(
 					[55358, 56760, 9792, 65039],
 					[55358, 56760, 8203, 9792, 65039]
 				);
+
 				return ! isIdentical;
 		}
 
 		return false;
 	}
 
+	/**
+	 * Adds a script to the head of the document.
+	 *
+	 * @ignore
+	 *
+	 * @since 4.2.0
+	 *
+	 * @param {Object} src The url where the script is located.
+	 * @return {void}
+	 */
 	function addScript( src ) {
 		var script = document.createElement( 'script' );
 
@@ -119,6 +141,10 @@
 		everythingExceptFlag: true
 	};
 
+	/*
+	 * Tests the browser support for flag emojis and other emojis, and adjusts the
+	 * support settings accordingly.
+	 */
 	for( ii = 0; ii < tests.length; ii++ ) {
 		settings.supports[ tests[ ii ] ] = browserSupportsEmoji( tests[ ii ] );
 
@@ -131,16 +157,21 @@
 
 	settings.supports.everythingExceptFlag = settings.supports.everythingExceptFlag && ! settings.supports.flag;
 
+	// Sets DOMReady to false and assigns a ready function to settings.
 	settings.DOMReady = false;
 	settings.readyCallback = function() {
 		settings.DOMReady = true;
 	};
 
+	// When the browser can not render everything we need to load a polyfill.
 	if ( ! settings.supports.everything ) {
 		ready = function() {
 			settings.readyCallback();
 		};
 
+		/*
+		 * Cross-browser version of adding a dom ready event.
+		 */
 		if ( document.addEventListener ) {
 			document.addEventListener( 'DOMContentLoaded', ready, false );
 			window.addEventListener( 'load', ready, false );

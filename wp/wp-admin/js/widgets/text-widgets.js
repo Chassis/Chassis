@@ -1,5 +1,13 @@
+/**
+ * @output wp-admin/js/widgets/text-widgets.js
+ */
+
 /* global tinymce, switchEditors */
 /* eslint consistent-this: [ "error", "control" ] */
+
+/**
+ * @namespace wp.textWidgets
+ */
 wp.textWidgets = ( function( $ ) {
 	'use strict';
 
@@ -8,14 +16,7 @@ wp.textWidgets = ( function( $ ) {
 		idBases: [ 'text' ]
 	};
 
-	/**
-	 * Text widget control.
-	 *
-	 * @class TextWidgetControl
-	 * @constructor
-	 * @abstract
-	 */
-	component.TextWidgetControl = Backbone.View.extend({
+	component.TextWidgetControl = Backbone.View.extend(/** @lends wp.textWidgets.TextWidgetControl.prototype */{
 
 		/**
 		 * View events.
@@ -25,11 +26,16 @@ wp.textWidgets = ( function( $ ) {
 		events: {},
 
 		/**
-		 * Initialize.
+		 * Text widget control.
+		 *
+		 * @constructs wp.textWidgets.TextWidgetControl
+		 * @augments   Backbone.View
+		 * @abstract
 		 *
 		 * @param {Object} options - Options.
 		 * @param {jQuery} options.el - Control field container element.
 		 * @param {jQuery} options.syncContainer - Container element where fields are synced for the server.
+		 *
 		 * @returns {void}
 		 */
 		initialize: function initialize( options ) {
@@ -357,6 +363,8 @@ wp.textWidgets = ( function( $ ) {
 	/**
 	 * Mapping of widget ID to instances of TextWidgetControl subclasses.
 	 *
+	 * @memberOf wp.textWidgets
+	 *
 	 * @type {Object.<string, wp.textWidgets.TextWidgetControl>}
 	 */
 	component.widgetControls = {};
@@ -364,8 +372,11 @@ wp.textWidgets = ( function( $ ) {
 	/**
 	 * Handle widget being added or initialized for the first time at the widget-added event.
 	 *
+	 * @memberOf wp.textWidgets
+	 *
 	 * @param {jQuery.Event} event - Event.
 	 * @param {jQuery}       widgetContainer - Widget container element.
+	 *
 	 * @returns {void}
 	 */
 	component.handleWidgetAdded = function handleWidgetAdded( event, widgetContainer ) {
@@ -429,6 +440,8 @@ wp.textWidgets = ( function( $ ) {
 	/**
 	 * Setup widget in accessibility mode.
 	 *
+	 * @memberOf wp.textWidgets
+	 *
 	 * @returns {void}
 	 */
 	component.setupAccessibleMode = function setupAccessibleMode() {
@@ -467,6 +480,8 @@ wp.textWidgets = ( function( $ ) {
 	 * the widgets admin screen and also via the 'widget-synced' event when making
 	 * a change to a widget in the customizer.
 	 *
+	 * @memberOf wp.textWidgets
+	 *
 	 * @param {jQuery.Event} event - Event.
 	 * @param {jQuery}       widgetContainer - Widget container element.
 	 * @returns {void}
@@ -495,6 +510,8 @@ wp.textWidgets = ( function( $ ) {
 	 * This function exists to prevent the JS file from having to boot itself.
 	 * When WordPress enqueues this script, it should have an inline script
 	 * attached which calls wp.textWidgets.init().
+	 *
+	 * @memberOf wp.textWidgets
 	 *
 	 * @returns {void}
 	 */

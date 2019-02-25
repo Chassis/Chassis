@@ -15,8 +15,28 @@
  * @see WP_Customize_Image_Control
  */
 class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
+	/**
+	 * Customize control type.
+	 *
+	 * @since 4.2.0
+	 * @var string
+	 */
 	public $type = 'header';
+
+	/**
+	 * Uploaded header images.
+	 *
+	 * @since 3.9.0
+	 * @var string
+	 */
 	public $uploaded_headers;
+
+	/**
+	 * Default header images.
+	 *
+	 * @since 3.9.0
+	 * @var string
+	 */
 	public $default_headers;
 
 	/**
@@ -27,16 +47,20 @@ class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
 	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
 	 */
 	public function __construct( $manager ) {
-		parent::__construct( $manager, 'header_image', array(
-			'label'    => __( 'Header Image' ),
-			'settings' => array(
-				'default' => 'header_image',
-				'data'    => 'header_image_data',
-			),
-			'section'  => 'header_image',
-			'removed'  => 'remove-header',
-			'get_url'  => 'get_header_image',
-		) );
+		parent::__construct(
+			$manager,
+			'header_image',
+			array(
+				'label'    => __( 'Header Image' ),
+				'settings' => array(
+					'default' => 'header_image',
+					'data'    => 'header_image_data',
+				),
+				'section'  => 'header_image',
+				'removed'  => 'remove-header',
+				'get_url'  => 'get_header_image',
+			)
+		);
 
 	}
 
@@ -48,27 +72,30 @@ class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
 
 		$this->prepare_control();
 
-		wp_localize_script( 'customize-views', '_wpCustomizeHeader', array(
-			'data' => array(
-				'width' => absint( get_theme_support( 'custom-header', 'width' ) ),
-				'height' => absint( get_theme_support( 'custom-header', 'height' ) ),
-				'flex-width' => absint( get_theme_support( 'custom-header', 'flex-width' ) ),
-				'flex-height' => absint( get_theme_support( 'custom-header', 'flex-height' ) ),
-				'currentImgSrc' => $this->get_current_image_src(),
-			),
-			'nonces' => array(
-				'add' => wp_create_nonce( 'header-add' ),
-				'remove' => wp_create_nonce( 'header-remove' ),
-			),
-			'uploads' => $this->uploaded_headers,
-			'defaults' => $this->default_headers
-		) );
+		wp_localize_script(
+			'customize-views',
+			'_wpCustomizeHeader',
+			array(
+				'data'     => array(
+					'width'         => absint( get_theme_support( 'custom-header', 'width' ) ),
+					'height'        => absint( get_theme_support( 'custom-header', 'height' ) ),
+					'flex-width'    => absint( get_theme_support( 'custom-header', 'flex-width' ) ),
+					'flex-height'   => absint( get_theme_support( 'custom-header', 'flex-height' ) ),
+					'currentImgSrc' => $this->get_current_image_src(),
+				),
+				'nonces'   => array(
+					'add'    => wp_create_nonce( 'header-add' ),
+					'remove' => wp_create_nonce( 'header-remove' ),
+				),
+				'uploads'  => $this->uploaded_headers,
+				'defaults' => $this->default_headers,
+			)
+		);
 
 		parent::enqueue();
 	}
 
 	/**
-	 *
 	 * @global Custom_Image_Header $custom_image_header
 	 */
 	public function prepare_control() {
@@ -81,7 +108,7 @@ class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
 
 		// Process default headers and uploaded headers.
 		$custom_image_header->process_default_headers();
-		$this->default_headers = $custom_image_header->get_default_header_images();
+		$this->default_headers  = $custom_image_header->get_default_header_images();
 		$this->uploaded_headers = $custom_image_header->get_uploaded_header_images();
 	}
 
@@ -160,31 +187,36 @@ class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
 	 */
 	public function render_content() {
 		$visibility = $this->get_current_image_src() ? '' : ' style="display:none" ';
-		$width = absint( get_theme_support( 'custom-header', 'width' ) );
-		$height = absint( get_theme_support( 'custom-header', 'height' ) );
+		$width      = absint( get_theme_support( 'custom-header', 'width' ) );
+		$height     = absint( get_theme_support( 'custom-header', 'height' ) );
 		?>
 		<div class="customize-control-content">
-			<?php if ( current_theme_supports( 'custom-header', 'video' ) ) {
+			<?php
+			if ( current_theme_supports( 'custom-header', 'video' ) ) {
 				echo '<span class="customize-control-title">' . $this->label . '</span>';
-			} ?>
+			}
+			?>
 			<div class="customize-control-notifications-container"></div>
 			<p class="customizer-section-intro customize-control-description">
 				<?php
 				if ( current_theme_supports( 'custom-header', 'video' ) ) {
 					_e( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image that matches the size of your video &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' );
 				} elseif ( $width && $height ) {
-					/* translators: %s: header size in pixels */
-					printf( __( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image with a header size of %s pixels &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' ),
+					printf(
+						/* translators: %s: header size in pixels */
+						__( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image with a header size of %s pixels &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' ),
 						sprintf( '<strong>%s &times; %s</strong>', $width, $height )
 					);
 				} elseif ( $width ) {
-					/* translators: %s: header width in pixels */
-					printf( __( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image with a header width of %s pixels &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' ),
+					printf(
+						/* translators: %s: header width in pixels */
+						__( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image with a header width of %s pixels &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' ),
 						sprintf( '<strong>%s</strong>', $width )
 					);
 				} else {
-					/* translators: %s: header height in pixels */
-					printf( __( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image with a header height of %s pixels &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' ),
+					printf(
+						/* translators: %s: header height in pixels */
+						__( 'Click &#8220;Add new image&#8221; to upload an image file from your computer. Your theme works best with an image with a header height of %s pixels &#8212; you&#8217;ll be able to crop your image once you upload it for a perfect fit.' ),
 						sprintf( '<strong>%s</strong>', $height )
 					);
 				}
@@ -200,7 +232,7 @@ class WP_Customize_Header_Image_Control extends WP_Customize_Image_Control {
 				</div>
 			</div>
 			<div class="actions">
-				<?php if ( current_user_can( 'upload_files' ) ): ?>
+				<?php if ( current_user_can( 'upload_files' ) ) : ?>
 				<button type="button"<?php echo $visibility; ?> class="button remove" aria-label="<?php esc_attr_e( 'Hide header image' ); ?>"><?php _e( 'Hide image' ); ?></button>
 				<button type="button" class="button new" id="header_image-button" aria-label="<?php esc_attr_e( 'Add new header image' ); ?>"><?php _e( 'Add new image' ); ?></button>
 				<?php endif; ?>

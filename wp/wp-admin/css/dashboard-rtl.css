@@ -141,7 +141,6 @@
 
 .welcome-panel .welcome-panel-close {
 	position: absolute;
-	z-index: 10;
 	top: 10px;
 	left: 10px;
 	padding: 10px 21px 10px 15px;
@@ -166,7 +165,7 @@
 }
 
 .welcome-panel-content {
-	margin: 0 13px;
+	margin-right: 13px;
 	max-width: 1500px;
 }
 
@@ -203,7 +202,7 @@
 }
 
 .welcome-panel .welcome-panel-column ul {
-		margin: 0.8em 0 1em 1em;
+	margin: 0.8em 0 1em 1em;
 }
 
 .welcome-panel .welcome-panel-column li {
@@ -243,6 +242,11 @@
 
 .welcome-panel .welcome-add-page:before {
 	content: "\f132";
+	top: -1px;
+}
+
+.welcome-panel .welcome-setup-home:before {
+	content: "\f102";
 	top: -1px;
 }
 
@@ -390,7 +394,7 @@
 .community-events li {
 	margin: 0;
 	padding: 8px 12px;
-	color: #72777c;
+	color: #32373c;
 }
 .community-events li:first-child {
 	border-top: 1px solid #eee;
@@ -1117,6 +1121,28 @@ a.rsswidget {
 	font-size: 16px;
 }
 
+/* PHP Nag */
+#dashboard_php_nag .dashicons-warning {
+	color: #ffb900;
+	padding-left: 6px;
+}
+
+#dashboard_php_nag.php-insecure .dashicons-warning {
+	color: #df3232;
+}
+
+#dashboard_php_nag p {
+	margin: 12px 0;
+}
+
+#dashboard_php_nag h3 {
+	font-weight: 600;
+}
+
+#dashboard_php_nag .button .dashicons-external {
+	line-height: 25px;
+}
+
 /* =Media Queries
 -------------------------------------------------------------- */
 
@@ -1224,9 +1250,10 @@ a.rsswidget {
 	.welcome-panel .welcome-panel-column ul {
 		margin: 0.4em 0 0;
 	}
+
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	#dashboard_recent_comments #the-comment-list .comment-item .avatar {
 		height: 30px;
 		width: 30px;

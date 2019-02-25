@@ -38,13 +38,17 @@ function _wp_scripts_maybe_doing_it_wrong( $function ) {
 		return;
 	}
 
-	_doing_it_wrong( $function, sprintf(
-		/* translators: 1: wp_enqueue_scripts, 2: admin_enqueue_scripts, 3: login_enqueue_scripts */
-		__( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
-		'<code>wp_enqueue_scripts</code>',
-		'<code>admin_enqueue_scripts</code>',
-		'<code>login_enqueue_scripts</code>'
-	), '3.3.0' );
+	_doing_it_wrong(
+		$function,
+		sprintf(
+			/* translators: 1: wp_enqueue_scripts, 2: admin_enqueue_scripts, 3: login_enqueue_scripts */
+			__( 'Scripts and styles should not be registered or enqueued until the %1$s, %2$s, or %3$s hooks.' ),
+			'<code>wp_enqueue_scripts</code>',
+			'<code>admin_enqueue_scripts</code>',
+			'<code>login_enqueue_scripts</code>'
+		),
+		'3.3.0'
+	);
 }
 
 /**
@@ -89,7 +93,7 @@ function wp_print_scripts( $handles = false ) {
 /**
  * Adds extra code to a registered script.
  *
- * Code will only be added if the script in already in the queue.
+ * Code will only be added if the script is already in the queue.
  * Accepts a string $data containing the Code. If two or more code blocks
  * are added to the same script $handle, they will be printed in the order
  * they were added, i.e. the latter added code can redeclare the previous.
@@ -108,12 +112,16 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
 	if ( false !== stripos( $data, '</script>' ) ) {
-		_doing_it_wrong( __FUNCTION__, sprintf(
-			/* translators: 1: <script>, 2: wp_add_inline_script() */
-			__( 'Do not pass %1$s tags to %2$s.' ),
-			'<code>&lt;script&gt;</code>',
-			'<code>wp_add_inline_script()</code>'
-		), '4.5.0' );
+		_doing_it_wrong(
+			__FUNCTION__,
+			sprintf(
+				/* translators: 1: <script>, 2: wp_add_inline_script() */
+				__( 'Do not pass %1$s tags to %2$s.' ),
+				'<code>&lt;script&gt;</code>',
+				'<code>wp_add_inline_script()</code>'
+			),
+			'4.5.0'
+		);
 		$data = trim( preg_replace( '#<script[^>]*>(.*)</script>#is', '$1', $data ) );
 	}
 
@@ -132,7 +140,8 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
  * @since 4.3.0 A return value was added.
  *
  * @param string           $handle    Name of the script. Should be unique.
- * @param string           $src       Full URL of the script, or path of the script relative to the WordPress root directory.
+ * @param string|bool      $src       Full URL of the script, or path of the script relative to the WordPress root directory.
+ *                                    If source is set to false, script is an alias of other scripts it depends on.
  * @param array            $deps      Optional. An array of registered script handles this script depends on. Default empty array.
  * @param string|bool|null $ver       Optional. String specifying script version number, if it has one, which is added to the URL
  *                                    as a query string for cache busting purposes. If version is set to false, a version
@@ -167,7 +176,6 @@ function wp_register_script( $handle, $src, $deps = array(), $ver = false, $in_f
  *         ...
  *     }
  *
- *
  * @see WP_Dependencies::localize()
  * @link https://core.trac.wordpress.org/ticket/11520
  * @global WP_Scripts $wp_scripts The WP_Scripts object for printing scripts.
@@ -201,14 +209,14 @@ function wp_localize_script( $handle, $object_name, $l10n ) {
  * @global WP_Scripts $wp_scripts The WP_Scripts object for printing scripts.
  *
  * @since 5.0.0
+ * @since 5.1.0 The `$domain` parameter was made optional.
  *
  * @param string $handle Script handle the textdomain will be attached to.
- * @param string $domain The textdomain.
+ * @param string $domain Optional. Text domain. Default 'default'.
  * @param string $path   Optional. The full file path to the directory containing translation files.
- *
- * @return bool True if the textdomain was successfully localized, false otherwise.
+ * @return bool True if the text domain was successfully localized, false otherwise.
  */
-function wp_set_script_translations( $handle, $domain, $path = null ) {
+function wp_set_script_translations( $handle, $domain = 'default', $path = null ) {
 	global $wp_scripts;
 	if ( ! ( $wp_scripts instanceof WP_Scripts ) ) {
 		_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
@@ -242,12 +250,31 @@ function wp_deregister_script( $handle ) {
 		( 'wp-login.php' === $GLOBALS['pagenow'] && 'login_enqueue_scripts' !== $current_filter )
 	) {
 		$no = array(
-			'jquery', 'jquery-core', 'jquery-migrate', 'jquery-ui-core', 'jquery-ui-accordion',
-			'jquery-ui-autocomplete', 'jquery-ui-button', 'jquery-ui-datepicker', 'jquery-ui-dialog',
-			'jquery-ui-draggable', 'jquery-ui-droppable', 'jquery-ui-menu', 'jquery-ui-mouse',
-			'jquery-ui-position', 'jquery-ui-progressbar', 'jquery-ui-resizable', 'jquery-ui-selectable',
-			'jquery-ui-slider', 'jquery-ui-sortable', 'jquery-ui-spinner', 'jquery-ui-tabs',
-			'jquery-ui-tooltip', 'jquery-ui-widget', 'underscore', 'backbone',
+			'jquery',
+			'jquery-core',
+			'jquery-migrate',
+			'jquery-ui-core',
+			'jquery-ui-accordion',
+			'jquery-ui-autocomplete',
+			'jquery-ui-button',
+			'jquery-ui-datepicker',
+			'jquery-ui-dialog',
+			'jquery-ui-draggable',
+			'jquery-ui-droppable',
+			'jquery-ui-menu',
+			'jquery-ui-mouse',
+			'jquery-ui-position',
+			'jquery-ui-progressbar',
+			'jquery-ui-resizable',
+			'jquery-ui-selectable',
+			'jquery-ui-slider',
+			'jquery-ui-sortable',
+			'jquery-ui-spinner',
+			'jquery-ui-tabs',
+			'jquery-ui-tooltip',
+			'jquery-ui-widget',
+			'underscore',
+			'backbone',
 		);
 
 		if ( in_array( $handle, $no ) ) {
@@ -292,7 +319,6 @@ function wp_enqueue_script( $handle, $src = '', $deps = array(), $ver = false, $
 
 	_wp_scripts_maybe_doing_it_wrong( __FUNCTION__ );
 
-
 	if ( $src || $in_footer ) {
 		$_handle = explode( '?', $handle );
 
@@ -325,11 +351,11 @@ function wp_dequeue_script( $handle ) {
 
 /**
  * Determines whether a script has been added to the queue.
- * 
+ *
  * For more information on this and similar theme functions, check out
- * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/ 
+ * the {@link https://developer.wordpress.org/themes/basics/conditional-tags/
  * Conditional Tags} article in the Theme Developer Handbook.
- *  
+ *
  * @since 2.8.0
  * @since 3.5.0 'enqueued' added as an alias of the 'queue' list.
  *
@@ -354,13 +380,13 @@ function wp_script_is( $handle, $list = 'enqueued' ) {
  *
  * @since 4.2.0
  *
- * @see WP_Dependency::add_data()
+ * @see WP_Dependencies::add_data()
  *
  * @param string $handle Name of the script.
  * @param string $key    Name of data point for which we're storing a value.
  * @param mixed  $value  String containing the data to be added.
  * @return bool True on success, false on failure.
  */
-function wp_script_add_data( $handle, $key, $value ){
+function wp_script_add_data( $handle, $key, $value ) {
 	return wp_scripts()->add_data( $handle, $key, $value );
 }

@@ -152,9 +152,9 @@ function excerpt_remove_blocks( $content ) {
 	 * @param array $allowed_blocks The list of allowed blocks.
 	 */
 	$allowed_blocks = apply_filters( 'excerpt_allowed_blocks', $allowed_blocks );
-	$blocks = parse_blocks( $content );
-	$output = '';
-	 foreach ( $blocks as $block ) {
+	$blocks         = parse_blocks( $content );
+	$output         = '';
+	foreach ( $blocks as $block ) {
 		if ( in_array( $block['blockName'], $allowed_blocks, true ) ) {
 			$output .= render_block( $block );
 		}
@@ -174,6 +174,31 @@ function excerpt_remove_blocks( $content ) {
  */
 function render_block( $block ) {
 	global $post;
+
+	/**
+	 * Allows render_block() to be shortcircuited, by returning a non-null value.
+	 *
+	 * @since 5.1.0
+	 *
+	 * @param string $pre_render The pre-rendered content. Default null.
+	 * @param array  $block      The block being rendered.
+	 */
+	$pre_render = apply_filters( 'pre_render_block', null, $block );
+	if ( ! is_null( $pre_render ) ) {
+		return $pre_render;
+	}
+
+	$source_block = $block;
+
+	/**
+	 * Filters the block being rendered in render_block(), before it's processed.
+	 *
+	 * @since 5.1.0
+	 *
+	 * @param array $block        The block being rendered.
+	 * @param array $source_block An un-modified copy of $block, as it appeared in the source content.
+	 */
+	$block = apply_filters( 'render_block_data', $block, $source_block );
 
 	$block_type    = WP_Block_Type_Registry::get_instance()->get_registered( $block['blockName'] );
 	$is_dynamic    = $block['blockName'] && null !== $block_type && $block_type->is_dynamic();
@@ -266,7 +291,6 @@ function do_blocks( $content ) {
  * @return string The unmodified content.
  */
 function _restore_wpautop_hook( $content ) {
-	global $wp_filter;
 	$current_priority = has_filter( 'the_content', '_restore_wpautop_hook' );
 
 	add_filter( 'the_content', 'wpautop', $current_priority - 1 );

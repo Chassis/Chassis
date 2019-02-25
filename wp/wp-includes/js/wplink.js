@@ -1,7 +1,11 @@
-var wpLink;
+/**
+ * @output wp-includes/js/wplink.js
+ */
+
+ /* global wpLink */
 
 ( function( $, wpLinkL10n, wp ) {
-	var editor, searchTimer, River, Query, correctedURL, linkNode,
+	var editor, searchTimer, River, Query, correctedURL,
 		emailRegexp = /^[A-Z0-9._%+-]+@[A-Z0-9.-]+\.[A-Z]{2,63}$/i,
 		urlRegexp = /^(https?|ftp):\/\/[A-Z0-9.-]+\.[A-Z]{2,63}[^ "]*$/i,
 		inputs = {},
@@ -9,10 +13,14 @@ var wpLink;
 		isTouch = ( 'ontouchend' in document );
 
 	function getLink() {
-		return linkNode || editor.dom.getParent( editor.selection.getNode(), 'a[href]' );
+		if ( editor ) {
+			return editor.$( 'a[data-wplink-edit="true"]' );
+		}
+
+		return null;
 	}
 
-	wpLink = {
+	window.wpLink = {
 		timeToTriggerRiver: 150,
 		minRiverAJAXDuration: 200,
 		riverBottomThreshold: 5,
@@ -93,13 +101,12 @@ var wpLink;
 			}
 		},
 
-		open: function( editorId, url, text, node ) {
+		open: function( editorId, url, text ) {
 			var ed,
 				$body = $( document.body );
 
 			$body.addClass( 'modal-open' );
 			wpLink.modalOpen = true;
-			linkNode = node;
 
 			wpLink.range = null;
 
@@ -201,10 +208,10 @@ var wpLink;
 				return false;
 			}
 
-			if ( linkNode ) {
-				nodes = linkNode.childNodes;
+			if ( linkNode.length ) {
+				nodes = linkNode[0].childNodes;
 
-				if ( nodes.length === 0 ) {
+				if ( ! nodes || ! nodes.length ) {
 					return false;
 				}
 
@@ -225,9 +232,9 @@ var wpLink;
 				linkNode = getLink(),
 				onlyText = this.hasSelectedText( linkNode );
 
-			if ( linkNode ) {
-				linkText = linkNode.textContent || linkNode.innerText;
-				href = editor.dom.getAttrib( linkNode, 'href' );
+			if ( linkNode.length ) {
+				linkText = linkNode.text();
+				href = linkNode.attr( 'href' );
 
 				if ( ! $.trim( linkText ) ) {
 					linkText = text || '';
@@ -239,7 +246,7 @@ var wpLink;
 
 				if ( href !== '_wp_link_placeholder' ) {
 					inputs.url.val( href );
-					inputs.openInNewTab.prop( 'checked', '_blank' === editor.dom.getAttrib( linkNode, 'target' ) );
+					inputs.openInNewTab.prop( 'checked', '_blank' === linkNode.attr( 'target' ) );
 					inputs.submit.val( wpLinkL10n.update );
 				} else {
 					this.setDefaultValues( linkText );
@@ -395,7 +402,7 @@ var wpLink;
 
 		mceUpdate: function() {
 			var attrs = wpLink.getAttrs(),
-				$link, text, hasText, $mceCaret;
+				$link, text, hasText;
 
 			var parser = document.createElement( 'a' );
 			parser.href = attrs.href;
@@ -410,7 +417,7 @@ var wpLink;
 				return;
 			}
 
-			$link = editor.$( getLink() );
+			$link = getLink();
 
 			editor.undoManager.transact( function() {
 				if ( ! $link.length ) {
@@ -433,7 +440,7 @@ var wpLink;
 					}
 
 					attrs['data-wplink-edit'] = null;
-					attrs['data-mce-href'] = null; // attrs.href
+					attrs['data-mce-href'] = attrs.href;
 					$link.attr( attrs );
 				}
 			} );
@@ -442,14 +449,7 @@ var wpLink;
 			editor.focus();
 
 			if ( $link.length ) {
-				$mceCaret = $link.parent( '#_mce_caret' );
-
-				if ( $mceCaret.length ) {
-					$mceCaret.before( $link.removeAttr( 'data-mce-bogus' ) );
-				}
-
 				editor.selection.select( $link[0] );
-				editor.selection.collapse();
 
 				if ( editor.plugins.wplink ) {
 					editor.plugins.wplink.checkLink( $link[0] );
@@ -464,6 +464,10 @@ var wpLink;
 
 		updateFields: function( e, li ) {
 			inputs.url.val( li.children( '.item-permalink' ).val() );
+
+			if ( inputs.wrap.hasClass( 'has-text-field' ) && ! inputs.text.val() ) {
+				inputs.text.val( li.children( '.item-title' ).text() );
+			}
 		},
 
 		getUrlFromSelection: function( selection ) {

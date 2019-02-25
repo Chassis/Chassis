@@ -300,29 +300,29 @@ abstract class WP_REST_Controller {
 	 */
 	public function get_collection_params() {
 		return array(
-			'context'                => $this->get_context_param(),
-			'page'                   => array(
-				'description'        => __( 'Current page of the collection.' ),
-				'type'               => 'integer',
-				'default'            => 1,
-				'sanitize_callback'  => 'absint',
-				'validate_callback'  => 'rest_validate_request_arg',
-				'minimum'            => 1,
+			'context'  => $this->get_context_param(),
+			'page'     => array(
+				'description'       => __( 'Current page of the collection.' ),
+				'type'              => 'integer',
+				'default'           => 1,
+				'sanitize_callback' => 'absint',
+				'validate_callback' => 'rest_validate_request_arg',
+				'minimum'           => 1,
 			),
-			'per_page'               => array(
-				'description'        => __( 'Maximum number of items to be returned in result set.' ),
-				'type'               => 'integer',
-				'default'            => 10,
-				'minimum'            => 1,
-				'maximum'            => 100,
-				'sanitize_callback'  => 'absint',
-				'validate_callback'  => 'rest_validate_request_arg',
+			'per_page' => array(
+				'description'       => __( 'Maximum number of items to be returned in result set.' ),
+				'type'              => 'integer',
+				'default'           => 10,
+				'minimum'           => 1,
+				'maximum'           => 100,
+				'sanitize_callback' => 'absint',
+				'validate_callback' => 'rest_validate_request_arg',
 			),
-			'search'                 => array(
-				'description'        => __( 'Limit results to those matching a string.' ),
-				'type'               => 'string',
-				'sanitize_callback'  => 'sanitize_text_field',
-				'validate_callback'  => 'rest_validate_request_arg',
+			'search'   => array(
+				'description'       => __( 'Limit results to those matching a string.' ),
+				'type'              => 'string',
+				'sanitize_callback' => 'sanitize_text_field',
+				'validate_callback' => 'rest_validate_request_arg',
 			),
 		);
 	}
@@ -339,10 +339,10 @@ abstract class WP_REST_Controller {
 	 */
 	public function get_context_param( $args = array() ) {
 		$param_details = array(
-			'description'        => __( 'Scope under which the request is made; determines fields present in response.' ),
-			'type'               => 'string',
-			'sanitize_callback'  => 'sanitize_key',
-			'validate_callback'  => 'rest_validate_request_arg',
+			'description'       => __( 'Scope under which the request is made; determines fields present in response.' ),
+			'type'              => 'string',
+			'sanitize_callback' => 'sanitize_key',
+			'validate_callback' => 'rest_validate_request_arg',
 		);
 
 		$schema = $this->get_item_schema();
@@ -532,7 +532,7 @@ abstract class WP_REST_Controller {
 		if ( ! isset( $request['_fields'] ) ) {
 			return $fields;
 		}
-		$requested_fields = is_array( $request['_fields'] ) ? $request['_fields'] : preg_split( '/[\s,]+/', $request['_fields'] );
+		$requested_fields = wp_parse_list( $request['_fields'] );
 		if ( 0 === count( $requested_fields ) ) {
 			return $fields;
 		}
@@ -596,7 +596,13 @@ abstract class WP_REST_Controller {
 
 				// Only use required / default from arg_options on CREATABLE endpoints.
 				if ( WP_REST_Server::CREATABLE !== $method ) {
-					$params['arg_options'] = array_diff_key( $params['arg_options'], array( 'required' => '', 'default' => '' ) );
+					$params['arg_options'] = array_diff_key(
+						$params['arg_options'],
+						array(
+							'required' => '',
+							'default'  => '',
+						)
+					);
 				}
 
 				$endpoint_args[ $field_id ] = array_merge( $endpoint_args[ $field_id ], $params['arg_options'] );

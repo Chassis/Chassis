@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["deprecated"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 267);
+/******/ 	return __webpack_require__(__webpack_require__.s = 268);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -94,7 +94,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["deprecated"] =
 
 /***/ }),
 
-/***/ 267:
+/***/ 268:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

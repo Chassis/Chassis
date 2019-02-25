@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["reduxRoutine"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 322);
+/******/ 	return __webpack_require__(__webpack_require__.s = 323);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -275,15 +275,15 @@ Object.keys(_helpers).forEach(function (key) {
   });
 });
 
-var _create = __webpack_require__(292);
+var _create = __webpack_require__(293);
 
 var _create2 = _interopRequireDefault(_create);
 
-var _async = __webpack_require__(294);
+var _async = __webpack_require__(295);
 
 var _async2 = _interopRequireDefault(_async);
 
-var _wrap = __webpack_require__(296);
+var _wrap = __webpack_require__(297);
 
 var _wrap2 = _interopRequireDefault(_wrap);
 
@@ -325,7 +325,7 @@ function _typeof(obj) {
 
 /***/ }),
 
-/***/ 292:
+/***/ 293:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -335,7 +335,7 @@ Object.defineProperty(exports, "__esModule", {
   value: true
 });
 
-var _builtin = __webpack_require__(293);
+var _builtin = __webpack_require__(294);
 
 var _builtin2 = _interopRequireDefault(_builtin);
 
@@ -411,7 +411,7 @@ exports.default = create;
 
 /***/ }),
 
-/***/ 293:
+/***/ 294:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -512,7 +512,7 @@ exports.default = [error, iterator, array, object, any];
 
 /***/ }),
 
-/***/ 294:
+/***/ 295:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -529,7 +529,7 @@ var _is2 = _interopRequireDefault(_is);
 
 var _helpers = __webpack_require__(177);
 
-var _dispatcher = __webpack_require__(295);
+var _dispatcher = __webpack_require__(296);
 
 var _dispatcher2 = _interopRequireDefault(_dispatcher);
 
@@ -634,7 +634,7 @@ exports.default = [promise, fork, join, race, subscribe];
 
 /***/ }),
 
-/***/ 295:
+/***/ 296:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -667,7 +667,7 @@ exports.default = createDispatcher;
 
 /***/ }),
 
-/***/ 296:
+/***/ 297:
 /***/ (function(module, exports, __webpack_require__) {
 
 "use strict";
@@ -710,7 +710,7 @@ exports.default = [call, cps];
 
 /***/ }),
 
-/***/ 322:
+/***/ 323:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

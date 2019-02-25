@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["compose"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 313);
+/******/ 	return __webpack_require__(__webpack_require__.s = 314);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -244,7 +244,7 @@ function _assertThisInitialized(self) {
 
 /***/ }),
 
-/***/ 313:
+/***/ 314:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
