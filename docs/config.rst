@@ -274,7 +274,7 @@ Paths
 
 **Key**: ``paths``
 
-If you're transplanting Chassis into an existing project, you can manually set some paths manually.
+If you're transplanting Chassis into an existing project, you can manually set some paths.
 These can be set to absolute paths, or relative paths.
 
 .. code-block:: yaml
@@ -284,7 +284,14 @@ These can be set to absolute paths, or relative paths.
       wp: wordpress
       content: wordpress/wp-content
 
-Any time you make a change to the paths you will need to run ``vagrant reload`` for those changes to take effect.
+There are a few important things to note about ``paths``:
+
+1. Paths must be set in ``config.local.yaml`` in the same directory as your ``Vagrantfile``.
+2. Path's can't be used in ``content/config.yaml``.
+3. ``base`` is relative to ``Vagrantfile``.
+4. ``content`` and ``wp`` are relative to ``base``.
+5. When used, the internal mount point is changed to ``/chassis`` instead of ``/vagrant``.
+6. Any time you make a change to the paths you will need to run ``vagrant reload`` for those changes to take effect.
 
 In case you have the Chassis folder nested within the project rather than wrapping it, eg: ``base : ..``, you will need to navigate to Chassis folder in order to carry out any Vagrant commands, like ``vagrant up``/``vagrant halt`` and ``vagrant ssh``, because they only work from the folder that has a ``VagrantFile``.
 There is a workaround for that, which is to use the ``VAGRANT_CWD`` variable, eg: ``VAGRANT_CWD=chassis vagrant ssh``. And you can automate this by using dotenv files with ``direnv``_. Install it and from the project directory execute: ``direnv allow .; echo 'export VAGRANT_CWD=chassis' > .envrc;`` replacing ``chassis`` with your relative Chassis directory name.
@@ -303,6 +310,8 @@ Plugins
 If you're using plugins from the WordPress.org repository you can add them in a list using the plugins slug.
 These will be downloaded, installed and activated for you.
 
+Alternatively, if you want to install a plugin from a Git repository you can use a URL to a zip file of your plugin. e.g. ``https://github.com/humanmade/S3-Uploads/archive/master.zip``
+
 To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Query Monitor is https://wordpress.org/plugins/query-monitor/ which makes the slug ``query-monitor``.
 
 .. code-block:: yaml
@@ -310,6 +319,7 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
    plugins:
       - query-monitor
       - user-switching
+      - https://github.com/humanmade/S3-Uploads/archive/master.zip
 
 Themes
 ------
@@ -319,6 +329,8 @@ Themes
 If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
 These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
 
+Alternatively, if you want to install a theme from a Git repository you can use a URL to a zip file of your theme. e.g. ``https://github.com/humanmade/S3-Uploads/archive/master.zip``
+
 To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slug ``twentysixteen``.
 
 .. code-block:: yaml
@@ -326,9 +338,22 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
    themes:
       - twentyfifteen
       - twentysixteen
+      - https://github.com/WordPress/twentyseventeen/archive/master.zip
 
 
 .. _extension-format-ref:
+
+Site Title
+----------
+
+**Key**: ``site``
+
+You can customize the title Chassis uses when installing your local WordPress site.
+
+.. code-block:: yaml
+
+   site:
+      name: My Local WordPress Site
 
 Extensions
 ----------
