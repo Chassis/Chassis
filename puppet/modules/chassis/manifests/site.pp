@@ -11,6 +11,7 @@ define chassis::site (
 	$admin_user     = 'admin',
 	$admin_email    = 'admin@example.com',
 	$admin_password = 'password',
+	$sitename       = 'Chassis Site',
 ) {
 	$extra_hosts = join($hosts, ' ')
 	$server_name = rstrip("${name} ${extra_hosts}")
@@ -42,7 +43,7 @@ define chassis::site (
 
 	wp::site { $wpdir:
 		url            => "http://${name}/",
-		name           => 'Vagrant Site',
+		sitename       => $sitename,
 		require        => Mysql::Db[$database],
 		admin_user     => $admin_user,
 		admin_email    => $admin_email,

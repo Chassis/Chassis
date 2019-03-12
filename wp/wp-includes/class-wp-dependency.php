@@ -68,14 +68,31 @@ class _WP_Dependency {
 	public $extra = array();
 
 	/**
+	 * Translation textdomain set for this dependency.
+	 *
+	 * @since 5.0.0
+	 * @var string
+	 */
+	public $textdomain;
+
+	/**
+	 * Translation path set for this dependency.
+	 *
+	 * @since 5.0.0
+	 * @var string
+	 */
+	public $translations_path;
+
+	/**
 	 * Setup dependencies.
 	 *
 	 * @since 2.6.0
 	 */
 	public function __construct() {
 		@list( $this->handle, $this->src, $this->deps, $this->ver, $this->args ) = func_get_args();
-		if ( ! is_array($this->deps) )
+		if ( ! is_array( $this->deps ) ) {
 			$this->deps = array();
+		}
 	}
 
 	/**
@@ -88,10 +105,29 @@ class _WP_Dependency {
 	 * @return bool False if not scalar, true otherwise.
 	 */
 	public function add_data( $name, $data ) {
-		if ( !is_scalar($name) )
+		if ( ! is_scalar( $name ) ) {
 			return false;
-		$this->extra[$name] = $data;
+		}
+		$this->extra[ $name ] = $data;
 		return true;
 	}
 
+	/**
+	 * Sets the translation domain for this dependency.
+	 *
+	 * @since 5.0.0
+	 *
+	 * @param string $domain The translation textdomain.
+	 * @param string $path   Optional. The full file path to the directory containing translation files.
+	 *
+	 * @return bool False if $domain is not a string, true otherwise.
+	 */
+	public function set_translations( $domain, $path = null ) {
+		if ( ! is_string( $domain ) ) {
+			return false;
+		}
+		$this->textdomain        = $domain;
+		$this->translations_path = $path;
+		return true;
+	}
 }

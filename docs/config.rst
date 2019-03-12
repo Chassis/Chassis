@@ -274,7 +274,7 @@ Paths
 
 **Key**: ``paths``
 
-If you're transplanting Chassis into an existing project, you can manually set some paths manually.
+If you're transplanting Chassis into an existing project, you can manually set some paths.
 These can be set to absolute paths, or relative paths.
 
 .. code-block:: yaml
@@ -310,6 +310,8 @@ Plugins
 If you're using plugins from the WordPress.org repository you can add them in a list using the plugins slug.
 These will be downloaded, installed and activated for you.
 
+Alternatively, if you want to install a plugin from a Git repository you can use a URL to a zip file of your plugin. e.g. ``https://github.com/humanmade/S3-Uploads/archive/master.zip``
+
 To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Query Monitor is https://wordpress.org/plugins/query-monitor/ which makes the slug ``query-monitor``.
 
 .. code-block:: yaml
@@ -317,6 +319,7 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
    plugins:
       - query-monitor
       - user-switching
+      - https://github.com/humanmade/S3-Uploads/archive/master.zip
 
 Themes
 ------
@@ -326,6 +329,8 @@ Themes
 If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
 These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
 
+Alternatively, if you want to install a theme from a Git repository you can use a URL to a zip file of your theme. e.g. ``https://github.com/humanmade/S3-Uploads/archive/master.zip``
+
 To find the slug just copy and paste the plugins slug from your browsers. For example the URL for Twenty Sixteen is https://wordpress.org/themes/twentysixteen/ which makes the slug ``twentysixteen``.
 
 .. code-block:: yaml
@@ -333,9 +338,22 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
    themes:
       - twentyfifteen
       - twentysixteen
+      - https://github.com/WordPress/twentyseventeen/archive/master.zip
 
 
 .. _extension-format-ref:
+
+Site Title
+----------
+
+**Key**: ``site``
+
+You can customize the title Chassis uses when installing your local WordPress site.
+
+.. code-block:: yaml
+
+   site:
+      name: My Local WordPress Site
 
 Extensions
 ----------

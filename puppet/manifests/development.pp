@@ -4,7 +4,14 @@ import "/vagrant/extensions/*/chassis.pp"
 $config = sz_load_config()
 $extensions = sz_extensions('/vagrant/extensions')
 $loadable_extensions = sz_extensions('/vagrant/extensions', 2)
+$global_extensions = chassis_get_global_extensions()
 $php_extensions = [ 'curl', 'gd', 'mysql' ]
+
+if $global_extensions {
+	class { $global_extensions:
+		config => $config,
+	}
+}
 
 if $loadable_extensions {
 	class { $loadable_extensions:
@@ -55,8 +62,10 @@ chassis::wp { $config['hosts'][0]:
 	admin_user        => $config[admin][user],
 	admin_email       => $config[admin][email],
 	admin_password    => $config[admin][password],
+	sitename          => $config[site][name],
 
 	extensions        => $extensions,
+	global_extensions => $global_extensions,
 
 	require => [
 		Class['chassis::php'],

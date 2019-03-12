@@ -7,11 +7,11 @@ module Chassis
 	@@extension_dir = File.join(@@dir, 'extensions')
 	@@extension_config = {}
 
-	def self.get_extension_config(extension)
+	def self.get_extension_config(extension, base_dir = @@extension_dir)
 		# Use cache if we can.
 		return @@extension_config[extension] if @@extension_config.key?(extension)
 
-		path = File.join(@@extension_dir, extension, 'chassis.yaml')
+		path = File.join(base_dir, extension, 'chassis.yaml')
 
 		begin
 			YAML.load_file(path)
@@ -21,14 +21,31 @@ module Chassis
 		end
 	end
 
-	def self.get_extensions(version = nil)
-		all = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
+	def self.get_extensions_for_dir(ext_dir, version = nil)
+		all = Dir.glob(ext_dir + '/*').map { |directory| File.basename( directory ) }
+
+		# Remove dummy _global if found
+		all.delete("_global")
 
 		return all if ! version
 
 		all.select { |extension|
-			config = get_extension_config(extension)
+			config = get_extension_config(extension, ext_dir)
 			config['version'] == version
+		}
+	end
+
+	def self.get_extensions(version = nil)
+		self.get_extensions_for_dir(@@extension_dir, version)
+	end
+
+	def self.get_global_extensions(version = nil)
+		global = self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
+
+		# Remove extensions which are installed locally
+		regular = self.get_extensions(version)
+		global.reject { |item|
+			regular.include?( item )
 		}
 	end
 
@@ -162,6 +179,15 @@ module Chassis
 		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
+	end
+
+	def self.make_relative(base, paths)
+		# Convert to relative from Vagrantfile
+		base = Pathname.new(base)
+		paths.map do |path|
+			pathname = Pathname.new(path)
+			pathname.relative_path_from(base).to_s
+		end
 	end
 
 	def self.update_core

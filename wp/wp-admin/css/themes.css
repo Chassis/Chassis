@@ -230,7 +230,6 @@ body.js .theme-browser.search-loading {
 .theme-browser .theme .theme-actions {
 	position: absolute;
 	top: 50%;
-	-webkit-transform: translateY(-50%);
 	transform: translateY(-50%);
 	right: 0;
 	padding: 10px 15px;
@@ -313,7 +312,7 @@ body.js .theme-browser.search-loading {
 	text-indent: -4px;
 	padding: 0;
 	text-shadow: none;
-	z-index:4;
+	z-index: 4;
 }
 
 .rtl .theme-browser .theme.add-new-theme span:after {
@@ -439,8 +438,8 @@ body.js .theme-browser.search-loading {
 .theme-overlay .theme-header .close:focus,
 .theme-overlay .theme-header .right:focus,
 .theme-overlay .theme-header .left:focus {
-    box-shadow: none;
-    outline: none;
+	box-shadow: none;
+	outline: none;
 }
 
 .theme-overlay .theme-header .left.disabled,
@@ -730,7 +729,7 @@ body.folded .theme-browser ~ .theme-overlay .theme-wrap {
 }
 
 .theme-overlay .parent-theme strong {
-	font-weight: 700;
+	font-weight: 600;
 }
 
 /**
@@ -1002,7 +1001,7 @@ body.folded .theme-browser ~ .theme-overlay .theme-wrap {
 }
 
 .theme-install.updated-message:before {
-	content: '';
+	content: "";
 }
 
 .theme-install-php .wp-filter {
@@ -1182,7 +1181,7 @@ div#custom-background-image img {
 	display: inline-block;
 	line-height: 1;
 	text-align: center;
-	transition: background-color .1s ease-in 0;
+	transition: background-color .1s ease-in;
 }
 
 .background-position-control .background-position-center-icon {
@@ -1239,7 +1238,6 @@ div#custom-background-image img {
 }
 
 .background-position-control .button-group:first-child > label:first-child .dashicons {
-	-webkit-transform: rotate( 45deg );
 	transform: rotate( 45deg );
 }
 
@@ -1248,7 +1246,6 @@ div#custom-background-image img {
 }
 
 .background-position-control .button-group:first-child > label:last-child .dashicons {
-	-webkit-transform: rotate( -45deg );
 	transform: rotate( -45deg );
 }
 
@@ -1257,7 +1254,6 @@ div#custom-background-image img {
 }
 
 .background-position-control .button-group:last-child > label:first-child .dashicons {
-	-webkit-transform: rotate( -45deg );
 	transform: rotate( -45deg );
 }
 
@@ -1266,7 +1262,6 @@ div#custom-background-image img {
 }
 
 .background-position-control .button-group:last-child > label:last-child .dashicons {
-	-webkit-transform: rotate( 45deg );
 	transform: rotate( 45deg );
 }
 
@@ -1532,8 +1527,8 @@ body.full-overlay-active {
 
 .wp-full-overlay .collapse-sidebar:hover .collapse-sidebar-arrow,
 .wp-full-overlay .collapse-sidebar:focus .collapse-sidebar-arrow {
-    box-shadow:
-    	0 0 0 1px #5b9dd9,
+	box-shadow:
+		0 0 0 1px #5b9dd9,
 		0 0 2px 1px rgba(30, 140, 190, .8);
 }
 
@@ -1563,12 +1558,10 @@ body.full-overlay-active {
 /* rtl:ignore */
 .wp-full-overlay.collapsed .collapse-sidebar-arrow:before,
 .rtl .wp-full-overlay .collapse-sidebar-arrow:before {
-	-webkit-transform: rotate(180.001deg);
-	transform: rotate(180.001deg); /* Firefox: promoting to its own layer to trigger anti-aliasing  */
+	transform: rotate(180.001deg); /* Firefox: promoting to its own layer to trigger anti-aliasing */
 }
 
 .rtl .wp-full-overlay.collapsed .collapse-sidebar-arrow:before {
-	-webkit-transform: none;
 	transform: none;
 }
 
@@ -1624,9 +1617,10 @@ body.full-overlay-active {
 	box-shadow: none;
 	border-top: 1px solid transparent;
 	border-bottom: 4px solid transparent;
-	transition: .15s color ease-in-out,
-	            .15s background-color ease-in-out,
-	            .15s border-color ease-in-out;
+	transition:
+		.15s color ease-in-out,
+		.15s background-color ease-in-out,
+		.15s border-color ease-in-out;
 }
 
 .wp-full-overlay-footer .devices button:focus {
@@ -1679,7 +1673,7 @@ body.full-overlay-active {
 	content: "\f470";
 }
 
-@media screen and (max-width:1024px) {
+@media screen and (max-width: 1024px) {
 	.wp-full-overlay-footer .devices {
 		display: none;
 	}
@@ -1854,7 +1848,6 @@ body.full-overlay-active {
 	top: 50%;
 	z-index: -1;
 	margin: -10px 0 0 -10px;
-	-webkit-transform: translateZ(0);
 	transform: translateZ(0);
 	background: transparent url(../images/spinner.gif) no-repeat center center;
 	background-size: 20px 20px;
@@ -1887,7 +1880,7 @@ body.full-overlay-active {
 	}
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	.available-theme .action-links .delete-theme {
 		float: none;
 		margin: 0;
