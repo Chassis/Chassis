@@ -12,7 +12,7 @@ module Chassis
 		if use_global_ext
 			global_ext_plugins = Dir.glob(global_ext_path + "/*/.vagrantplugins")
 			# If we have global extensions that have .vagrantplugins then combine the arrays
-			subplugins += global_ext_plugins unless global_ext_plugins.empty
+			subplugins += global_ext_plugins unless global_ext_plugins.empty?
 		end
 		subplugins.each {|pluginfile| load pluginfile}
 	end
