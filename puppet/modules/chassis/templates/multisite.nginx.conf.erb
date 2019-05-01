@@ -1,5 +1,6 @@
 server {
 	listen 80;
+	listen [::]:80;
 	server_name <%= @server_name %> *.ngrok.io;
 	root <%= @location %>;
 	client_max_body_size 50M;
