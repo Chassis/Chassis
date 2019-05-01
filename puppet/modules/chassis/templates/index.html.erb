@@ -1,0 +1,50 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Welcome to Chassis!</title>
+<style>
+	body {
+		width: 35em;
+		margin: 0 auto;
+		font-family: Tahoma, Verdana, Arial, sans-serif;
+	}
+</style>
+</head>
+<body>
+<h1>Welcome to Chassis!</h1>
+<p>If you see this page, the nginx web server is successfully installed and
+working. However, further configuration is required.</p>
+<h2>Troubleshooting</h2>
+
+<h3>Have you installed the prerequisite software?</h3>
+<p>Chassis requires you to have Vagrant, VirtualBox and Bonjour installed. Please refer to the <a href="http://docs.chassis.io/en/latest/quickstart/#prerequisites">documentation</a> for further installation instructions.<p>
+
+<h3>Have you tried updating Vagrant and VirtualBox?</h3>
+<p>Vagrant and VirtualBox frequently release updates to their software. Please check that you are running the latest versions of this software.</p>
+<p>To check the version of <a href="https://www.vagrantup.com/">Vagrant</a> you have installed you can run: <code>vagrant --version</code> in a Terminal window.<p>
+<p>To check the version of <a href="https://www.virtualbox.org/">VirtualBox</a> you are running you can run: <code>vboxmanage --version</code> in a Terminal window.</p>
+
+<h3>Have you entered the correct URL for the site?</h3>
+<p>Chassis gives you the ability to configure <a href="http://docs.chassis.io/en/latest/config/#custom-host-names">custom host names</a>. Please double check your configuration files to ensure you are loading the correct URL.</p>
+
+<h3>Have you changed internet connections?</h3>
+<p>Ocassionally there can be issues with domains not resolving because you've changed your internet connection. Try running <code>vagrant reload</code> in a Terminal to see if that resolves your issue.</p>
+
+<h3>Did you internet connection drop out during your initial provision?</h3>
+<p>Sometimes an initial provision will fail due to an Ubuntu mirror being down or dropping out during the initial provision. To resolve this please run <code>vagrant destroy</code> then <code>vagrant up</code>.<p>
+<p><strong>WARNING: This command will destroy your database content so please only run this command if you are confident you don't require any existing data.</strong><p>
+
+<h3>Have you tried provisioning Vagrant again?</h3>
+
+<p>There is a chance that a provision was not completed correctly. Please try running <code>vagrant provision</code> in a Terminal window to see if this resolves your issue.<p>
+
+<h3>Have you tried provisioning your Chassis box without an extensions?</h3>
+
+<p>Chassis gives you the ability to install <a href="http://docs.chassis.io/en/latest/config/#extensions">extensions</a> and sometimes there might be an issue with an extension that causes Chassis to fail during provisioning. Try deleting any extensions you have installed in <code>extensions</code> and also delete any extensions that you have specified in your <a href="http://docs.chassis.io/en/latest/config/">configuration files</a>. Once you have done this please run <code>vagrant provision</code> in a Terminal window.</p>
+
+<h3>Log an issue</h3>
+
+<p>If none of the troubleshooting tips resolve your problem please <a href="https://github.com/Chassis/Chassis/issues/new">open a new issue</a> in the Chassis GitHub repository and one of the Chassis maintainers or core contributors will try and assist you within 7 - 10 days.</p>
+
+</body>
+</html>

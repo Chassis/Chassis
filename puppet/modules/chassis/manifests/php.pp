@@ -28,16 +28,21 @@ class chassis::php (
 	$php_dir = "php/${short_ver}"
 
 	# Prepare our array of PHP packages
-	$packages = [
+	$common_packages = [
 		"${php_package}-fpm",
-		"${php_package}-cli",
 		"${php_package}-common",
 		"${php_package}-xml",
 		"${php_package}-mbstring",
 		"${php_package}-zip"
 	]
 
-	$prefixed_extensions = prefix($extensions, "${php_package}-")
+	if ! defined( Package["${php_package}-cli"] ) {
+		$packages = concat( $common_packages, [ "${php_package}-cli" ] )
+	} else {
+		$packages = $common_packages
+	}
+
+	$prefixed_extensions = prefix( $extensions, "${php_package}-" )
 
 	# Hold the packages at the necessary version.
 	apt::pin { $packages:
@@ -84,7 +89,8 @@ class chassis::php (
 			'5.6',
 			'7.0',
 			'7.1',
-			'7.2': {
+			'7.2',
+			'7.3': {
 				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
 					ensure => absent,
 				}
@@ -99,22 +105,27 @@ class chassis::php (
 
 	case $short_ver {
 		'5.6': {
-			remove_php_fpm { [ '7.0', '7.1', '7.2' ]:
+			remove_php_fpm { [ '7.0', '7.1', '7.2', '7.3' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.0': {
-			remove_php_fpm { [ '5.6', '7.1', '7.2' ]:
+			remove_php_fpm { [ '5.6', '7.1', '7.2', '7.3' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.1': {
-			remove_php_fpm { [ '5.6', '7.0', '7.2' ]:
+			remove_php_fpm { [ '5.6', '7.0', '7.2', '7.3' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
 		'7.2': {
-			remove_php_fpm { [ '5.6', '7.0', '7.1' ]:
+			remove_php_fpm { [ '5.6', '7.0', '7.1', '7.3' ]:
+				notify => Service["${php_package}-fpm"],
+			}
+		}
+		'7.3': {
+			remove_php_fpm { [ '5.6', '7.0', '7.1', '7.2' ]:
 				notify => Service["${php_package}-fpm"],
 			}
 		}
