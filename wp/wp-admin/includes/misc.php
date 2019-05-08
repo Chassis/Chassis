@@ -362,7 +362,7 @@ function wp_print_theme_file_tree( $tree, $level = 2, $size = 1, $index = 1 ) {
 				aria-posinset="<?php echo esc_attr( $index ); ?>">
 				<?php
 				$file_description = esc_html( get_file_description( $filename ) );
-				if ( $file_description !== $filename && basename( $filename ) !== $file_description ) {
+				if ( $file_description !== $filename && wp_basename( $filename ) !== $file_description ) {
 					$file_description .= '<br /><span class="nonessential">(' . esc_html( $filename ) . ')</span>';
 				}
 
@@ -1082,8 +1082,6 @@ function wp_refresh_post_nonces( $response, $data, $screen_id ) {
 function wp_refresh_heartbeat_nonces( $response ) {
 	// Refresh the Rest API nonce.
 	$response['rest_nonce'] = wp_create_nonce( 'wp_rest' );
-	// TEMPORARY: Compat with api-fetch library
-	$response['rest-nonce'] = $response['rest_nonce'];
 
 	// Refresh the Heartbeat nonce.
 	$response['heartbeat_nonce'] = wp_create_nonce( 'heartbeat-nonce' );
@@ -1291,6 +1289,7 @@ All at ###SITENAME###
 	$content      = str_replace( '###SITENAME###', wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ), $content );
 	$content      = str_replace( '###SITEURL###', home_url(), $content );
 
+	/* translators: New admin email address notification email subject. %s: Site title */
 	wp_mail( $value, sprintf( __( '[%s] New Admin Email Address' ), wp_specialchars_decode( get_option( 'blogname' ), ENT_QUOTES ) ), $content );
 
 	if ( $switched_locale ) {
@@ -1621,7 +1620,11 @@ final class WP_Privacy_Policy_Content {
 	 * @param WP_Post|null $post The currently edited post. Default null.
 	 */
 	public static function notice( $post = null ) {
-		$post = get_post( $post );
+		if ( is_null( $post ) ) {
+			global $post;
+		} else {
+			$post = get_post( $post );
+		}
 
 		if ( ! ( $post instanceof WP_Post ) ) {
 			return;
@@ -1633,30 +1636,47 @@ final class WP_Privacy_Policy_Content {
 
 		$policy_page_id = (int) get_option( 'wp_page_for_privacy_policy' );
 
-		if ( ! $policy_page_id || $policy_page_id != $post->ID ) {
+		if ( ! $policy_page_id || $policy_page_id !== $post->ID ) {
 			return;
 		}
 
-		?>
-		<div class="notice notice-warning inline wp-pp-notice">
-			<p>
-			<?php
-			/* translators: 1: Privacy Policy guide URL, 2: additional link attributes, 3: accessibility text */
-			printf(
-				__( 'Need help putting together your new Privacy Policy page? <a href="%1$s" %2$s>Check out our guide%3$s</a> for recommendations on what content to include, along with policies suggested by your plugins and theme.' ),
-				admin_url( 'tools.php?wp-privacy-policy-guide=1' ),
-				'target="_blank"',
+		$message = __( 'Need help putting together your new Privacy Policy page? Check out our guide for recommendations on what content to include, along with policies suggested by your plugins and theme.' );
+		$url     = esc_url( admin_url( 'tools.php?wp-privacy-policy-guide=1' ) );
+		$label   = __( 'View Privacy Policy Guide.' );
+
+		if ( get_current_screen()->is_block_editor() ) {
+			wp_enqueue_script( 'wp-notices' );
+			$action = array(
+				'url'   => $url,
+				'label' => $label,
+			);
+			wp_add_inline_script(
+				'wp-notices',
 				sprintf(
-					'<span class="screen-reader-text"> %s</span>',
+					'wp.data.dispatch( "core/notices" ).createWarningNotice( "%s", { actions: [ %s ], isDismissible: false } )',
+					$message,
+					wp_json_encode( $action )
+				),
+				'after'
+			);
+		} else {
+			?>
+			<div class="notice notice-warning inline wp-pp-notice">
+				<p>
+				<?php
+				echo $message;
+				printf(
+					' <a href="%s" target="_blank">%s <span class="screen-reader-text">%s</span></a>',
+					$url,
+					$label,
 					/* translators: accessibility text */
 					__( '(opens in a new tab)' )
-				)
-			);
-			?>
-			</p>
-		</div>
-		<?php
-
+				);
+				?>
+				</p>
+			</div>
+			<?php
+		}
 	}
 
 	/**
@@ -1841,7 +1861,7 @@ final class WP_Privacy_Policy_Content {
 		/* translators: default privacy policy text. */
 		$strings[] = '<p>' . $suggested_text . __( 'If you leave a comment on our site you may opt-in to saving your name, email address and website in cookies. These are for your convenience so that you do not have to fill in your details again when you leave another comment. These cookies will last for one year.' ) . '</p>';
 		/* translators: default privacy policy text. */
-		$strings[] = '<p>' . __( 'If you have an account and you log in to this site, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.' ) . '</p>';
+		$strings[] = '<p>' . __( 'If you visit our login page, we will set a temporary cookie to determine if your browser accepts cookies. This cookie contains no personal data and is discarded when you close your browser.' ) . '</p>';
 		/* translators: default privacy policy text. */
 		$strings[] = '<p>' . __( 'When you log in, we will also set up several cookies to save your login information and your screen display choices. Login cookies last for two days, and screen options cookies last for a year. If you select &quot;Remember Me&quot;, your login will persist for two weeks. If you log out of your account, the login cookies will be removed.' ) . '</p>';
 		/* translators: default privacy policy text. */

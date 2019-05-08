@@ -91,8 +91,8 @@ function wp_default_packages_vendor( &$scripts ) {
 	);
 
 	$vendor_scripts_versions = array(
-		'react'                       => '16.6.3',
-		'react-dom'                   => '16.6.3',
+		'react'                       => '16.8.4',
+		'react-dom'                   => '16.8.4',
 		'moment'                      => '2.22.2',
 		'lodash'                      => '4.17.11',
 		'wp-polyfill-fetch'           => '3.0.0',
@@ -224,47 +224,49 @@ function wp_default_packages_scripts( &$scripts ) {
 	$suffix = wp_scripts_get_suffix();
 
 	$packages_versions = array(
-		'api-fetch'                          => '2.2.8',
-		'a11y'                               => '2.0.2',
-		'annotations'                        => '1.0.8',
-		'autop'                              => '2.0.2',
-		'blob'                               => '2.1.0',
-		'block-library'                      => '2.2.16',
-		'block-serialization-default-parser' => '2.0.5',
-		'blocks'                             => '6.0.6',
-		'components'                         => '7.0.8',
-		'compose'                            => '3.0.1',
-		'core-data'                          => '2.0.17',
-		'data'                               => '4.2.1',
-		'date'                               => '3.0.1',
-		'deprecated'                         => '2.0.5',
-		'dom'                                => '2.0.8',
-		'dom-ready'                          => '2.0.2',
-		'edit-post'                          => '3.1.11',
-		'editor'                             => '9.0.11',
-		'element'                            => '2.1.9',
-		'escape-html'                        => '1.0.1',
-		'format-library'                     => '1.2.14',
-		'hooks'                              => '2.0.5',
-		'html-entities'                      => '2.0.4',
-		'i18n'                               => '3.1.1',
-		'is-shallow-equal'                   => '1.1.5',
-		'keycodes'                           => '2.0.6',
-		'list-reusable-blocks'               => '1.1.21',
-		'notices'                            => '1.1.3',
-		'nux'                                => '3.0.9',
-		'plugins'                            => '2.0.10',
-		'redux-routine'                      => '3.0.4',
-		'rich-text'                          => '3.0.7',
-		'shortcode'                          => '2.0.2',
-		'token-list'                         => '1.1.0',
-		'url'                                => '2.3.3',
-		'viewport'                           => '2.1.1',
-		'wordcount'                          => '2.0.3',
+		'a11y'                               => '2.2.0',
+		'annotations'                        => '1.2.2',
+		'api-fetch'                          => '3.1.2',
+		'autop'                              => '2.0.0',
+		'blob'                               => '2.3.0',
+		'block-editor'                       => '2.0.1',
+		'block-library'                      => '2.4.4',
+		'block-serialization-default-parser' => '3.1.0',
+		'blocks'                             => '6.2.4',
+		'components'                         => '7.3.1',
+		'compose'                            => '3.2.0',
+		'core-data'                          => '2.2.2',
+		'data'                               => '4.4.0',
+		'date'                               => '3.2.0',
+		'deprecated'                         => '2.2.0',
+		'dom'                                => '2.2.4',
+		'dom-ready'                          => '2.2.0',
+		'edit-post'                          => '3.3.4',
+		'editor'                             => '9.2.4',
+		'element'                            => '2.3.0',
+		'escape-html'                        => '1.2.0',
+		'format-library'                     => '1.4.4',
+		'hooks'                              => '2.2.0',
+		'html-entities'                      => '2.2.0',
+		'i18n'                               => '3.3.0',
+		'is-shallow-equal'                   => '1.2.0',
+		'keycodes'                           => '2.2.0',
+		'list-reusable-blocks'               => '1.3.4',
+		'notices'                            => '1.3.0',
+		'nux'                                => '3.2.4',
+		'plugins'                            => '2.2.0',
+		'priority-queue'                     => '1.1.0',
+		'redux-routine'                      => '3.2.0',
+		'rich-text'                          => '3.2.2',
+		'shortcode'                          => '2.2.0',
+		'token-list'                         => '1.2.0',
+		'url'                                => '2.5.0',
+		'viewport'                           => '2.3.0',
+		'wordcount'                          => '2.2.0',
 	);
 
 	$packages_dependencies = array(
-		'api-fetch'                          => array( 'wp-polyfill', 'wp-hooks', 'wp-i18n', 'wp-url' ),
+		'api-fetch'                          => array( 'wp-polyfill', 'wp-i18n', 'wp-url' ),
 		'a11y'                               => array( 'wp-dom-ready', 'wp-polyfill' ),
 		'annotations'                        => array(
 			'wp-data',
@@ -296,6 +298,7 @@ function wp_default_packages_scripts( &$scripts ) {
 			'wp-api-fetch',
 			'wp-autop',
 			'wp-blob',
+			'wp-block-editor',
 			'wp-blocks',
 			'wp-components',
 			'wp-compose',
@@ -313,6 +316,28 @@ function wp_default_packages_scripts( &$scripts ) {
 			'wp-rich-text',
 		),
 		'block-serialization-default-parser' => array(),
+		'block-editor'                       => array(
+			'lodash',
+			'wp-a11y',
+			'wp-blob',
+			'wp-blocks',
+			'wp-components',
+			'wp-compose',
+			'wp-core-data',
+			'wp-data',
+			'wp-dom',
+			'wp-element',
+			'wp-hooks',
+			'wp-html-entities',
+			'wp-i18n',
+			'wp-is-shallow-equal',
+			'wp-keycodes',
+			'wp-rich-text',
+			'wp-token-list',
+			'wp-url',
+			'wp-viewport',
+			'wp-wordcount',
+		),
 		'components'                         => array(
 			'lodash',
 			'moment',
@@ -336,18 +361,26 @@ function wp_default_packages_scripts( &$scripts ) {
 			'wp-is-shallow-equal',
 			'wp-polyfill',
 		),
-		'core-data'                          => array( 'wp-data', 'wp-api-fetch', 'wp-polyfill', 'wp-url', 'lodash' ),
+		'core-data'                          => array(
+			'lodash',
+			'wp-api-fetch',
+			'wp-data',
+			'wp-deprecated',
+			'wp-polyfill',
+			'wp-url',
+		),
 		'data'                               => array(
 			'lodash',
 			'wp-compose',
 			'wp-element',
 			'wp-is-shallow-equal',
 			'wp-polyfill',
+			'wp-priority-queue',
 			'wp-redux-routine',
 		),
 		'date'                               => array( 'moment', 'wp-polyfill' ),
 		'deprecated'                         => array( 'wp-polyfill', 'wp-hooks' ),
-		'dom'                                => array( 'lodash', 'wp-polyfill', 'wp-tinymce' ),
+		'dom'                                => array( 'lodash', 'wp-polyfill' ),
 		'dom-ready'                          => array( 'wp-polyfill' ),
 		'edit-post'                          => array(
 			'jquery',
@@ -357,6 +390,7 @@ function wp_default_packages_scripts( &$scripts ) {
 			'media-views',
 			'wp-a11y',
 			'wp-api-fetch',
+			'wp-block-editor',
 			'wp-block-library',
 			'wp-blocks',
 			'wp-components',
@@ -377,11 +411,10 @@ function wp_default_packages_scripts( &$scripts ) {
 			'wp-viewport',
 		),
 		'editor'                             => array(
-			'jquery',
 			'lodash',
-			'wp-a11y',
 			'wp-api-fetch',
 			'wp-blob',
+			'wp-block-editor',
 			'wp-blocks',
 			'wp-components',
 			'wp-compose',
@@ -389,28 +422,23 @@ function wp_default_packages_scripts( &$scripts ) {
 			'wp-data',
 			'wp-date',
 			'wp-deprecated',
-			'wp-dom',
 			'wp-element',
 			'wp-hooks',
 			'wp-html-entities',
 			'wp-i18n',
-			'wp-is-shallow-equal',
 			'wp-keycodes',
 			'wp-notices',
 			'wp-nux',
 			'wp-polyfill',
-			'wp-tinymce',
-			'wp-token-list',
 			'wp-url',
 			'wp-viewport',
 			'wp-wordcount',
-			'wp-rich-text',
 		),
 		'element'                            => array( 'wp-polyfill', 'react', 'react-dom', 'lodash', 'wp-escape-html' ),
 		'escape-html'                        => array( 'wp-polyfill' ),
 		'format-library'                     => array(
+			'wp-block-editor',
 			'wp-components',
-			'wp-dom',
 			'wp-editor',
 			'wp-element',
 			'wp-i18n',
@@ -450,6 +478,7 @@ function wp_default_packages_scripts( &$scripts ) {
 			'lodash',
 		),
 		'plugins'                            => array( 'lodash', 'wp-compose', 'wp-element', 'wp-hooks', 'wp-polyfill' ),
+		'priority-queue'                     => array(),
 		'redux-routine'                      => array( 'wp-polyfill' ),
 		'rich-text'                          => array(
 			'lodash',
@@ -467,6 +496,7 @@ function wp_default_packages_scripts( &$scripts ) {
 	$package_translations = array(
 		'api-fetch',
 		'blocks',
+		'block-editor',
 		'block-library',
 		'components',
 		'edit-post',
@@ -500,10 +530,30 @@ function wp_default_packages_scripts( &$scripts ) {
 function wp_default_packages_inline_scripts( &$scripts ) {
 	global $wp_locale;
 
+	if ( isset( $scripts->registered['wp-api-fetch'] ) ) {
+		$scripts->registered['wp-api-fetch']->deps[] = 'wp-hooks';
+	}
 	$scripts->add_inline_script(
 		'wp-api-fetch',
 		sprintf(
-			'wp.apiFetch.use( wp.apiFetch.createNonceMiddleware( "%s" ) );',
+			implode(
+				"\n",
+				array(
+					'( function() {',
+					'	var nonceMiddleware = wp.apiFetch.createNonceMiddleware( "%s" );',
+					'	wp.apiFetch.use( nonceMiddleware );',
+					'	wp.hooks.addAction(',
+					'		"heartbeat.tick",',
+					'		"core/api-fetch/create-nonce-middleware",',
+					'		function( response ) {',
+					'			if ( response[ "rest_nonce" ] ) {',
+					'				nonceMiddleware.nonce = response[ "rest_nonce" ];',
+					'			}',
+					'		}',
+					'	);',
+					'} )();',
+				)
+			),
 			( wp_installing() && ! is_multisite() ) ? '' : wp_create_nonce( 'wp_rest' )
 		),
 		'after'
@@ -528,6 +578,7 @@ function wp_default_packages_inline_scripts( &$scripts ) {
 				'	wp.data',
 				'		.use( wp.data.plugins.persistence, { storageKey: storageKey } )',
 				'		.use( wp.data.plugins.controls );',
+				'	wp.data.plugins.persistence.__unstableMigrate( { storageKey: storageKey } );',
 				'} )();',
 			)
 		)
@@ -873,6 +924,8 @@ function wp_default_scripts( &$scripts ) {
 
 	$scripts->add( 'editor', "/wp-admin/js/editor$suffix.js", array( 'utils', 'jquery' ), false, 1 );
 
+	$scripts->add( 'clipboard', "/wp-includes/js/clipboard$suffix.js", array(), false, 1 );
+
 	// Back-compat for old DFW. To-do: remove at the end of 2016.
 	$scripts->add( 'wp-fullscreen-stub', "/wp-admin/js/wp-fullscreen-stub$suffix.js", array(), false, 1 );
 
@@ -1030,7 +1083,7 @@ function wp_default_scripts( &$scripts ) {
 	$scripts->add( 'jquery-table-hotkeys', "/wp-includes/js/jquery/jquery.table-hotkeys$suffix.js", array( 'jquery', 'jquery-hotkeys' ), false, 1 );
 	$scripts->add( 'jquery-touch-punch', '/wp-includes/js/jquery/jquery.ui.touch-punch.js', array( 'jquery-ui-widget', 'jquery-ui-mouse' ), '0.2.2', 1 );
 
-	// Not used any more, registered for backwards compatibility.
+	// Not used any more, registered for backward compatibility.
 	$scripts->add( 'suggest', "/wp-includes/js/jquery/suggest$suffix.js", array( 'jquery' ), '1.1-20110113', 1 );
 
 	// Masonry v2 depended on jQuery. v3 does not. The older jquery-masonry handle is a shiv.
@@ -1637,6 +1690,9 @@ function wp_default_scripts( &$scripts ) {
 			)
 		);
 
+		$scripts->add( 'site-health', "/wp-admin/js/site-health$suffix.js", array( 'clipboard', 'jquery', 'wp-util', 'wp-a11y', 'wp-i18n' ), false, 1 );
+		$scripts->set_translations( 'site-health' );
+
 		$scripts->add( 'updates', "/wp-admin/js/updates$suffix.js", array( 'jquery', 'wp-util', 'wp-a11y' ), false, 1 );
 		did_action( 'init' ) && $scripts->localize(
 			'updates',
@@ -1882,6 +1938,7 @@ function wp_default_styles( &$styles ) {
 	$styles->add( 'site-icon', "/wp-admin/css/site-icon$suffix.css" );
 	$styles->add( 'l10n', "/wp-admin/css/l10n$suffix.css" );
 	$styles->add( 'code-editor', "/wp-admin/css/code-editor$suffix.css", array( 'wp-codemirror' ) );
+	$styles->add( 'site-health', "/wp-admin/css/site-health$suffix.css" );
 
 	$styles->add( 'wp-admin', false, array( 'dashicons', 'common', 'forms', 'admin-menu', 'dashboard', 'list-tables', 'edit', 'revisions', 'media', 'themes', 'about', 'nav-menus', 'widgets', 'site-icon', 'l10n' ) );
 
@@ -1953,10 +2010,25 @@ function wp_default_styles( &$styles ) {
 	);
 
 	$package_styles = array(
+		'block-editor'         => array(
+			'wp-components',
+			'wp-editor-font',
+		),
 		'block-library'        => array(),
 		'components'           => array(),
-		'edit-post'            => array( 'wp-components', 'wp-editor', 'wp-edit-blocks', 'wp-block-library', 'wp-nux' ),
-		'editor'               => array( 'wp-components', 'wp-editor-font', 'wp-nux' ),
+		'edit-post'            => array(
+			'wp-components',
+			'wp-block-editor',
+			'wp-editor',
+			'wp-edit-blocks',
+			'wp-block-library',
+			'wp-nux',
+		),
+		'editor'               => array(
+			'wp-components',
+			'wp-block-editor',
+			'wp-nux',
+		),
 		'format-library'       => array(),
 		'list-reusable-blocks' => array( 'wp-components' ),
 		'nux'                  => array( 'wp-components' ),
@@ -1994,6 +2066,7 @@ function wp_default_styles( &$styles ) {
 		'customize-preview',
 		'ie',
 		'login',
+		'site-health',
 		// Includes CSS
 		'buttons',
 		'admin-bar',
@@ -2005,6 +2078,7 @@ function wp_default_styles( &$styles ) {
 		// Package styles
 		'wp-block-library-theme',
 		'wp-edit-blocks',
+		'wp-block-editor',
 		'wp-block-library',
 		'wp-components',
 		'wp-edit-post',

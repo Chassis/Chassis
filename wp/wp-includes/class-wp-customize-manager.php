@@ -402,7 +402,7 @@ final class WP_Customize_Manager {
 
 		// Add theme update notices.
 		if ( current_user_can( 'install_themes' ) || current_user_can( 'update_themes' ) ) {
-			require_once ABSPATH . '/wp-admin/includes/update.php';
+			require_once ABSPATH . 'wp-admin/includes/update.php';
 			add_action( 'customize_controls_print_footer_scripts', 'wp_print_admin_notice_templates' );
 		}
 	}
@@ -1360,7 +1360,7 @@ final class WP_Customize_Manager {
 				if ( ! $attachment_id ) {
 
 					// Copy file to temp location so that original file won't get deleted from theme after sideloading.
-					$temp_file_name = wp_tempnam( basename( $file_path ) );
+					$temp_file_name = wp_tempnam( wp_basename( $file_path ) );
 					if ( $temp_file_name && copy( $file_path, $temp_file_name ) ) {
 						$file_array['tmp_name'] = $temp_file_name;
 					}
@@ -1621,7 +1621,7 @@ final class WP_Customize_Manager {
 			} else {
 				continue;
 			}
-			$file_name = basename( $attachment['file'] );
+			$file_name = wp_basename( $attachment['file'] );
 
 			// Skip file types that are not recognized.
 			$checked_filetype = wp_check_filetype( $file_name );
@@ -3647,7 +3647,7 @@ final class WP_Customize_Manager {
 	 *  @type string       $capability            Capability required for the setting. Default 'edit_theme_options'
 	 *  @type string|array $theme_supports        Theme features required to support the panel. Default is none.
 	 *  @type string       $default               Default value for the setting. Default is empty string.
-	 *  @type string       $transport             Options for rendering the live preview of changes in Theme Customizer.
+	 *  @type string       $transport             Options for rendering the live preview of changes in Customizer.
 	 *                                            Using 'refresh' makes the change visible by reloading the whole preview.
 	 *                                            Using 'postMessage' allows a custom JavaScript to handle live changes.
 	 * @link https://developer.wordpress.org/themes/customize-api
@@ -4594,7 +4594,7 @@ final class WP_Customize_Manager {
 
 		if ( $this->return_url ) {
 			$return_url = $this->return_url;
-		} elseif ( $referer && ! in_array( basename( parse_url( $referer, PHP_URL_PATH ) ), $excluded_referer_basenames, true ) ) {
+		} elseif ( $referer && ! in_array( wp_basename( parse_url( $referer, PHP_URL_PATH ) ), $excluded_referer_basenames, true ) ) {
 			$return_url = $referer;
 		} elseif ( $this->preview_url ) {
 			$return_url = $this->preview_url;
@@ -5729,6 +5729,9 @@ final class WP_Customize_Manager {
 			// Arguments for all queries.
 			$wporg_args = array(
 				'per_page' => 100,
+				'fields'   => array(
+					'reviews_url' => true, // Explicitly request the reviews URL to be linked from the customizer.
+				),
 			);
 
 			$args = array_merge( $wporg_args, $args );

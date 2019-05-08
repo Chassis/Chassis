@@ -767,10 +767,11 @@ function load_default_textdomain( $locale = null ) {
  * @since 1.5.0
  * @since 4.6.0 The function now tries to load the .mo file from the languages directory first.
  *
- * @param string $domain          Unique identifier for retrieving translated strings
- * @param string $deprecated      Optional. Use the $plugin_rel_path parameter instead. Default false.
- * @param string $plugin_rel_path Optional. Relative path to WP_PLUGIN_DIR where the .mo file resides.
- *                                Default false.
+ * @param string       $domain          Unique identifier for retrieving translated strings
+ * @param string|false $deprecated      Optional. Deprecated. Use the $plugin_rel_path parameter instead.
+ *                                      Default false.
+ * @param string|false $plugin_rel_path Optional. Relative path to WP_PLUGIN_DIR where the .mo file resides.
+ *                                      Default false.
  * @return bool True when textdomain is successfully loaded, false otherwise.
  */
 function load_plugin_textdomain( $domain, $deprecated = false, $plugin_rel_path = false ) {
@@ -1232,12 +1233,15 @@ function is_textdomain_loaded( $domain ) {
  * won't suffer from that problem.
  *
  * @since 2.8.0
+ * @since 5.2.0 Added the `$domain` parameter.
  *
- * @param string $name The role name.
+ * @param string $name   The role name.
+ * @param string $domain Optional. Text domain. Unique identifier for retrieving translated strings.
+ *                       Default 'default'.
  * @return string Translated role name on success, original name on failure.
  */
-function translate_user_role( $name ) {
-	return translate_with_gettext_context( before_last_bar( $name ), 'User role' );
+function translate_user_role( $name, $domain = 'default' ) {
+	return translate_with_gettext_context( before_last_bar( $name ), 'User role', $domain );
 }
 
 /**

@@ -20,7 +20,7 @@
 	border-right: 1px solid #ccc;
 	color: #555;
 	display: block;
-	line-height: 22px;
+	line-height: 2;
 	padding: 0 6px;
 	text-align: center;
 }
@@ -45,7 +45,7 @@
 
 .wp-color-result:focus {
 	border-color: #5b9dd9;
-	box-shadow: 0 0 3px rgba( 0, 115, 170, .8 );
+	box-shadow: 0 0 3px rgba(0, 115, 170, 0.8);
 }
 
 .wp-color-result:active {
@@ -87,7 +87,7 @@
 	width: 65px;
 	font-size: 12px;
 	font-family: monospace;
-	line-height: 16px;
+	line-height: 1.4;
 	margin: 0;
 	vertical-align: top;
 }
@@ -115,14 +115,14 @@
 .iris-picker .iris-strip .ui-slider-handle:focus {
 	box-shadow:
 		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 2px 1px rgba(30, 140, 190, 0.8);
 }
 
 .iris-picker .iris-palette:focus {
 	box-shadow:
-		inset 0 0 5px rgba(0,0,0,.4),
+		inset 0 0 5px rgba(0, 0, 0, 0.4),
 		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 2px 1px rgba(30, 140, 190, 0.8);
 }
 
 @media screen and (max-width: 782px) {
@@ -130,7 +130,7 @@
 		width: 80px;
 		padding: 6px 5px 5px;
 		font-size: 16px;
-		line-height: 18px;
+		line-height: 1.15;
 	}
 
 	.wp-customizer .wp-picker-container input[type="text"].wp-color-picker {
@@ -141,12 +141,12 @@
 		height: auto;
 		padding: 0 40px 0 0;
 		font-size: 14px;
-		line-height: 29px;
+		line-height: 2.1;
 	}
 
 	.wp-customizer .wp-picker-container .wp-color-result.button {
 		font-size: 13px;
-		line-height: 26px;
+		line-height: 2;
 	}
 
 	.wp-picker-container .wp-color-result-text {
@@ -163,7 +163,7 @@
 @media screen and (max-width: 640px) {
 	.wp-customizer .wp-picker-container .wp-color-result.button {
 		font-size: 14px;
-		line-height: 29px;
+		line-height: 2.1;
 	}
 
 	.wp-customizer .wp-picker-container input[type="text"].wp-color-picker {

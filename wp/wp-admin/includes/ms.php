@@ -226,7 +226,11 @@ function upload_is_user_over_quota( $echo = true ) {
 
 	if ( ( $space_allowed - $space_used ) < 0 ) {
 		if ( $echo ) {
-			_e( 'Sorry, you have used your space allocation. Please delete some files to upload more files.' );
+			printf(
+				/* translators: %s: allowed space allocation */
+				__( 'Sorry, you have used your space allocation of %s. Please delete some files to upload more files.' ),
+				size_format( $space_allowed * MB_IN_BYTES )
+			);
 		}
 		return true;
 	} else {
@@ -1130,9 +1134,9 @@ function network_edit_site_nav( $args = array() ) {
 	}
 
 	// All done!
-	echo '<h2 class="nav-tab-wrapper wp-clearfix">';
+	echo '<nav class="nav-tab-wrapper wp-clearfix" aria-label="' . esc_attr__( 'Secondary menu' ) . '">';
 	echo implode( '', $screen_links );
-	echo '</h2>';
+	echo '</nav>';
 }
 
 /**

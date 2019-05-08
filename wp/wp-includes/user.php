@@ -95,10 +95,6 @@ function wp_signon( $credentials = array(), $secure_cookie = '' ) {
 	$user = wp_authenticate( $credentials['user_login'], $credentials['user_password'] );
 
 	if ( is_wp_error( $user ) ) {
-		if ( $user->get_error_codes() == array( 'empty_username', 'empty_password' ) ) {
-			$user = new WP_Error( '', '' );
-		}
-
 		return $user;
 	}
 
@@ -680,8 +676,9 @@ function get_blogs_of_user( $user_id, $all = false ) {
 
 	if ( ! empty( $site_ids ) ) {
 		$args = array(
-			'number'   => '',
-			'site__in' => $site_ids,
+			'number'                 => '',
+			'site__in'               => $site_ids,
+			'update_site_meta_cache' => false,
 		);
 		if ( ! $all ) {
 			$args['archived'] = 0;
@@ -1973,8 +1970,8 @@ All at ###SITENAME###
 
 			$pass_change_email = array(
 				'to'      => $user['user_email'],
-				/* translators: User password change notification email subject. %s: Site name */
-				'subject' => __( '[%s] Notice of Password Change' ),
+				/* translators: Password change notification email subject. %s: Site name */
+				'subject' => __( '[%s] Password Changed' ),
 				'message' => $pass_change_text,
 				'headers' => '',
 			);
@@ -2030,8 +2027,8 @@ All at ###SITENAME###
 
 			$email_change_email = array(
 				'to'      => $user['user_email'],
-				/* translators: User email change notification email subject. %s: Site name */
-				'subject' => __( '[%s] Notice of Email Change' ),
+				/* translators: Email change notification email subject. %s: Site name */
+				'subject' => __( '[%s] Email Changed' ),
 				'message' => $email_change_text,
 				'headers' => '',
 			);
@@ -2313,16 +2310,16 @@ function check_password_reset_key( $key, $login ) {
 	$key = preg_replace( '/[^a-z0-9]/i', '', $key );
 
 	if ( empty( $key ) || ! is_string( $key ) ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
 	if ( empty( $login ) || ! is_string( $login ) ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
 	$row = $wpdb->get_row( $wpdb->prepare( "SELECT ID, user_activation_key FROM $wpdb->users WHERE user_login = %s", $login ) );
 	if ( ! $row ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
 	if ( empty( $wp_hasher ) ) {
@@ -2348,7 +2345,7 @@ function check_password_reset_key( $key, $login ) {
 	}
 
 	if ( ! $pass_key ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
 	$hash_is_correct = $wp_hasher->CheckPassword( $key, $pass_key );
@@ -2357,11 +2354,11 @@ function check_password_reset_key( $key, $login ) {
 		return get_userdata( $row->ID );
 	} elseif ( $hash_is_correct && $expiration_time ) {
 		// Key has an expiration time that's passed
-		return new WP_Error( 'expired_key', __( 'Invalid key' ) );
+		return new WP_Error( 'expired_key', __( 'Invalid key.' ) );
 	}
 
 	if ( hash_equals( $row->user_activation_key, $key ) || ( $hash_is_correct && ! $expiration_time ) ) {
-		$return  = new WP_Error( 'expired_key', __( 'Invalid key' ) );
+		$return  = new WP_Error( 'expired_key', __( 'Invalid key.' ) );
 		$user_id = $row->ID;
 
 		/**
@@ -2378,7 +2375,7 @@ function check_password_reset_key( $key, $login ) {
 		return apply_filters( 'password_reset_key_expired', $return, $user_id );
 	}
 
-	return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+	return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 }
 
 /**
@@ -2812,7 +2809,8 @@ All at ###SITENAME###
 		$content = str_replace( '###SITENAME###', $sitename, $content );
 		$content = str_replace( '###SITEURL###', home_url(), $content );
 
-		wp_mail( $_POST['email'], sprintf( __( '[%s] New Email Address' ), $sitename ), $content );
+		/* translators: New email address notification email subject. %s: Site name */
+		wp_mail( $_POST['email'], sprintf( __( '[%s] Email Change Request' ), $sitename ), $content );
 
 		$_POST['email'] = $current_user->user_email;
 	}
@@ -3087,7 +3085,7 @@ All at ###SITENAME###
 	$content = str_replace( '###SITEURL###', esc_url_raw( $email_data['siteurl'] ), $content );
 
 	$subject = sprintf(
-		/* translators: 1: Site name. 2: Name of the confirmed action. */
+		/* translators: Privacy data request confirmed notification email subject. 1: Site title, 2: Name of the confirmed action. */
 		__( '[%1$s] Action Confirmed: %2$s' ),
 		$email_data['sitename'],
 		$action_description
@@ -3143,6 +3141,15 @@ function _wp_privacy_send_erasure_fulfillment_notification( $request_id ) {
 		return;
 	}
 
+	// Localize message content for user; fallback to site default for visitors.
+	if ( ! empty( $request->user_id ) ) {
+		$locale = get_user_locale( $request->user_id );
+	} else {
+		$locale = get_locale();
+	}
+
+	$switched_locale = switch_to_locale( $locale );
+
 	/**
 	 * Filters the recipient of the data erasure fulfillment notification.
 	 *
@@ -3162,7 +3169,7 @@ function _wp_privacy_send_erasure_fulfillment_notification( $request_id ) {
 	);
 
 	$subject = sprintf(
-		/* translators: %s: Site name. */
+		/* translators: Erasure request fulfilled notification email subject. %s: Site name. */
 		__( '[%s] Erasure Request Fulfilled' ),
 		$email_data['sitename']
 	);
@@ -3253,6 +3260,10 @@ All at ###SITENAME###
 
 	$email_sent = wp_mail( $user_email, $subject, $content );
 
+	if ( $switched_locale ) {
+		restore_previous_locale();
+	}
+
 	if ( $email_sent ) {
 		update_post_meta( $request_id, '_wp_user_notified', true );
 	}
@@ -3330,13 +3341,16 @@ function wp_create_user_request( $email_address = '', $action_name = '', $reques
 			'post_type'     => 'user_request',
 			'post_name__in' => array( $action_name ),  // Action name stored in post_name column.
 			'title'         => $email_address, // Email address stored in post_title column.
-			'post_status'   => 'any',
+			'post_status'   => array(
+				'request-pending',
+				'request-confirmed',
+			),
 			'fields'        => 'ids',
 		)
 	);
 
 	if ( $requests_query->found_posts ) {
-		return new WP_Error( 'duplicate_request', __( 'A request for this email address already exists.' ) );
+		return new WP_Error( 'duplicate_request', __( 'An incomplete request for this email address already exists.' ) );
 	}
 
 	$request_id = wp_insert_post(
@@ -3483,7 +3497,7 @@ All at ###SITENAME###
 	$content = str_replace( '###SITENAME###', $email_data['sitename'], $content );
 	$content = str_replace( '###SITEURL###', esc_url_raw( $email_data['siteurl'] ), $content );
 
-	/* translators: Privacy data request subject. 1: Site name, 2: Name of the action */
+	/* translators: Confirm privacy data request notification email subject. 1: Site title, 2: Name of the action */
 	$subject = sprintf( __( '[%1$s] Confirm Action: %2$s' ), $email_data['sitename'], $email_data['description'] );
 
 	/**
@@ -3574,7 +3588,7 @@ function wp_validate_user_request_key( $request_id, $key ) {
 	}
 
 	if ( empty( $key ) ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'missing_key', __( 'Missing confirm key.' ) );
 	}
 
 	if ( empty( $wp_hasher ) ) {
@@ -3586,11 +3600,11 @@ function wp_validate_user_request_key( $request_id, $key ) {
 	$saved_key        = $request->confirm_key;
 
 	if ( ! $saved_key ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
 	if ( ! $key_request_time ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid action' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid action.' ) );
 	}
 
 	/**
@@ -3604,7 +3618,7 @@ function wp_validate_user_request_key( $request_id, $key ) {
 	$expiration_time     = $key_request_time + $expiration_duration;
 
 	if ( ! $wp_hasher->CheckPassword( $key, $saved_key ) ) {
-		return new WP_Error( 'invalid_key', __( 'Invalid key' ) );
+		return new WP_Error( 'invalid_key', __( 'Invalid key.' ) );
 	}
 
 	if ( ! $expiration_time || time() > $expiration_time ) {
