@@ -593,7 +593,7 @@ endif;
 get_current_screen()->set_help_sidebar(
 	'<p><strong>' . __( 'For more information:' ) . '</strong></p>' .
 	'<p>' . __( '<a href="https://codex.wordpress.org/Appearance_Menus_Screen">Documentation on Menus</a>' ) . '</p>' .
-	'<p>' . __( '<a href="https://wordpress.org/support/">Support Forums</a>' ) . '</p>'
+	'<p>' . __( '<a href="https://wordpress.org/support/">Support</a>' ) . '</p>'
 );
 
 // Get the admin header.
@@ -627,7 +627,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
 	<hr class="wp-header-end">
 
-	<h2 class="nav-tab-wrapper wp-clearfix">
+	<nav class="nav-tab-wrapper wp-clearfix" aria-label="<?php esc_attr_e( 'Secondary menu' ); ?>">
 		<a href="<?php echo admin_url( 'nav-menus.php' ); ?>" class="nav-tab<?php echo $nav_tab_active_class; ?>"><?php esc_html_e( 'Edit Menus' ); ?></a>
 		<?php
 		if ( $num_locations && $menu_count ) {
@@ -640,7 +640,7 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 			<?php
 		}
 		?>
-	</h2>
+	</nav>
 	<?php
 	foreach ( $messages as $message ) :
 		echo $message . "\n";

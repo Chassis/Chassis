@@ -282,7 +282,7 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 
 		$response->header( 'X-WP-TotalPages', (int) $max_pages );
 
-		$base = add_query_arg( $request->get_query_params(), rest_url( $this->namespace . '/' . $this->rest_base ) );
+		$base = add_query_arg( urlencode_deep( $request->get_query_params() ), rest_url( $this->namespace . '/' . $this->rest_base ) );
 		if ( $page > 1 ) {
 			$prev_page = $page - 1;
 
@@ -685,11 +685,15 @@ class WP_REST_Terms_Controller extends WP_REST_Controller {
 		}
 
 		if ( isset( $request['parent'] ) && ! empty( $schema['properties']['parent'] ) ) {
-			$parent_term_id = 0;
-			$parent_term    = get_term( (int) $request['parent'], $this->taxonomy );
+			$parent_term_id   = 0;
+			$requested_parent = (int) $request['parent'];
 
-			if ( $parent_term ) {
-				$parent_term_id = $parent_term->term_id;
+			if ( $requested_parent ) {
+				$parent_term = get_term( $requested_parent, $this->taxonomy );
+
+				if ( $parent_term instanceof WP_Term ) {
+					$parent_term_id = $parent_term->term_id;
+				}
 			}
 
 			$prepared_term->parent = $parent_term_id;

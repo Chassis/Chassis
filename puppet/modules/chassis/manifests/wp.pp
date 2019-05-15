@@ -33,6 +33,10 @@ define chassis::wp (
 			admin_user        => $admin_user,
 			admin_email       => $admin_email,
 			admin_password    => $admin_password,
+			require           => [
+				File['/vagrant/local-config-db.php'],
+				File['/vagrant/local-config-extensions.php'],
+			],
 		}
 	}
 	else {
@@ -49,6 +53,10 @@ define chassis::wp (
 			admin_email       => $admin_email,
 			admin_password    => $admin_password,
 			sitename          => $sitename,
+			require           => [
+				File['/vagrant/local-config-db.php'],
+				File['/vagrant/local-config-extensions.php'],
+			],
 		}
 	}
 

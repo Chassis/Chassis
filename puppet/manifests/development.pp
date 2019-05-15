@@ -78,3 +78,9 @@ chassis::content { $config['hosts'][0]:
 	# These tasks will not run unless WP is installed.
 	require  => Chassis::Wp[ $config['hosts'][0] ],
 }
+
+# Add a custom Nginx index.html with troubleshooting.
+file  { '/var/www/html/index.html':
+	content => template('chassis/index.html.erb'),
+	require => Service['nginx']
+}

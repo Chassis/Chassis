@@ -812,6 +812,15 @@ function _wp_personal_data_export_page() {
 			'screen'   => 'export_personal_data',
 		)
 	);
+
+	$requests_table->screen->set_screen_reader_content(
+		array(
+			'heading_views'      => __( 'Filter export personal data list' ),
+			'heading_pagination' => __( 'Export personal data list navigation' ),
+			'heading_list'       => __( 'Export personal data list' ),
+		)
+	);
+
 	$requests_table->process_bulk_action();
 	$requests_table->prepare_items();
 	?>
@@ -821,7 +830,7 @@ function _wp_personal_data_export_page() {
 
 		<?php settings_errors(); ?>
 
-		<form method="post" class="wp-privacy-request-form">
+		<form action="<?php echo esc_url( admin_url( 'tools.php?page=export_personal_data' ) ); ?>" method="post" class="wp-privacy-request-form">
 			<h2><?php esc_html_e( 'Add Data Export Request' ); ?></h2>
 			<p><?php esc_html_e( 'An email will be sent to the user at this email address asking them to verify the request.' ); ?></p>
 
@@ -887,6 +896,14 @@ function _wp_personal_data_removal_page() {
 		)
 	);
 
+	$requests_table->screen->set_screen_reader_content(
+		array(
+			'heading_views'      => __( 'Filter erase personal data list' ),
+			'heading_pagination' => __( 'Erase personal data list navigation' ),
+			'heading_list'       => __( 'Erase personal data list' ),
+		)
+	);
+
 	$requests_table->process_bulk_action();
 	$requests_table->prepare_items();
 
@@ -897,7 +914,7 @@ function _wp_personal_data_removal_page() {
 
 		<?php settings_errors(); ?>
 
-		<form method="post" class="wp-privacy-request-form">
+		<form action="<?php echo esc_url( admin_url( 'tools.php?page=remove_personal_data' ) ); ?>" method="post" class="wp-privacy-request-form">
 			<h2><?php esc_html_e( 'Add Data Erasure Request' ); ?></h2>
 			<p><?php esc_html_e( 'An email will be sent to the user at this email address asking them to verify the request.' ); ?></p>
 
@@ -1392,7 +1409,7 @@ abstract class WP_Privacy_Requests_Table extends WP_List_Table {
 			return '';
 		}
 
-		$time_diff = current_time( 'timestamp', true ) - $timestamp;
+		$time_diff = time() - $timestamp;
 
 		if ( $time_diff >= 0 && $time_diff < DAY_IN_SECONDS ) {
 			/* translators: human readable timestamp */
@@ -1513,7 +1530,7 @@ class WP_Privacy_Data_Export_Requests_Table extends WP_Privacy_Requests_Table {
 		$download_data_markup .= '<span class="export-personal-data-idle"><button type="button" class="button-link export-personal-data-handle">' . __( 'Download Personal Data' ) . '</button></span>' .
 			'<span style="display:none" class="export-personal-data-processing" >' . __( 'Downloading Data...' ) . '</span>' .
 			'<span style="display:none" class="export-personal-data-success"><button type="button" class="button-link export-personal-data-handle">' . __( 'Download Personal Data Again' ) . '</button></span>' .
-			'<span style="display:none" class="export-personal-data-failed">' . __( 'Download has failed.' ) . ' <button type="button" class="button-link">' . __( 'Retry' ) . '</button></span>';
+			'<span style="display:none" class="export-personal-data-failed">' . __( 'Download failed.' ) . ' <button type="button" class="button-link">' . __( 'Retry' ) . '</button></span>';
 
 		$download_data_markup .= '</div>';
 
@@ -1553,7 +1570,7 @@ class WP_Privacy_Data_Export_Requests_Table extends WP_Privacy_Requests_Table {
 					'">';
 
 				?>
-				<span class="export-personal-data-idle"><button type="button" class="button export-personal-data-handle"><?php _e( 'Email Data' ); ?></button></span>
+				<span class="export-personal-data-idle"><button type="button" class="button export-personal-data-handle"><?php _e( 'Send Export Link' ); ?></button></span>
 				<span style="display:none" class="export-personal-data-processing button updating-message" ><?php _e( 'Sending Email...' ); ?></span>
 				<span style="display:none" class="export-personal-data-success success-message" ><?php _e( 'Email sent.' ); ?></span>
 				<span style="display:none" class="export-personal-data-failed"><?php _e( 'Email could not be sent.' ); ?> <button type="button" class="button export-personal-data-handle"><?php _e( 'Retry' ); ?></button></span>

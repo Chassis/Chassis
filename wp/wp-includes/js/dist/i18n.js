@@ -82,12 +82,12 @@ this["wp"] = this["wp"] || {}; this["wp"]["i18n"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 320);
+/******/ 	return __webpack_require__(__webpack_require__.s = 376);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 125:
+/***/ 137:
 /***/ (function(module, exports, __webpack_require__) {
 
 var __WEBPACK_AMD_DEFINE_RESULT__;/* global window, exports, define */
@@ -348,14 +348,14 @@ function _defineProperty(obj, key, value) {
 
 /***/ }),
 
-/***/ 320:
+/***/ 376:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread.js
-var objectSpread = __webpack_require__(8);
+var objectSpread = __webpack_require__(7);
 
 // CONCATENATED MODULE: ./node_modules/@tannin/postfix/index.js
 var PRECEDENCE, OPENERS, TERMINATORS, PATTERN;
@@ -564,19 +564,22 @@ var OPERATORS = {
  */
 function evaluate_evaluate( postfix, variables ) {
 	var stack = [],
-		i, getOperatorResult, term, value;
+		i, j, args, getOperatorResult, term, value;
 
 	for ( i = 0; i < postfix.length; i++ ) {
 		term = postfix[ i ];
 
 		getOperatorResult = OPERATORS[ term ];
 		if ( getOperatorResult ) {
+			// Pop from stack by number of function arguments.
+			j = getOperatorResult.length;
+			args = Array( j );
+			while ( j-- ) {
+				args[ j ] = stack.pop();
+			}
+
 			try {
-				// Pop from stack by number of function arguments.
-				value = getOperatorResult.apply(
-					null,
-					stack.splice( -1 * getOperatorResult.length )
-				);
+				value = getOperatorResult.apply( null, args );
 			} catch ( earlyReturn ) {
 				return earlyReturn;
 			}
@@ -723,17 +726,28 @@ function Tannin( data, options ) {
  */
 Tannin.prototype.getPluralForm = function( domain, n ) {
 	var getPluralForm = this.pluralForms[ domain ],
-		config, plural;
+		config, plural, pf;
 
 	if ( ! getPluralForm ) {
 		config = this.data[ domain ][ '' ];
-		plural = getPluralExpression(
+
+		pf = (
 			config[ 'Plural-Forms' ] ||
 			config[ 'plural-forms' ] ||
 			config.plural_forms
 		);
 
-		getPluralForm = this.pluralForms[ domain ] = pluralForms( plural );
+		if ( typeof pf !== 'function' ) {
+			plural = getPluralExpression(
+				config[ 'Plural-Forms' ] ||
+				config[ 'plural-forms' ] ||
+				config.plural_forms
+			);
+
+			pf = pluralForms( plural );
+		}
+
+		getPluralForm = this.pluralForms[ domain ] = pf;
 	}
 
 	return getPluralForm( n );
@@ -790,7 +804,7 @@ var memize = __webpack_require__(41);
 var memize_default = /*#__PURE__*/__webpack_require__.n(memize);
 
 // EXTERNAL MODULE: ./node_modules/@wordpress/i18n/node_modules/sprintf-js/src/sprintf.js
-var sprintf = __webpack_require__(125);
+var sprintf = __webpack_require__(137);
 var sprintf_default = /*#__PURE__*/__webpack_require__.n(sprintf);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/i18n/build-module/index.js
@@ -954,7 +968,7 @@ function _nx(single, plural, number, context, domain) {
  * original format string is returned.
  *
  * @param {string}   format  The format of the string to generate.
- * @param {string[]} ...args Arguments to apply to the format.
+ * @param {...string} args Arguments to apply to the format.
  *
  * @see http://www.diveintojavascript.com/projects/javascript-sprintf
  *
@@ -1095,7 +1109,7 @@ module.exports = function memize( fn, options ) {
 
 /***/ }),
 
-/***/ 8:
+/***/ 7:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";

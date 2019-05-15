@@ -30,6 +30,14 @@
  *     @type int    $spam         Whether the site is spam. Default 0.
  *     @type int    $deleted      Whether the site is deleted. Default 0.
  *     @type int    $lang_id      The site's language ID. Currently unused. Default 0.
+ *     @type int    $user_id      User ID for the site administrator. Passed to the
+ *                                `wp_initialize_site` hook.
+ *     @type string $title        Site title. Default is 'Site %d' where %d is the site ID. Passed
+ *                                to the `wp_initialize_site` hook.
+ *     @type array  $options      Custom option $key => $value pairs to use. Default empty array. Passed
+ *                                to the `wp_initialize_site` hook.
+ *     @type array  $meta         Custom site metadata $key => $value pairs to use. Default empty array.
+ *                                Passed to the `wp_initialize_site` hook.
  * }
  * @return int|WP_Error The new site's ID on success, or error object on failure.
  */
@@ -380,6 +388,10 @@ function update_site_cache( $sites, $update_meta_cache = true ) {
  * @return array|false Returns false if there is nothing to update. Returns an array of metadata on success.
  */
 function update_sitemeta_cache( $site_ids ) {
+	// Ensure this filter is hooked in even if the function is called early.
+	if ( ! has_filter( 'update_blog_metadata_cache', 'wp_check_site_meta_support_prefilter' ) ) {
+		add_filter( 'update_blog_metadata_cache', 'wp_check_site_meta_support_prefilter' );
+	}
 	return update_meta_cache( 'blog', $site_ids );
 }
 

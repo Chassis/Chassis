@@ -1,12 +1,12 @@
 @charset "UTF-8";
 /*
 Theme Name: Twenty Nineteen
-Theme URI: https://github.com/WordPress/twentynineteen
+Theme URI: https://wordpress.org/themes/twentynineteen/
 Author: the WordPress team
 Author URI: https://wordpress.org/
 Description: Our 2019 default theme is designed to show off the power of the block editor. It features custom styles for all the default blocks, and is built so that what you see in the editor looks like what you'll see on your website. Twenty Nineteen is designed to be adaptable to a wide range of websites, whether you’re running a photo blog, launching a new business, or supporting a non-profit. Featuring ample whitespace and modern sans-serif headlines paired with classic serif body text, it's built to be beautiful on all screen sizes.
 Requires at least: WordPress 4.9.6
-Version: 1.3
+Version: 1.4
 License: GNU General Public License v2 or later
 License URI: LICENSE
 Text Domain: twentynineteen
@@ -2387,13 +2387,20 @@ h6 {
 .error-404 .page-title,
 .comments-title,
 blockquote {
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
   hyphens: auto;
   word-break: break-word;
+  word-wrap: break-word;
 }
 
 /* Do not hyphenate entry title on tablet view and bigger. */
 @media only screen and (min-width: 768px) {
   .entry-title {
+    -webkit-hyphens: none;
+    -moz-hyphens: none;
+    -ms-hyphens: none;
     hyphens: none;
   }
 }
@@ -3734,7 +3741,12 @@ body.page .main-navigation {
 
 .site-branding {
   color: #767676;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
   position: relative;
+  word-wrap: break-word;
 }
 
 @media only screen and (min-width: 768px) {
@@ -4514,7 +4526,12 @@ body.page .main-navigation {
 }
 
 .comments-area {
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
   margin: calc(2 * 1rem) 1rem;
+  word-wrap: break-word;
   /* Add extra margin when the comments section is located immediately after the
 	 * post itself (this happens on pages).
 	 */
@@ -5029,7 +5046,12 @@ body.page .main-navigation {
 }
 
 #colophon .widget-column .widget {
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
   width: 100%;
+  word-wrap: break-word;
 }
 
 @media only screen and (min-width: 1168px) {
@@ -5041,6 +5063,11 @@ body.page .main-navigation {
 
 #colophon .site-info {
   color: #767676;
+  -webkit-hyphens: auto;
+  -moz-hyphens: auto;
+  -ms-hyphens: auto;
+  hyphens: auto;
+  word-wrap: break-word;
 }
 
 #colophon .site-info a {
@@ -5663,7 +5690,8 @@ body.page .main-navigation {
 }
 
 .entry .entry-content .wp-block-quote:not(.is-large), .entry .entry-content .wp-block-quote:not(.is-style-large) {
-  border-left: 2px solid #0073aa;
+  border-width: 2px;
+  border-color: #0073aa;
   padding-top: 0;
   padding-bottom: 0;
 }
@@ -6013,34 +6041,20 @@ body.page .main-navigation {
   word-break: break-word;
 }
 
-.entry .entry-content .wp-block-columns.alignfull {
-  padding-left: 1rem;
-  padding-right: 1rem;
+.entry .entry-content .wp-block-columns .wp-block-column > *:first-child {
+  margin-top: 0;
 }
 
-@media only screen and (min-width: 600px) {
-  .entry .entry-content .wp-block-columns {
-    flex-wrap: nowrap;
-  }
+.entry .entry-content .wp-block-columns .wp-block-column > *:last-child {
+  margin-bottom: 0;
 }
 
 @media only screen and (min-width: 768px) {
-  .entry .entry-content .wp-block-columns .wp-block-column > *:first-child {
-    margin-top: 0;
+  .entry .entry-content .wp-block-columns {
+    flex-wrap: nowrap;
   }
-  .entry .entry-content .wp-block-columns .wp-block-column > *:last-child {
-    margin-bottom: 0;
-  }
-  .entry .entry-content .wp-block-columns[class*='has-'] > * {
-    margin-right: 1rem;
-  }
-  .entry .entry-content .wp-block-columns[class*='has-'] > *:last-child {
-    margin-right: 0;
-  }
-  .entry .entry-content .wp-block-columns.alignfull,
-  .entry .entry-content .wp-block-columns.alignfull .wp-block-column {
-    padding-left: calc(2 * 1rem);
-    padding-right: calc(2 * 1rem);
+  .entry .entry-content .wp-block-columns .wp-block-column:not(:first-child) {
+    margin-left: 32px;
   }
 }
 
@@ -6086,38 +6100,38 @@ body.page .main-navigation {
   color: #fff;
 }
 
-.entry .entry-content .has-primary-background-color p,
-.entry .entry-content .has-primary-background-color h1,
-.entry .entry-content .has-primary-background-color h2,
-.entry .entry-content .has-primary-background-color h3,
-.entry .entry-content .has-primary-background-color h4,
-.entry .entry-content .has-primary-background-color h5,
-.entry .entry-content .has-primary-background-color h6,
-.entry .entry-content .has-primary-background-color a,
-.entry .entry-content .has-secondary-background-color p,
-.entry .entry-content .has-secondary-background-color h1,
-.entry .entry-content .has-secondary-background-color h2,
-.entry .entry-content .has-secondary-background-color h3,
-.entry .entry-content .has-secondary-background-color h4,
-.entry .entry-content .has-secondary-background-color h5,
-.entry .entry-content .has-secondary-background-color h6,
-.entry .entry-content .has-secondary-background-color a,
-.entry .entry-content .has-dark-gray-background-color p,
-.entry .entry-content .has-dark-gray-background-color h1,
-.entry .entry-content .has-dark-gray-background-color h2,
-.entry .entry-content .has-dark-gray-background-color h3,
-.entry .entry-content .has-dark-gray-background-color h4,
-.entry .entry-content .has-dark-gray-background-color h5,
-.entry .entry-content .has-dark-gray-background-color h6,
-.entry .entry-content .has-dark-gray-background-color a,
-.entry .entry-content .has-light-gray-background-color p,
-.entry .entry-content .has-light-gray-background-color h1,
-.entry .entry-content .has-light-gray-background-color h2,
-.entry .entry-content .has-light-gray-background-color h3,
-.entry .entry-content .has-light-gray-background-color h4,
-.entry .entry-content .has-light-gray-background-color h5,
-.entry .entry-content .has-light-gray-background-color h6,
-.entry .entry-content .has-light-gray-background-color a {
+.entry .entry-content .has-primary-background-color > p,
+.entry .entry-content .has-primary-background-color > h1,
+.entry .entry-content .has-primary-background-color > h2,
+.entry .entry-content .has-primary-background-color > h3,
+.entry .entry-content .has-primary-background-color > h4,
+.entry .entry-content .has-primary-background-color > h5,
+.entry .entry-content .has-primary-background-color > h6,
+.entry .entry-content .has-primary-background-color > a,
+.entry .entry-content .has-secondary-background-color > p,
+.entry .entry-content .has-secondary-background-color > h1,
+.entry .entry-content .has-secondary-background-color > h2,
+.entry .entry-content .has-secondary-background-color > h3,
+.entry .entry-content .has-secondary-background-color > h4,
+.entry .entry-content .has-secondary-background-color > h5,
+.entry .entry-content .has-secondary-background-color > h6,
+.entry .entry-content .has-secondary-background-color > a,
+.entry .entry-content .has-dark-gray-background-color > p,
+.entry .entry-content .has-dark-gray-background-color > h1,
+.entry .entry-content .has-dark-gray-background-color > h2,
+.entry .entry-content .has-dark-gray-background-color > h3,
+.entry .entry-content .has-dark-gray-background-color > h4,
+.entry .entry-content .has-dark-gray-background-color > h5,
+.entry .entry-content .has-dark-gray-background-color > h6,
+.entry .entry-content .has-dark-gray-background-color > a,
+.entry .entry-content .has-light-gray-background-color > p,
+.entry .entry-content .has-light-gray-background-color > h1,
+.entry .entry-content .has-light-gray-background-color > h2,
+.entry .entry-content .has-light-gray-background-color > h3,
+.entry .entry-content .has-light-gray-background-color > h4,
+.entry .entry-content .has-light-gray-background-color > h5,
+.entry .entry-content .has-light-gray-background-color > h6,
+.entry .entry-content .has-light-gray-background-color > a {
   color: #fff;
 }
 
@@ -6125,14 +6139,14 @@ body.page .main-navigation {
   color: #111;
 }
 
-.entry .entry-content .has-white-background-color p,
-.entry .entry-content .has-white-background-color h1,
-.entry .entry-content .has-white-background-color h2,
-.entry .entry-content .has-white-background-color h3,
-.entry .entry-content .has-white-background-color h4,
-.entry .entry-content .has-white-background-color h5,
-.entry .entry-content .has-white-background-color h6,
-.entry .entry-content .has-white-background-color a {
+.entry .entry-content .has-white-background-color > p,
+.entry .entry-content .has-white-background-color > h1,
+.entry .entry-content .has-white-background-color > h2,
+.entry .entry-content .has-white-background-color > h3,
+.entry .entry-content .has-white-background-color > h4,
+.entry .entry-content .has-white-background-color > h5,
+.entry .entry-content .has-white-background-color > h6,
+.entry .entry-content .has-white-background-color > a {
   color: #111;
 }
 
@@ -6163,25 +6177,25 @@ body.page .main-navigation {
 
 .entry .entry-content .has-primary-color,
 .entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-primary-color,
-.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-primary-color p {
+.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-primary-color > p {
   color: #0073aa;
 }
 
 .entry .entry-content .has-secondary-color,
 .entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-secondary-color,
-.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-secondary-color p {
+.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-secondary-color > p {
   color: #005177;
 }
 
 .entry .entry-content .has-dark-gray-color,
 .entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-dark-gray-color,
-.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-dark-gray-color p {
+.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-dark-gray-color > p {
   color: #111;
 }
 
 .entry .entry-content .has-light-gray-color,
 .entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-light-gray-color,
-.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-light-gray-color p {
+.entry .entry-content .wp-block-pullquote.is-style-solid-color blockquote.has-light-gray-color > p {
   color: #767676;
 }
 

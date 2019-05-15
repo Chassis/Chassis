@@ -15,11 +15,11 @@ if ( ! class_exists( 'Services_JSON' ) ) :
  * ideal data-interchange language.
  *
  * This package provides a simple encoder and decoder for JSON notation. It
- * is intended for use with client-side Javascript applications that make
+ * is intended for use with client-side JavaScript applications that make
  * use of HTTPRequest to perform server communication functions - data can
- * be encoded into JSON notation for use in a client-side javascript, or
- * decoded from incoming Javascript requests. JSON format is native to
- * Javascript, and can be directly eval()'ed with no further parsing
+ * be encoded into JSON notation for use in a client-side javaScript, or
+ * decoded from incoming JavaScript requests. JSON format is native to
+ * JavaScript, and can be directly eval()'ed with no further parsing
  * overhead
  *
  * All strings should be in ASCII or UTF-8 format!
@@ -805,7 +805,7 @@ class Services_JSON
                                  ($top['what'] == SERVICES_JSON_IN_STR) &&
                                  (($this->strlen8($this->substr8($chrs, 0, $c)) - $this->strlen8(rtrim($this->substr8($chrs, 0, $c), '\\'))) % 2 != 1)) {
                             // found a quote, we're in a string, and it's not escaped
-                            // we know that it's not escaped becase there is _not_ an
+                            // we know that it's not escaped because there is _not_ an
                             // odd number of backslashes at the end of the string so far
                             array_pop($stk);
                             //print("Found end of string at {$c}: ".$this->substr8($chrs, $top['where'], (1 + 1 + $c - $top['where']))."\n");
