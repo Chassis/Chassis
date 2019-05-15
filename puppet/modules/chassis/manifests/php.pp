@@ -83,56 +83,22 @@ class chassis::php (
 		require => Package["${php_package}-fpm"]
 	}
 
-	# Add a type we can use to remove old php versions.
-	define remove_php_fpm {
-		case $name {
-			'5.6',
-			'7.0',
-			'7.1',
-			'7.2',
-			'7.3': {
-				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
-					ensure => absent,
-				}
-			}
-			default: {
-				package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
-					ensure => absent,
-				}
-			}
+	# Any array of all the versions of php that we support.
+	$php_versions = [ '7.3', '7.2', '7.1', '7.0', '5.6' ]
+
+	# Work out which version of php we should remove if we've swapped versions.
+	$php_versions_to_remove = delete( $php_versions, $short_ver )
+
+	$php_versions_to_remove.each | Integer $index, String $value | {
+		package { [ "php${value}-fpm", "php${value}-cli", "php${value}-common" ]:
+			ensure => absent,
+			notify => Service["${php_package}-fpm"],
+			require => Package["${php_package}-fpm"]
 		}
 	}
 
-	case $short_ver {
-		'5.6': {
-			remove_php_fpm { [ '7.0', '7.1', '7.2', '7.3' ]:
-				notify => Service["${php_package}-fpm"],
-			}
-		}
-		'7.0': {
-			remove_php_fpm { [ '5.6', '7.1', '7.2', '7.3' ]:
-				notify => Service["${php_package}-fpm"],
-			}
-		}
-		'7.1': {
-			remove_php_fpm { [ '5.6', '7.0', '7.2', '7.3' ]:
-				notify => Service["${php_package}-fpm"],
-			}
-		}
-		'7.2': {
-			remove_php_fpm { [ '5.6', '7.0', '7.1', '7.3' ]:
-				notify => Service["${php_package}-fpm"],
-			}
-		}
-		'7.3': {
-			remove_php_fpm { [ '5.6', '7.0', '7.1', '7.2' ]:
-				notify => Service["${php_package}-fpm"],
-			}
-		}
-		default: {}
-	}
 
-	# Install the extensions we need
+		# Install the extensions we need
 	package { $prefixed_extensions:
 		# Hold at the given version
 		ensure          => 'latest',
