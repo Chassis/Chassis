@@ -91,8 +91,8 @@ class chassis::php (
 
 	$php_versions_to_remove.each | Integer $index, String $value | {
 		package { [ "php${value}-fpm", "php${value}-cli", "php${value}-common" ]:
-			ensure => absent,
-			notify => Service["${php_package}-fpm"],
+			ensure  => absent,
+			notify  => Service["${php_package}-fpm"],
 			require => Package["${php_package}-fpm"]
 		}
 	}
