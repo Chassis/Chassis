@@ -1,3 +1,7 @@
+/**
+ * @output wp-admin/js/theme-plugin-editor.js
+ */
+
 /* eslint no-magic-numbers: ["error", { "ignore": [-1, 0, 1] }] */
 
 if ( ! window.wp ) {
@@ -49,6 +53,8 @@ wp.themePluginEditor = (function( $ ) {
 		component.textarea = component.form.find( '#newcontent' );
 		component.textarea.on( 'change', component.onChange );
 		component.warning = $( '.file-editor-warning' );
+		component.docsLookUpButton = component.form.find( '#docs-lookup' );
+		component.docsLookUpList = component.form.find( '#docs-list' );
 
 		if ( component.warning.length > 0 ) {
 			component.showWarning();
@@ -72,6 +78,15 @@ wp.themePluginEditor = (function( $ ) {
 				return component.l10n.saveAlert;
 			}
 			return undefined;
+		} );
+
+		component.docsLookUpList.on( 'change', function() {
+			var option = $( this ).val();
+			if ( '' === option ) {
+				component.docsLookUpButton.prop( 'disabled', true );
+			} else {
+				component.docsLookUpButton.prop( 'disabled', false );
+			}
 		} );
 	};
 

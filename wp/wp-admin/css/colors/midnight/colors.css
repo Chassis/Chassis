@@ -111,9 +111,7 @@ input[type=radio]:checked:before {
 
 /* List tables */
 .wrap .add-new-h2:hover,
-.wrap .page-title-action:hover,
-.tablenav .tablenav-pages a:hover,
-.tablenav .tablenav-pages a:focus {
+.wrap .page-title-action:hover {
   color: #fff;
   background-color: #363b3f;
 }
@@ -155,7 +153,7 @@ input[type=radio]:checked:before {
 }
 
 /* Active tabs use a bottom border color that matches the page background color. */
-.about-wrap h2 .nav-tab-active,
+.about-wrap .nav-tab-active,
 .nav-tab-active,
 .nav-tab-active:hover {
   background-color: #f1f1f1;
@@ -370,6 +368,25 @@ ul#adminmenu > li.current > a.current:after {
 #wpadminbar > #wp-toolbar > #wp-admin-bar-top-secondary > #wp-admin-bar-search #adminbarsearch input.adminbar-input:focus {
   color: #fff;
   background: #464d52;
+}
+
+/* Admin Bar: recovery mode */
+#wpadminbar #wp-admin-bar-recovery-mode {
+  color: #fff;
+  background-color: #69a8bb;
+}
+
+#wpadminbar #wp-admin-bar-recovery-mode .ab-item,
+#wpadminbar #wp-admin-bar-recovery-mode a.ab-item {
+  color: #fff;
+}
+
+#wpadminbar .ab-top-menu > #wp-admin-bar-recovery-mode.hover > .ab-item,
+#wpadminbar.nojq .quicklinks .ab-top-menu > #wp-admin-bar-recovery-mode > .ab-item:focus,
+#wpadminbar:not(.mobile) .ab-top-menu > #wp-admin-bar-recovery-mode:hover > .ab-item,
+#wpadminbar:not(.mobile) .ab-top-menu > #wp-admin-bar-recovery-mode > .ab-item:focus {
+  color: #fff;
+  background-color: #5f97a8;
 }
 
 /* Admin Bar: my account */

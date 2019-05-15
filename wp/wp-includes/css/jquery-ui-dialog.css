@@ -197,7 +197,7 @@
 	border-color: #cccccc;
 	background: #f7f7f7;
 	box-shadow: 0 1px 0 #cccccc;
- 	vertical-align: top;
+	vertical-align: top;
 }
 
 .ui-button:active,
@@ -221,14 +221,13 @@
 
 .ui-button:focus {
 	border-color: #5b9dd9;
-	box-shadow: 0 0 3px rgba( 0, 115, 170, .8 );
+	box-shadow: 0 0 3px rgba(0, 115, 170, 0.8);
 }
 
 .ui-button:active {
 	background: #eee;
 	border-color: #999;
-	box-shadow: inset 0 2px 5px -3px rgba( 0, 0, 0, 0.5 );
-	-webkit-transform: translateY(1px);
+	box-shadow: inset 0 2px 5px -3px rgba(0, 0, 0, 0.5);
 	transform: translateY(1px);
 }
 
@@ -240,11 +239,10 @@
 	box-shadow: none !important;
 	text-shadow: 0 1px 0 #fff !important;
 	cursor: default;
-	-webkit-transform: none !important;
 	transform: none !important;
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 
 	.ui-button {
 		padding: 6px 14px;
@@ -265,7 +263,7 @@
 	left: 0;
 	z-index: 100102;
 	background-color: #fff;
-	box-shadow: 0 3px 6px rgba( 0, 0, 0, 0.3 );
+	box-shadow: 0 3px 6px rgba(0, 0, 0, 0.3);
 }
 
 .ui-dialog-titlebar {
@@ -303,7 +301,7 @@
 	line-height: 36px;
 	width: 36px;
 	height: 36px;
-	content: '\f158';
+	content: "\f158";
 }
 
 .ui-button.ui-dialog-titlebar-close:hover {

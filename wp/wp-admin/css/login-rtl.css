@@ -37,7 +37,7 @@ a:focus {
 	color: #124964;
 	box-shadow:
 		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 2px 1px rgba(30, 140, 190, 0.8);
 }
 
 .ie8 a:focus {
@@ -56,7 +56,7 @@ p {
 	margin-right: 0;
 	margin-bottom: 20px;
 	background-color: #fff;
-	box-shadow: 0 1px 1px 0 rgba(0,0,0,0.1);
+	box-shadow: 0 1px 1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .login .success {
@@ -79,22 +79,49 @@ p {
 }
 
 .login .password-input-wrapper {
-    display: table;
+	position: relative;
 }
 
 .login .input.password-input {
-    display: table-cell;
-    margin: 0;
+	margin: 0;
+}
+
+.login .input::-ms-clear {
+	display: none;
 }
 
 .login .pw-weak {
-    margin-bottom: 15px;
+	margin-bottom: 15px;
 }
 
 .login .button.button-secondary {
-    display: table-cell;
-    border-radius: 0;
-    vertical-align: middle;
+	background: transparent;
+	border: 1px solid transparent;
+	box-shadow: none;
+	font-size: 14px;
+	line-height: 2;
+	height: auto;
+	margin: 0;
+	padding: 5px 9px;
+	position: absolute;
+	left: 0;
+	top: 0;
+}
+
+.login .button.button-secondary:hover {
+	background: transparent;
+}
+
+.login .button.button-secondary:focus {
+	background: transparent;
+	border-color: #5b9dd9;
+	box-shadow: 0 0 3px rgba(0, 115, 170, 0.8);
+}
+
+.login .button.button-secondary:active {
+	background: transparent;
+	box-shadow: none;
+	transform: none;
 }
 
 .login form {
@@ -104,7 +131,7 @@ p {
 	font-weight: 400;
 	overflow: hidden;
 	background: #fff;
-	box-shadow: 0 1px 3px rgba(0,0,0,0.13);
+	box-shadow: 0 1px 3px rgba(0, 0, 0, 0.13);
 }
 
 .login form .forgetmenot {
@@ -127,7 +154,6 @@ p {
 }
 
 .login label {
-	color: #72777c;
 	font-size: 14px;
 }
 
@@ -209,8 +235,13 @@ p {
 .login input[type="text"] {
 	font-size: 24px;
 	width: 100%;
-	padding: 3px;
+	padding: 5px;
 	margin: 2px 0 16px 6px;
+}
+
+.login-action-rp form .input,
+.login-action-rp input[type="text"] {
+	padding: 5px 5px 5px 45px;
 }
 
 .login form .input,
@@ -263,13 +294,13 @@ body.interim-login {
 	width: device-width;
 }
 
-@media screen and ( max-height: 550px ) {
+@media screen and (max-height: 550px) {
 	#login {
 		padding: 20px 0;
 	}
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	.interim-login input[type=checkbox] {
 		height: 16px;
 		width: 16px;

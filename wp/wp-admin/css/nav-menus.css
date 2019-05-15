@@ -37,8 +37,8 @@ ul.add-menu-item-tabs li {
 }
 
 #wpbody-content #menu-settings-column {
-	display:inline;
-	width:281px;
+	display: inline;
+	width: 281px;
 	margin-left: -300px;
 	clear: both;
 	float: left;
@@ -161,7 +161,6 @@ ul.add-menu-item-tabs li {
 	margin-right: 20px;
 	margin-top: -3px;
 	width: 100%;
-	background: #f5f5f5;
 }
 
 #menu-management .menu-edit {
@@ -169,7 +168,7 @@ ul.add-menu-item-tabs li {
 }
 
 .nav-menus-php #post-body {
-	padding: 0 10px 10px;
+	padding: 0 10px;
 	border-top: 1px solid #fff;
 	border-bottom: 1px solid #ddd;
 	background: #fff;
@@ -178,6 +177,7 @@ ul.add-menu-item-tabs li {
 #nav-menu-header,
 #nav-menu-footer {
 	padding: 0 10px;
+	background: #f5f5f5;
 }
 
 #nav-menu-header {
@@ -202,8 +202,12 @@ ul.add-menu-item-tabs li {
 	float: none;
 }
 
+.nav-menus-php #post-body-content .post-body-plain {
+	margin-bottom: 0;
+}
+
 #menu-management .menu-add-new abbr {
-	font-weight:600;
+	font-weight: 600;
 }
 
 #select-nav-menu-container {
@@ -318,7 +322,7 @@ ul.add-menu-item-tabs li {
 }
 
 .button-controls {
-	clear:both;
+	clear: both;
 	margin: 10px 0;
 }
 
@@ -415,7 +419,7 @@ ul.add-menu-item-tabs li {
 }
 
 .menu {
-	padding-top:1em;
+	padding-top: 1em;
 }
 
 #menu-to-edit {
@@ -429,13 +433,13 @@ ul.add-menu-item-tabs li {
 
 .menu li {
 	margin-bottom: 0;
-	position:relative;
+	position: relative;
 }
 
 .menu-item-bar {
-	clear:both;
-	line-height:1.5em;
-	position:relative;
+	clear: both;
+	line-height: 1.5;
+	position: relative;
 	margin: 9px 0 0;
 }
 
@@ -446,7 +450,7 @@ ul.add-menu-item-tabs li {
 	height: auto;
 	min-height: 20px;
 	width: 382px;
-	line-height: 30px;
+	line-height: 2.4;
 	overflow: hidden;
 	word-wrap: break-word;
 }
@@ -476,7 +480,7 @@ ul.add-menu-item-tabs li {
 .menu-item-handle .item-title {
 	font-size: 13px;
 	font-weight: 600;
-	line-height: 20px;
+	line-height: 1.6;
 	display: block;
 	/* @todo: responsive view. */
 	margin-right: 13em;
@@ -492,13 +496,13 @@ li.menu-item.ui-sortable-helper .menu-item-bar {
 }
 
 li.menu-item.ui-sortable-helper .menu-item-transport .menu-item-bar {
-	margin-top: 13px;
+	margin-top: 9px; /* Must use the same value used by the dragged item .menu-item-bar */
 }
 
 .menu .sortable-placeholder {
 	height: 35px;
 	width: 410px;
-	margin-top: 13px;
+	margin-top: 9px; /* Must use the same value used by the dragged item .menu-item-bar */
 }
 
 /* Hide the transport list when it's empty */
@@ -552,7 +556,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 	padding: 12px 16px;
 	color: #666;
 	font-size: 12px;
-	line-height: 18px;
+	line-height: 1.5;
 }
 
 .item-controls {
@@ -594,7 +598,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 	color: #0073aa;
 	text-decoration: underline;
 	font-size: 12px;
-	line-height: 18px;
+	line-height: 1.5;
 }
 
 .no-js.nav-menus-php .item-edit .screen-reader-text {
@@ -629,7 +633,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 .nav-menus-php .item-edit:focus:before {
 	box-shadow:
 		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 2px 1px rgba(30, 140, 190, 0.8);
 }
 
 /* Menu editing */
@@ -645,7 +649,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 	z-index: 10; /* Keep .item-title's shadow from appearing on top of .menu-item-settings */
 	border: 1px solid #e5e5e5;
 	border-top: none;
-	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
 
 .menu-item-settings .field-move {
@@ -733,7 +737,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 .nav-menus-php .major-publishing-actions {
 	clear: both;
 	padding: 10px 0;
-	line-height: 28px;
+	line-height: 2.1;
 }
 
 .nav-menus-php .major-publishing-actions .publishing-action {
@@ -748,7 +752,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 /* Same as the Publish Meta Box #delete-action */
 .nav-menus-php .delete-action {
 	float: left;
-	line-height: 28px;
+	line-height: 2.1;
 }
 
 .nav-menus-php .major-publishing-actions .form-invalid {
@@ -784,7 +788,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 	}
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	body.nav-menus-php,
 	body.wp-customizer {
 		min-width: 0 !important;
@@ -837,7 +841,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 
 	.nav-menus-php .delete-action {
 		font-size: 14px;
-		line-height: 30px;
+		line-height: 2.1;
 	}
 
 	.menu-item-bar .menu-item-handle,

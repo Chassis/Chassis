@@ -39,7 +39,7 @@
 .widgets-holder-wrap .widget-inside {
 	border-top: none;
 	padding: 1px 15px 15px 15px;
-	line-height: 16px;
+	line-height: 1.2;
 }
 
 .widget.widget-dirty .widget-control-close-wrapper {
@@ -84,15 +84,36 @@
 	margin-right: 8px;
 }
 
+.media-widget-control .attachment-media-view .button-add-media,
 .media-widget-control .placeholder {
 	border: 1px dashed #b4b9be;
 	box-sizing: border-box;
 	cursor: pointer;
-	line-height: 20px;
+	line-height: 1.6;
 	padding: 9px 0;
 	position: relative;
 	text-align: center;
 	width: 100%;
+}
+
+.media-widget-control .attachment-media-view .button-add-media {
+	cursor: pointer;
+	background-color: #edeff0;
+	color: #32373c;
+}
+
+.media-widget-control .attachment-media-view .button-add-media:hover {
+	background-color: #fbfbfc;
+}
+
+.media-widget-control .attachment-media-view .button-add-media:focus {
+	background-color: #fbfbfc;
+	border-style: solid;
+	border-color: #5b9dd9;
+	box-shadow: 0 0 3px rgba( 0, 115, 170, .8 );
+	/* Only visible in Windows High Contrast mode */
+	outline: 2px solid transparent;
+	outline-offset: -2px;
 }
 
 .media-widget-control .media-widget-preview {
@@ -164,9 +185,7 @@
 }
 
 .media-widget-gallery-preview {
-	display: -webkit-box;
 	display: flex;
-	-webkit-box-pack: start;
 	justify-content: flex-start;
 	flex-wrap: wrap;
 	margin: -1.79104477%;
@@ -221,13 +240,10 @@
 	bottom: 0;
 	width: 100%;
 	box-sizing: border-box;
-	display: -webkit-box;
 	display: flex;
-	-webkit-box-align: center;
 	align-items: center;
-	-webkit-box-pack: center;
 	justify-content: center;
-	background-color: rgba( 0, 0, 0, .5 );
+	background-color: rgba(0, 0, 0, 0.5);
 }
 
 .media-widget-gallery-preview .gallery-icon-placeholder-text {
@@ -313,7 +329,7 @@
 .sidebar-name .handlediv:focus .toggle-indicator:before {
 	box-shadow:
 		0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+		0 0 2px 1px rgba(30, 140, 190, 0.8);
 }
 
 .sidebar-name h2,
@@ -379,10 +395,6 @@ div#widgets-left .widget-holder {
 #widgets-left .widgets-holder-wrap {
 	border: none;
 	box-shadow: none;
-}
-
-#available-widgets .widget-action {
-	display: none;
 }
 
 #available-widgets .widget {
@@ -491,10 +503,15 @@ div#widgets-right .closed .widgets-sortables {
 /* Dragging a widget over a closed sidebar */
 #widgets-right .widgets-holder-wrap.widget-hover {
 	border-color: #72777c;
-	box-shadow: 0 1px 2px rgba(0,0,0,0.3);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.3);
 }
 
 /* Accessibility Mode */
+.widget-access-link {
+	float: right;
+	margin: -5px 0 10px 10px;
+}
+
 .widgets_access #widgets-left .widget .widget-top {
 	cursor: auto;
 }
@@ -511,8 +528,11 @@ div#widgets-right .closed .widgets-sortables {
 }
 
 #available-widgets .widget-control-edit .edit,
+#available-widgets .widget-action .edit,
 #widgets-left .inactive-sidebar .widget-control-edit .add,
-#widgets-right .widget-control-edit .add {
+#widgets-left .inactive-sidebar .widget-action .add,
+#widgets-right .widget-control-edit .add,
+#widgets-right .widget-action .add {
 	display: none;
 }
 
@@ -521,7 +541,7 @@ div#widgets-right .closed .widgets-sortables {
 	color: #666;
 	background: #EEE;
 	padding: 0 15px;
-	line-height: 43px;
+	line-height: 3.35;
 	border-left: 1px solid #DDD;
 }
 
@@ -640,7 +660,7 @@ div#widgets-right .closed .widgets-sortables {
 div#widgets-right .widget-top:hover,
 #widgets-left .widget-top:hover {
 	border-color: #999;
-	box-shadow: 0 1px 2px rgba(0,0,0,0.1);
+	box-shadow: 0 1px 2px rgba(0, 0, 0, 0.1);
 }
 
 .widgets-chooser ul.widgets-chooser-sidebars {
@@ -659,44 +679,40 @@ div#widgets-right .widget-top:hover,
 }
 
 .widgets-chooser li {
-	padding: 10px 15px 10px 35px;
 	border-bottom: 1px solid #ccc;
 	background: #fff;
 	margin: 0;
-	cursor: pointer;
-	outline: none;
 	position: relative;
+}
+
+.widgets-chooser .widgets-chooser-button {
+	width: 100%;
+	padding: 10px 15px 10px 35px;
+	background: transparent;
+	border: 0;
+	box-sizing: border-box;
+	text-align: left;
+	cursor: pointer;
 	transition: background 0.2s ease-in-out;
 }
 
- /* @todo looks like these hover/focus states are overridden by .widgets-chooser-selected */
-.widgets-chooser li:hover,
-.widgets-chooser li:focus {
-	background: rgba(255,255,255,0.7);
-}
-
-.widgets-chooser li:focus:before {
-	content: "\f147";
-	display: block;
-	-webkit-font-smoothing: antialiased;
-	font: normal 26px/1 dashicons;
-	color: #555d66;
-	position: absolute;
-	top: 7px;
-	left: 5px;
+/* @todo looks like these hover/focus states are overridden by .widgets-chooser-selected */
+.widgets-chooser .widgets-chooser-button:hover,
+.widgets-chooser .widgets-chooser-button:focus {
+	outline: none;
+	text-decoration: underline;
 }
 
 .widgets-chooser li:last-child {
 	border: none;
 }
 
-.widgets-chooser li.widgets-chooser-selected {
-	background: #00a0d2;
+.widgets-chooser .widgets-chooser-selected .widgets-chooser-button {
+	background: #0073aa;
 	color: #fff;
 }
 
-.widgets-chooser li.widgets-chooser-selected:before,
-.widgets-chooser li.widgets-chooser-selected:focus:before {
+.widgets-chooser .widgets-chooser-selected:before {
 	content: "\f147";
 	display: block;
 	-webkit-font-smoothing: antialiased;
@@ -710,10 +726,6 @@ div#widgets-right .widget-top:hover,
 .widgets-chooser .widgets-chooser-actions {
 	padding: 10px 0 12px 0;
 	text-align: center;
-}
-
-.widgets-chooser button {
-	margin-right: 5px;
 }
 
 #available-widgets .widget .widget-top {
@@ -744,7 +756,7 @@ div#widgets-right .widget-top:hover,
 	right: 15px;
 }
 .text-widget-fields .wp-pointer .wp-pointer-buttons {
-	line-height: 1.4em;
+	line-height: 1.4;
 }
 
 .custom-html-widget-fields > p > .CodeMirror {
@@ -792,6 +804,11 @@ ul.CodeMirror-hints {
 	div.widget {
 		margin: 0 auto !important;
 		max-width: 480px;
+	}
+
+	.widget-access-link {
+		float: none;
+		margin: 15px 0 0 0;
 	}
 }
 

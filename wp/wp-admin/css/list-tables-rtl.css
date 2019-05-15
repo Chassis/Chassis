@@ -152,8 +152,17 @@
 	overflow: hidden;
 }
 
+#replysubmit .reply-submit-buttons {
+	margin-bottom: 0;
+}
+
 #replysubmit .button {
 	margin-left: 5px;
+}
+
+#replysubmit .spinner {
+	float: none;
+	margin: -4px 0 0;
 }
 
 #replyrow.inline-edit-row fieldset.comment-reply {
@@ -243,12 +252,12 @@
 
 #the-comment-list tr:last-child th,
 #the-comment-list tr:last-child td {
-    box-shadow: none;
+	box-shadow: none;
 }
 
 #the-comment-list tr.unapproved + tr.approved th,
 #the-comment-list tr.unapproved + tr.approved td {
-    border-top: 1px solid rgba(0, 0, 0, 0.03);
+	border-top: 1px solid rgba(0, 0, 0, 0.03);
 }
 
 /* table vim shortcuts */
@@ -351,7 +360,7 @@ td.plugin-title p {
 table.media .column-title .media-icon {
 	float: right;
 	min-height: 60px;
- 	margin: 0 0 0 9px;
+	margin: 0 0 0 9px;
 }
 
 table.media .column-title .media-icon img {
@@ -393,7 +402,7 @@ table.media .column-title .filename {
 }
 
 #commentsdiv .inside .row-actions {
-	line-height:18px;
+	line-height: 18px;
 }
 
 #commentsdiv .inside .column-author {
@@ -495,9 +504,9 @@ th.asc a:focus span.sorting-indicator:before {
 }
 
 .wp-list-table .toggle-row:focus:before {
-    box-shadow:
-    	0 0 0 1px #5b9dd9,
-		0 0 2px 1px rgba(30, 140, 190, .8);
+	box-shadow:
+		0 0 0 1px #5b9dd9,
+		0 0 2px 1px rgba(30, 140, 190, 0.8);
 }
 
 .ie8 .wp-list-table .toggle-row:focus:before {
@@ -610,15 +619,9 @@ th.asc a:focus span.sorting-indicator {
 	visibility: visible;
 }
 
-/* Bulk Actions */
-.tablenav-pages a,
-.tablenav-pages-navspan {
-	font-weight: 600;
-	padding: 0 2px;
-}
-
 .tablenav-pages .current-page {
 	margin: 0 0 0 2px;
+	padding-top: 5px;
 	padding-bottom: 5px;
 	font-size: 13px;
 	text-align: center;
@@ -630,12 +633,6 @@ th.asc a:focus span.sorting-indicator {
 
 .tablenav #table-paging {
 	margin-right: 2px;
-}
-
-.tablenav a.button,
-.tablenav a.button-secondary {
-	display: block;
-	margin: 3px 0 0 8px;
 }
 
 .tablenav {
@@ -651,10 +648,7 @@ th.asc a:focus span.sorting-indicator {
 
 .tablenav .tablenav-pages {
 	float: left;
-	height: 28px;
-	margin-top: 3px;
-	cursor: default;
-	color: #555;
+	margin: 3px 0 9px;
 }
 
 .tablenav .no-pages,
@@ -662,39 +656,17 @@ th.asc a:focus span.sorting-indicator {
 	display: none;
 }
 
-.tablenav .tablenav-pages a,
-.tablenav-pages span.current  {
-	text-decoration: none;
-	padding: 3px 6px;
-}
-
-.tablenav .tablenav-pages a,
-.tablenav-pages-navspan {
+.tablenav .tablenav-pages .button,
+.tablenav .tablenav-pages .tablenav-pages-navspan {
 	display: inline-block;
-	min-width: 17px;
-	border: 1px solid #ccc; /* same color as buttons border */
-	padding: 3px 5px 7px;
-	background: #e5e5e5;
+	vertical-align: baseline;
+	min-width: 28px;
+	min-height: 28px;
+	margin: 0;
+	padding: 0 4px;
 	font-size: 16px;
-	line-height: 1;
-	font-weight: 400;
+	line-height: 1.5;
 	text-align: center;
-}
-
-.tablenav-pages-navspan {
-	height: 16px;
-	border-color: #ddd; /* same as disabled buttons */
-	background: #f7f7f7; /* same as disabled buttons */
-	color: #a0a5aa; /* same as disabled buttons */
-}
-
-.tablenav .tablenav-pages a:hover,
-.tablenav .tablenav-pages a:focus {
-	border-color: #5b9dd9;
-	color: #fff;
-	background: #00a0d2;
-	box-shadow: none;
-	outline: none; /* IE8 */
 }
 
 .tablenav .displaying-num {
@@ -703,8 +675,7 @@ th.asc a:focus span.sorting-indicator {
 
 .tablenav .one-page .displaying-num {
 	display: inline-block;
-	margin-top: 5px;
-	margin-left: 0;
+	margin: 5px 0;
 }
 
 .tablenav .actions {
@@ -721,24 +692,7 @@ th.asc a:focus span.sorting-indicator {
 	margin-left: 20px;
 }
 
-/* @todo: unclear if the following tablenav rules are actually used.
-classes exist in paginate_links() but not seen in list table output. */
-.tablenav .dots {
-	border-color: transparent;
-}
-
-.tablenav .next,
-.tablenav .prev {
-	border-color: transparent;
-	color: #0073aa;
-}
-
-.tablenav .next:hover,
-.tablenav .prev:hover {
-	border-color: transparent;
-	color: #00a0d2;
-}
-
+/* This view-switcher is still used on multisite. */
 .tablenav .view-switch {
 	float: left;
 	margin: 0 5px;
@@ -1257,15 +1211,15 @@ ul.cat-checklist {
 .plugin-install #the-list td,
 .upgrade .plugins td,
 .upgrade .plugins th {
-	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .plugins tr.active.plugin-update-tr + tr.inactive th,
 .plugins tr.active.plugin-update-tr + tr.inactive td,
 .plugins tr.active + tr.inactive th,
 .plugins tr.active + tr.inactive td {
-	border-top: 1px solid rgba(0,0,0,0.03);
-	box-shadow: inset 0 1px 0 rgba(0,0,0,0.02), inset 0 -1px 0 #e1e1e1;
+	border-top: 1px solid rgba(0, 0, 0, 0.03);
+	box-shadow: inset 0 1px 0 rgba(0, 0, 0, 0.02), inset 0 -1px 0 #e1e1e1;
 }
 
 .plugins .update td,
@@ -1303,7 +1257,7 @@ ul.cat-checklist {
 .plugins .plugin-title .dashicons:before {
 	padding: 2px;
 	background-color: #eee;
-	box-shadow: inset 0 0 10px rgba(160,165,170,.15);
+	box-shadow: inset 0 0 10px rgba(160, 165, 170, 0.15);
 	font-size: 60px;
 	color: #B4B9BE;
 }
@@ -1336,7 +1290,7 @@ ul.cat-checklist {
 }
 
 .plugins .plugin-update-tr .plugin-update {
-	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 	overflow: hidden; /* clearfix */
 	padding: 0;
 }
@@ -1348,6 +1302,37 @@ ul.cat-checklist {
 
 .plugins .notice p {
 	margin: 0.5em 0;
+}
+
+.plugins .plugin-description a,
+.plugins .plugin-update a,
+.updates-table .plugin-title a {
+	text-decoration: underline;
+}
+
+.plugins tr.paused th.check-column {
+	border-right: 4px solid #d54e21;
+}
+
+.plugins tr.paused th,
+.plugins tr.paused td {
+	background-color: #fef7f1;
+}
+
+.plugins tr.paused .plugin-title,
+.plugins .paused .dashicons-warning {
+	color: #dc3232;
+}
+
+.plugins .paused .error-display p,
+.plugins .paused .error-display code {
+	font-size: 90%;
+	font-style: italic;
+	color: rgb( 0, 0, 0, 0.7 );
+}
+
+.plugins .resume-link {
+	color: #dc3232;
 }
 
 .plugin-card .update-now:before {
@@ -1364,28 +1349,14 @@ ul.cat-checklist {
 
 .plugin-card .updating-message:before {
 	content: "\f463";
-	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
-}
-
-@-webkit-keyframes rotation {
-	0% {
-		-webkit-transform: rotate(0deg);
-		transform: rotate(0deg);
-	}
-	100% {
-		-webkit-transform: rotate(-359deg);
-		transform: rotate(-359deg);
-	}
 }
 
 @keyframes rotation {
 	0% {
-		-webkit-transform: rotate(0deg);
 		transform: rotate(0deg);
 	}
 	100% {
-		-webkit-transform: rotate(-359deg);
 		transform: rotate(-359deg);
 	}
 }
@@ -1436,7 +1407,7 @@ ul.cat-checklist {
 	margin-left: 0;
 }
 
-@media screen and ( min-width: 1600px ) {
+@media screen and (min-width: 1600px) and ( max-width: 2299px ) {
 	.plugin-card {
 		width: 30%;
 		width: calc( 33.1% - 8px );
@@ -1457,6 +1428,31 @@ ul.cat-checklist {
 	}
 
 	.plugin-card:nth-child(3n) {
+		margin-left: 0;
+	}
+}
+
+@media screen and (min-width: 2300px) {
+	.plugin-card {
+		width: 25%;
+		width: calc( 25% - 12px );
+	}
+
+	.plugin-card:nth-child(odd) {
+		clear: none;
+		margin-right: 8px;
+	}
+
+	.plugin-card:nth-child(even) {
+		margin-left: 8px;
+	}
+
+	.plugin-card:nth-child(4n+1) {
+		clear: both;
+		margin-right: 0;
+	}
+
+	.plugin-card:nth-child(4n) {
 		margin-left: 0;
 	}
 }
@@ -1569,12 +1565,18 @@ div.action-links,
 	color: #444;
 }
 
-.plugin-card .compatibility-incompatible:before {
+.plugin-card .column-compatibility .compatibility-incompatible:before {
 	content: "\f158";
+	color: #c62d2d;
 }
 
-.plugin-card .compatibility-compatible:before {
+.plugin-card .column-compatibility .compatibility-compatible:before {
 	content: "\f147";
+	color: #31843f;
+}
+
+.plugin-card .notice {
+	margin: 20px 20px 0 20px;
 }
 
 .plugin-icon {
@@ -1626,7 +1628,7 @@ div.action-links,
 /* =Media Queries
 -------------------------------------------------------------- */
 
-@media screen and ( max-width: 1100px ) and ( min-width: 782px ), ( max-width: 480px ) {
+@media screen and (max-width: 1100px) and (min-width: 782px), (max-width: 480px) {
 	.plugin-card .action-links {
 		position: static;
 		margin-right: 148px;
@@ -1662,7 +1664,7 @@ div.action-links,
 	}
 }
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	/* WP List Table Options & Filters */
 	.tablenav {
 		height: auto;
@@ -1711,7 +1713,6 @@ div.action-links,
 
 	.tablenav .tablenav-pages {
 		width: 100%;
-		height: auto;
 		text-align: center;
 		margin: 0 0 25px;
 	}
@@ -1733,19 +1734,19 @@ div.action-links,
 		font-size: 16px;
 	}
 
-	.tablenav-pages .pagination-links a,
-	.tablenav-pages-navspan {
-		padding: 9px 11px 12px;
+	.tablenav .tablenav-pages .button,
+	.tablenav .tablenav-pages .tablenav-pages-navspan {
+		min-width: 44px;
+		padding: 12px 8px;
 		font-size: 18px;
-	}
-
-	.tablenav-pages-navspan {
-		height: 18px;
+		line-height: 1;
 	}
 
 	.tablenav-pages .pagination-links .current-page {
-		padding: 8px 9px 9px;
+		min-width: 44px;
+		padding: 12px 6px;
 		font-size: 16px;
+		line-height: 18px;
 	}
 
 	/* WP List Table Adjustments: General */
@@ -1820,6 +1821,11 @@ div.action-links,
 
 	.fixed .column-comment .comment-author {
 		display: block;
+	}
+
+	/* Comment author hidden via Screen Options */
+	.fixed .column-author.hidden ~ .column-comment .comment-author {
+		display: none;
 	}
 
 	#the-comment-list .is-expanded td {
@@ -1897,6 +1903,30 @@ div.action-links,
 
 	.widefat * {
 		word-wrap: normal;
+	}
+
+	/* Make row actions more easy to select on mobile */
+	body:not(.plugins-php) .row-actions {
+		display: -ms-grid;
+		display: grid;
+		-ms-grid-columns: auto auto auto;
+		grid-template-columns: auto auto auto;
+		color: transparent;
+	}
+
+	.row-actions span {
+		padding: 4px 0;
+	}
+
+	.row-actions span a,
+	.row-actions span .button-link {
+		display: inline-block;
+		padding: 4px 0;
+	}
+
+	.row-actions span.approve:before,
+	.row-actions span.unapprove:before {
+		content: "| ";
 	}
 
 	/* Quick Edit and Bulk Edit */
@@ -2018,6 +2048,11 @@ div.action-links,
 		padding: 10px 9px; /* reset from other list tables that have a label at this width */
 	}
 
+	/* Plugin description hidden via Screen Options */
+	#wpbody-content .wp-list-table.plugins .desc.hidden {
+		display: none;
+	}
+
 	#wpbody-content .wp-list-table.plugins .column-description {
 		padding-top: 2px;
 	}
@@ -2122,7 +2157,7 @@ div.action-links,
 
 	table.plugin-install #the-list tr {
 		display: block;
-		box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+		box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 	}
 
 	.plugin-card {
@@ -2132,9 +2167,15 @@ div.action-links,
 	}
 }
 
-@media screen and ( max-width: 480px ) {
+@media screen and (max-width: 480px) {
 	.tablenav-pages .current-page {
 		margin: 0;
+	}
+
+	/* Drop row actions to two columns on a small screen */
+	.row-actions:not(.plugins-php) {
+		-ms-grid-columns: auto auto;
+		grid-template-columns: auto auto;
 	}
 
 	.tablenav-pages .tablenav-paging-text {

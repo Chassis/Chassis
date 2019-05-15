@@ -1,9 +1,13 @@
+/**
+ * @output wp-admin/js/edit-comments.js
+ */
+
 /* global adminCommentsL10n, thousandsSeparator, list_args, QTags, ajaxurl, wpAjax */
-var setCommentsList, theList, theExtraList, commentReply;
+/* global commentReply, theExtraList, theList, setCommentsList */
 
 (function($) {
 var getCount, updateCount, updateCountText, updatePending, updateApproved,
-	updateHtmlTitle, updateDashboardText, adminTitle = document.title,
+	updateHtmlTitle, updateDashboardText, updateInModerationText, adminTitle = document.title,
 	isDashboard = $('#dashboard_right_now').length,
 	titleDiv, titleRegEx;
 
@@ -82,20 +86,38 @@ var getCount, updateCount, updateCountText, updatePending, updateApproved,
 		});
 	};
 
-	updateDashboardText = function ( response ) {
+	updateDashboardText = function( response ) {
 		if ( ! isDashboard || ! response || ! response.i18n_comments_text ) {
 			return;
 		}
 
-		var rightNow = $( '#dashboard_right_now' );
-
-		$( '.comment-count a', rightNow ).text( response.i18n_comments_text );
-		$( '.comment-mod-count a', rightNow ).text( response.i18n_moderation_text )
-			.parent()
-			[ response.in_moderation > 0 ? 'removeClass' : 'addClass' ]( 'hidden' );
+		$( '.comment-count a', '#dashboard_right_now' ).text( response.i18n_comments_text );
 	};
 
-	updateHtmlTitle = function ( diff ) {
+	/**
+	 * Updates the "comments in moderation" text across the UI.
+	 *
+	 * @since 5.2.0
+	 *
+	 * @param {object} response Ajax response from the server.
+	 *
+	 * @return {void}
+	 */
+	updateInModerationText = function( response ) {
+		if ( ! response || ! response.i18n_moderation_text ) {
+			return;
+		}
+
+		// Update the "comment in moderation" text across the UI.
+		$( '.comments-in-moderation-text' ).text( response.i18n_moderation_text );
+		// Hide the "comment in moderation" text in the Dashboard "At a Glance" widget.
+		if ( isDashboard && response.in_moderation ) {
+			$( '.comment-mod-count', '#dashboard_right_now' )
+				[ response.in_moderation > 0 ? 'removeClass' : 'addClass' ]( 'hidden' );
+		}
+	};
+
+	updateHtmlTitle = function( diff ) {
 		var newTitle, regExMatch, titleCount, commentFrag;
 
 		titleRegEx = titleRegEx || new RegExp( adminCommentsL10n.docTitleCommentsCount.replace( '%s', '\\([0-9' + thousandsSeparator + ']+\\)' ) + '?' );
@@ -184,7 +206,7 @@ var getCount, updateCount, updateCountText, updatePending, updateApproved,
 		});
 	};
 
-setCommentsList = function() {
+window.setCommentsList = function() {
 	var totalInput, perPageInput, pageInput, dimAfter, delBefore, updateTotalCount, delAfter, refillTheExtraList, diff,
 		lastConfidentTime = 0;
 
@@ -234,6 +256,7 @@ setCommentsList = function() {
 		diff = $('#' + settings.element).is('.' + settings.dimClass) ? 1 : -1;
 		if ( response ) {
 			updateDashboardText( response.supplemental );
+			updateInModerationText( response.supplemental );
 			updatePending( diff, response.supplemental.postId );
 			updateApproved( -1 * diff, response.supplemental.postId );
 		} else {
@@ -284,7 +307,7 @@ setCommentsList = function() {
 			a = $('.undo a', '#undo-' + id);
 			a.attr('href', 'comment.php?action=un' + action + 'comment&c=' + id + '&_wpnonce=' + settings.data._ajax_nonce);
 			a.attr('data-wp-lists', 'delete:the-comment-list:comment-' + id + '::un' + action + '=1');
-			a.attr('class', 'vim-z vim-destructive');
+			a.attr('class', 'vim-z vim-destructive aria-button-if-js');
 			$('.avatar', el).first().clone().prependTo('#undo-' + id + ' .' + action + '-undo-inside');
 
 			a.click(function( e ){
@@ -314,13 +337,18 @@ setCommentsList = function() {
 
 			spamDiff, trashDiff, pendingDiff, approvedDiff,
 
-			approved = commentRow.hasClass( 'approved' ),
+			/*
+			 * As `wpList` toggles only the `unapproved` class, the approved comment
+			 * rows can have both the `approved` and `unapproved` classes.
+			 */
+			approved = commentRow.hasClass( 'approved' ) && ! commentRow.hasClass( 'unapproved' ),
 			unapproved = commentRow.hasClass( 'unapproved' ),
 			spammed = commentRow.hasClass( 'spam' ),
 			trashed = commentRow.hasClass( 'trash' ),
 			undoing = false; // ticket #35904
 
 		updateDashboardText( newTotal );
+		updateInModerationText( newTotal );
 
 		// the order of these checks is important
 		// .unspam can also have .approve or .unapprove
@@ -504,7 +532,7 @@ setCommentsList = function() {
 		refillTheExtraList();
 
 		animated = $( ':animated', '#the-comment-list' );
-		animatedCallback = function () {
+		animatedCallback = function() {
 			if ( ! $( '#the-comment-list tr:visible' ).length ) {
 				theList.get(0).wpList.add( theExtraList.find( '.no-items' ).clone() );
 			}
@@ -560,8 +588,8 @@ setCommentsList = function() {
 		});
 	};
 
-	theExtraList = $('#the-extra-comment-list').wpList( { alt: '', delColor: 'none', addColor: 'none' } );
-	theList = $('#the-comment-list').wpList( { alt: '', delBefore: delBefore, dimAfter: dimAfter, delAfter: delAfter, addColor: 'none' } )
+	window.theExtraList = $('#the-extra-comment-list').wpList( { alt: '', delColor: 'none', addColor: 'none' } );
+	window.theList = $('#the-comment-list').wpList( { alt: '', delBefore: delBefore, dimAfter: dimAfter, delAfter: delAfter, addColor: 'none' } )
 		.bind('wpListDelEnd', function(e, s){
 			var wpListsData = $(s.target).attr('data-wp-lists'), id = s.element.replace(/[^0-9]+/g, '');
 
@@ -570,7 +598,7 @@ setCommentsList = function() {
 		});
 };
 
-commentReply = {
+window.commentReply = {
 	cid : '',
 	act : '',
 	originalContent : '',
@@ -578,8 +606,8 @@ commentReply = {
 	init : function() {
 		var row = $('#replyrow');
 
-		$('a.cancel', row).click(function() { return commentReply.revert(); });
-		$('a.save', row).click(function() { return commentReply.send(); });
+		$( '.cancel', row ).click( function() { return commentReply.revert(); } );
+		$( '.save', row ).click( function() { return commentReply.send(); } );
 		$( 'input#author-name, input#author-email, input#author-url', row ).keypress( function( e ) {
 			if ( e.which == 13 ) {
 				commentReply.send();
@@ -599,10 +627,6 @@ commentReply = {
 		});
 
 		this.comments_listing = $('#comments-form > input[name="comment_status"]').val() || '';
-
-		/* $(listTable).bind('beforeChangePage', function(){
-			commentReply.close();
-		}); */
 	},
 
 	addEvents : function(r) {
@@ -627,20 +651,40 @@ commentReply = {
 		$('#replyrow').fadeOut('fast', function(){
 			commentReply.close();
 		});
-
-		return false;
 	},
 
 	close : function() {
-		var c, replyrow = $('#replyrow');
+		var commentRow = $(),
+			replyRow = $( '#replyrow' );
 
 		// replyrow is not showing?
-		if ( replyrow.parent().is('#com-reply') )
+		if ( replyRow.parent().is( '#com-reply' ) ) {
 			return;
+		}
 
-		if ( this.cid && this.act == 'edit-comment' ) {
-			c = $('#comment-' + this.cid);
-			c.fadeIn(300, function(){ c.show(); }).css('backgroundColor', '');
+		if ( this.cid ) {
+			commentRow = $( '#comment-' + this.cid );
+		}
+
+		/*
+		 * When closing the Quick Edit form, show the comment row and move focus
+		 * back to the Quick Edit button.
+		 */
+		if ( 'edit-comment' === this.act ) {
+			commentRow.fadeIn( 300, function() {
+				commentRow
+					.show()
+					.find( '.vim-q' )
+						.attr( 'aria-expanded', 'false' )
+						.focus();
+			} ).css( 'backgroundColor', '' );
+		}
+
+		// When closing the Reply form, move focus back to the Reply button.
+		if ( 'replyto-comment' === this.act ) {
+			commentRow.find( '.vim-r' )
+				.attr( 'aria-expanded', 'false' )
+				.focus();
 		}
 
 		// reset the Quicktags buttons
@@ -649,14 +693,14 @@ commentReply = {
 
 		$('#add-new-comment').css('display', '');
 
-		replyrow.hide();
-		$('#com-reply').append( replyrow );
+		replyRow.hide();
+		$( '#com-reply' ).append( replyRow );
 		$('#replycontent').css('height', '').val('');
 		$('#edithead input').val('');
-		$( '.notice-error', replyrow )
+		$( '.notice-error', replyRow )
 			.addClass( 'hidden' )
 			.find( '.error' ).empty();
-		$( '.spinner', replyrow ).removeClass( 'is-active' );
+		$( '.spinner', replyRow ).removeClass( 'is-active' );
 
 		this.cid = '';
 		this.originalContent = '';
@@ -782,8 +826,6 @@ commentReply = {
 			success : function(x) { commentReply.show(x); },
 			error : function(r) { commentReply.error(r); }
 		});
-
-		return false;
 	},
 
 	show : function(xml) {
@@ -821,12 +863,10 @@ commentReply = {
 		}
 
 		if ( r.supplemental.i18n_comments_text ) {
-			if ( isDashboard ) {
-				updateDashboardText( r.supplemental );
-			} else {
-				updateApproved( 1, r.supplemental.parent_post_id );
-				updateCountText( 'span.all-count', 1 );
-			}
+			updateDashboardText( r.supplemental );
+			updateInModerationText( r.supplemental );
+			updateApproved( 1, r.supplemental.parent_post_id );
+			updateCountText( 'span.all-count', 1 );
 		}
 
 		c = $.trim(r.data); // Trim leading whitespaces
@@ -960,8 +1000,7 @@ $(document).ready(function(){
 	}
 
 	// Quick Edit and Reply have an inline comment editor.
-	$( '#the-comment-list' ).on( 'click', '.comment-inline', function (e) {
-		e.preventDefault();
+	$( '#the-comment-list' ).on( 'click', '.comment-inline', function() {
 		var $el = $( this ),
 			action = 'replyto';
 
@@ -969,6 +1008,7 @@ $(document).ready(function(){
 			action = $el.data( 'action' );
 		}
 
+		$( this ).attr( 'aria-expanded', 'true' );
 		commentReply.open( $el.data( 'commentId' ), $el.data( 'postId' ), action );
 	} );
 });

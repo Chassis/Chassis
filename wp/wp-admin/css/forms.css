@@ -24,7 +24,7 @@ input[type="week"],
 select,
 textarea {
 	border: 1px solid #ddd;
-	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.07 );
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.07);
 	background-color: #fff;
 	color: #32373c;
 	outline: none;
@@ -51,7 +51,9 @@ input[type="radio"]:focus,
 select:focus,
 textarea:focus {
 	border-color: #5b9dd9;
-	box-shadow: 0 0 2px rgba( 30, 140, 190, 0.8 );
+	box-shadow: 0 0 2px rgba(30, 140, 190, 0.8);
+	/* Only visible in Windows High Contrast mode */
+	outline: 2px solid transparent;
 }
 
 /* rtl:ignore */
@@ -84,7 +86,7 @@ input[type="radio"] {
 	width: 16px;
 	min-width: 16px;
 	-webkit-appearance: none;
-	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.1 );
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.1);
 	transition: .05s border-color ease-in-out;
 }
 
@@ -228,18 +230,20 @@ textarea[readonly] {
 }
 
 ::-moz-placeholder {
-   color: #72777c;
-   opacity: 1;
+	color: #72777c;
+	opacity: 1;
 }
 
 :-ms-input-placeholder {
 	color: #72777c;
 }
 
-.form-invalid input, .form-invalid input:focus,
-.form-invalid select, .form-invalid select:focus {
+.form-invalid input,
+.form-invalid input:focus,
+.form-invalid select,
+.form-invalid select:focus {
 	border-color: #dc3232 !important;
- box-shadow: 0 0 2px rgba( 204, 0, 0, 0.8 );
+	box-shadow: 0 0 2px rgba(204, 0, 0, 0.8);
 }
 
 .form-table .form-required.form-invalid td:after {
@@ -252,11 +256,11 @@ textarea[readonly] {
 
 /* Adjust error indicator for password layout */
 .form-table .form-required.user-pass1-wrap.form-invalid td:after {
-	content: '';
+	content: "";
 }
 
 .form-table .form-required.user-pass1-wrap.form-invalid .password-input-wrapper:after {
-	content: '\f534';
+	content: "\f534";
 	font: normal 20px/1 dashicons;
 	color: #dc3232;
 	margin: 0 6px 0 -29px;
@@ -273,10 +277,10 @@ select:disabled,
 select.disabled,
 textarea:disabled,
 textarea.disabled {
-	background: rgba( 255, 255, 255, 0.5 );
-	border-color: rgba( 222, 222, 222, 0.75 );
-	box-shadow: inset 0 1px 2px rgba( 0, 0, 0, 0.04 );
-	color: rgba( 51, 51, 51, 0.5 );
+	background: rgba(255, 255, 255, 0.5);
+	border-color: rgba(222, 222, 222, 0.75);
+	box-shadow: inset 0 1px 2px rgba(0, 0, 0, 0.04);
+	color: rgba(51, 51, 51, 0.5);
 }
 
 input[type="file"]:disabled,
@@ -423,9 +427,14 @@ input[type="number"].tiny-text {
 	margin-left: 1em;
 }
 
-button.wp-hide-pw > .dashicons {
+.wp-hide-pw > .dashicons,
+.wp-cancel-pw > .dashicons {
 	position: relative;
 	top: 3px;
+}
+
+.wp-cancel-pw .dashicons-no {
+	display: none;
 }
 
 label,
@@ -455,7 +464,7 @@ fieldset label,
 	background-color: #eee;
 	border: 1px solid #ddd;
 	color: #23282d;
-	margin: -2px 5px 5px 1px;
+	margin: -1px 0 5px;
 	padding: 3px 5px;
 	text-align: center;
 	width: 25em;
@@ -504,11 +513,20 @@ fieldset label,
 }
 
 .pw-weak {
-	display:none;
+	display: none;
 }
 
 .indicator-hint {
 	padding-top: 8px;
+}
+
+.wp-pwd [type="text"],
+.wp-pwd [type="password"] {
+	margin: 0;
+	/* Same height as the buttons */
+	line-height: 20px;
+	min-height: 28px;
+	max-height: 40px;
 }
 
 #pass1-text,
@@ -516,8 +534,11 @@ fieldset label,
 	display: none;
 }
 
-.show-password #pass1-text
-{
+#pass1-text::-ms-clear {
+	display: none;
+}
+
+.show-password #pass1-text {
 	display: inline-block;
 }
 
@@ -575,7 +596,7 @@ ul#add-to-blog-users {
 	position: absolute;
 	z-index: 10000;
 	border: 1px solid #5b9dd9;
-	box-shadow: 0 1px 2px rgba( 30, 140, 190, 0.8 );
+	box-shadow: 0 1px 2px rgba(30, 140, 190, 0.8);
 	background-color: #fff;
 }
 
@@ -778,7 +799,7 @@ table.form-table td .updated p {
 	min-width: 255px;
 	max-width: 520px;
 	border: 1px solid #e5e5e5;
-	box-shadow: 0 1px 1px rgba(0,0,0,0.04);
+	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 	background: #fff;
 }
 
@@ -834,13 +855,11 @@ table.form-table td .updated p {
 	right: 10px;
 	bottom: 9px;
 	background: transparent;
-	-webkit-transform: skew(20deg) rotate(6deg);
 	transform: skew(20deg) rotate(6deg);
 	box-shadow: 0 10px 8px rgba(0, 0, 0, 0.6);
 }
 
 .pressthis-bookmarklet:hover:after {
-	-webkit-transform: skew(20deg) rotate(9deg);
 	transform: skew(20deg) rotate(9deg);
 	box-shadow: 0 10px 8px rgba(0, 0, 0, 0.7);
 }
@@ -974,8 +993,8 @@ table.form-table td .updated p {
 }
 
 #request-filesystem-credentials-title {
-    font-size: 1.3em;
-    margin: 1em 0;
+	font-size: 1.3em;
+	margin: 1em 0;
 }
 
 .request-filesystem-credentials-form legend {
@@ -1112,7 +1131,7 @@ table.form-table td .updated p {
 .privacy_requests tbody th {
 	border-left: 4px solid #fff;
 	background: #fff;
-	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .privacy_requests tbody .has-request-results th {
@@ -1125,7 +1144,7 @@ table.form-table td .updated p {
 
 .privacy_requests tbody td {
 	background: #fff;
-	box-shadow: inset 0 -1px 0 rgba(0,0,0,0.1);
+	box-shadow: inset 0 -1px 0 rgba(0, 0, 0, 0.1);
 }
 
 .privacy_requests tbody .has-request-results td {
@@ -1157,18 +1176,18 @@ table.form-table td .updated p {
 }
 
 .status-label {
-	font-weight: bold;
+	font-weight: 600;
 }
 
 .status-label.status-request-pending {
-	font-weight: normal;
+	font-weight: 400;
 	font-style: italic;
 	color: #6c7781;
 }
 
 .status-label.status-request-failed {
 	color: #aa0000;
-	font-weight: bold;
+	font-weight: 600;
 }
 
 .wp-privacy-request-form {
@@ -1180,7 +1199,7 @@ table.form-table td .updated p {
 }
 
 .wp-privacy-request-form label {
-	font-weight: bold;
+	font-weight: 600;
 	line-height: 1.5;
 	padding-bottom: .5em;
 	display: block;
@@ -1204,7 +1223,6 @@ table.form-table td .updated p {
 .email-personal-data--sending::before {
 	color: #f56e28;
 	content: "\f463";
-	-webkit-animation: rotation 2s infinite linear;
 	animation: rotation 2s infinite linear;
 }
 
@@ -1217,7 +1235,7 @@ table.form-table td .updated p {
 /* =Media Queries
 -------------------------------------------------------------- */
 
-@media screen and ( max-width: 782px ) {
+@media screen and (max-width: 782px) {
 	/* Input Elements */
 	textarea {
 		-webkit-appearance: none;
@@ -1461,29 +1479,42 @@ table.form-table td .updated p {
 
 	.wp-pwd [type="text"],
 	.wp-pwd [type="password"] {
-		padding-right: 40px;
+		padding-right: 88px;
 	}
 
 	.wp-pwd button.button {
 		background: transparent;
-		border: none;
+		border: 1px solid transparent;
 		box-shadow: none;
 		line-height: 2;
 		margin: 0;
-		padding: 5px 10px;
+		padding: 5px 9px;
 		position: absolute;
 		right: 0;
 		top: 0;
 	}
 
+	.wp-pwd button.wp-hide-pw {
+		right: 40px;
+	}
+
 	.wp-pwd button.button:hover,
-	.wp-pwd button.button:focus,
+	.wp-pwd button.button:focus {
+		background: transparent;
+	}
+
 	.wp-pwd button.button:active {
 		background: transparent;
+		box-shadow: none;
+		transform: none;
 	}
 
 	.wp-pwd .button .text {
 		display: none;
+	}
+
+	.wp-cancel-pw .dashicons-no {
+		display: inline-block;
 	}
 
 	.options-general-php input[type="text"].small-text {
@@ -1493,21 +1524,21 @@ table.form-table td .updated p {
 
 	/* Privacy Policy settings screen */
 	.tools-privacy-policy-page form.wp-create-privacy-page {
-	    margin-bottom: 1em;
+		margin-bottom: 1em;
 	}
 
- 	.tools-privacy-policy-page input#set-page,
+	.tools-privacy-policy-page input#set-page,
 	.tools-privacy-policy-page select {
 		margin: 10px 0 0;
 	}
 
 	.tools-privacy-policy-page .wp-create-privacy-page span {
-	    display: block;
-	    margin-bottom: 1em;
+		display: block;
+		margin-bottom: 1em;
 	}
 
 	.tools-privacy-policy-page .wp-create-privacy-page .button {
-	    margin-left: 0;
+		margin-left: 0;
 	}
 
 	.wp-list-table.privacy_requests tr:not(.inline-edit-row):not(.no-items) td.column-primary:not(.check-column) {
@@ -1530,18 +1561,12 @@ table.form-table td .updated p {
 	}
 
 	.form-wrap .form-field {
-		padding:0;
-	}
-
-	/* users */
-	#profile-page .form-table textarea {
-		max-width: 400px;
-		width: auto;
+		padding: 0;
 	}
 }
 
 @media only screen and (max-height: 480px), screen and (max-width: 450px) {
-	/*  Request Credentials / File Editor Warning */
+	/* Request Credentials / File Editor Warning */
 	.request-filesystem-credentials-dialog .notification-dialog,
 	.file-editor-warning .notification-dialog {
 		width: 100%;
@@ -1569,24 +1594,11 @@ table.form-table td .updated p {
 	}
 }
 
-@-webkit-keyframes rotation {
-	0% {
-		-webkit-transform: rotate(0deg);
-		transform: rotate(0deg);
-	}
-	100% {
-		-webkit-transform: rotate(359deg);
-		transform: rotate(359deg);
-	}
-}
-
 @keyframes rotation {
 	0% {
-		-webkit-transform: rotate(0deg);
 		transform: rotate(0deg);
 	}
 	100% {
-		-webkit-transform: rotate(359deg);
 		transform: rotate(359deg);
 	}
 }

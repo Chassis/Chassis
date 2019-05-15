@@ -1,15 +1,15 @@
-/* global postL10n, ajaxurl, wpAjax, setPostThumbnailL10n, postboxes, pagenow, tinymce, alert, deleteUserSetting */
-/* global theList:true, theExtraList:true, getUserSetting, setUserSetting, commentReply */
-
 /**
- * Contains all dynamic functionality needed on post and term pages.
+ * @file Contains all dynamic functionality needed on post and term pages.
  *
- * @summary Control page and term functionality.
+ * @output wp-admin/js/post.js
  */
 
-var commentsBox, WPSetThumbnailHTML, WPSetThumbnailID, WPRemoveThumbnail, wptitlehint, makeSlugeditClickable, editPermalink;
+ /* global postL10n, ajaxurl, wpAjax, setPostThumbnailL10n, postboxes, pagenow, tinymce, alert, deleteUserSetting */
+ /* global theList:true, theExtraList:true, getUserSetting, setUserSetting, commentReply, commentsBox */
+ /* global WPSetThumbnailHTML, wptitlehint */
+
 // Backwards compatibility: prevent fatal errors.
-makeSlugeditClickable = editPermalink = function(){};
+window.makeSlugeditClickable = window.editPermalink = function(){};
 
 // Make sure the wp object exists.
 window.wp = window.wp || {};
@@ -24,18 +24,18 @@ window.wp = window.wp || {};
 	 *
 	 * @namespace commentsBox
 	 */
-	commentsBox = {
+	window.commentsBox = {
 		// Comment offset to use when fetching new comments.
 		st : 0,
 
 		/**
 		 * Fetch comments using AJAX and display them in the box.
 		 *
+		 * @memberof commentsBox
+		 *
 		 * @param {int} total Total number of comments for this post.
 		 * @param {int} num   Optional. Number of comments to fetch, defaults to 20.
 		 * @returns {boolean} Always returns false.
-		 *
-		 * @memberof commentsBox
 		 */
 		get : function(total, num) {
 			var st = this.st, data;
@@ -108,7 +108,7 @@ window.wp = window.wp || {};
 	 *
 	 * @global
 	 */
-	WPSetThumbnailHTML = function(html){
+	window.WPSetThumbnailHTML = function(html){
 		$('.inside', '#postimagediv').html(html);
 	};
 
@@ -119,7 +119,7 @@ window.wp = window.wp || {};
 	 *
 	 * @global
 	 */
-	WPSetThumbnailID = function(id){
+	window.WPSetThumbnailID = function(id){
 		var field = $('input[value="_thumbnail_id"]', '#list-table');
 		if ( field.length > 0 ) {
 			$('#meta\\[' + field.attr('id').match(/[0-9]+/) + '\\]\\[value\\]').text(id);
@@ -133,7 +133,7 @@ window.wp = window.wp || {};
 	 *
 	 * @global
 	 */
-	WPRemoveThumbnail = function(nonce){
+	window.WPRemoveThumbnail = function(nonce){
 		$.post(ajaxurl, {
 			action: 'set-post-thumbnail', post_id: $( '#post_ID' ).val(), thumbnail_id: -1, _ajax_nonce: nonce, cookie: encodeURIComponent( document.cookie )
 		},
@@ -662,6 +662,8 @@ jQuery(document).ready( function($) {
 			/**
 			 * Add current post_ID to request to fetch custom fields
 			 *
+			 * @ignore
+			 *
 			 * @param {Object} s Request object.
 			 *
 			 * @returns {Object} Data modified with post_ID attached.
@@ -672,6 +674,8 @@ jQuery(document).ready( function($) {
 			},
 			/**
 			 * Show the listing of custom fields after fetching.
+			 *
+			 * @ignore
 			 */
 			addAfter: function() {
 				$('table#list-table').show();
@@ -688,6 +692,8 @@ jQuery(document).ready( function($) {
 
 		/**
 		 * When the visibility of a post changes sub-options should be shown or hidden.
+		 *
+		 * @ignore
 		 *
 		 * @returns void
 		 */
@@ -710,6 +716,8 @@ jQuery(document).ready( function($) {
 
 		/**
 		 * Make sure all labels represent the current settings.
+		 *
+		 * @ignore
 		 *
 		 * @returns {boolean} False when an invalid timestamp has been selected, otherwise True.
 		 */
@@ -926,9 +934,8 @@ jQuery(document).ready( function($) {
 	}
 
 	/**
-	 * Handle the editing of the post_name. Create the required HTML elements and update the changes via AJAX.
-	 *
-	 * @summary Permalink aka slug aka post_name editing
+	 * Handle the editing of the post_name. Create the required HTML elements and
+	 * update the changes via AJAX.
 	 *
 	 * @global
 	 *
@@ -1033,9 +1040,10 @@ jQuery(document).ready( function($) {
 	});
 
 	/**
-	 * Add screen reader text to the title prompt when needed.
+	 * Adds screen reader text to the title label when needed.
 	 *
-	 * @summary Title screen reader text handler.
+	 * Use the 'screen-reader-text' class to emulate a placeholder attribute
+	 * and hide the label when entering a value.
 	 *
 	 * @param {string} id Optional. HTML ID to add the screen reader helper text to.
 	 *
@@ -1043,28 +1051,23 @@ jQuery(document).ready( function($) {
 	 *
 	 * @returns void
 	 */
-	wptitlehint = function(id) {
+	window.wptitlehint = function( id ) {
 		id = id || 'title';
 
-		var title = $('#' + id), titleprompt = $('#' + id + '-prompt-text');
+		var title = $( '#' + id ), titleprompt = $( '#' + id + '-prompt-text' );
 
-		if ( '' === title.val() )
-			titleprompt.removeClass('screen-reader-text');
+		if ( '' === title.val() ) {
+			titleprompt.removeClass( 'screen-reader-text' );
+		}
 
-		titleprompt.click(function(){
-			$(this).addClass('screen-reader-text');
-			title.focus();
-		});
+		title.on( 'input', function() {
+			if ( '' === this.value ) {
+				titleprompt.removeClass( 'screen-reader-text' );
+				return;
+			}
 
-		title.blur(function(){
-			if ( '' === this.value )
-				titleprompt.removeClass('screen-reader-text');
-		}).focus(function(){
-			titleprompt.addClass('screen-reader-text');
-		}).keydown(function(e){
-			titleprompt.addClass('screen-reader-text');
-			$(this).unbind(e);
-		});
+			titleprompt.addClass( 'screen-reader-text' );
+		} );
 	};
 
 	wptitlehint();

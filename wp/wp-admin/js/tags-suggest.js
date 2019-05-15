@@ -1,5 +1,7 @@
 /**
  * Default settings for jQuery UI Autocomplete for use with non-hierarchical taxonomies.
+ *
+ * @output wp-admin/js/tags-suggest.js
  */
 ( function( $ ) {
 	if ( typeof window.tagsSuggestL10n === 'undefined' || typeof window.uiAutocompleteL10n === 'undefined' ) {
@@ -105,6 +107,12 @@
 					window.wp.a11y.speak( window.tagsSuggestL10n.termSelected, 'assertive' );
 					event.preventDefault();
 				} else if ( $.ui.keyCode.ENTER === event.keyCode ) {
+					// If we're in the edit post Tags meta box, add the tag.
+					if ( window.tagBox ) {
+						window.tagBox.userAction = 'add';
+						window.tagBox.flushTags( $( this ).closest( '.tagsdiv' ) );
+					}
+
 					// Do not close Quick Edit / Bulk Edit
 					event.preventDefault();
 					event.stopPropagation();

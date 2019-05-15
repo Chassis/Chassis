@@ -1,10 +1,14 @@
+/**
+ * @output wp-admin/js/editor.js
+ */
+
 window.wp = window.wp || {};
 
 ( function( $, wp ) {
 	wp.editor = wp.editor || {};
 
 	/**
-	 * @summary Utility functions for the editor.
+	 * Utility functions for the editor.
 	 *
 	 * @since 2.5.0
 	 */
@@ -18,7 +22,7 @@ window.wp = window.wp || {};
 				$$ = tinymce.$;
 
 				/**
-				 * @summary Handles onclick events for the Visual/Text tabs.
+				 * Handles onclick events for the Visual/Text tabs.
 				 *
 				 * @since 4.3.0
 				 *
@@ -38,7 +42,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Returns the height of the editor toolbar(s) in px.
+		 * Returns the height of the editor toolbar(s) in px.
 		 *
 		 * @since 3.9.0
 		 *
@@ -58,7 +62,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Switches the editor between Visual and Text mode.
+		 * Switches the editor between Visual and Text mode.
 		 *
 		 * @since 2.5.0
 		 *
@@ -184,7 +188,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Checks if a cursor is inside an HTML tag.
+		 * Checks if a cursor is inside an HTML tag or comment.
 		 *
 		 * In order to prevent breaking HTML tags when selecting text, the cursor
 		 * must be moved to either the start or end of the tag.
@@ -207,7 +211,7 @@ window.wp = window.wp || {};
 			if ( lastLtPos > lastGtPos || content.substr( cursorPosition, 1 ) === '>' ) {
 				// find what the tag is
 				var tagContent = content.substr( lastLtPos ),
-					tagMatch = tagContent.match( /<\s*(\/)?(\w+)/ );
+					tagMatch = tagContent.match( /<\s*(\/)?(\w+|\!-{2}.*-{2})/ );
 
 				if ( ! tagMatch ) {
 					return null;
@@ -227,7 +231,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Check if the cursor is inside a shortcode
+		 * Checks if the cursor is inside a shortcode
 		 *
 		 * If the cursor is inside a shortcode wrapping tag, e.g. `[caption]` it's better to
 		 * move the selection marker to before or after the shortcode.
@@ -281,7 +285,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Get all shortcodes and their positions in the content
+		 * Gets all shortcodes and their positions in the content
 		 *
 		 * This function returns all the shortcodes that could be found in the textarea content
 		 * along with their character positions and boundaries.
@@ -378,7 +382,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Get adjusted selection cursor positions according to HTML tags/shortcodes
+		 * Gets adjusted selection cursor positions according to HTML tags, comments, and shortcodes.
 		 *
 		 * Shortcodes and HTML codes are a bit of a special case when selecting, since they may render
 		 * content in Visual mode. If we insert selection markers somewhere inside them, it's really possible
@@ -461,7 +465,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Adds text selection markers in the editor textarea.
+		 * Adds text selection markers in the editor textarea.
 		 *
 		 * Adds selection markers in the content of the editor `textarea`.
 		 * The method directly manipulates the `textarea` content, to allow TinyMCE plugins
@@ -511,7 +515,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Focus the selection markers in Visual mode.
+		 * Focuses the selection markers in Visual mode.
 		 *
 		 * The method checks for existing selection markers inside the editor DOM (Visual mode)
 		 * and create a selection between the two nodes using the DOM `createRange` selection API
@@ -550,7 +554,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Remove selection marker and the parent node if it is an empty paragraph.
+		 * Removes selection marker and the parent node if it is an empty paragraph.
 		 *
 		 * By default TinyMCE wraps loose inline tags in a `<p>`.
 		 * When removing selection markers an empty `<p>` may be left behind, remove it.
@@ -569,7 +573,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Scrolls the content to place the selected element in the center of the screen.
+		 * Scrolls the content to place the selected element in the center of the screen.
 		 *
 		 * Takes an element, that is usually the selection start element, selected in
 		 * `focusHTMLBookmarkInVisualEditor()` and scrolls the screen so the element appears roughly
@@ -644,7 +648,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Finds the current selection position in the Visual editor.
+		 * Finds the current selection position in the Visual editor.
 		 *
 		 * Find the current selection in the Visual editor by inserting marker elements at the start
 		 * and end of the selection.
@@ -811,7 +815,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Selects text in the TinyMCE `textarea`.
+		 * Selects text in the TinyMCE `textarea`.
 		 *
 		 * Selects the text in TinyMCE's textarea that's between `selection.start` and `selection.end`.
 		 *
@@ -852,7 +856,7 @@ window.wp = window.wp || {};
 		} );
 
 		/**
-		 * @summary Replaces <p> tags with two line breaks. "Opposite" of wpautop().
+		 * Replaces <p> tags with two line breaks. "Opposite" of wpautop().
 		 *
 		 * Replaces <p> tags with two line breaks except where the <p> has attributes.
 		 * Unifies whitespace.
@@ -991,7 +995,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Replaces two line breaks with a paragraph tag and one line break with a <br>.
+		 * Replaces two line breaks with a paragraph tag and one line break with a <br>.
 		 *
 		 * Similar to `wpautop()` in formatting.php.
 		 *
@@ -1120,7 +1124,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Fires custom jQuery events `beforePreWpautop` and `afterPreWpautop` when jQuery is available.
+		 * Fires custom jQuery events `beforePreWpautop` and `afterPreWpautop` when jQuery is available.
 		 *
 		 * @since 2.9.0
 		 *
@@ -1146,7 +1150,7 @@ window.wp = window.wp || {};
 		}
 
 		/**
-		 * @summary Fires custom jQuery events `beforeWpautop` and `afterWpautop` when jQuery is available.
+		 * Fires custom jQuery events `beforeWpautop` and `afterWpautop` when jQuery is available.
 		 *
 		 * @since 2.9.0
 		 *
@@ -1200,8 +1204,9 @@ window.wp = window.wp || {};
 	}
 
 	/**
-	 * @namespace {SwitchEditors} switchEditors
 	 * Expose the switch editors to be used globally.
+	 *
+	 * @namespace switchEditors
 	 */
 	window.switchEditors = new SwitchEditors();
 

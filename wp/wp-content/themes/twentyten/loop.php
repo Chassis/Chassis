@@ -55,9 +55,12 @@
 	 * Without further ado, the loop:
 	 */
 ?>
-<?php while ( have_posts() ) : the_post(); ?>
+<?php
+while ( have_posts() ) :
+	the_post();
+	?>
 
-<?php /* How to display posts of the Gallery format. The gallery category is the old way. */ ?>
+	<?php /* How to display posts of the Gallery format. The gallery category is the old way. */ ?>
 
 	<?php if ( ( function_exists( 'get_post_format' ) && 'gallery' == get_post_format( $post->ID ) ) || in_category( _x( 'gallery', 'gallery category slug', 'twentyten' ) ) ) : ?>
 		<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
@@ -68,22 +71,27 @@
 			</div><!-- .entry-meta -->
 
 			<div class="entry-content">
-<?php if ( post_password_required() ) : ?>
+		<?php if ( post_password_required() ) : ?>
 				<?php the_content(); ?>
 <?php else : ?>
 				<?php
 					$images = twentyten_get_gallery_images();
-					if ( $images ) :
-						$total_images = count( $images );
-						$image = reset( $images );
-				?>
-						<div class="gallery-thumb">
-							<a class="size-thumbnail" href="<?php the_permalink(); ?>"><?php echo wp_get_attachment_image( $image, 'thumbnail' ); ?></a>
-						</div><!-- .gallery-thumb -->
-						<p><em><?php printf( _n( 'This gallery contains <a %1$s>%2$s photo</a>.', 'This gallery contains <a %1$s>%2$s photos</a>.', $total_images, 'twentyten' ),
-								'href="' . esc_url( get_permalink() ) . '" title="' . esc_attr( sprintf( __( 'Permalink to %s', 'twentyten' ), the_title_attribute( 'echo=0' ) ) ) . '" rel="bookmark"',
-								number_format_i18n( $total_images )
-							); ?></em></p>
+				if ( $images ) :
+					$total_images = count( $images );
+					$image        = reset( $images );
+					?>
+					<div class="gallery-thumb">
+						<a class="size-thumbnail" href="<?php the_permalink(); ?>"><?php echo wp_get_attachment_image( $image, 'thumbnail' ); ?></a>
+					</div><!-- .gallery-thumb -->
+					<p><em>
+					<?php
+						printf(
+							_n( 'This gallery contains <a %1$s>%2$s photo</a>.', 'This gallery contains <a %1$s>%2$s photos</a>.', $total_images, 'twentyten' ),
+							'href="' . esc_url( get_permalink() ) . '" title="' . esc_attr( sprintf( __( 'Permalink to %s', 'twentyten' ), the_title_attribute( 'echo=0' ) ) ) . '" rel="bookmark"',
+							number_format_i18n( $total_images )
+						);
+					?>
+							</em></p>
 				<?php endif; // end twentyten_get_gallery_images() check ?>
 						<?php the_excerpt(); ?>
 <?php endif; ?>
@@ -100,11 +108,11 @@
 				<span class="comments-link"><?php comments_popup_link( __( 'Leave a comment', 'twentyten' ), __( '1 Comment', 'twentyten' ), __( '% Comments', 'twentyten' ) ); ?></span>
 				<?php edit_post_link( __( 'Edit', 'twentyten' ), '<span class="meta-sep">|</span> <span class="edit-link">', '</span>' ); ?>
 			</div><!-- .entry-utility -->
-		</div><!-- #post-## -->
+		</div><!-- #post-<?php the_ID(); ?> -->
 
-<?php /* How to display posts of the Aside format. The asides category is the old way. */ ?>
+		<?php /* How to display posts of the Aside format. The asides category is the old way. */ ?>
 
-	<?php elseif ( ( function_exists( 'get_post_format' ) && 'aside' == get_post_format( $post->ID ) ) || in_category( _x( 'asides', 'asides category slug', 'twentyten' ) )  ) : ?>
+	<?php elseif ( ( function_exists( 'get_post_format' ) && 'aside' == get_post_format( $post->ID ) ) || in_category( _x( 'asides', 'asides category slug', 'twentyten' ) ) ) : ?>
 		<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
 
 		<?php if ( is_archive() || is_search() ) : // Display excerpts for archives and search. ?>
@@ -123,9 +131,9 @@
 				<span class="comments-link"><?php comments_popup_link( __( 'Leave a comment', 'twentyten' ), __( '1 Comment', 'twentyten' ), __( '% Comments', 'twentyten' ) ); ?></span>
 				<?php edit_post_link( __( 'Edit', 'twentyten' ), '<span class="meta-sep">|</span> <span class="edit-link">', '</span>' ); ?>
 			</div><!-- .entry-utility -->
-		</div><!-- #post-## -->
+		</div><!-- #post-<?php the_ID(); ?> -->
 
-<?php /* How to display all other posts. */ ?>
+		<?php /* How to display all other posts. */ ?>
 
 	<?php else : ?>
 		<div id="post-<?php the_ID(); ?>" <?php post_class(); ?>>
@@ -135,14 +143,21 @@
 				<?php twentyten_posted_on(); ?>
 			</div><!-- .entry-meta -->
 
-	<?php if ( is_archive() || is_search() ) : // Only display excerpts for archives and search. ?>
+		<?php if ( is_archive() || is_search() ) : // Only display excerpts for archives and search. ?>
 			<div class="entry-summary">
 				<?php the_excerpt(); ?>
 			</div><!-- .entry-summary -->
 	<?php else : ?>
 			<div class="entry-content">
 				<?php the_content( __( 'Continue reading <span class="meta-nav">&rarr;</span>', 'twentyten' ) ); ?>
-				<?php wp_link_pages( array( 'before' => '<div class="page-link">' . __( 'Pages:', 'twentyten' ), 'after' => '</div>' ) ); ?>
+				<?php
+				wp_link_pages(
+					array(
+						'before' => '<div class="page-link">' . __( 'Pages:', 'twentyten' ),
+						'after'  => '</div>',
+					)
+				);
+				?>
 			</div><!-- .entry-content -->
 	<?php endif; ?>
 
@@ -155,17 +170,17 @@
 				<?php endif; ?>
 				<?php
 					$tags_list = get_the_tag_list( '', ', ' );
-					if ( $tags_list ):
-				?>
-					<span class="tag-links">
-						<?php printf( __( '<span class="%1$s">Tagged</span> %2$s', 'twentyten' ), 'entry-utility-prep entry-utility-prep-tag-links', $tags_list ); ?>
-					</span>
-					<span class="meta-sep">|</span>
+				if ( $tags_list ) :
+					?>
+				<span class="tag-links">
+					<?php printf( __( '<span class="%1$s">Tagged</span> %2$s', 'twentyten' ), 'entry-utility-prep entry-utility-prep-tag-links', $tags_list ); ?>
+				</span>
+				<span class="meta-sep">|</span>
 				<?php endif; ?>
 				<span class="comments-link"><?php comments_popup_link( __( 'Leave a comment', 'twentyten' ), __( '1 Comment', 'twentyten' ), __( '% Comments', 'twentyten' ) ); ?></span>
 				<?php edit_post_link( __( 'Edit', 'twentyten' ), '<span class="meta-sep">|</span> <span class="edit-link">', '</span>' ); ?>
 			</div><!-- .entry-utility -->
-		</div><!-- #post-## -->
+		</div><!-- #post-<?php the_ID(); ?> -->
 
 		<?php comments_template( '', true ); ?>
 
@@ -174,7 +189,7 @@
 <?php endwhile; // End the loop. Whew. ?>
 
 <?php /* Display navigation to next/previous pages when applicable */ ?>
-<?php if (  $wp_query->max_num_pages > 1 ) : ?>
+<?php if ( $wp_query->max_num_pages > 1 ) : ?>
 				<div id="nav-below" class="navigation">
 					<div class="nav-previous"><?php next_posts_link( __( '<span class="meta-nav">&larr;</span> Older posts', 'twentyten' ) ); ?></div>
 					<div class="nav-next"><?php previous_posts_link( __( 'Newer posts <span class="meta-nav">&rarr;</span>', 'twentyten' ) ); ?></div>
