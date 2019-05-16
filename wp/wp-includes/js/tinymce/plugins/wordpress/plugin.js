@@ -12,14 +12,15 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 		__ = editor.editorManager.i18n.translate,
 		$ = window.jQuery,
 		wp = window.wp,
-		hasWpautop = ( wp && wp.editor && wp.editor.autop && editor.getParam( 'wpautop', true ) );
+		hasWpautop = ( wp && wp.editor && wp.editor.autop && editor.getParam( 'wpautop', true ) ),
+		wpTooltips = false;
 
 	if ( $ ) {
 		$( document ).triggerHandler( 'tinymce-editor-setup', [ editor ] );
 	}
 
 	function toggleToolbars( state ) {
-		var initial, toolbars,
+		var initial, toolbars, iframeHeight,
 			pixels = 0,
 			classicBlockToolbar = tinymce.$( '.block-library-classic__toolbar' );
 
@@ -44,18 +45,24 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 				if ( i > 0 ) {
 					if ( state === 'hide' ) {
 						toolbar.hide();
-						pixels += 30;
+						pixels += 34;
 					} else {
 						toolbar.show();
-						pixels -= 30;
+						pixels -= 34;
 					}
 				}
 			});
 		}
 
 		// Resize editor iframe, not needed for iOS and inline instances.
-		if ( pixels && ! tinymce.Env.iOS && editor.iframeElement ) {
-			DOM.setStyle( editor.iframeElement, 'height', editor.iframeElement.clientHeight + pixels );
+		// Don't resize if the editor is in a hidden container.
+		if ( pixels && ! tinymce.Env.iOS && editor.iframeElement && editor.iframeElement.clientHeight ) {
+			iframeHeight = editor.iframeElement.clientHeight + pixels;
+
+			// Keep min-height.
+			if ( iframeHeight > 50  ) {
+				DOM.setStyle( editor.iframeElement, 'height', iframeHeight );
+			}
 		}
 
 		if ( ! initial ) {
@@ -575,41 +582,6 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 				}
 			});
 		}
-
-		if ( editor.settings.wp_shortcut_labels && editor.theme.panel ) {
-			var labels = {};
-			var access = 'Shift+Alt+';
-			var meta = 'Ctrl+';
-
-			// For Mac: ctrl = \u2303, cmd = \u2318, alt = \u2325
-
-			if ( tinymce.Env.mac ) {
-				access = '\u2303\u2325';
-				meta = '\u2318';
-			}
-
-			each( editor.settings.wp_shortcut_labels, function( value, name ) {
-				labels[ name ] = value.replace( 'access', access ).replace( 'meta', meta );
-			} );
-
-			each( editor.theme.panel.find('button'), function( button ) {
-				if ( button && button.settings.tooltip && labels.hasOwnProperty( button.settings.tooltip ) ) {
-					// Need to translate now. We are changing the string so it won't match and cannot be translated later.
-					button.settings.tooltip = editor.translate( button.settings.tooltip ) + ' (' + labels[ button.settings.tooltip ] + ')';
-				}
-			} );
-
-			// listbox for the "blocks" drop-down
-			each( editor.theme.panel.find('listbox'), function( listbox ) {
-				if ( listbox && listbox.settings.text === 'Paragraph' ) {
-					each( listbox.settings.values, function( item ) {
-						if ( item.text && labels.hasOwnProperty( item.text ) ) {
-							item.shortcut = '(' + labels[ item.text ] + ')';
-						}
-					} );
-				}
-			} );
-		}
 	});
 
 	editor.on( 'SaveContent', function( event ) {
@@ -673,7 +645,15 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 
 		// Workaround for not triggering the global help modal in the Block Editor by the Classic Block shortcut.
 		editor.on( 'keydown', function( event ) {
-			if ( event.shiftKey && event.altKey && event.code === 'KeyH' ) {
+			var match;
+
+			if ( tinymce.Env.mac ) {
+				match = event.ctrlKey && event.altKey && event.code === 'KeyH';
+			} else {
+				match = event.shiftKey && event.altKey && event.code === 'KeyH';
+			}
+
+			if ( match ) {
 				editor.execCommand( 'WP_Help' );
 				event.stopPropagation();
 				event.stopImmediatePropagation();
@@ -703,6 +683,95 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 			}
 		}
 	});
+
+	editor.on( 'beforerenderui', function() {
+		if ( editor.theme.panel ) {
+			each( [ 'button', 'colorbutton', 'splitbutton' ], function( buttonType ) {
+				replaceButtonsTooltips( editor.theme.panel.find( buttonType ) );
+			} );
+
+			addShortcutsToListbox();
+		}
+	} );
+
+	function prepareTooltips() {
+		var access = 'Shift+Alt+';
+		var meta = 'Ctrl+';
+
+		wpTooltips = {};
+
+		// For MacOS: ctrl = \u2303, cmd = \u2318, alt = \u2325
+		if ( tinymce.Env.mac ) {
+			access = '\u2303\u2325';
+			meta = '\u2318';
+		}
+
+		// Some tooltips are translated, others are not...
+		if ( editor.settings.wp_shortcut_labels ) {
+			each( editor.settings.wp_shortcut_labels, function( value, tooltip ) {
+				var translated = editor.translate( tooltip );
+
+				value = value.replace( 'access', access ).replace( 'meta', meta );
+				wpTooltips[ tooltip ] = value;
+
+				// Add the translated so we can match all of them.
+				if ( tooltip !== translated ) {
+					wpTooltips[ translated ] = value;
+				}
+			} );
+		}
+	}
+
+	function getTooltip( tooltip ) {
+		var translated = editor.translate( tooltip );
+		var label;
+
+		if ( ! wpTooltips ) {
+			prepareTooltips();
+		}
+
+		if ( wpTooltips.hasOwnProperty( translated ) ) {
+			label = wpTooltips[ translated ];
+		} else if ( wpTooltips.hasOwnProperty( tooltip ) ) {
+			label = wpTooltips[ tooltip ];
+		}
+
+		return label ? translated + ' (' + label + ')' : translated;
+	}
+
+	function replaceButtonsTooltips( buttons ) {
+
+		if ( ! buttons ) {
+			return;
+		}
+
+		each( buttons, function( button ) {
+			var tooltip;
+
+			if ( button && button.settings.tooltip ) {
+				tooltip = getTooltip( button.settings.tooltip );
+				button.settings.tooltip = tooltip;
+
+				// Override the aria label wiht the translated tooltip + shortcut.
+				if ( button._aria && button._aria.label ) {
+					button._aria.label = tooltip;
+				}
+			}
+		} );
+	}
+
+	function addShortcutsToListbox() {
+		// listbox for the "blocks" drop-down
+		each( editor.theme.panel.find( 'listbox' ), function( listbox ) {
+			if ( listbox && listbox.settings.text === 'Paragraph' ) {
+				each( listbox.settings.values, function( item ) {
+					if ( item.text && wpTooltips.hasOwnProperty( item.text ) ) {
+						item.shortcut = '(' + wpTooltips[ item.text ] + ')';
+					}
+				} );
+			}
+		} );
+	}
 
 	/**
 	 * Experimental: create a floating toolbar.
@@ -738,6 +807,7 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 
 			each( buttons, function( item ) {
 				var itemName;
+				var tooltip;
 
 				function bindSelectorChanged() {
 					var selection = editor.selection;
@@ -826,6 +896,12 @@ tinymce.PluginManager.add( 'wordpress', function( editor ) {
 
 							if ( settings.toolbar_items_size ) {
 								item.size = settings.toolbar_items_size;
+							}
+
+							tooltip = item.tooltip || item.title;
+
+							if ( tooltip ) {
+								item.tooltip = getTooltip( tooltip );
 							}
 
 							item = Factory.create( item );

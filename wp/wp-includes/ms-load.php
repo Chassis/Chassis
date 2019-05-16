@@ -109,7 +109,7 @@ function ms_site_check() {
 				/* translators: %s: admin email link */
 				sprintf(
 					__( 'This site has not been activated yet. If you are having problems activating your site, please contact %s.' ),
-					sprintf( '<a href="mailto:%s">%s</a>', $admin_email )
+					sprintf( '<a href="mailto:%1$s">%1$s</a>', $admin_email )
 				)
 			);
 		}
@@ -235,7 +235,8 @@ function get_site_by_path( $domain, $path, $segments = null ) {
 	}
 
 	$args = array(
-		'number' => 1,
+		'number'                 => 1,
+		'update_site_meta_cache' => false,
 	);
 
 	if ( count( $domains ) > 1 ) {

@@ -105,19 +105,9 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
    You now need to run ``vagrant share --http=vagrant.local:80``. If you're using a custom domain then you will need to use that e.g. ``vagrant share --http=<your-custom-domain>.local:80``.
    You will then have a temporary URL generated for you. e.g. ``http://<id>.ngrok.io``. You need to leave this running in the background.
 
-4. **Alter your Chassis config**
+4. **Share your site**
 
-   Alter one of your Chassis config files to include the additional subdomain. e.g.
-
-.. code-block:: yaml
-
-   hosts:
-       - vagrant.local
-       - <id>.ngrok.io
-
-5. **Reprovision Vagrant**
-
-   You now need to run ``vagrant provision`` and you should be able to access your Chassis box with the URL generated in Step 2.
+   Navigate to the URL that ngrok generated.
 
 Debugging
 ~~~~~~~~~

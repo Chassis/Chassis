@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["wordcount"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 311);
+/******/ 	return __webpack_require__(__webpack_require__.s = 365);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -94,7 +94,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["wordcount"] =
 
 /***/ }),
 
-/***/ 311:
+/***/ 365:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -317,6 +317,13 @@ var defaultSettings = {
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/index.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "count", function() { return count; });
+/**
+ * External dependencies
+ */
+
+/**
+ * Internal dependencies
+ */
 
 
 
@@ -391,6 +398,12 @@ function matchCharacters(text, regex, settings) {
  * @param {String} text         The text being processed
  * @param {String} type         The type of count. Accepts ;words', 'characters_excluding_spaces', or 'characters_including_spaces'.
  * @param {Object} userSettings Custom settings object.
+ *
+ * @example
+ * ```js
+ * import { count } from '@wordpress/wordcount';
+ * const numberOfWords = count( 'Words to count', 'words', {} )
+ * ```
  *
  * @return {Number} The word or character count.
  */

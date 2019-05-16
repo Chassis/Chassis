@@ -46,7 +46,7 @@ PHP Version
 
 **Key**: ``php``
 
-PHP 7.0 is included with Chassis by default, plus we register the additional
+PHP 7.2 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
@@ -58,7 +58,7 @@ To switch to 5.6 for example:
 
 You can use either a two-part version (``5.6``) or a three-part version
 (``5.6.1``) if you want to pick specifc versions. We support any version between
-5.6.0 and 7.2.x.
+5.6.0 and 7.3.x.
 
 
 WordPress Directory

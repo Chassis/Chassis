@@ -733,7 +733,7 @@ function image_get_intermediate_size( $post_id, $size = 'thumbnail' ) {
 			$data = array_shift( $candidates );
 			/*
 			* When the size requested is smaller than the thumbnail dimensions, we
-			* fall back to the thumbnail size to maintain backwards compatibility with
+			* fall back to the thumbnail size to maintain backward compatibility with
 			* pre 4.6 versions of WordPress.
 			*/
 		} elseif ( ! empty( $imagedata['sizes']['thumbnail'] ) && $imagedata['sizes']['thumbnail']['width'] >= $size[0] && $imagedata['sizes']['thumbnail']['width'] >= $size[1] ) {
@@ -2871,7 +2871,7 @@ function get_attachment_taxonomies( $attachment, $output = 'names' ) {
 	}
 
 	$file     = get_attached_file( $attachment->ID );
-	$filename = basename( $file );
+	$filename = wp_basename( $file );
 
 	$objects = array( 'attachment' );
 
@@ -3672,10 +3672,8 @@ function wp_enqueue_media( $args = array() ) {
 		'warnBulkDelete'              => __( "You are about to permanently delete these items from your site.\nThis action cannot be undone.\n 'Cancel' to stop, 'OK' to delete." ),
 		'warnBulkTrash'               => __( "You are about to trash these items.\n  'Cancel' to stop, 'OK' to delete." ),
 		'bulkSelect'                  => __( 'Bulk Select' ),
-		'cancelSelection'             => __( 'Cancel Selection' ),
-		'trashSelected'               => __( 'Trash Selected' ),
-		'untrashSelected'             => __( 'Untrash Selected' ),
-		'deleteSelected'              => __( 'Delete Selected' ),
+		'trashSelected'               => __( 'Move to Trash' ),
+		'restoreSelected'             => __( 'Restore from Trash' ),
 		'deletePermanently'           => __( 'Delete Permanently' ),
 		'apply'                       => __( 'Apply' ),
 		'filterByDate'                => __( 'Filter by date' ),
@@ -3754,6 +3752,9 @@ function wp_enqueue_media( $args = array() ) {
 		'updateVideoPlaylist'         => __( 'Update video playlist' ),
 		'addToVideoPlaylist'          => __( 'Add to video playlist' ),
 		'addToVideoPlaylistTitle'     => __( 'Add to Video Playlist' ),
+
+		// Headings
+		'attachmentsList'             => __( 'Attachments list' ),
 	);
 
 	/**
