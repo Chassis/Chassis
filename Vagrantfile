@@ -49,17 +49,21 @@ if use_global_ext
 end
 
 Vagrant.configure("2") do |config|
+  # Set the machine name.
+  config.vm.define CONF['machine_name']
+
 	# Set up potential providers.
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
 		vb.linked_clone = true if Vagrant::VERSION =~ /^1.8/
 		vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
-
 		# Customisations from config.local.yaml
 		if CONF['virtualbox']
 			vb.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
 			vb.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
-		end
+    end
+    # Set the machine name for the VirtualBox GUI.
+    vb.name = CONF['machine_name']
 	end
 
 	# We <3 Ubuntu LTS

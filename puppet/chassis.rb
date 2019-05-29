@@ -134,6 +134,20 @@ module Chassis
 					config["mapped_paths"][path] = config["mapped_paths"]["base"]
 				end
 			end
+
+			machine_name = '' unless config["machine_name"]
+
+			# If we don't have a machine name in the config generate one from the directory structure.
+			if machine_name == ''
+				pwd = Dir.pwd.downcase
+				name = pwd.gsub("/","_")
+				if name[0] == "/"
+					machine_name = name
+					machine_name[0] = ''
+				else
+					machine_name = name
+				end
+			end
 		end
 
 		# Cast config as needed
