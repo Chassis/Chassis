@@ -49,8 +49,8 @@ if use_global_ext
 end
 
 Vagrant.configure("2") do |config|
-  # Set the machine name.
-  config.vm.define CONF['machine_name']
+	# Set the machine name.
+	config.vm.define CONF['machine_name']
 
 	# Set up potential providers.
 	config.vm.provider "virtualbox" do |vb|
@@ -61,9 +61,9 @@ Vagrant.configure("2") do |config|
 		if CONF['virtualbox']
 			vb.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
 			vb.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
-    end
-    # Set the machine name for the VirtualBox GUI.
-    vb.name = CONF['machine_name']
+		end
+		# Set the machine name for the VirtualBox GUI.
+		vb.name = CONF['machine_name']
 	end
 
 	# We <3 Ubuntu LTS
