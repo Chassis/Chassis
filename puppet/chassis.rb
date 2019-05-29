@@ -140,13 +140,8 @@ module Chassis
 			# If we don't have a machine name in the config generate one from the directory structure.
 			if machine_name == ''
 				pwd = Dir.pwd.downcase
-				name = pwd.gsub("/","_")
-				if name[0] == "/"
-					machine_name = name
-					machine_name[0] = ''
-				else
-					machine_name = name
-				end
+				# Replace all non word characters with underscores then trim underscores.
+				machine_name = pwd.gsub(/[\s\W]+/,'_').gsub(/^_*(.*?)_*$/,'\1')
 			end
 		end
 
