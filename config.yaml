@@ -105,7 +105,7 @@ synced_folders:
 
 # PHP version
 # Values: 5.6, 7.0, 7.1, 7.2, 7.3 (or 5.6.30)
-php: 7.2
+php: 7.3
 
 # VirtualBox-specific customisations.
 virtualbox:
