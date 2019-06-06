@@ -69,13 +69,13 @@ Vagrant.configure("2") do |config|
 			vb.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
 		end
 
-		# Pass synched folders to guest
-		full_synched = {}
+		# Pass synced folders to guest
+		full_synced = {}
 		synced_folders.each do |from, to|
 			full_from = File.realpath from, base_path.to_s
-			full_synched[ to ] = full_from
+			full_synced[ to ] = full_from
 		end
-		vb.customize [ "guestproperty", "set", :id, "/Chassis/synced_folders", JSON.dump( full_synched ), "--flags", "TRANSIENT,RDONLYGUEST" ]
+		vb.customize [ "guestproperty", "set", :id, "/Chassis/synced_folders", JSON.dump( full_synced ), "--flags", "TRANSIENT,RDONLYGUEST" ]
 	end
 
 	# We <3 Ubuntu LTS
