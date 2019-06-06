@@ -49,6 +49,14 @@ if use_global_ext
 end
 
 Vagrant.configure("2") do |config|
+	# Set up synced folders.
+	synced_folders = CONF["synced_folders"].clone
+	synced_folders["."] = "/vagrant"
+
+	if use_global_ext
+		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
+	end
+
 	# Set up potential providers.
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
@@ -130,13 +138,6 @@ Vagrant.configure("2") do |config|
 		]
 	end
 
-	# Set up synced folders.
-	synced_folders = CONF["synced_folders"].clone
-	synced_folders["."] = "/vagrant"
-
-	if use_global_ext
-		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
-	end
 
 	# Ensure that WordPress can install/update plugins, themes and core
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
