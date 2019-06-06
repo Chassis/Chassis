@@ -146,6 +146,11 @@ Vagrant.configure("2") do |config|
 		]
 	end
 
+	# Export necessary constants to the VM
+	config.vm.provision "set_constants",
+		type: :shell,
+		path: "puppet/export-constants.sh",
+		run: "always"
 
 	# Ensure that WordPress can install/update plugins, themes and core
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
