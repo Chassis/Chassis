@@ -2,6 +2,7 @@
 class chassis::php (
 	$extensions = [],
 	$version = '7.0',
+	$upload_size,
 ) {
 	# Ensure add-apt-repository is actually available.
 	if !defined(Package[$::apt::ppa_package]) {
