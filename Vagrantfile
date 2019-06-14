@@ -49,6 +49,14 @@ if use_global_ext
 end
 
 Vagrant.configure("2") do |config|
+	# Set up synced folders.
+	synced_folders = CONF["synced_folders"].clone
+	synced_folders["."] = "/vagrant"
+
+	if use_global_ext
+		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
+	end
+
 	# Set up potential providers.
 	config.vm.provider "virtualbox" do |vb|
 		# Use linked clones to preserve disk space.
@@ -60,6 +68,14 @@ Vagrant.configure("2") do |config|
 			vb.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
 			vb.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
 		end
+
+		# Pass synced folders to guest
+		full_synced = {}
+		synced_folders.each do |from, to|
+			full_from = File.realpath from, base_path.to_s
+			full_synced[ to ] = full_from
+		end
+		vb.customize [ "guestproperty", "set", :id, "/Chassis/synced_folders", JSON.dump( full_synced ), "--flags", "TRANSIENT,RDONLYGUEST" ]
 	end
 
 	# We <3 Ubuntu LTS
@@ -130,13 +146,11 @@ Vagrant.configure("2") do |config|
 		]
 	end
 
-	# Set up synced folders.
-	synced_folders = CONF["synced_folders"].clone
-	synced_folders["."] = "/vagrant"
-
-	if use_global_ext
-		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
-	end
+	# Export necessary constants to the VM
+	config.vm.provision "set_constants",
+		type: :shell,
+		path: "puppet/export-constants.sh",
+		run: "always"
 
 	# Ensure that WordPress can install/update plugins, themes and core
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
