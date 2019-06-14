@@ -139,6 +139,7 @@ module Chassis
 		# Cast config as needed
 		config["nfs"] = !!config["nfs"]
 		config["php"] = config["php"].to_s
+		config["upload_size"] = config["upload_size"].to_s
 
 		return config
 	end

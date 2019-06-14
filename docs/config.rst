@@ -60,6 +60,23 @@ You can use either a two-part version (``5.6``) or a three-part version
 (``5.6.1``) if you want to pick specifc versions. We support any version between
 5.6.0 and 7.3.x.
 
+PHP File Upload Size
+--------------------
+
+**Key**: ``upload_size``
+
+A file upload size of 1024M is included with Chassis by default. This sets
+``post_max_size`` and ``upload_max_filesize`` in ``php.ini`` and sets
+``client_max_body_size`` in Nginx.
+
+To switch to 100M for example:
+
+1. Add ``upload_size: 100M`` to one of your ``.yaml`` files.
+2. Run ``vagrant provision``
+
+**Note**: Additional ``php.ini`` settings can be configured by using the `Chassis Phpini`_ extension.
+
+.. _Chassis Phpini: https://github.com/Chassis/phpini
 
 WordPress Directory
 -------------------
