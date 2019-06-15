@@ -105,7 +105,10 @@ synced_folders:
 
 # PHP version
 # Values: 5.6, 7.0, 7.1, 7.2, 7.3 (or 5.6.30)
-php: 7.2
+php: 7.3
+
+# Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
+upload_size: 1024M
 
 # VirtualBox-specific customisations.
 virtualbox:

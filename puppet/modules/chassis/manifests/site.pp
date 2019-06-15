@@ -3,6 +3,7 @@ define chassis::site (
 	$location,
 	$wpdir,
 	$contentdir,
+	$upload_size,
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',

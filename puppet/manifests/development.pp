@@ -28,8 +28,9 @@ class { 'apt':
 include apt
 
 class { 'chassis::php':
-	extensions => $php_extensions,
-	version => $config[php],
+	extensions  => $php_extensions,
+	version     => $config[php],
+	upload_size => $config[upload_size],
 	require => [
 		Class['apt'],
 	],
@@ -58,7 +59,7 @@ chassis::wp { $config['hosts'][0]:
 	location          => $config[mapped_paths][base],
 	wpdir             => $config[mapped_paths][wp],
 	contentdir        => $config[mapped_paths][content],
-
+	upload_size       => $config[upload_size],
 	hosts             => $config[hosts],
 	database          => $config[database][name],
 	database_user     => $config[database][user],
