@@ -38,7 +38,7 @@ of the VM.
 The ``normal`` box will use the Chassis box that we've built and uploaded to
 Vagrant Cloud which uses PHP 7.3.
 
-To create a customised base box for your project you could have create a `config.local.yaml` file as follows:
+To create a customised base box for your project you could have create a `config.local.yaml` file as follows::
 
     hosts:
         - client.local
