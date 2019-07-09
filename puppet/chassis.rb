@@ -175,7 +175,7 @@ module Chassis
 			repo = extension
 		end
 
-		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
+		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').gsub(/-/, '_').downcase
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 	end
