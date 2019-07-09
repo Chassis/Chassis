@@ -184,7 +184,7 @@ module Chassis
 					# Delete the old extension if it has a hyphen in it.
 					FileUtils.remove_dir(extension)
 					new_extension = extension.gsub(/-/, '_')
-					puts "We've upgraded #{extension} to #{new_extension}"
+					puts "\e[32mWe've upgraded #{extension} to #{new_extension}\e[0m"
 				end
 		    }
 		    # Puppet have taken a hard stance on not allowing hypens in class names.
