@@ -175,7 +175,24 @@ module Chassis
 			repo = extension
 		end
 
-		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').gsub(/-/, '_').downcase
+		# We need to add a version to allow for a seamless upgrade to Bionic Beaver.
+		if config["version"] = 3
+			# Check for existing extensions that have a hyphen and remove them.
+			old_extensions = Dir.glob(@@dir + '/extensions/*')
+			old_extensions.each { |extension|
+				if extension.include? "-"
+					# Delete the old extension if it has a hyphen in it.
+					FileUtils.remove_dir(extension)
+					new_extension = extension.gsub(/-/, '_')
+					puts "We've upgraded #{extension} to #{new_extension}"
+				end
+		    }
+		    # Puppet have taken a hard stance on not allowing hypens in class names.
+		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').gsub(/-/, '_').downcase
+		else
+		    # Leave extensions as they were for Xenial and below for backwards compatibility.
+		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
+		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 	end
