@@ -1,5 +1,6 @@
 require "pathname"
 require "yaml"
+require "open3"
 
 module Chassis
 	@@dir = File.dirname(File.dirname(__FILE__))
@@ -177,24 +178,40 @@ module Chassis
 
 		# We need to add a version to allow for a seamless upgrade to Bionic Beaver.
 		if config["version"] = 3
-			# Check for existing extensions that have a hyphen and remove them.
-			old_extensions = Dir.glob(@@dir + '/extensions/*')
-			old_extensions.each { |extension|
-				if extension.include? "-"
-					# Delete the old extension if it has a hyphen in it.
-					FileUtils.remove_dir(extension)
-					new_extension = extension.gsub(/-/, '_')
-					puts "\e[32mWe've upgraded #{extension} to #{new_extension}\e[0m"
+			# # Check for existing extensions that have a hyphen and remove them.
+			# old_extensions = Dir.glob(@@dir + '/extensions/*')
+			# old_extensions.each { |extension|
+			# 	if extension.include? "-"
+			# 		# Delete the old extension if it has a hyphen in it.
+			# 		FileUtils.remove_dir(extension)
+			# 		new_extension = extension.gsub(/-/, '_')
+			# 		puts "\e[32mWe've upgraded #{extension} to #{new_extension}\e[0m"
+			# 	end
+		    # }
+			# system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
+			print "\e[0;1mYour Chassis extensions contain old versions that we need to update. Would you like to update them now? [Y/n]: \e[0m"
+			autoupdate = STDIN.gets.chomp
+			if ( autoupdate != "n" )
+				stdout, stderr, status = Open3.capture3('vagrant status --machine-readable | grep not_created')
+				if ( status.exitstatus == 1 )
+					print "\e[0;1mYour Chassis VM isn't running so we need to boot it up...\e[0m"
+					system("vagrant up")
+					exit
+				else 
+					stdout, stderr, status = Open3.capture3('vagrant status --machine-readable | grep state,running')
+					p status.exitstatus
+					puts "Creating a snapshot of your VM before we update your extensions..."
+					exit
 				end
-		    }
-		    # Puppet have taken a hard stance on not allowing hypens in class names.
-		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').gsub(/-/, '_').downcase
+				# snapshot = Time.new.strftime("%Y-%m-%d-%H:%M:%S")
+				# system("vagrant snapshot save %s", Shellwords.escape(snapshot))
+				# exit
+			end	
 		else
 		    # Leave extensions as they were for Xenial and below for backwards compatibility.
 		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
+		    system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 		end
-
-		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 	end
 
 	def self.make_relative(base, paths)
