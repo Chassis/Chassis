@@ -49,8 +49,10 @@ if use_global_ext
 end
 
 Vagrant.configure("2") do |config|
-	# Set the machine name.
-	config.vm.define CONF['machine_name']
+	# Set the machine name not default.
+	if CONF['machine_name'] != 'default'
+		config.vm.define CONF['machine_name']
+	end
 
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
@@ -73,7 +75,9 @@ Vagrant.configure("2") do |config|
 		end
 
 		# Set the machine name for the VirtualBox GUI.
-		vb.name = CONF['machine_name']
+		if CONF['machine_name'] != 'default'
+			vb.name = CONF['machine_name']
+		end
 
 		# Pass synced folders to guest
 		full_synced = {}
