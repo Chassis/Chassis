@@ -419,3 +419,13 @@ When using VirtualBox, you can customise how much memory (in megabytes) and how 
    virtualbox:
       memory: null
       cpus: null
+
+**Key**: ``machine_name``
+
+By default the machine name is "default". This can make it difficult to distinguish between virtual machines in the VirtualBox GUI or when listing VMs on the command line. Overriding the machine name makes it easier to tell which one is which.
+
+Note that if the machine name is changed after it has already been created vagrant will not be able to find the VM. It is recommended to destroy the VM before making this change and then recreating it.
+
+.. code-block:: yaml
+
+   machine_name: project.local
