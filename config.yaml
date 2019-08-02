@@ -107,8 +107,10 @@ synced_folders:
 # Values: 5.6, 7.0, 7.1, 7.2, 7.3 (or 5.6.30)
 php: 7.2
 
-# Vagrant machine name.
-machine_name: chassis
+# Vagrant machine name
+# This can be any string and helps to identify a specific VM
+# NOTE: If changed the machine will need to be re-created and should ideally be destroyed before any change
+machine_name: default
 
 # VirtualBox-specific customisations.
 virtualbox:

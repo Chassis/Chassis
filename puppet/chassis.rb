@@ -134,20 +134,12 @@ module Chassis
 					config["mapped_paths"][path] = config["mapped_paths"]["base"]
 				end
 			end
-
-			machine_name = '' unless config["machine_name"]
-
-			# If we don't have a machine name in the config generate one from the directory structure.
-			if machine_name == ''
-				pwd = Dir.pwd.downcase
-				# Replace all non word characters with underscores then trim underscores.
-				machine_name = pwd.gsub(/[\s\W]+/,'_').gsub(/^_*(.*?)_*$/,'\1')
-			end
 		end
 
 		# Cast config as needed
 		config["nfs"] = !!config["nfs"]
 		config["php"] = config["php"].to_s
+		config["machine_name"] = config["machine_name"].to_s
 
 		return config
 	end
