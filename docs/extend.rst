@@ -26,8 +26,8 @@ Example: Installing The Memcached Extension
 To install the memcached extension you would do the following:
 
 1. Open your terminal and navigate to your root Chassis folder.
-2. `git clone git@github.com:Chassis/memcache.git extensions/memcache`.
-3. `vagrant provision`.
+2. ``git clone git@github.com:Chassis/memcache.git extensions/memcache``.
+3. ``vagrant provision``.
 
 
 Globally installing extensions
@@ -58,6 +58,22 @@ Global extensions can also be disabled in the same way local extensions are
       - chassis/mailhog
 
 .. _disabled: http://docs.chassis.io/en/latest/config/?highlight=disabled_extensions#extensions
+
+Updating extensions
+-------------------
+
+The Chassis extensions often received bug fixes, upgrades and enhancements and a developers Chassis project may require
+an extension to be updated if a provision is failing. Currently you need to update extensions manually. For example,
+let's pretend that the `Xdebug`_ extension has an update that you require. You would need to do the following:
+
+1. Open your terminal and navigate to your root Chassis folder.
+2. ``cd extensions\xdebug``
+3. ``git pull``
+4. ``vagrant provision``
+
+You can run steps 3 & 4 in each extensions directory and run step 4 to update all of your extensions.
+
+.. _Xdebug: https://github.com/Chassis/Xdebug
 
 Creating your own
 -----------------

@@ -140,6 +140,7 @@ module Chassis
 		config["nfs"] = !!config["nfs"]
 		config["php"] = config["php"].to_s
 		config["machine_name"] = config["machine_name"].to_s
+		config["upload_size"] = config["upload_size"].to_s
 
 		return config
 	end
