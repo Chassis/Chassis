@@ -178,7 +178,7 @@ module Chassis
 		end
 
 		# We need to add a version to allow for a seamless upgrade to Bionic Beaver.
-		if config["version"] = 3
+		if config["version"] >= 3
 			# Check for existing extensions that have a hyphen and remove them.
 			old_extensions = Dir.glob(@@dir + '/extensions/*')
 			old_extensions.each { |extension|
@@ -189,7 +189,7 @@ module Chassis
 					puts "We've upgraded #{extension} to #{new_extension}"
 				end
 		    }
-		    # Puppet have taken a hard stance on not allowing hypens in class names.
+		    # Puppet have taken a hard stance on not allowing hyphens in class names.
 		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').gsub(/-/, '_').downcase
 		else
 		    # Leave extensions as they were for Xenial and below for backwards compatibility.
