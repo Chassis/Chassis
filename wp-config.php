@@ -142,4 +142,5 @@ if ( ! file_exists( ABSPATH . 'wp-settings.php' ) ) {
 	echo '<h1>WordPress is missing.</h1>';
 	die(1);
 }
+
 require_once( ABSPATH . 'wp-settings.php' );
