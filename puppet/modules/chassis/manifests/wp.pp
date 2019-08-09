@@ -1,6 +1,7 @@
 # Install our WordPress site and add our configuration.
 define chassis::wp (
 	$location,
+	$upload_size,
 	$wpdir = 'wp',
 	$contentdir = 'content',
 	$hosts = [],
@@ -25,6 +26,7 @@ define chassis::wp (
 			subdomains        => $subdomains,
 			wpdir             => $wpdir,
 			contentdir        => $contentdir,
+			upload_size       => $upload_size,
 			hosts             => $hosts,
 			database          => $database,
 			database_user     => $database_user,
@@ -44,6 +46,7 @@ define chassis::wp (
 			location          => $location,
 			wpdir             => $wpdir,
 			contentdir        => $contentdir,
+			upload_size       => $upload_size,
 			hosts             => $hosts,
 			database          => $database,
 			database_user     => $database_user,
