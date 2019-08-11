@@ -126,7 +126,7 @@ Vagrant.configure("2") do |config|
 
 		# Set up the module path
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
-		shell.args.push("--basemodulepath " +  module_paths.join( ':' ).inspect)
+		shell.args.push("--basemodulepath /vagrant/puppet/modules:" +  module_paths.join( ':' ).inspect)
 
 		# Set up the full environment
 		shell.args.push("--confdir /vagrant/puppet")
