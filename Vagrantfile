@@ -54,13 +54,13 @@ Vagrant.configure("2") do |config|
 		config.vm.define CONF['machine_name']
 	end
 
-	# Set up synced folders.
-	synced_folders = CONF["synced_folders"].clone
-	synced_folders["."] = "/vagrant"
-
 	if use_global_ext
 		synced_folders[global_ext_path] = "/vagrant/extensions/_global"
 	end
+
+	# Set up synced folders.
+	synced_folders = CONF["synced_folders"].clone
+	synced_folders["."] = "/vagrant"
 
 	# Set up potential providers.
 	config.vm.provider "virtualbox" do |vb|
