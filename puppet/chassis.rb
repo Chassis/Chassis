@@ -207,6 +207,5 @@ module Chassis
 			pathname = Pathname.new(path)
 			pathname.relative_path_from(base).to_s
 		end
-		return paths
 	end
 end
