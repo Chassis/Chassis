@@ -124,9 +124,12 @@ Vagrant.configure("2") do |config|
 
 		shell.args = []
 
-		# Set up the module path
+		# Set up the module paths
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
-		shell.args.push("--basemodulepath /vagrant/puppet/modules:" +  module_paths.join( ':' ).inspect)
+		# Set up the global extension paths
+		global_ext_modules.map! { |rel_path| "/vagrant/extensions/_global/" + rel_path }
+		extensions = module_paths + global_ext_modules
+		shell.args.push("--basemodulepath /vagrant/puppet/modules:" +  extensions.join( ':' ).inspect)
 
 		# Set up the full environment
 		shell.args.push("--confdir /vagrant/puppet")
