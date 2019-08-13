@@ -187,6 +187,7 @@ module Chassis
 					FileUtils.remove_dir(extension)
 					new_extension = extension.gsub(/-/, '_')
 					puts "We've renamed #{extension} to #{new_extension} as hyphens aren't allowed in Puppet: https://puppet.com/docs/puppet/5.4/lang_reserved.html#classes-and-defined-resource-types"
+					puts "If you have #{extension} in one of your yaml configuration files we would recommend altering it to #{new_extension}."
 				end
 		    }
 		    # Puppet have taken a hard stance on not allowing hyphens in class names.
