@@ -182,7 +182,7 @@ module Chassis
 			# Check for existing extensions that have a hyphen and remove them.
 			old_extensions = Dir.glob(@@dir + '/extensions/*')
 			old_extensions.each { |extension|
-				if extension.include? "-"
+				next unless extension.include? "-"
 					# Delete the old extension if it has a hyphen in it.
 					FileUtils.remove_dir(extension)
 					new_extension = extension.gsub(/-/, '_')
