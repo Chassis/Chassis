@@ -193,7 +193,7 @@ module Chassis
 		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').gsub(/-/, '_').downcase
 		else
 		    # Leave extensions as they were for Xenial and below for backwards compatibility.
-		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
+		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').downcase
 		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
