@@ -190,10 +190,10 @@ module Chassis
 				end
 		    }
 		    # Puppet have taken a hard stance on not allowing hyphens in class names.
-		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').gsub(/-/, '_').downcase
+		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').gsub(/-/, '_').downcase
 		else
 		    # Leave extensions as they were for Xenial and below for backwards compatibility.
-		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
+		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').downcase
 		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
