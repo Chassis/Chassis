@@ -177,24 +177,31 @@ module Chassis
 			repo = extension
 		end
 
+		renamed_extensions = Array.new
 		# We need to add a version to allow for a seamless upgrade to Bionic Beaver.
 		if config["version"] >= 3
 			# Check for existing extensions that have a hyphen and remove them.
 			old_extensions = Dir.glob(@@dir + '/extensions/*')
 			old_extensions.each { |extension|
-				next unless extension.include? "-"
-					# Delete the old extension if it has a hyphen in it.
-					FileUtils.remove_dir(extension)
-					new_extension = extension.gsub(/-/, '_')
-					puts "We've renamed #{extension} to #{new_extension} as hyphens aren't allowed in Puppet: https://puppet.com/docs/puppet/5.4/lang_reserved.html#classes-and-defined-resource-types"
-					puts "If you have #{extension} in one of your yaml configuration files we would recommend altering it to #{new_extension}."
-				end
-		    }
+			next unless extension.include? "-"
+				# Delete the old extension if it has a hyphen in it.
+				FileUtils.remove_dir(extension)
+				new_extension = extension.gsub(/-/, '_')
+				renamed_extensions << "- #{extension} to #{new_extension}"
+			}
 		    # Puppet have taken a hard stance on not allowing hyphens in class names.
 		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').gsub(/-/, '_').downcase
 		else
 		    # Leave extensions as they were for Xenial and below for backwards compatibility.
 		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').downcase
+		end
+
+		if ! renamed_extensions.empty?
+			puts("\e[33mWe're renaming the following extensions:")
+			renamed_extensions.each {|extension|
+				puts extension
+			}
+			puts("\e[0m")
 		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
