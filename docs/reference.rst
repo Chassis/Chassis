@@ -37,6 +37,17 @@ documentation, check out the `Vagrant command reference`_.
 Troubleshooting
 ---------------
 
+Logs
+----
+
+Chassis synchronises the Nginx and PHP log files from the Virtual Machine to your local development folder. These logs can be useful if your provisions are failing and you require further information.
+
+There are three logs that we synchronise for you:
+
+1. ``logs/php/php_errors.log`` - This shows any PHP errors or warnings that have occurred.
+2. ``logs/nginx/error.log`` - This shows any errors that have occurred.
+3. ``logs/nginx/access.log`` = This shows details of any requests that Nginx has served.
+
 Character encoding on Windows machines
 --------------------------------------
 
