@@ -93,11 +93,11 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 
    Run the following command in a terminal to install the `Vagrant Share plugin`_. ``vagrant plugin install vagrant-share``.
 
-2. **Install ngrok**
+2. **Install ngrok Version 2.2.8**
 
-   Vagrant Share requires ``ngrok`` to be installed on the host machine.
+   Vagrant Share requires ``ngrok`` 2.2.8 to be installed on the host machine.
    You can verify if this is installed by running ``which ngrok`` in a terminal. If there is no output then you will need to download and install `ngrok`_.
-   Once you've downloaded ``ngrok`` unzip it: ``unzip /path/to/ngrok-stable-darwin-amd64.zip``
+   Once you've downloaded ``ngrok`` unzip it: ``unzip /path/to/ngrok-2.2.8-darwin-amd64.zip``
    Move ngrok: ``mv /path/to/ngrok /usr/local/bin/ngrok``
 
 3. **Run Vagrant Share**
@@ -109,11 +109,14 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 
    Navigate to the URL that ngrok generated.
 
+**Note**: ngrok Version 2.2.8 is required due to this known `bug`_:
+
 Debugging
 ~~~~~~~~~
 
 If you see an error when you run ``vagrant provision`` then try running it again.
 If you're still having trouble accessing the URL try a ``vagrant reload`` after you've run a successful ``vagrant provision``
 
-.. _ngrok: https://ngrok.com/download
+.. _ngrok: https://dl.equinox.io/ngrok/ngrok/stable/archive
 .. _Vagrant Share plugin: https://www.vagrantup.com/docs/share/
+.. _bug: https://github.com/hashicorp/vagrant/issues/10799
