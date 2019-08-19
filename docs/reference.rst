@@ -37,19 +37,6 @@ documentation, check out the `Vagrant command reference`_.
 Troubleshooting
 ---------------
 
-There is a known bug in Vagrant 1.8.5 which will result in the following output:
-
-::
-
-  Vagrant attempted to execute the capability 'change_host_name'
-  on the detect guest OS 'linux', but the guest doesn't
-  support that capability. This capability is required for your
-  configuration of Vagrant. Please either reconfigure Vagrant to
-  avoid this capability or fix the issue by creating the capability.
-  To correct this you can either follow this fix on `stackoverflow`_ or rollback to Vagrant 1.8.4 until 1.8.6 is released.
-
-.. _stackoverflow: http://stackoverflow.com/questions/38636023/vagrant-not-supported-the-capability-change-host-name
-
 Character encoding on Windows machines
 --------------------------------------
 
