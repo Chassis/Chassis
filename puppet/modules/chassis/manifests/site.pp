@@ -15,7 +15,7 @@ define chassis::site (
 	$sitename       = 'Chassis Site',
 ) {
 	$extra_hosts = join($hosts, ' ')
-	$server_name = rstrip("${name}")
+	$server_name = rstrip($name)
 	file { $wpdir:
 		ensure => directory
 	}
