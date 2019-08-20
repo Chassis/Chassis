@@ -8,6 +8,9 @@
 # - project/config.local.yaml          (global overrides)
 # - project/config.yaml                 (global defaults)
 
+# Add a version for Chassis for when we upgrade Ubuntu distributions. We're currently on version 2.1: https://github.com/Chassis/Chassis/releases/tag/2.1
+version: 2.1
+
 # Domain names to use for Vagrant
 #
 # The first name will be used as the machine's name, subsequent names will be
