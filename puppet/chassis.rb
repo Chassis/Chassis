@@ -252,6 +252,14 @@ module Chassis
 		self.prompt_for_updates(updates, @@extension_dir, 'extensions')
 	end
 
+	def self.update_global_extensions
+		puts "\e[32mChecking for Chassis global extension updates...\e[0m"
+		global_ext_path = File.join(Dir.home, ".chassis", "extensions")
+		global_extensions = Dir.glob(global_ext_path + '/*').map { |directory| File.basename( directory ) }
+		updates = self.updates_check(global_extensions, global_ext_path)
+		self.prompt_for_updates(updates, global_ext_path, 'extensions')
+	end
+
 	def self.updates_check(folders, directory)
 		updates = Array.new
 		folders.each do |folder|
