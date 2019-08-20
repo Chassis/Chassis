@@ -16,7 +16,7 @@ require_once( dirname( __FILE__ ) . '/admin.php' );
 
 $title = __( 'Site Health Status' );
 
-if ( ! current_user_can( 'install_plugins' ) ) {
+if ( ! current_user_can( 'view_site_health_checks' ) ) {
 	wp_die( __( 'Sorry, you are not allowed to access site health information.' ), '', 403 );
 }
 
@@ -52,11 +52,17 @@ require_once( ABSPATH . 'wp-admin/admin-header.php' );
 
 	<nav class="health-check-tabs-wrapper hide-if-no-js" aria-label="<?php esc_attr_e( 'Secondary menu' ); ?>">
 		<a href="<?php echo esc_url( admin_url( 'site-health.php' ) ); ?>" class="health-check-tab active" aria-current="true">
-			<?php _e( 'Status' ); ?>
+			<?php
+			/* translators: tab heading for Site Health Status page */
+			_ex( 'Status', 'Site Health' );
+			?>
 		</a>
 
 		<a href="<?php echo esc_url( admin_url( 'site-health.php?tab=debug' ) ); ?>" class="health-check-tab">
-			<?php _e( 'Info' ); ?>
+			<?php
+			/* translators: tab heading for Site Health Info page */
+			_ex( 'Info', 'Site Health' );
+			?>
 		</a>
 	</nav>
 </div>

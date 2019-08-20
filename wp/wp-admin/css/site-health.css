@@ -108,13 +108,31 @@
 	}
 }
 
+.health-check-tabs-wrapper {
+	/* IE 11 */
+	display: -ms-inline-grid;
+	-ms-grid-columns: 1fr 1fr;
+	vertical-align: top;
+	/* modern browsers */
+	display: inline-grid;
+	grid-template-columns: 1fr 1fr;
+}
+
 .health-check-tab {
-	display: inline-block;
+	display: block; /* IE 11 */
 	text-decoration: none;
 	color: inherit;
 	padding: 0.5rem 1rem 1rem;
 	margin: 0 1rem;
 	transition: box-shadow 0.5s ease-in-out;
+}
+
+.health-check-tab:nth-child(1) {
+	-ms-grid-column: 1; /* IE 11 */
+}
+
+.health-check-tab:nth-child(2) {
+	-ms-grid-column: 2; /* IE 11 */
 }
 
 .health-check-tab:focus {
@@ -153,32 +171,23 @@
 .health-check-body .pass::before,
 .health-check-body .good::before {
 	content: "\f147";
-	display: inline-block;
 	color: #46b450;
-	font-family: dashicons;
-	vertical-align: top;
 }
 
 .health-check-body .warning::before {
 	content: "\f460";
-	display: inline-block;
 	color: #ffb900;
-	font-family: dashicons;
 }
 
 .health-check-body .info::before {
 	content: "\f348";
-	display: inline-block;
 	color: #00a0d2;
-	font-family: dashicons;
 }
 
 .health-check-body .fail::before,
 .health-check-body .error::before {
 	content: "\f335";
-	display: inline-block;
 	color: #dc3232;
-	font-family: dashicons;
 }
 
 .site-health-copy-buttons {
@@ -277,13 +286,16 @@
 	border: 0;
 	color: #32373c;
 	cursor: pointer;
-	display: block;
+	display: flex;
 	font-weight: 400;
 	margin: 0;
 	padding: 1em 3.5em 1em 1.5em;
+	min-height: 46px;
 	position: relative;
 	text-align: left;
 	width: 100%;
+	align-items: center;
+	justify-content: space-between;
 }
 
 .wp-core-ui .button.site-health-view-passed {
@@ -306,9 +318,9 @@
 }
 
 .health-check-accordion-trigger .title {
-	display: inline-block;
 	pointer-events: none;
 	font-weight: 600;
+	flex-grow: 1;
 }
 
 .health-check-accordion-trigger .icon,
@@ -325,7 +337,6 @@
 }
 
 .health-check-accordion-trigger .badge {
-	float: right;
 	padding: 0.1rem 0.5rem 0.15rem;
 	color: #32373c;
 	font-weight: 600;
@@ -386,10 +397,10 @@
 }
 
 .health-check-wp-paths-sizes.spinner {
-	position: absolute;
 	visibility: visible;
 	float: none;
 	margin: 0 4px;
+	flex-shrink: 0;
 }
 
 @media screen and (max-width: 782px) {
@@ -407,14 +418,30 @@
 		margin-left: 10px;
 	}
 
-	.health-check-accordion-trigger .title {
-		display: block;
-		margin-bottom: 1em;
+	.site-health-issues-wrapper .health-check-accordion-trigger {
+		flex-direction: column;
+		align-items: flex-start;
 	}
 
 	.health-check-accordion-trigger .badge {
-		float: left;
-		margin: 0;
+		margin: 1em 0 0;
+	}
+
+	.health-check-table {
+		table-layout: fixed;
+	}
+
+	.health-check-table td {
+		box-sizing: border-box;
+		display: block;
+		width: 100%;
+		word-wrap: break-word;
+	}
+
+	.health-check-table td:first-child {
+		width: 100%;
+		padding-bottom: 0;
+		font-weight: 600;
 	}
 }
 

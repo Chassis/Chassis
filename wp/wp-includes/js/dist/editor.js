@@ -2738,6 +2738,7 @@ __webpack_require__.d(actions_namespaceObject, "multiSelect", function() { retur
 __webpack_require__.d(actions_namespaceObject, "clearSelectedBlock", function() { return clearSelectedBlock; });
 __webpack_require__.d(actions_namespaceObject, "toggleSelection", function() { return toggleSelection; });
 __webpack_require__.d(actions_namespaceObject, "replaceBlocks", function() { return replaceBlocks; });
+__webpack_require__.d(actions_namespaceObject, "replaceBlock", function() { return replaceBlock; });
 __webpack_require__.d(actions_namespaceObject, "moveBlocksDown", function() { return moveBlocksDown; });
 __webpack_require__.d(actions_namespaceObject, "moveBlocksUp", function() { return moveBlocksUp; });
 __webpack_require__.d(actions_namespaceObject, "moveBlockToPosition", function() { return moveBlockToPosition; });
@@ -5258,6 +5259,7 @@ var multiSelect = actions_getBlockEditorAction('multiSelect');
 var clearSelectedBlock = actions_getBlockEditorAction('clearSelectedBlock');
 var toggleSelection = actions_getBlockEditorAction('toggleSelection');
 var replaceBlocks = actions_getBlockEditorAction('replaceBlocks');
+var replaceBlock = actions_getBlockEditorAction('replaceBlock');
 var moveBlocksDown = actions_getBlockEditorAction('moveBlocksDown');
 var moveBlocksUp = actions_getBlockEditorAction('moveBlocksUp');
 var moveBlockToPosition = actions_getBlockEditorAction('moveBlockToPosition');
@@ -14943,7 +14945,7 @@ function (_Component) {
   Object(createClass["a" /* default */])(EditorProvider, [{
     key: "getBlockEditorSettings",
     value: function getBlockEditorSettings(settings, meta, onMetaChange, reusableBlocks) {
-      return Object(objectSpread["a" /* default */])({}, Object(external_lodash_["pick"])(settings, ['alignWide', 'allowedBlockTypes', 'availableLegacyWidgets', 'bodyPlaceholder', 'colors', 'disableCustomColors', 'disableCustomFontSizes', 'focusMode', 'fontSizes', 'hasFixedToolbar', 'hasPermissionsToManageWidgets', 'imageSizes', 'isRTL', 'maxWidth', 'styles', 'templateLock', 'titlePlaceholder']), {
+      return Object(objectSpread["a" /* default */])({}, Object(external_lodash_["pick"])(settings, ['alignWide', 'allowedBlockTypes', 'availableLegacyWidgets', 'bodyPlaceholder', 'colors', 'disableCustomColors', 'disableCustomFontSizes', 'focusMode', 'fontSizes', 'hasFixedToolbar', 'hasPermissionsToManageWidgets', 'imageSizes', 'isRTL', 'maxWidth', 'styles', 'template', 'templateLock', 'titlePlaceholder']), {
         __experimentalMetaSource: {
           value: meta,
           onChange: onMetaChange
