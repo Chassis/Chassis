@@ -26,10 +26,10 @@ CONF = Chassis.config
 
 # Install extensions defined in config file
 Chassis.install_extensions(CONF)
-Chassis.update_core
-Chassis.update_extensions
-Chassis.update_submodules
-Chassis.update_global_extensions
+Chassis.update_core(CONF)
+Chassis.update_extensions(CONF)
+Chassis.update_submodules(CONF)
+Chassis.update_global_extensions(CONF)
 
 # Add extra extension modules
 base_path = Pathname.new( File.dirname( __FILE__ ) )

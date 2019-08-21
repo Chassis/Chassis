@@ -231,32 +231,40 @@ module Chassis
 		end
 	end
 
-	def self.update_core
-		puts "\e[32mChecking for Chassis core updates...\e[0m"
-		updates = self.updates_check(core, @@dir)
-		self.prompt_for_updates(updates, @@dir, 'core')
+	def self.update_core(config)
+		if config["auto_update"]["core"] == true
+			puts "\e[32mChecking for Chassis core updates...\e[0m"
+			updates = self.updates_check(['core'], @@dir)
+			self.prompt_for_updates(updates, @@dir, 'core')
+		end
 	end
 
-	def self.update_submodules
-		puts "\e[32mChecking for Chassis submodule updates...\e[0m"
-		submodules = ['apt','mysql','stdlib','wp']
-		directory = File.join(@@dir, 'puppet/modules')
-		updates = self.submodule_update_check(submodules, directory)
+	def self.update_submodules(config)
+		if config["auto_update"]["submodules"] == true
+			puts "\e[32mChecking for Chassis submodule updates...\e[0m"
+			submodules = ['apt','mysql','stdlib','wp']
+			directory = File.join(@@dir, 'puppet/modules')
+			updates = self.submodule_update_check(submodules, directory)
+		end
 	end
 
-	def self.update_extensions
-		puts "\e[32mChecking for Chassis extension updates...\e[0m"
-		extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
-		updates = self.updates_check(extensions, @@extension_dir)
-		self.prompt_for_updates(updates, @@extension_dir, 'extensions')
+	def self.update_extensions(config)
+		if config["auto_update"]["extensions"] == true
+			puts "\e[32mChecking for Chassis extension updates...\e[0m"
+			extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
+			updates = self.updates_check(extensions, @@extension_dir)
+			self.prompt_for_updates(updates, @@extension_dir, 'extensions')
+		end
 	end
 
-	def self.update_global_extensions
-		puts "\e[32mChecking for Chassis global extension updates...\e[0m"
-		global_ext_path = File.join(Dir.home, ".chassis", "extensions")
-		global_extensions = Dir.glob(global_ext_path + '/*').map { |directory| File.basename( directory ) }
-		updates = self.updates_check(global_extensions, global_ext_path)
-		self.prompt_for_updates(updates, global_ext_path, 'extensions')
+	def self.update_global_extensions(config)
+		if config["auto_update"]["global_extensions"] == true
+			puts "\e[32mChecking for Chassis global extension updates...\e[0m"
+			global_ext_path = File.join(Dir.home, ".chassis", "extensions")
+			global_extensions = Dir.glob(global_ext_path + '/*').map { |directory| File.basename( directory ) }
+			updates = self.updates_check(global_extensions, global_ext_path)
+			self.prompt_for_updates(updates, global_ext_path, 'extensions')
+		end
 	end
 
 	def self.updates_check(folders, directory)

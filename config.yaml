@@ -132,3 +132,10 @@ virtualbox:
 
 # NFS support. You should change this to Yes if you use VMWare
 nfs: No
+
+# Auto update configuration. Set to false to disable entirely, or set each item to true/false as needed.
+auto_update:
+    core: true
+    submodules: true
+    extensions: true
+    global_extensions: true
