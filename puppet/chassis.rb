@@ -289,25 +289,25 @@ module Chassis
 			elsif
 				Dir.chdir(directory + '/' + folder )
 			end
-			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout master")
-			git_remote_update_stdout, git_remote_update_stdeerr, git_remote_update_status = Open3.capture3("git remote update")
-			git_status_stdout, git_status_stdeerr, git_status_status = Open3.capture3("git status --porcelain=2 --branch")
-			if git_status_stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
+			_, _, _ = Open3.capture3("git checkout master")
+			_, _, _ = Open3.capture3("git remote update")
+			stdout, _, _ = Open3.capture3("git status --porcelain=2 --branch")
+			if stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
 				updates.push folder
 			end
 			# The user might've been on another branch before we checked out master so switch back.
-			git_checkout_master_stdout, git_checkout_master_stdeerr, git_checkout_master_status = Open3.capture3("git checkout -")
+			_, _, _ = Open3.capture3("git checkout -")
 		end
 		return updates
 	end
 
 	def self.submodule_update_check(folders, directory)
-		git_submodule_status_stdout, git_submodule_status_stdeerr, git_submodule_status_status = Open3.capture3("git submodule status")
-		if git_submodule_status_stdout =~ /(\+)/
+		stdout, _, _ = Open3.capture3("git submodule status")
+		if stdout =~ /(\+)/
 			print "\e[0;1mYour Chassis submodules are out of date. This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
 			auto_update = STDIN.gets.chomp
 			if ( auto_update != "n" )
-				git_submodule_update_stdout, git_submodule_update_stdeerr, git_submodule_update_status = Open3.capture3("git submodule update")
+				_, _, _ = Open3.capture3("git submodule update")
 				puts "\e[032;1mAll your submodules are up to date!\e[0m\n"
 			end
 		else
@@ -344,8 +344,8 @@ module Chassis
 		if ( prompt != "n" )
 			updates.each do |update|
 				puts "\e[32mUpdating #{update}...\e[0m"
-				Dir.chdir(directory + '/' + update )
-				git_pull_stdout, git_pull_stdeerr, git_pull_status = Open3.capture3("git checkout master && git pull")
+				Dir.chdir(directory + '/' + update)
+				_, _, _ = Open3.capture3("git checkout master && git pull")
 				puts "\e[32;1mThe #{update} is now up to date.\e[0m"
 			end
 		end
