@@ -235,13 +235,17 @@ module Chassis
 		if config["auto_update"]["core"] == true
 			puts "\e[32mChecking for Chassis core updates...\e[0m"
 			updates = self.updates_check(['core'], @@dir)
-			self.prompt_for_updates(updates, @@dir, 'core')
+			if updates.empty?
+				puts "\033[A\e[K"
+			else
+				self.prompt_for_updates(updates, @@extension_dir, 'core')
+			end
 		end
 	end
 
 	def self.update_submodules(config)
 		if config["auto_update"]["submodules"] == true
-			puts "\e[32mChecking for Chassis submodule updates...\e[0m"
+			puts "\033[A\e[32mChecking for Chassis submodule updates...\e[0m"
 			submodules = ['apt','mysql','stdlib','wp']
 			directory = File.join(@@dir, 'puppet/modules')
 			updates = self.submodule_update_check(submodules, directory)
@@ -250,20 +254,28 @@ module Chassis
 
 	def self.update_extensions(config)
 		if config["auto_update"]["extensions"] == true
-			puts "\e[32mChecking for Chassis extension updates...\e[0m"
+			puts "\033[A\e[32mChecking for Chassis extension updates...\e[0m"
 			extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
 			updates = self.updates_check(extensions, @@extension_dir)
-			self.prompt_for_updates(updates, @@extension_dir, 'extensions')
+			if updates.empty?
+				puts "\033[A\r\e[K"
+			else
+				self.prompt_for_updates(updates, @@extension_dir, 'extensions')
+			end
 		end
 	end
 
 	def self.update_global_extensions(config)
 		if config["auto_update"]["global_extensions"] == true
-			puts "\e[32mChecking for Chassis global extension updates...\e[0m"
+			puts "\033[A\e[32mChecking for Chassis global extension updates...\e[0m"
 			global_ext_path = File.join(Dir.home, ".chassis", "extensions")
 			global_extensions = Dir.glob(global_ext_path + '/*').map { |directory| File.basename( directory ) }
 			updates = self.updates_check(global_extensions, global_ext_path)
-			self.prompt_for_updates(updates, global_ext_path, 'extensions')
+			if updates.empty?
+				puts "\033[A\r\e[K"
+			else
+				self.prompt_for_updates(updates, global_ext_path, 'extensions')
+			end
 		end
 	end
 
@@ -293,19 +305,21 @@ module Chassis
 		git_submodule_status_stdout, git_submodule_status_stdeerr, git_submodule_status_status = Open3.capture3("git submodule status")
 		if git_submodule_status_stdout =~ /(\+)/
 			print "\e[0;1mYour Chassis submodules are out of date. This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
-			autoupdate = STDIN.gets.chomp
-			if ( autoupdate != "n" )
+			auto_update = STDIN.gets.chomp
+			if ( auto_update != "n" )
 				git_submodule_update_stdout, git_submodule_update_stdeerr, git_submodule_update_status = Open3.capture3("git submodule update")
 				puts "\e[032;1mAll your submodules are up to date!\e[0m\n"
 			end
+		else
+			puts "\033[A\r\e[K"
 		end
 	end
 
 	def self.prompt_for_updates(updates, directory, context)
 		if 'core' == context
 			print "\e[0;1mChassis core appears to be out of date. This may cause provisioning to fail! Would you like to update it now? [Y/n]: \e[0m"
-			autoupdate = STDIN.gets.chomp
-			self.do_updates(autoupdate, updates, directory)
+			auto_update = STDIN.gets.chomp
+			self.do_updates(auto_update, updates, directory)
 		elsif 'extensions' == context
 			if updates.empty? != true
 				if ( updates.count > 1 )
@@ -314,15 +328,15 @@ module Chassis
 					wording = String.new("extension appears")
 				end
 				print "\e[0;1mThe following Chassis #{wording} to be out of date: " + updates.join(", ") + ". This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
-				autoupdate = STDIN.gets.chomp
-				self.do_updates(autoupdate, updates, directory)
+				auto_update = STDIN.gets.chomp
+				self.do_updates(auto_update, updates, directory)
 			elsif
 				puts "\e[032;1mAll your extensions are up to date!\e[0m\n"
 			end
 		else
 			print "\e[0;1mThe Chassis submodules appear to be out of date. This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
-			autoupdate = STDIN.gets.chomp
-			self.do_updates(autoupdate, updates, directory)
+			auto_update = STDIN.gets.chomp
+			self.do_updates(auto_update, updates, directory)
 		end
 	end
 
