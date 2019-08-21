@@ -233,7 +233,6 @@ module Chassis
 
 	def self.update_core
 		puts "\e[32mChecking for Chassis core updates...\e[0m"
-		core = ['core']
 		updates = self.updates_check(core, @@dir)
 		self.prompt_for_updates(updates, @@dir, 'core')
 	end
