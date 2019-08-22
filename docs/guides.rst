@@ -39,7 +39,7 @@ You can see a full list of WP-CLI commands by running ``wp help`` inside your Ch
 * ``wp plugin install <plugin_slug> --activate`` -- Install and activate a plugin from the WordPress plugin directory.
 * ``wp post list`` - Gets a list of posts.
 * ``wp post-type list`` - Lists registered post types.
-* ``wp search-replace <old> <new>`` - Searches through all rows in a selection of tables and replaces appearances of the first string with the second string.
+* ``wp search-replace <old> <new>`` - Searches through all rows in a selection of tables and replaces appearances of the first string with the second string. Add the ``--dry-run`` parameter to test without making changes.
 * ``wp shell`` - Evaluate PHP statements and expressions interactively, from within a WordPress environment. e.g. ``get_bloginfo( 'name' );``
 * ``wp site empty`` - Empties a site of its content (posts, comments, terms, and meta).
 * ``wp site create --slug=awesome`` -Creates a site in a multisite installation.
