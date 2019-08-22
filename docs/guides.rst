@@ -13,6 +13,8 @@ Importing A Production Database Into Chassis
 
 #. Use ``ssh`` to connect to your production server. Your host should provide instructions for doing this.
 #. Export your production database with `WP-CLI`_ ``wp db export <filename.sql>``.
+#. Download your the contents of your ``wp-content`` folder on production to your local content folder.
+#. Provision a new Chassis instance.
 #. Copy the export into the ``content`` folder.
 #. Run ``vagrant ssh`` in a terminal to SSH into your Chassis box.
 #. Run ``cd /vagrant/content``
