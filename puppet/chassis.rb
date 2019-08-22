@@ -296,14 +296,14 @@ module Chassis
 			elsif
 				Dir.chdir(directory + '/' + folder )
 			end
-			_, _, _ = Open3.capture3("git checkout master")
-			_, _, _ = Open3.capture3("git remote update")
+			Open3.capture3("git checkout master")
+			Open3.capture3("git remote update")
 			stdout, _, _ = Open3.capture3("git status --porcelain=2 --branch")
 			if stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
 				updates.push folder
 			end
 			# The user might've been on another branch before we checked out master so switch back.
-			_, _, _ = Open3.capture3("git checkout -")
+			Open3.capture3("git checkout -")
 		end
 		return updates
 	end
