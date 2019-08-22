@@ -42,6 +42,7 @@ You can see a full list of WP-CLI commands by running ``wp help`` inside your Ch
 * ``wp search-replace <old> <new>`` - Searches through all rows in a selection of tables and replaces appearances of the first string with the second string.
 * ``wp shell`` - Evaluate PHP statements and expressions interactively, from within a WordPress environment. e.g. ``get_bloginfo( 'name' );``
 * ``wp site empty`` - Empties a site of its content (posts, comments, terms, and meta).
+* ``wp site create --slug=awesome`` -Creates a site in a multisite installation.
 
 There is extensive documentation and examples of all the WP-CLI commands on the `WP-CLI`_ website.
 
