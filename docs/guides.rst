@@ -109,7 +109,7 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 
    Navigate to the URL that ngrok generated.
 
-**Note**: ngrok Version 2.2.8 is required due to this known `bug`_:
+**Note**: ngrok Version 2.2.8 is required due to this known `bug`_
 
 Debugging
 ~~~~~~~~~
