@@ -21,7 +21,6 @@ Importing A Production Database Into Chassis
 #. Run ``wp db import <filename.sql>``
 #. Run ``wp search-replace '//www.yoursite.com/wp-content' '//vagrant.local/content'``
 #. Run ``wp cache flush``
-#. Download your the contents of your ``wp-content`` folder on production to your local content folder.
 #. Start developing.
 
 Alternatively you can use the `SequelPro`_ or `phpMyAdmin`_ extensions to handle importing and exporting of your databases.
