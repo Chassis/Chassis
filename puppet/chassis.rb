@@ -87,6 +87,15 @@ module Chassis
 	end
 
 	def self.normalize_config(config)
+
+		# Set all the auto_update keys to false.
+		if config["auto_update"] == false
+			config["auto_update"] = {}
+			config["auto_update"]["core"], config["auto_update"]["submodules"], config["auto_update"]["extensions"], config["auto_update"]['global_extensions'] = false, false, false, false
+		end
+
+		puts config["auto_update"]
+
 		config["synced_folders"] = {} unless config["synced_folders"]
 
 		if config["wpdir"]
