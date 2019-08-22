@@ -154,7 +154,7 @@ module Chassis
 	end
 
 	def self.install_extensions(config)
-		if config["version"] >= 3
+		if config["version"] >= 3 && ! config["extensions"].nil?
 			# Warn about old extensions.
 			config["extensions"].each do |extension|
 				if extension.include? "-"
