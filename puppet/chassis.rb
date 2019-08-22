@@ -94,8 +94,6 @@ module Chassis
 			config["auto_update"]["core"], config["auto_update"]["submodules"], config["auto_update"]["extensions"], config["auto_update"]['global_extensions'] = false, false, false, false
 		end
 
-		puts config["auto_update"]
-
 		config["synced_folders"] = {} unless config["synced_folders"]
 
 		if config["wpdir"]
