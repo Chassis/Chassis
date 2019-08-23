@@ -68,6 +68,21 @@ For example you could add the following section to one of your ``.yaml`` configu
 .. _Chassis WP-CLI extension: https://github.com/Chassis/WP_CLI
 .. _WP-CLI Server: https://github.com/wp-cli/server-command
 
+Setting up SSL
+--------------
+
+To add an SSL to Chassis you need to do the following steps:
+
+#. Add ``- chassis/chassis_openssl`` to one of your ``.yaml`` `configuration`_ files or run ``git clone https://github.com/Chassis/chassis_openssl.git extensions/chassis_openssl``.
+#. Run ``vagrant provision``. This will create a ``vagrant.local.cert`` or ``<yoursitename>.local.cert`` and a ``vagrant.local.key`` or  `<yoursitename>.local.key` in the root directory of your Chassis folder.
+#. Modify the ``WP_SITEURL`` and ``WP_HOME`` constants to use ``https://`` instead of ``http://``.
+#. If you are using a Mac run ``sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain <yoursitename>.local.key.cert``.
+#. If you are using Windows run ``certutil -enterprise -f -v -AddStore "Root" "<yoursitename>.local.key.cert"``.
+#. Alternatively, you can read the `Chassis OpenSSL`_ readme for GUI options.
+
+.. _configuration: http://docs.chassis.io/en/latest/config/
+.. _Chassis OpenSSL: https://github.com/Chassis/chassis_openssl#gui-methods
+
 WordPress Core Development
 --------------------------
 
