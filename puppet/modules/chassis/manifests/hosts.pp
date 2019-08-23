@@ -31,6 +31,7 @@ class chassis::hosts(
 
 	file { '/etc/avahi/aliases':
 		content => template('chassis/aliases.erb'),
+		mode   => '0777',
 	}
 
 	file { '/vagrant/local-config-hosts.php':

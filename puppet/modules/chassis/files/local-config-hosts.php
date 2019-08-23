@@ -41,5 +41,5 @@ function write_hosts( $exclude = array() ) {
 	$domains = array_unique( $domains );
 	$content = implode( "\n", $domains );
 
-	file_put_contents( '/etc/chassis-hosts/conf.d/subdomains', $content );
+	file_put_contents( '/etc/avahi/aliases', $content );
 }
