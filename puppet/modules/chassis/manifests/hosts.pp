@@ -9,7 +9,8 @@ class chassis::hosts(
 	exec { 'clone avahi aliases':
 		command => 'git clone https://github.com/hmalphettes/avahi-aliases.git',
 		path    => '/bin',
-		cwd     => '/home/vagrant'
+		cwd     => '/home/vagrant',
+		require => Package['git-core']
 	}
 
 	exec { 'install avahi aliases':
