@@ -8,11 +8,6 @@ class chassis::hosts(
 	}
 
 	if ( $subdomains ) {
-		package { 'watchdog':
-			ensure   => '0.8.3',
-			provider => 'pip',
-			require  => Package['python-pip'],
-		}
 
 		file { '/lib/systemd/system/chassis-hosts.service':
 			ensure => 'file',
@@ -21,17 +16,8 @@ class chassis::hosts(
 			notify => Exec['systemctl-daemon-reload'],
 		}
 
-		file { [ '/etc/chassis-hosts', '/etc/chassis-hosts/conf.d' ]:
-			ensure => directory
-		}
-
-		file { '/etc/chassis-hosts/conf.d/aliases':
-			content => template('chassis/avahi-aliases.erb'),
-		}
-
-		file { '/etc/chassis-hosts/conf.d/subdomains':
-			ensure => file,
-			mode   => '0777',
+		file { '/etc/avahi/aliases':
+			content => template('chassis/aliases.erb'),
 		}
 
 		file { '/vagrant/local-config-hosts.php':
@@ -45,10 +31,8 @@ class chassis::hosts(
 			require => [
 				Package[ 'avahi-daemon' ],
 				Package[ 'python-avahi' ],
-				Package[ 'watchdog' ],
 				File[ '/lib/systemd/system/chassis-hosts.service' ],
-				File[ '/etc/chassis-hosts/conf.d/aliases' ],
-				File[ '/etc/chassis-hosts/conf.d/subdomains' ],
+				File[ '/etc/avahi/aliases' ],
 			]
 		}
 	}

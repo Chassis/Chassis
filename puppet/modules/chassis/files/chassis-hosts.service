@@ -1,13 +1,13 @@
 [Unit]
 Description=Chassis subdomain hosts updater
+StartLimitBurst=5
 
 [Service]
 TimeoutStartSec=0
 TimeoutStopSec=600
 Restart=on-failure
 RestartSec=30s
-StartLimitBurst=5
-ExecStart=/usr/bin/python /vagrant/puppet/chassis-hosts.py
+ExecStart=/usr/bin/sudo avahi-publish-alias
 
 [Install]
 WantedBy=multi-user.target
