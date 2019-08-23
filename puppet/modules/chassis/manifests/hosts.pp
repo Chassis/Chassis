@@ -13,10 +13,11 @@ class chassis::hosts(
 	}
 
 	exec { 'install avahi aliases':
-		command => 'sudo ./install.sh',
-		path    => '/bin',
-		cwd     => '/home/vagrant',
-		require => Exec['clone avahi aliases']
+		command  => 'sudo ./install.sh',
+		path     => '/bin',
+		cwd      => '/home/vagrant',
+		require  => Exec['clone avahi aliases'],
+		logoutput => true
 	}
 
 	file { '/lib/systemd/system/chassis-hosts.service':

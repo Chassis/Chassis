@@ -45,8 +45,7 @@ class { 'chassis':
 $subdomains = ( $config[multisite] == 'subdomains' )
 
 class { 'chassis::hosts':
-	aliases => $config[hosts],
-	subdomains => $subdomains,
+	aliases => $config[hosts]
 }
 
 chassis::wp { $config['hosts'][0]:
