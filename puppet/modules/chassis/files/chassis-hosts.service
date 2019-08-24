@@ -10,4 +10,4 @@ RestartSec=30s
 ExecStart=/usr/bin/sudo avahi-publish-aliases
 
 [Install]
-WantedBy=multi-user.target
+WantedBy=vagrant.mount
