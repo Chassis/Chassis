@@ -1,13 +1,8 @@
 [Unit]
-Description=Chassis subdomain hosts updater
+Description=Chassis Avahi Hosts Updater
 StartLimitBurst=5
+Wants=chassis-hosts.timer
 
 [Service]
-TimeoutStartSec=0
-TimeoutStopSec=600
-Restart=always
-RestartSec=30s
-ExecStart=/usr/bin/sudo avahi-publish-aliases
-
-[Install]
-WantedBy=vagrant.mount
+Type=oneshot
+ExecStart=/usr/bin/avahi-publish-aliases

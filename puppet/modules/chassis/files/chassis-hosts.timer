@@ -1,0 +1,13 @@
+[Unit]
+Description=Timer For Chassis Avahi Hosts Updater
+Requires=chassis-hosts.service
+
+[Timer]
+Unit=chassis-hosts.service
+# Run every 10 seconds
+OnCalendar=*:*:0/10
+Persistent=true
+AccuracySec=10s
+
+[Install]
+WantedBy=timers.target

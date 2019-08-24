@@ -29,6 +29,13 @@ class chassis::hosts(
 		notify => Exec['systemctl-daemon-reload'],
 	}
 
+	file { '/lib/systemd/system/chassis-hosts.timer':
+		ensure => 'file',
+		mode   => '0644',
+		source => 'puppet:///modules/chassis/chassis-hosts.timer',
+		notify => Exec['systemctl-daemon-reload'],
+	}
+
 	file { '/etc/avahi/aliases':
 		content => template('chassis/aliases.erb'),
 		mode    => '0777',
