@@ -19,7 +19,7 @@ class chassis::hosts(
 		path      => '/usr/bin',
 		cwd       => '/home/vagrant/avahi-aliases',
 		require   => Exec['clone avahi aliases'],
-		logoutput => true
+		onlyif    => 'test ! -d /etc/avahi/aliases.d'
 	}
 
 	file { '/lib/systemd/system/chassis-hosts.service':
