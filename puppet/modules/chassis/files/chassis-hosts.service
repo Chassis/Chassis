@@ -5,7 +5,7 @@ StartLimitBurst=5
 [Service]
 TimeoutStartSec=0
 TimeoutStopSec=600
-Restart=on-failure
+Restart=always
 RestartSec=30s
 ExecStart=/usr/bin/sudo avahi-publish-aliases
 
