@@ -5,6 +5,55 @@ Guides
 
 These guides will help you configure Chassis for specific types of development.
 
+Migrations
+----------
+
+Importing A Production Database Into Chassis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#. Use ``ssh`` to connect to your production server. Your host should provide instructions for doing this.
+#. Export your production database with `WP-CLI`_ ``wp db export <filename.sql>``.
+#. Download your the contents of your ``wp-content`` folder on production to your local content folder.
+#. Provision a new Chassis instance.
+#. Copy the export into the ``content`` folder.
+#. Run ``vagrant ssh`` in a terminal to SSH into your Chassis box.
+#. Run ``cd /vagrant/content``
+#. Run ``wp db import <filename.sql>``
+#. Run ``wp search-replace '//www.yoursite.com/wp-content' '//vagrant.local/content'``
+#. Run ``wp cache flush``
+#. Start developing.
+
+Alternatively you can use the `SequelPro`_ or `phpMyAdmin`_ extensions to handle importing and exporting of your databases.
+
+You could also look at using the `db_backup`_ extension. You can commit an SQL export as a file called ``chassis-backup.sql`` and it should automatically import on install. You will still need to search and replace the URLs.
+
+.. _SequelPro: https://github.com/Chassis/SequelPro
+.. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
+.. _db_backup: https://github.com/Chassis/db_backup
+.. _WP-CLI: https://wp-cli.org/
+
+Exporting A Development Database Into A Production Database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#. Add the production domain under ``- vagrant.local`` in ``content/config.local.yaml`` e.g. - ``www.yoursite.com``.
+#. Reprovision with Puppet ``vagrant provision``.
+#. SSH into your Chassis Box ``vagrant ssh``.
+#. Use `WP-CLI`_ to search and replace e.g. ``wp search-replace '//vagrant.local' '//www.yoursite.com'``.
+#. Use `WP-CLI`_ to search and replace the content urls. e.g. ``wp search-replace '//www.yoursite.com/content' '//www.yoursite.com/wp-content'``.
+#. Export the database using `WP-CLI`_ ``wp db dump --add-drop-table``.
+#. Log in to phpMyAdmin on your production server.
+#. Drop the database on your site and import your database dump.
+#. Upload your the contents of your ``content`` folder to your ``wp-content`` folder on production.
+#. You're done!
+
+N.B. If you getting the Error Establishing a Database Connection message then you'll probably need to edit the ``$table_prefix`` in ``wp-config.php``.
+
+Alternatively you can use the `SequelPro`_ or `phpMyAdmin`_ extensions to handle importing and exporting of your databases.
+
+.. _SequelPro: https://github.com/Chassis/SequelPro
+.. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
+.. _WP-CLI: https://wp-cli.org/
+
 WP-CLI
 ------
 
