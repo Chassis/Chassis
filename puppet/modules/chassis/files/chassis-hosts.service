@@ -5,4 +5,4 @@ Wants=chassis-hosts.timer
 
 [Service]
 Type=oneshot
-ExecStart=/usr/bin/avahi-publish-aliases
+ExecStart=/usr/bin/sudo /usr/bin/avahi-publish-aliases
