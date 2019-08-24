@@ -48,5 +48,5 @@ class chassis::hosts(
 			File[ '/lib/systemd/system/chassis-hosts.service' ],
 			File[ '/etc/avahi/aliases' ],
 		]
-}
+	}
 }
