@@ -50,12 +50,12 @@ module Chassis
 	end
 
 	def self.load_config()
-		# Load git-managed configuration
-		_config = YAML.load_file(File.join(@@dir, "config.yaml"))
+		# Get the path to the global configuration.
+        _config =  YAML.load_file(File.join(Dir.home, ".chassis", "config.yaml"))
 		has_custom_prefix = false
 
 		# Load other configuration files
-		config_files = [ "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
+		config_files = [ "config.yaml", "config.local.yaml", "content/config.yaml", "content/config.local.yaml" ]
 		config_files.each do |filename|
 			path = File.join(@@dir, filename)
 
