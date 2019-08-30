@@ -22,3 +22,5 @@ config.local.yaml
 
 # Ignore symlinked Puppet manifests
 /puppet/manifests/*.pp
+# Ignore multisite functions.
+/local-config-hosts.php
