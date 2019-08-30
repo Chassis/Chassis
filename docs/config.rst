@@ -9,13 +9,14 @@ configuration (we load ``content/config.php`` in during ``wp-config.php``
 loading) and your plugins and themes. This is designed such that you can keep
 your site self-contained in a separate repository, including API keys and such.
 
-We also load 4 configuration files, allowing you to store project-specific
+We also load 5 configuration files, allowing you to store project-specific
 configuration while still allowing overriding:
 
 * ``project/content/config.local.yaml`` - project-specific overrides
 * ``project/content/config.yaml`` - project-specific defaults
 * ``project/config.local.yaml`` - global overrides
 * ``project/config.yaml`` - global defaults
+* ``~/.chassis/config.yml`` - global update defaults
 
 This allows you to (e.g.) enable multisite for the entire project, while
 allowing specific users to override the hostname if it conflicts with existing
