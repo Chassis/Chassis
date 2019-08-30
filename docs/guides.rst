@@ -5,6 +5,133 @@ Guides
 
 These guides will help you configure Chassis for specific types of development.
 
+Migrations
+----------
+
+Importing A Production Database Into Chassis
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#. Use ``ssh`` to connect to your production server. Your host should provide instructions for doing this.
+#. Export your production database with `WP-CLI`_ ``wp db export <filename.sql>``.
+#. Download your the contents of your ``wp-content`` folder on production to your local content folder.
+#. Provision a new Chassis instance.
+#. Copy the export into the ``content`` folder.
+#. Run ``vagrant ssh`` in a terminal to SSH into your Chassis box.
+#. Run ``cd /vagrant/content``
+#. Run ``wp db import <filename.sql>``
+#. Run ``wp search-replace '//www.yoursite.com/wp-content' '//vagrant.local/content'``
+#. Run ``wp cache flush``
+#. Start developing.
+
+Alternatively you can use the `SequelPro`_ or `phpMyAdmin`_ extensions to handle importing and exporting of your databases.
+
+You could also look at using the `db_backup`_ extension. You can commit an SQL export as a file called ``chassis-backup.sql`` and it should automatically import on install. You will still need to search and replace the URLs.
+
+.. _SequelPro: https://github.com/Chassis/SequelPro
+.. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
+.. _db_backup: https://github.com/Chassis/db_backup
+.. _WP-CLI: https://wp-cli.org/
+
+Exporting A Development Database Into A Production Database
+~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~~
+
+#. Add the production domain under ``- vagrant.local`` in ``content/config.local.yaml`` e.g. - ``www.yoursite.com``.
+#. Reprovision with Puppet ``vagrant provision``.
+#. SSH into your Chassis Box ``vagrant ssh``.
+#. Use `WP-CLI`_ to search and replace e.g. ``wp search-replace '//vagrant.local' '//www.yoursite.com'``.
+#. Use `WP-CLI`_ to search and replace the content urls. e.g. ``wp search-replace '//www.yoursite.com/content' '//www.yoursite.com/wp-content'``.
+#. Export the database using `WP-CLI`_ ``wp db dump --add-drop-table``.
+#. Log in to phpMyAdmin on your production server.
+#. Drop the database on your site and import your database dump.
+#. Upload your the contents of your ``content`` folder to your ``wp-content`` folder on production.
+#. You're done!
+
+N.B. If you getting the Error Establishing a Database Connection message then you'll probably need to edit the ``$table_prefix`` in ``wp-config.php``.
+
+Alternatively you can use the `SequelPro`_ or `phpMyAdmin`_ extensions to handle importing and exporting of your databases.
+
+.. _SequelPro: https://github.com/Chassis/SequelPro
+.. _phpMyAdmin: https://github.com/Chassis/phpMyAdmin
+.. _WP-CLI: https://wp-cli.org/
+
+WP-CLI
+------
+
+`WP-CLI`_ is the command-line interface for WordPress. You can update plugins, configure multisite installations and much more, without using a web browser.
+
+We bundle the latest version of WP-CLI in Chassis. You can access WP-CLI by running ``vagrant ssh`` from a terminal. You can check the WP-CLI details by running ``wp --info`` inside the Chassis box.
+This should result in something like the following:
+
+   vagrant@vagrant:~$ wp --info
+   OS:	Linux 4.4.0-150-generic #176-Ubuntu SMP Wed May 29 18:56:26 UTC 2019 x86_64
+   Shell:	/bin/bash
+   PHP binary:	/usr/bin/php7.3
+   PHP version:	7.3.8-1+ubuntu16.04.1+deb.sury.org+1
+   php.ini used:	/etc/php/7.3/cli/php.ini
+   WP-CLI root dir:	phar://wp-cli.phar/vendor/wp-cli/wp-cli
+   WP-CLI vendor dir:	phar://wp-cli.phar/vendor
+   WP_CLI phar path:	/home/vagrant
+   WP-CLI packages dir:
+   WP-CLI global config:	/home/vagrant/.wp-cli/config.yml
+   WP-CLI project config:
+   WP-CLI version:	2.3.0
+
+WP-CLI Commands
+~~~~~~~~~~~~~~~
+
+You can see a full list of WP-CLI commands by running ``wp help`` inside your Chassis box. Some common commands are as follows:
+
+* ``wp config list`` - Lists variables, constants, and file includes defined in wp-config.php file.
+* ``wp cron event list`` - Lists scheduled cron events.
+* ``wp cron event run`` - Runs the next scheduled cron event for the given hook.
+* ``wp plugin list`` - Gets a list of plugins.
+* ``wp plugin install <plugin_slug> --activate`` -- Install and activate a plugin from the WordPress plugin directory.
+* ``wp post list`` - Gets a list of posts.
+* ``wp post-type list`` - Lists registered post types.
+* ``wp search-replace <old> <new>`` - Searches through all rows in a selection of tables and replaces appearances of the first string with the second string. Add the ``--dry-run`` parameter to test without making changes.
+* ``wp shell`` - Evaluate PHP statements and expressions interactively, from within a WordPress environment. e.g. ``get_bloginfo( 'name' );``
+* ``wp site empty`` - Empties a site of its content (posts, comments, terms, and meta).
+* ``wp site create --slug=awesome`` - Creates a site in a multisite installation.
+
+There is extensive documentation and examples of all the WP-CLI commands on the `WP-CLI`_ website.
+
+.. _WP-CLI: https://wp-cli.org/
+
+WP-CLI Packages
+~~~~~~~~~~~~~~~
+
+WP-CLI has additional `WP-CLI packages`_ which can be installed to add additional helper commands for your WordPress development needs.
+
+We have made a `Chassis WP-CLI extension`_ that allows you to automatically install WP-CLI packages which have been published in the package index.
+
+For example you could add the following section to one of your ``.yaml`` configuration files to automatically install the Chassis WP-CLI extension and the `WP-CLI Server`_ command.
+
+.. code-block:: yaml
+
+   wp_cli:
+    packages:
+        - wp-cli/server-command
+        - wp-cli/restful
+
+.. _WP-CLI packages: https://wp-cli.org/package-index/
+.. _Chassis WP-CLI extension: https://github.com/Chassis/WP_CLI
+.. _WP-CLI Server: https://github.com/wp-cli/server-command
+
+Setting up SSL
+--------------
+
+To add an SSL to Chassis you need to do the following steps:
+
+#. Add ``- chassis/chassis_openssl`` to one of your ``.yaml`` `configuration`_ files or run ``git clone https://github.com/Chassis/chassis_openssl.git extensions/chassis_openssl``.
+#. Run ``vagrant provision``. This will create a ``vagrant.local.cert`` or ``<yoursitename>.local.cert`` and a ``vagrant.local.key`` or  `<yoursitename>.local.key` in the root directory of your Chassis folder.
+#. Modify the ``WP_SITEURL`` and ``WP_HOME`` constants to use ``https://`` instead of ``http://``.
+#. If you are using a Mac run ``sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain <yoursitename>.local.key.cert``.
+#. If you are using Windows run ``certutil -enterprise -f -v -AddStore "Root" "<yoursitename>.local.key.cert"``.
+#. Alternatively, you can read the `Chassis OpenSSL`_ readme for GUI options.
+
+.. _configuration: http://docs.chassis.io/en/latest/config/
+.. _Chassis OpenSSL: https://github.com/Chassis/chassis_openssl#gui-methods
+
 WordPress Core Development
 --------------------------
 
@@ -109,7 +236,7 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 
    Navigate to the URL that ngrok generated.
 
-**Note**: ngrok Version 2.2.8 is required due to this known `bug`_:
+**Note**: ngrok Version 2.2.8 is required due to this known `bug`_
 
 Debugging
 ~~~~~~~~~
