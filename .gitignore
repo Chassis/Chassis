@@ -9,12 +9,16 @@
 /content
 .DS_Store
 .idea
+.vscode
 config.local.yaml
 /.wp-cli
 /wp-cli.local.yml
 /extensions
 /phpmyadmin
+/xhgui
 /*.cert
+/phpmemcachedadmin
+/webgrind
 
 # Ignore symlinked Puppet manifests
 /puppet/manifests/*.pp

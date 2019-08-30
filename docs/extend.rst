@@ -52,7 +52,7 @@ globally-installed extension.
 
 
 Global extensions can also be disabled in the same way local extensions are
-`disabled`_. e.g.
+`disabled`_. e.g::
 
    disabled_extensions:
       - chassis/mailhog
