@@ -1,5 +1,5 @@
 # Setup Nginx, MySQL and WordPress.
-define chassis::site (
+define chassis::core (
 	$location,
 	$wpdir,
 	$contentdir,
@@ -42,7 +42,7 @@ define chassis::site (
 		grant    => ['all'],
 	}
 
-	wp::site { $wpdir:
+	wp::core { $wpdir:
 		url            => "http://${name}/",
 		sitename       => $sitename,
 		require        => Mysql::Db[$database],
