@@ -98,8 +98,7 @@ class chassis::php (
 		}
 	}
 
-
-		# Install the extensions we need
+	# Install the extensions we need
 	package { $prefixed_extensions:
 		# Hold at the given version
 		ensure          => 'latest',
