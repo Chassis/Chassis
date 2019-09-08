@@ -63,18 +63,16 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 Troubleshooting
 ---------------
 
-There is a known bug in Vagrant 1.8.5 which will result in the following output:
+Logs
+----
 
-::
+Chassis synchronises the Nginx and PHP log files from the Virtual Machine to your local development folder. These logs can be useful if your provisions are failing and you require further information.
 
-  Vagrant attempted to execute the capability 'change_host_name'
-  on the detect guest OS 'linux', but the guest doesn't
-  support that capability. This capability is required for your
-  configuration of Vagrant. Please either reconfigure Vagrant to
-  avoid this capability or fix the issue by creating the capability.
-  To correct this you can either follow this fix on `stackoverflow`_ or rollback to Vagrant 1.8.4 until 1.8.6 is released.
+There are three logs that we synchronise for you:
 
-.. _stackoverflow: http://stackoverflow.com/questions/38636023/vagrant-not-supported-the-capability-change-host-name
+1. ``logs/php/php_errors.log`` - This shows any PHP errors or warnings that have occurred.
+2. ``logs/nginx/error.log`` - This shows any errors that have occurred.
+3. ``logs/nginx/access.log`` = This shows details of any requests that Nginx has served.
 
 Character encoding on Windows machines
 --------------------------------------
