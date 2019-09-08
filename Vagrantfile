@@ -55,7 +55,7 @@ Vagrant.configure("2") do |config|
 	end
 
 	 config.trigger.before [ :provision, :up, :halt ] do |trigger|
-	    deprecated_extensions = ''
+		deprecated_extensions = ''
 		if CONF["version"] >= 3 && ! CONF["extensions"].nil?
 			# Warn about old extensions.
 			CONF["extensions"].each do |extension|
