@@ -65,7 +65,7 @@ Vagrant.configure("2") do |config|
 				end
 			end
 		end
-        trigger.warn = "#{deprecated_extensions}"
+		trigger.warn = "#{deprecated_extensions}"
 	 end
 
 	# Set up synced folders.
