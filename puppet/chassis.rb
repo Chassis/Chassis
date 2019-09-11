@@ -93,6 +93,10 @@ module Chassis
 			config["paths"]["wp"] = config["wpdir"]
 		end
 
+		if ! config["hosts"][0].include?(".local")
+			puts "\e[33mWARNING: The hosts URL does not contain .local. You will need to edit your hosts file for this URL to resolve.\e[0m"
+		end
+
 		# Set up the paths as needed
 		config["mapped_paths"] = {}
 		base = config["paths"]["base"] = File.expand_path(config["paths"]["base"], @@dir)
@@ -139,6 +143,7 @@ module Chassis
 		# Cast config as needed
 		config["nfs"] = !!config["nfs"]
 		config["php"] = config["php"].to_s
+		config["machine_name"] = config["machine_name"].to_s
 		config["upload_size"] = config["upload_size"].to_s
 
 		return config
@@ -176,7 +181,34 @@ module Chassis
 			repo = extension
 		end
 
-		folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/.git$/, '').downcase
+		renamed_extensions = Array.new
+		# We need to add a version to allow for a seamless upgrade to Bionic Beaver.
+		if config["version"] >= 3
+			# Check for existing extensions that have a hyphen and remove them.
+			old_extensions = Dir.glob(@@dir + '/extensions/*')
+			old_extensions.each { |extension|
+			# Remove @@dir before "-" include check in case of hyphenated parent directories.
+			next unless extension.gsub(@@dir, '').include? "-"
+				# Delete the old extension if it has a hyphen in it.
+				FileUtils.remove_dir(extension)
+				# Swap "-" for "_" in the non-parent-directory part of the path.
+				new_extension = @@dir + extension.gsub(@@dir, '').gsub(/-/, '_')
+				renamed_extensions << "- #{extension} to #{new_extension}"
+			}
+			# Puppet have taken a hard stance on not allowing hyphens in class names.
+			folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').gsub(/-/, '_').downcase
+		else
+			# Leave extensions as they were for Xenial and below for backwards compatibility.
+			folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').downcase
+		end
+
+		if ! renamed_extensions.empty?
+			puts("\e[33mWe're renaming the following extensions:")
+			renamed_extensions.each {|extension|
+				puts extension
+			}
+			puts("\e[0m")
+		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
 	end
