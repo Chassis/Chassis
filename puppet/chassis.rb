@@ -76,6 +76,14 @@ module Chassis
 			end
 		end
 
+		# Get the extension configurations.
+		ext_config = self.load_extension_config(_config)
+
+		# Merge the extension configuration into our main configuration.
+		if ext_config.is_a?(Hash)
+			_config.merge!(ext_config)
+		end
+
 		unless _config["database"].has_key? "prefix"
 			puts "ERROR: database.prefix is required as of 2016-11-25 but was not found."
 			raise "Could not load Chassis configuration"
@@ -83,6 +91,17 @@ module Chassis
 
 		_config["database"]["has_custom_prefix"] = has_custom_prefix
 		return _config
+	end
+
+	def self.load_extension_config(config)
+		ext_config = {}
+		# For each of the extensions in our folder, read the extension config for that extension.
+		self.get_extensions(2).each do |extension|
+			ext_config = self.get_extension_config(extension)
+			# Remove the extension version so we don't override the version number for Chassis core.
+			ext_config.delete('version')
+		end
+		return ext_config
 	end
 
 	def self.normalize_config(config)
