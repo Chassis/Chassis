@@ -223,7 +223,7 @@ function network_step1( $errors = false ) {
 			<strong><?php _e( 'You cannot change this later.' ); ?></strong></p>
 		<p><?php _e( 'You will need a wildcard DNS record if you are going to use the virtual host (sub-domain) functionality.' ); ?></p>
 		<?php // @todo: Link to an MS readme? ?>
-		<table class="form-table">
+		<table class="form-table" role="presentation">
 			<tr>
 				<th><label><input type="radio" name="subdomain_install" value="1"<?php checked( $subdomain_install ); ?> /> <?php _e( 'Sub-domains' ); ?></label></th>
 				<td>
@@ -272,7 +272,7 @@ function network_step1( $errors = false ) {
 		);
 		?>
 		</p>
-		<table class="form-table">
+		<table class="form-table" role="presentation">
 			<tr>
 			<th scope='row'><?php esc_html_e( 'Server Address' ); ?></th>
 			<td>
@@ -289,7 +289,7 @@ function network_step1( $errors = false ) {
 		<?php endif; ?>
 
 		<h3><?php esc_html_e( 'Network Details' ); ?></h3>
-		<table class="form-table">
+		<table class="form-table" role="presentation">
 		<?php if ( 'localhost' == $hostname ) : ?>
 			<tr>
 				<th scope="row"><?php esc_html_e( 'Sub-directory Installation' ); ?></th>
@@ -347,18 +347,18 @@ function network_step1( $errors = false ) {
 			</tr>
 		<?php endif; ?>
 			<tr>
-				<th scope='row'><?php esc_html_e( 'Network Title' ); ?></th>
+				<th scope='row'><label for="sitename"><?php esc_html_e( 'Network Title' ); ?></label></th>
 				<td>
-					<input name='sitename' type='text' size='45' value='<?php echo esc_attr( $site_name ); ?>' />
+					<input name='sitename' id='sitename' type='text' size='45' value='<?php echo esc_attr( $site_name ); ?>' />
 					<p class="description">
 						<?php _e( 'What would you like to call your network?' ); ?>
 					</p>
 				</td>
 			</tr>
 			<tr>
-				<th scope='row'><?php esc_html_e( 'Network Admin Email' ); ?></th>
+				<th scope='row'><label for="email"><?php esc_html_e( 'Network Admin Email' ); ?></label></th>
 				<td>
-					<input name='email' type='text' size='45' value='<?php echo esc_attr( $admin_email ); ?>' />
+					<input name='email' id='email' type='text' size='45' value='<?php echo esc_attr( $admin_email ); ?>' />
 					<p class="description">
 						<?php _e( 'Your email address.' ); ?>
 					</p>

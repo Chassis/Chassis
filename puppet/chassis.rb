@@ -154,16 +154,6 @@ module Chassis
 	end
 
 	def self.install_extensions(config)
-		if config["version"] >= 3 && ! config["extensions"].nil?
-			# Warn about old extensions.
-			config["extensions"].each do |extension|
-				if extension.include? "-"
-					new_extension = extension.gsub(/-/, '_')
-					puts("\e[33mPlease change #{extension} to #{new_extension} in your yaml configuration file. \e[0m")
-				end
-			end
-		end
-
 		# Install extensions listed in config
 		if config["extensions"]
 			config["extensions"].each { |ext| self.install_extension(ext) }
@@ -197,17 +187,19 @@ module Chassis
 			# Check for existing extensions that have a hyphen and remove them.
 			old_extensions = Dir.glob(@@dir + '/extensions/*')
 			old_extensions.each { |extension|
-			next unless extension.include? "-"
+			# Remove @@dir before "-" include check in case of hyphenated parent directories.
+			next unless extension.gsub(@@dir, '').include? "-"
 				# Delete the old extension if it has a hyphen in it.
 				FileUtils.remove_dir(extension)
-				new_extension = extension.gsub(/-/, '_')
+				# Swap "-" for "_" in the non-parent-directory part of the path.
+				new_extension = @@dir + extension.gsub(@@dir, '').gsub(/-/, '_')
 				renamed_extensions << "- #{extension} to #{new_extension}"
 			}
-		    # Puppet have taken a hard stance on not allowing hyphens in class names.
-		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').gsub(/-/, '_').downcase
+			# Puppet have taken a hard stance on not allowing hyphens in class names.
+			folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').gsub(/-/, '_').downcase
 		else
-		    # Leave extensions as they were for Xenial and below for backwards compatibility.
-		    folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').downcase
+			# Leave extensions as they were for Xenial and below for backwards compatibility.
+			folder = @@dir + '/extensions/' + extension.split('/').last.gsub(/\.git$/, '').downcase
 		end
 
 		if ! renamed_extensions.empty?
