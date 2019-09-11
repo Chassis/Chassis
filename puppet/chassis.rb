@@ -155,16 +155,6 @@ module Chassis
 	end
 
 	def self.install_extensions(config)
-		if config["version"] >= 3 && ! config["extensions"].nil?
-			# Warn about old extensions.
-			config["extensions"].each do |extension|
-				if extension.include? "-"
-					new_extension = extension.gsub(/-/, '_')
-					puts("\e[33mPlease change #{extension} to #{new_extension} in your yaml configuration file. \e[0m")
-				end
-			end
-		end
-
 		# Install extensions listed in config
 		if config["extensions"]
 			config["extensions"].each { |ext| self.install_extension(ext) }
