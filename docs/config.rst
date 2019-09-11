@@ -413,7 +413,7 @@ VirtualBox
 
 **Key**: ``virtualbox``
 
-When using VirtualBox, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the VirtualBox defaults (384 MB of RAM, and 2 vCPUs).
+When using VirtualBox, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the VirtualBox defaults (1024 MB of RAM, and 2 vCPUs).
 
 .. code-block:: yaml
 

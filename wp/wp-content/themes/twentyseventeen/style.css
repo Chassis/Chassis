@@ -1034,8 +1034,8 @@ input[type="submit"].secondary {
 	color: #222;
 }
 
-button:hover:not( .mejs-container > button ),
-button:focus,
+:not( .mejs-button ) > button:hover,
+:not( .mejs-button ) > button:focus,
 input[type="button"]:hover,
 input[type="button"]:focus,
 input[type="submit"]:hover,
@@ -2844,6 +2844,11 @@ img.alignright {
 	margin-bottom: 0;
 	margin-top: 0;
 	padding: 0;
+}
+
+audio:focus,
+video:focus {
+	outline: thin dotted;
 }
 
 /* Make sure embeds and iframes fit their containers. */

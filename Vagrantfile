@@ -62,6 +62,20 @@ Vagrant.configure("2") do |config|
 		config.vm.define CONF['machine_name']
 	end
 
+	 config.trigger.before [ :provision, :up, :halt ] do |trigger|
+		deprecated_extensions = ''
+		if CONF["version"] >= 3 && ! CONF["extensions"].nil?
+			# Warn about old extensions.
+			CONF["extensions"].each do |extension|
+				if extension.include? "-"
+					new_extension = extension.gsub(/-/, '_')
+					deprecated_extensions << "Please change #{extension} to #{new_extension} in your yaml configuration file.\n"
+				end
+			end
+		end
+		trigger.warn = "#{deprecated_extensions}"
+	 end
+
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
 	synced_folders["."] = "/vagrant"
@@ -174,7 +188,7 @@ Vagrant.configure("2") do |config|
 	mount_opts = CONF['nfs'] ? [] : ["dmode=777","fmode=777"]
 
 	synced_folders.each do |from, to|
-		config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs'], :group => 'www-data', :owner => 'www-data'
+		config.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs'], :group => 'www-data', :owner => 'vagrant'
 
 		# Automatically use bindfs if we can.
 		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")

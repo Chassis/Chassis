@@ -41,7 +41,7 @@ include( ABSPATH . 'wp-admin/admin-header.php' );
 <form method="post" action="options.php">
 <?php settings_fields( 'discussion' ); ?>
 
-<table class="form-table">
+<table class="form-table" role="presentation">
 <tr>
 <th scope="row"><?php _e( 'Default article settings' ); ?></th>
 <td><fieldset><legend class="screen-reader-text"><span><?php _e( 'Default article settings' ); ?></span></legend>
@@ -218,15 +218,15 @@ if ( ! $show_avatars ) {
 }
 ?>
 
-<table class="form-table">
+<table class="form-table" role="presentation">
 <tr>
 <th scope="row"><?php _e( 'Avatar Display' ); ?></th>
-<td><fieldset><legend class="screen-reader-text"><span><?php _e( 'Avatar Display' ); ?></span></legend>
+<td>
 	<label for="show_avatars">
 		<input type="checkbox" id="show_avatars" name="show_avatars" value="1" <?php checked( $show_avatars, 1 ); ?> />
 		<?php _e( 'Show Avatars' ); ?>
 	</label>
-</fieldset></td>
+</td>
 </tr>
 <tr class="avatar-settings<?php echo $show_avatars_class; ?>">
 <th scope="row"><?php _e( 'Maximum Rating' ); ?></th>
@@ -255,7 +255,9 @@ endforeach;
 <th scope="row"><?php _e( 'Default Avatar' ); ?></th>
 <td class="defaultavatarpicker"><fieldset><legend class="screen-reader-text"><span><?php _e( 'Default Avatar' ); ?></span></legend>
 
+<p>
 <?php _e( 'For users without a custom avatar of their own, you can either display a generic logo or a generated one based on their email address.' ); ?><br />
+</p>
 
 <?php
 $avatar_defaults = array(
