@@ -26,8 +26,7 @@ class { 'chassis::php':
 	upload_size => $config[upload_size],
 	require => [
 		Class['apt'],
-	],
-	notify => Exec['apt_update'],
+	]
 }
 
 package { 'git-core':

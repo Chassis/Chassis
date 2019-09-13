@@ -12,7 +12,10 @@ class chassis::php (
 	}
 
 	apt::ppa { 'ppa:ondrej/php':
-		require => [ Package[ $::apt::ppa_package ] ],
+		require => [
+			Package[ $::apt::ppa_package ],
+			Class['apt'],
+		],
 	}
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
@@ -62,11 +65,11 @@ class chassis::php (
 		# Hold at the given version
 		ensure          => 'latest',
 		install_options => '--force-yes',
-
 		notify          => Service["${php_package}-fpm"],
 		require         => [
 			Apt::Pin[$packages],
 			Apt::Ppa['ppa:ondrej/php'],
+			Class['apt::update'],
 		],
 	}
 
