@@ -397,8 +397,14 @@ module Chassis
 			updates.each do |update|
 				puts "\e[32mUpdating #{update}...\e[0m"
 				Dir.chdir(directory + '/' + update)
-				_, _, _ = Open3.capture3("git checkout master && git pull")
-				puts "\e[32;1mThe #{update} is now up to date.\e[0m"
+				branch, _, _ = Open3.capture3("git rev-parse --abbrev-ref HEAD")
+				if ( 'master' == branch )
+					_, _, _ = Open3.capture3("git checkout master && git pull")
+					puts "\e[32;1mThe #{update} is now up to date.\e[0m\n"
+				else
+					puts "\e[0;1mThe #{update} extension is not on the master branch so we are skipping this update.\e[0m\n"
+					puts "\e[0;1mIf you wish to update the #{update} extension, please run `git checkout master && git pull` inside the root directory of the extension. \e[0m\n"
+				end
 			end
 		end
 	end
