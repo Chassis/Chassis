@@ -439,10 +439,10 @@ Auto Updates
 .. code-block:: yaml
 
     auto_update:
-		core: true
-		submodules: true
-		extensions: true
-		global_extensions: true
+    core: true
+        submodules: true
+        extensions: true
+        global_extensions: true
 
 Chassis will automatically check for updates to Chassis core, Chassis core submodules (Apt, MySQL and Stdlib), Chassis extensions and Chassis global extensions. You can stop one of more of the updates from triggering by changing the value(s) to ``false``.
 
