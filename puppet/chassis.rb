@@ -344,8 +344,7 @@ module Chassis
 			elsif
 				Dir.chdir(directory + '/' + folder )
 			end
-			Open3.capture3("git checkout master")
-			Open3.capture3("git remote update")
+			Open3.capture3("git remote -v update")
 			stdout, _, _ = Open3.capture3("git status --porcelain=2 --branch")
 			if stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
 				updates.push folder
