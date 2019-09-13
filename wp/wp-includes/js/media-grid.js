@@ -707,8 +707,9 @@ EditAttachments = MediaFrame.extend(/** @lends wp.media.view.MediaFrame.EditAtta
 		// Initialize modal container view.
 		if ( this.options.modal ) {
 			this.modal = new wp.media.view.Modal({
-				controller: this,
-				title:      this.options.title
+				controller:     this,
+				title:          this.options.title,
+				hasCloseButton: false
 			});
 
 			this.modal.on( 'open', _.bind( function () {
@@ -994,6 +995,7 @@ DeleteSelected = Button.extend(/** @lends wp.media.view.DeleteSelectedButton.pro
 			this.options.filters.model.on( 'change', this.filterChange, this );
 		}
 		this.controller.on( 'selection:toggle', this.toggleDisabled, this );
+		this.controller.on( 'select:activate', this.toggleDisabled, this );
 	},
 
 	filterChange: function( model ) {

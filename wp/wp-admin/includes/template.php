@@ -1122,7 +1122,13 @@ function do_block_editor_incompatible_meta_box( $object, $box ) {
 			echo '</p>';
 		}
 	} elseif ( $object instanceof WP_Post ) {
-		$edit_url = add_query_arg( 'classic-editor', '', get_edit_post_link( $object ) );
+		$edit_url = add_query_arg(
+			array(
+				'classic-editor'         => '',
+				'classic-editor__forget' => '',
+			),
+			get_edit_post_link( $object )
+		);
 		echo '<p>';
 		/* translators: %s: A link to use the Classic Editor plugin. */
 		printf( __( 'Please open the <a href="%s">classic editor</a> to use this meta box.' ), esc_url( $edit_url ) );
@@ -1605,7 +1611,7 @@ function do_settings_sections( $page ) {
 		if ( ! isset( $wp_settings_fields ) || ! isset( $wp_settings_fields[ $page ] ) || ! isset( $wp_settings_fields[ $page ][ $section['id'] ] ) ) {
 			continue;
 		}
-		echo '<table class="form-table">';
+		echo '<table class="form-table" role="presentation">';
 		do_settings_fields( $page, $section['id'] );
 		echo '</table>';
 	}
