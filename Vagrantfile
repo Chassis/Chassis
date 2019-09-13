@@ -152,8 +152,6 @@ Vagrant.configure("2") do |config|
 
 		# Set up the full environment
 		shell.args.push("--confdir /vagrant/puppet")
-		#shell.args.push("--environment development")
-		#shell.args.push("--hiera_config /dev/null")
 
 		# Set the actual manifest to provision with
 		shell.args.push("/vagrant/puppet/manifests")
