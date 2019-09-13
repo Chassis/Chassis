@@ -18,13 +18,6 @@ if $loadable_extensions {
 		config => $config,
 	}
 }
-
-class { 'apt':
-	update => {
-		frequency => 'weekly',
-	},
-}
-
 include apt
 
 class { 'chassis::php':
@@ -34,6 +27,7 @@ class { 'chassis::php':
 	require => [
 		Class['apt'],
 	],
+	notify => Exec['apt_update'],
 }
 
 package { 'git-core':
