@@ -359,7 +359,7 @@ module Chassis
 			print "\e[0;1mYour Chassis submodules are out of date. This may cause provisioning to fail! Would you like to update them now? [Y/n]: \e[0m"
 			auto_update = STDIN.gets.chomp
 			if ( auto_update != "n" )
-				_, _, _ = Open3.capture3("git submodule update")
+				_, _, _ = Open3.capture3("git submodule update --recursive")
 				puts "\e[032;1mAll your submodules are up to date!\e[0m\n"
 			end
 		else
