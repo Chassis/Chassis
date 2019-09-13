@@ -44,7 +44,7 @@ For example:
 
 1. MAJOR version 2.0.0 - This would be a new Ubuntu distrobution. e.g. Bionic Beaver.
 2. MINOR version 1.1.0 - This would be when we have added a new Chassis feature. e.g. `upload_size`
-3. PATCH version 1.0.1 - This would be when the Ubuntu base box has had an update.
+3. PATCH version 1.0.1 - This would be when the Ubuntu base box has had an update or a bug fix.
 
 To generate and upload a new base box a Vagrant Cloud Chassis team member will need to do the following:
 
