@@ -153,7 +153,7 @@ Extensions may also specify the following options:
 
 - You can also add custom configuration variables to your extension configuration and use them in your extension. e.g.::
 
-  your_variable: your_value
+	your_variable: your_value
 
 Puppet Class
 ~~~~~~~~~~~~
