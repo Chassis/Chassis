@@ -151,7 +151,7 @@ Extensions may also specify the following options:
 - ``dependencies``: Extensions that the extension depends on. List of strings,
   where each string is an extension name (see :ref:`extension-format-ref`).
 
-- You can also add custom configuration variables to your extension configuration and use them in your extension. e.g.
+- You can also add custom configuration variables to your extension configuration and use them in your extension. e.g.::
 
   your_variable: your_value
 
