@@ -23,9 +23,10 @@ We use [doc2dash](https://doc2dash.readthedocs.io/en/stable/) to generate offlin
 If you wish to generate new documentation for Chassis then please to the following:
 
 1. Run `pip install --user doc2dash`
-1. Increase the [version number](https://github.com/Chassis/Chassis/blob/master/docs/conf.py#L57-L59) to make the release.
+1. Increase the [version number](https://github.com/Chassis/Chassis/blob/master/docs/conf.py#L57-L59) to match the release.
 1. Run `make html` inside the `docs` folder.
 1. Run `doc2dash -A _build/dirhtml/ -n Chassis -f -I index.html` to generate the new docset.
+1. Follow the instructions for the [Dash User Contributed Docsets](https://github.com/Chassis/Dash-User-Contributions.git) repository and submit a pull request.
 
 ### Troubleshooting
 
