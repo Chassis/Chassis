@@ -12,10 +12,12 @@ associated tools first:
 $ sudo -H pip install Sphinx sphinx-autobuild sphinx_rtd_theme imagesize livereload==2.3.0
 ```
 
-Then to build, run the `make html` within this documentation folder:
+Then to build, run the `sphinx-build -b dirhtml . _build/dirhtml` within this documentation folder:
 
 You should now be able to access `_build/dirhtml/index.html` in a browser and
 browse the documentation.
+
+The [doc2dash](https://doc2dash.readthedocs.io/en/stable/) parser is built for Python so we have used `py:data::` markup in `config.rst` so that an index of these values is generated for Dash.
 
 ### Building Offline Dash Documentation
 
