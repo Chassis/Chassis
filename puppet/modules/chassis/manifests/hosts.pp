@@ -19,11 +19,11 @@ class chassis::hosts(
 		require  => [ Package['python-pip'], Package['libdbus-glib-1-dev'], Exec['upgrade pip'] ],
 	})
 
-	file { '/lib/systemd/system/chassis-hosts.service':
+	file { "/lib/systemd/system/chassis-hosts.service":
 		ensure  => 'file',
 		mode    => '0644',
-		source  => 'puppet:///modules/chassis/chassis-hosts.service',
-		notify  => Exec['systemctl-daemon-reload'],
+		content => template('chassis/chassis-hosts.service.erb'),
+		notify  => Service['chassis-hosts'],
 		require => Package['mdns-publisher'],
 	}
 
