@@ -1,13 +1,14 @@
 [Unit]
 Description=Avahi/mDNS CNAME publisher
-After=vagrant.mount avahi-daemon.service
+Wants=network-online.target
+After=network-online.target
 
 [Service]
 Type=simple
-ExecStart=/usr/bin/nohup /usr/local/bin/mdns-publish-cname --ttl 20 vagrant.local wat.vagrant.local eep.vagrant.local cool.vagrant.local nice.vagrant.local
+ExecStart=/usr/local/bin/mdns-publish-cname --ttl 20 vagrant.local wat.vagrant.local eep.vagrant.local cool.vagrant.local nice.vagrant.local
 Restart=no
 PrivateTmp=true
 PrivateDevices=true
 
 [Install]
-WantedBy=vagrant.mount
+WantedBy=multi-user.target
