@@ -19,7 +19,7 @@ class chassis::hosts(
 		require  => [ Package['python-pip'], Package['libdbus-glib-1-dev'], Exec['upgrade pip'] ],
 	})
 
-	file { "/lib/systemd/system/chassis-hosts.service":
+	file { '/lib/systemd/system/chassis-hosts.service':
 		ensure  => 'file',
 		mode    => '0644',
 		content => template('chassis/chassis-hosts.service.erb'),
