@@ -151,6 +151,8 @@ If you're using ``subdomains`` then add your subdomains you'd like to use to a y
 Then run ``vagrant provision``. Once this is done, subdomains will work automatically in your
 browser. Create and remove sites at will, and Chassis will ensure it just works.
 
+Each time you add a new subdomain you will need to add the subdomain to your yaml file and run `vagrant provision`.
+
 These subdomains will be added to ``/lib/systemd/system/chassis-hosts.service``
 
 .. note::
