@@ -27,6 +27,17 @@ class chassis::hosts(
 		require => Package['mdns-publisher'],
 	}
 
+	if ( $subdomains ) {
+		file { '/vagrant/local-config-hosts.php':
+			source => 'puppet:///modules/chassis/local-config-hosts.php',
+			mode   => '0644',
+		}
+	} else {
+		file { '/vagrant/local-config-hosts.php':
+			ensure => absent,
+		}
+	}
+
 	service { 'chassis-hosts':
 		ensure  => running,
 		enable  => true,
