@@ -125,8 +125,8 @@ To add an SSL to Chassis you need to do the following steps:
 #. Add ``- chassis/chassis_openssl`` to one of your ``.yaml`` `configuration`_ files or run ``git clone https://github.com/Chassis/chassis_openssl.git extensions/chassis_openssl``.
 #. Run ``vagrant provision``. This will create a ``vagrant.local.cert`` or ``<yoursitename>.local.cert`` and a ``vagrant.local.key`` or  `<yoursitename>.local.key` in the root directory of your Chassis folder.
 #. Modify the ``WP_SITEURL`` and ``WP_HOME`` constants to use ``https://`` instead of ``http://``.
-#. If you are using a Mac run ``sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain <yoursitename>.local.key.cert``.
-#. If you are using Windows run ``certutil -enterprise -f -v -AddStore "Root" "<yoursitename>.local.key.cert"``.
+#. If you are using a Mac run ``sudo security add-trusted-cert -d -r trustRoot -k /Library/Keychains/System.keychain <yoursitename>.local.key``.
+#. If you are using Windows run ``certutil -enterprise -f -v -AddStore "Root" "<yoursitename>.local.key"``.
 #. Alternatively, you can read the `Chassis OpenSSL`_ readme for GUI options.
 
 .. _configuration: http://docs.chassis.io/en/latest/config/
@@ -136,6 +136,48 @@ WordPress Core Development
 --------------------------
 
 We have created an official Chassis extension for [WordPress Core](https://github.com/Chassis/core_dev) development. Follow the instructions in the README to get setup and help contribute to [WordPress Core](https://make.wordpress.org/docs/handbook/devhub/#to-get-involved).
+
+Site Health
+-----------
+
+Out of the box Chassis will not meet the Site Health requirements checks in WordPress core. If you'd like to achieve
+100% Site Health you will need to do the following:
+
+1. Create a `local-config.php` with the following constants:
+
+.. code-block:: php
+
+   <?php
+   define( ‘AUTOMATIC_UPDATER_DISABLED’, false );
+   define( ‘WP_DEBUG_LOG’, false );
+   define( ‘WP_DEBUG’, false );
+
+2. Delete the inactive themes and plugins in both `content` and `wp/wp-content`.
+3. Create a yaml configuration file with the following extensions:
+
+.. code-block:: yaml
+
+   extensions:
+       - chassis/chassis_openssl
+       - chassis/imagick
+       - chassis/bcmath
+
+4. Run ``vagrant provision``.
+5. Follow the `Setting up SSL`_ guide to setup your site for SSL.
+6. Create a file called ``ssl.php`` in `content/mu-plugins` with the following contents:
+
+.. code-block:: php
+
+   <?php
+   add_filter( 'https_ssl_verify', '__return_false' );
+
+7. **Caution:** Delete your ``.git`` folders.
+8. You'll now have 100% Site Health!
+
+.. image:: _static/100.png
+  :alt: 100% Site Health
+
+.. _Setting up SSL: http://docs.chassis.io/en/latest/guides/#setting-up-ssl
 
 Tester Extension
 ~~~~~~~~~~~~~~~~
