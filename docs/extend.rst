@@ -163,6 +163,10 @@ name as your extension. This class must be defined in
 ``extensions/{name}/modules/{name}/manifests/init.pp``, and the name of the
 class must match the extension's directory name.
 
+.. note::
+   You can't use hyphens in your extension name as Puppet interpolates those as minus signs. Please use underscores as
+   this will ensure your extension will work in future versions of Puppet and Chassis.
+
 This class receives a single hash parameter of ``$config``, which contains the
 Chassis configuration specified in the ``config.yaml`` files.
 
