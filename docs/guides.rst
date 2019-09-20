@@ -135,16 +135,7 @@ To add an SSL to Chassis you need to do the following steps:
 WordPress Core Development
 --------------------------
 
-An SVN or Git checkout of WordPress can be mapped as Chassis' ``wp/`` directory to enable development of WordPress Core.
-
-Directory Structure
-~~~~~~~~~~~~~~~~~~~
-
-If you've installed Chassis into a folder such as ``wpcore-box``, use SVN or Git to clone ``develop.svn.wordpress.org`` (or ``develop.git.wordpress.org``, depending on how you develop) into a sibling directory. For example:
-
-- ``wordpress-development/``
-    - ``wpcore/``: A clone of WordPress from ``develop.svn`` or ``develop.git``
-    - ``wpcore-box/``: Chassis
+We have created an official Chassis extension for [WordPress Core](https://github.com/Chassis/core_dev) development. Follow the instructions in the README to get setup and help contribute to [WordPress Core](https://make.wordpress.org/docs/handbook/devhub/#to-get-involved).
 
 Tester Extension
 ~~~~~~~~~~~~~~~~
