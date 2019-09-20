@@ -174,6 +174,9 @@ Out of the box Chassis will not meet the Site Health requirements checks in Word
 7. **Caution:** Delete your ``.git`` folders.
 8. You'll now have 100% Site Health!
 
+.. image:: _static/100.png
+  :alt: 100% Site Health
+
 .. _Setting up SSL: http://docs.chassis.io/en/latest/guides/#setting-up-ssl
 
 Tester Extension
