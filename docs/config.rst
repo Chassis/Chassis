@@ -30,6 +30,35 @@ Changing your Chassis box is a quick two-step process:
 and should take care of updating everything internally.
 
 -------------
+Base Box Mode
+-------------
+By default, we use a box built with the default settings. This speeds up
+initial provisioning time and reduces disk usage by sharing the common parts
+of the VM.
+
+The ``normal`` box will use the Chassis box that we've built and uploaded to
+Vagrant Cloud which uses PHP 7.3.
+
+To create a customised base box for your project you could have create a `config.local.yaml` file as follows::
+
+    hosts:
+        - client.local
+
+    # PHP version
+    php: 7.2
+
+    # Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
+    upload_size: 512M
+
+    # Values: normal, base
+    _mode: base
+
+    extensions:
+        - chassis/mailhog
+        - chassis/xdebug
+        - chassis/tester
+        - chassis/sequelpro
+
 wp-config.php
 -------------
 

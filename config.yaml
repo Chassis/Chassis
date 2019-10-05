@@ -132,3 +132,14 @@ virtualbox:
 
 # NFS support. You should change this to Yes if you use VMWare
 nfs: No
+
+# Base box mode
+#
+# By default, we use a box built with the default settings. This speeds up
+# initial provisioning time and reduces disk usage by sharing the common
+# parts of the VM.
+#
+# Set this to `base` to build your own base box.
+
+# Values: normal, base
+_mode: normal
