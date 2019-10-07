@@ -12,34 +12,17 @@ $GLOBALS['wp_filter']['muplugins_loaded'][10]['chassis-hosts'] = array(
 );
 
 function bootstrap() {
-	add_filter( 'wpmu_new_blog', __NAMESPACE__ . '\\add_host' );
-	add_filter( 'delete_blog', __NAMESPACE__ . '\\remove_host' );
+	add_filter( 'network_admin_notices', __NAMESPACE__ . '\\add_provision_notice' );
 }
 
-function add_host() {
-	write_hosts();
+/**
+ * Trigger a notice about needing to run a provision for the subdomain.
+ */
+function add_provision_notice() {
+	if ( isset( $_GET['update'] ) && ( 'added' == $_GET['update'] ) ) : ?>
+		<div class="notice notice-warning is-dismissible">
+			<p><?php _e( 'You may need to add this site to your yaml file and run <code>vagrant provision</code> for this site to resolve.', 'chassis' ); ?></p>
+		</div>
+	<?php endif;
 }
 
-function remove_host( $blog_id ) {
-	write_hosts( array( $blog_id ) );
-}
-
-function write_hosts( $exclude = array() ) {
-	$sites = get_sites( array(
-		'deleted' => 0,
-	) );
-	$domains = array();
-
-	foreach ( $sites as $site ) {
-		if ( in_array( $site->id, $exclude ) ) {
-			continue;
-		}
-
-		$domains[] = $site->domain;
-	}
-
-	$domains = array_unique( $domains );
-	$content = implode( "\n", $domains );
-
-	file_put_contents( '/etc/chassis-hosts/conf.d/subdomains', $content );
-}

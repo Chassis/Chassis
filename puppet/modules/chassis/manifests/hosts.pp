@@ -3,53 +3,49 @@ class chassis::hosts(
 	$aliases = [],
 	$subdomains = false,
 ) {
-	package { [ 'avahi-daemon', 'python-avahi', 'python-pip' ]:
+	package { [ 'avahi-daemon', 'python-pip', 'python-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
 		ensure => latest,
 	}
 
+	exec { 'upgrade pip':
+		path    => '/bin:/usr/bin',
+		command => 'pip install --upgrade pip==9.0.3',
+		require => Package['python-pip']
+	}
+
+	ensure_packages( ['mdns-publisher'], {
+		ensure   => present,
+		provider => 'pip',
+		require  => [ Package['python-pip'], Package['libdbus-glib-1-dev'], Exec['upgrade pip'] ],
+	})
+
+	file { '/lib/systemd/system/chassis-hosts.service':
+		ensure  => 'file',
+		mode    => '0644',
+		content => template('chassis/chassis-hosts.service.erb'),
+		notify  => Service['chassis-hosts'],
+		require => Package['mdns-publisher'],
+	}
+
 	if ( $subdomains ) {
-		package { 'watchdog':
-			ensure   => '0.8.3',
-			provider => 'pip',
-			require  => Package['python-pip'],
-		}
-
-		file { '/lib/systemd/system/chassis-hosts.service':
-			ensure => 'file',
-			mode   => '0644',
-			source => 'puppet:///modules/chassis/chassis-hosts.service',
-			notify => Exec['systemctl-daemon-reload'],
-		}
-
-		file { [ '/etc/chassis-hosts', '/etc/chassis-hosts/conf.d' ]:
-			ensure => directory
-		}
-
-		file { '/etc/chassis-hosts/conf.d/aliases':
-			content => template('chassis/avahi-aliases.erb'),
-		}
-
-		file { '/etc/chassis-hosts/conf.d/subdomains':
-			ensure => file,
-			mode   => '0777',
-		}
-
 		file { '/vagrant/local-config-hosts.php':
 			source => 'puppet:///modules/chassis/local-config-hosts.php',
 			mode   => '0644',
 		}
-
-		service { 'chassis-hosts':
-			ensure  => running,
-			enable  => true,
-			require => [
-				Package[ 'avahi-daemon' ],
-				Package[ 'python-avahi' ],
-				Package[ 'watchdog' ],
-				File[ '/lib/systemd/system/chassis-hosts.service' ],
-				File[ '/etc/chassis-hosts/conf.d/aliases' ],
-				File[ '/etc/chassis-hosts/conf.d/subdomains' ],
-			]
+	} else {
+		file { '/vagrant/local-config-hosts.php':
+			ensure => absent,
 		}
+	}
+
+	service { 'chassis-hosts':
+		ensure  => running,
+		enable  => true,
+		require => [
+			Package[ 'avahi-daemon' ],
+			Package[ 'python-avahi' ],
+			File[ '/lib/systemd/system/chassis-hosts.service' ],
+		],
+		notify  => Exec['systemctl-daemon-reload'],
 	}
 }

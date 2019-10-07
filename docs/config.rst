@@ -159,7 +159,6 @@ on easily.
 * For multisite in subdirectories, set ``multisite: Yes``
 * For multisite on subdomains, set ``multisite: subdomains``
 
-Then just reprovision.
 
 When multisite is turned on, Chassis will set up WordPress in "subdirectory"
 mode; that is, sites will be created under the root, but using the same domain.
@@ -168,9 +167,22 @@ A site called "test" would be created at ``/test/``, for example.
 Subdirectory mode is great, but subdomain mode is even better. With subdomains,
 a site called "test" would be available at ``test.vagrant.local``. This is one of
 the most common ways that multisite is set up, since it also means you're
-separating your sites more cleanly. Simply set the value to ``subdomains`` and
-reprovision. Once this is done, subdomains will work automatically in your
+separating your sites more cleanly.
+
+
+If you're using ``subdomains`` then add your subdomains you'd like to use to a yaml file. e.g. ::
+
+   hosts:
+     - vagrant.local
+     - wat.vagrant.local
+     - moo.vagrant.local
+
+Then run ``vagrant provision``. Once this is done, subdomains will work automatically in your
 browser. Create and remove sites at will, and Chassis will ensure it just works.
+
+Each time you add a new subdomain you will need to add the subdomain to your yaml file and run `vagrant provision`.
+
+These subdomains will be added to ``/lib/systemd/system/chassis-hosts.service``
 
 .. note::
    Changing from multisite back to single site requires creating the box from
