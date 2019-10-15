@@ -98,11 +98,13 @@ class chassis::php (
 			'7.4': {
 				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
 					ensure => absent,
+					notify => Class['apt::update'],
 				}
 			}
 			default: {
 				package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
 					ensure => absent,
+					notify => Class['apt::update'],
 				}
 			}
 		}
