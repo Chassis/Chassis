@@ -65,7 +65,7 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 1. Create a new branch off `master` for the base box updates.
 1. Backup any custom yaml configuration files you have as they will be deleted during this process.
 1. Bump the `version number`_ of the base box.
-1. Change ``_mode: base`` to ``_mode: base`` in ``config.yaml``.
+1. Change ``_mode: normal`` to ``_mode: base`` in ``config.yaml``.
 1. Run ``vagrant up``.
 1. Run ``sh buildbox.sh`` in the root directory of Chassis.
 1. Login to your Vagrant Cloud account when you are prompted to do so.
