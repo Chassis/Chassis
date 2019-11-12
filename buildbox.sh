@@ -38,7 +38,7 @@ echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0
 vagrant halt
 
 # The version number of the base box.
-VERSION=1.0.0
+VERSION=1.0.1
 
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
