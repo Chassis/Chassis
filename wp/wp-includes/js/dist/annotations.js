@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["annotations"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 370);
+/******/ 	return __webpack_require__(__webpack_require__.s = 355);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -94,7 +94,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["annotations"] =
 
 /***/ }),
 
-/***/ 15:
+/***/ 10:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -132,7 +132,7 @@ function _arrayWithoutHoles(arr) {
   }
 }
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-var iterableToArray = __webpack_require__(34);
+var iterableToArray = __webpack_require__(30);
 
 // CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
 function _nonIterableSpread() {
@@ -153,13 +153,6 @@ function _toConsumableArray(arr) {
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["lodash"]; }());
-
-/***/ }),
-
-/***/ 20:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["wp"]["richText"]; }());
 
 /***/ }),
 
@@ -207,7 +200,14 @@ function _objectWithoutProperties(source, excluded) {
 
 /***/ }),
 
-/***/ 26:
+/***/ 22:
+/***/ (function(module, exports) {
+
+(function() { module.exports = this["wp"]["richText"]; }());
+
+/***/ }),
+
+/***/ 27:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["hooks"]; }());
@@ -215,6 +215,607 @@ function _objectWithoutProperties(source, excluded) {
 /***/ }),
 
 /***/ 30:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _iterableToArray; });
+function _iterableToArray(iter) {
+  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+}
+
+/***/ }),
+
+/***/ 355:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+__webpack_require__.r(__webpack_exports__);
+var selectors_namespaceObject = {};
+__webpack_require__.r(selectors_namespaceObject);
+__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAnnotationsForBlock", function() { return __experimentalGetAnnotationsForBlock; });
+__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAllAnnotationsForBlock", function() { return selectors_experimentalGetAllAnnotationsForBlock; });
+__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAnnotationsForRichText", function() { return __experimentalGetAnnotationsForRichText; });
+__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAnnotations", function() { return __experimentalGetAnnotations; });
+var actions_namespaceObject = {};
+__webpack_require__.r(actions_namespaceObject);
+__webpack_require__.d(actions_namespaceObject, "__experimentalAddAnnotation", function() { return __experimentalAddAnnotation; });
+__webpack_require__.d(actions_namespaceObject, "__experimentalRemoveAnnotation", function() { return __experimentalRemoveAnnotation; });
+__webpack_require__.d(actions_namespaceObject, "__experimentalUpdateAnnotationRange", function() { return __experimentalUpdateAnnotationRange; });
+__webpack_require__.d(actions_namespaceObject, "__experimentalRemoveAnnotationsBySource", function() { return __experimentalRemoveAnnotationsBySource; });
+
+// EXTERNAL MODULE: external {"this":["wp","data"]}
+var external_this_wp_data_ = __webpack_require__(4);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
+var defineProperty = __webpack_require__(10);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules
+var toConsumableArray = __webpack_require__(17);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread.js
+var objectSpread = __webpack_require__(7);
+
+// EXTERNAL MODULE: external "lodash"
+var external_lodash_ = __webpack_require__(2);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/reducer.js
+
+
+
+
+/**
+ * External dependencies
+ */
+
+/**
+ * Filters an array based on the predicate, but keeps the reference the same if
+ * the array hasn't changed.
+ *
+ * @param {Array}    collection The collection to filter.
+ * @param {Function} predicate  Function that determines if the item should stay
+ *                              in the array.
+ * @return {Array} Filtered array.
+ */
+
+function filterWithReference(collection, predicate) {
+  var filteredCollection = collection.filter(predicate);
+  return collection.length === filteredCollection.length ? collection : filteredCollection;
+}
+/**
+ * Verifies whether the given annotations is a valid annotation.
+ *
+ * @param {Object} annotation The annotation to verify.
+ * @return {boolean} Whether the given annotation is valid.
+ */
+
+
+function isValidAnnotationRange(annotation) {
+  return Object(external_lodash_["isNumber"])(annotation.start) && Object(external_lodash_["isNumber"])(annotation.end) && annotation.start <= annotation.end;
+}
+/**
+ * Reducer managing annotations.
+ *
+ * @param {Array} state The annotations currently shown in the editor.
+ * @param {Object} action Dispatched action.
+ *
+ * @return {Array} Updated state.
+ */
+
+
+function reducer_annotations() {
+  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  var action = arguments.length > 1 ? arguments[1] : undefined;
+
+  switch (action.type) {
+    case 'ANNOTATION_ADD':
+      var blockClientId = action.blockClientId;
+      var newAnnotation = {
+        id: action.id,
+        blockClientId: blockClientId,
+        richTextIdentifier: action.richTextIdentifier,
+        source: action.source,
+        selector: action.selector,
+        range: action.range
+      };
+
+      if (newAnnotation.selector === 'range' && !isValidAnnotationRange(newAnnotation.range)) {
+        return state;
+      }
+
+      var previousAnnotationsForBlock = Object(external_lodash_["get"])(state, blockClientId, []);
+      return Object(objectSpread["a" /* default */])({}, state, Object(defineProperty["a" /* default */])({}, blockClientId, [].concat(Object(toConsumableArray["a" /* default */])(previousAnnotationsForBlock), [newAnnotation])));
+
+    case 'ANNOTATION_REMOVE':
+      return Object(external_lodash_["mapValues"])(state, function (annotationsForBlock) {
+        return filterWithReference(annotationsForBlock, function (annotation) {
+          return annotation.id !== action.annotationId;
+        });
+      });
+
+    case 'ANNOTATION_UPDATE_RANGE':
+      return Object(external_lodash_["mapValues"])(state, function (annotationsForBlock) {
+        var hasChangedRange = false;
+        var newAnnotations = annotationsForBlock.map(function (annotation) {
+          if (annotation.id === action.annotationId) {
+            hasChangedRange = true;
+            return Object(objectSpread["a" /* default */])({}, annotation, {
+              range: {
+                start: action.start,
+                end: action.end
+              }
+            });
+          }
+
+          return annotation;
+        });
+        return hasChangedRange ? newAnnotations : annotationsForBlock;
+      });
+
+    case 'ANNOTATION_REMOVE_SOURCE':
+      return Object(external_lodash_["mapValues"])(state, function (annotationsForBlock) {
+        return filterWithReference(annotationsForBlock, function (annotation) {
+          return annotation.source !== action.source;
+        });
+      });
+  }
+
+  return state;
+}
+/* harmony default export */ var reducer = (reducer_annotations);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js + 1 modules
+var objectWithoutProperties = __webpack_require__(21);
+
+// EXTERNAL MODULE: ./node_modules/rememo/es/rememo.js
+var rememo = __webpack_require__(36);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/selectors.js
+
+
+
+/**
+ * External dependencies
+ */
+
+
+/**
+ * Shared reference to an empty array for cases where it is important to avoid
+ * returning a new array reference on every invocation, as in a connected or
+ * other pure component which performs `shouldComponentUpdate` check on props.
+ * This should be used as a last resort, since the normalized data should be
+ * maintained by the reducer result in state.
+ *
+ * @type {Array}
+ */
+
+var EMPTY_ARRAY = [];
+/**
+ * Returns the annotations for a specific client ID.
+ *
+ * @param {Object} state Editor state.
+ * @param {string} clientId The ID of the block to get the annotations for.
+ *
+ * @return {Array} The annotations applicable to this block.
+ */
+
+var __experimentalGetAnnotationsForBlock = Object(rememo["a" /* default */])(function (state, blockClientId) {
+  return Object(external_lodash_["get"])(state, blockClientId, []).filter(function (annotation) {
+    return annotation.selector === 'block';
+  });
+}, function (state, blockClientId) {
+  return [Object(external_lodash_["get"])(state, blockClientId, EMPTY_ARRAY)];
+});
+var selectors_experimentalGetAllAnnotationsForBlock = function __experimentalGetAllAnnotationsForBlock(state, blockClientId) {
+  return Object(external_lodash_["get"])(state, blockClientId, EMPTY_ARRAY);
+};
+/**
+ * Returns the annotations that apply to the given RichText instance.
+ *
+ * Both a blockClientId and a richTextIdentifier are required. This is because
+ * a block might have multiple `RichText` components. This does mean that every
+ * block needs to implement annotations itself.
+ *
+ * @param {Object} state              Editor state.
+ * @param {string} blockClientId      The client ID for the block.
+ * @param {string} richTextIdentifier Unique identifier that identifies the given RichText.
+ * @return {Array} All the annotations relevant for the `RichText`.
+ */
+
+var __experimentalGetAnnotationsForRichText = Object(rememo["a" /* default */])(function (state, blockClientId, richTextIdentifier) {
+  return Object(external_lodash_["get"])(state, blockClientId, []).filter(function (annotation) {
+    return annotation.selector === 'range' && richTextIdentifier === annotation.richTextIdentifier;
+  }).map(function (annotation) {
+    var range = annotation.range,
+        other = Object(objectWithoutProperties["a" /* default */])(annotation, ["range"]);
+
+    return Object(objectSpread["a" /* default */])({}, range, other);
+  });
+}, function (state, blockClientId) {
+  return [Object(external_lodash_["get"])(state, blockClientId, EMPTY_ARRAY)];
+});
+/**
+ * Returns all annotations in the editor state.
+ *
+ * @param {Object} state Editor state.
+ * @return {Array} All annotations currently applied.
+ */
+
+function __experimentalGetAnnotations(state) {
+  return Object(external_lodash_["flatMap"])(state, function (annotations) {
+    return annotations;
+  });
+}
+
+// EXTERNAL MODULE: ./node_modules/uuid/v4.js
+var v4 = __webpack_require__(67);
+var v4_default = /*#__PURE__*/__webpack_require__.n(v4);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/actions.js
+/**
+ * External dependencies
+ */
+
+/**
+ * Adds an annotation to a block.
+ *
+ * The `block` attribute refers to a block ID that needs to be annotated.
+ * `isBlockAnnotation` controls whether or not the annotation is a block
+ * annotation. The `source` is the source of the annotation, this will be used
+ * to identity groups of annotations.
+ *
+ * The `range` property is only relevant if the selector is 'range'.
+ *
+ * @param {Object} annotation                    The annotation to add.
+ * @param {string} annotation.blockClientId      The blockClientId to add the annotation to.
+ * @param {string} annotation.richTextIdentifier Identifier for the RichText instance the annotation applies to.
+ * @param {Object} annotation.range              The range at which to apply this annotation.
+ * @param {number} annotation.range.start        The offset where the annotation should start.
+ * @param {number} annotation.range.end          The offset where the annotation should end.
+ * @param {string} annotation.[selector="range"] The way to apply this annotation.
+ * @param {string} annotation.[source="default"] The source that added the annotation.
+ * @param {string} annotation.[id]               The ID the annotation should have. Generates a UUID by default.
+ *
+ * @return {Object} Action object.
+ */
+
+function __experimentalAddAnnotation(_ref) {
+  var blockClientId = _ref.blockClientId,
+      _ref$richTextIdentifi = _ref.richTextIdentifier,
+      richTextIdentifier = _ref$richTextIdentifi === void 0 ? null : _ref$richTextIdentifi,
+      _ref$range = _ref.range,
+      range = _ref$range === void 0 ? null : _ref$range,
+      _ref$selector = _ref.selector,
+      selector = _ref$selector === void 0 ? 'range' : _ref$selector,
+      _ref$source = _ref.source,
+      source = _ref$source === void 0 ? 'default' : _ref$source,
+      _ref$id = _ref.id,
+      id = _ref$id === void 0 ? v4_default()() : _ref$id;
+  var action = {
+    type: 'ANNOTATION_ADD',
+    id: id,
+    blockClientId: blockClientId,
+    richTextIdentifier: richTextIdentifier,
+    source: source,
+    selector: selector
+  };
+
+  if (selector === 'range') {
+    action.range = range;
+  }
+
+  return action;
+}
+/**
+ * Removes an annotation with a specific ID.
+ *
+ * @param {string} annotationId The annotation to remove.
+ *
+ * @return {Object} Action object.
+ */
+
+function __experimentalRemoveAnnotation(annotationId) {
+  return {
+    type: 'ANNOTATION_REMOVE',
+    annotationId: annotationId
+  };
+}
+/**
+ * Updates the range of an annotation.
+ *
+ * @param {string} annotationId ID of the annotation to update.
+ * @param {number} start The start of the new range.
+ * @param {number} end The end of the new range.
+ *
+ * @return {Object} Action object.
+ */
+
+function __experimentalUpdateAnnotationRange(annotationId, start, end) {
+  return {
+    type: 'ANNOTATION_UPDATE_RANGE',
+    annotationId: annotationId,
+    start: start,
+    end: end
+  };
+}
+/**
+ * Removes all annotations of a specific source.
+ *
+ * @param {string} source The source to remove.
+ *
+ * @return {Object} Action object.
+ */
+
+function __experimentalRemoveAnnotationsBySource(source) {
+  return {
+    type: 'ANNOTATION_REMOVE_SOURCE',
+    source: source
+  };
+}
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/index.js
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Internal dependencies
+ */
+
+
+
+
+/**
+ * Module Constants
+ */
+
+var MODULE_KEY = 'core/annotations';
+var store = Object(external_this_wp_data_["registerStore"])(MODULE_KEY, {
+  reducer: reducer,
+  selectors: selectors_namespaceObject,
+  actions: actions_namespaceObject
+});
+/* harmony default export */ var build_module_store = (store);
+
+// EXTERNAL MODULE: external {"this":["wp","richText"]}
+var external_this_wp_richText_ = __webpack_require__(22);
+
+// EXTERNAL MODULE: external {"this":["wp","i18n"]}
+var external_this_wp_i18n_ = __webpack_require__(1);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/format/annotation.js
+/**
+ * WordPress dependencies
+ */
+
+
+var FORMAT_NAME = 'core/annotation';
+var ANNOTATION_ATTRIBUTE_PREFIX = 'annotation-text-';
+var STORE_KEY = 'core/annotations';
+/**
+ * Applies given annotations to the given record.
+ *
+ * @param {Object} record The record to apply annotations to.
+ * @param {Array} annotations The annotation to apply.
+ * @return {Object} A record with the annotations applied.
+ */
+
+function applyAnnotations(record) {
+  var annotations = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
+  annotations.forEach(function (annotation) {
+    var start = annotation.start,
+        end = annotation.end;
+
+    if (start > record.text.length) {
+      start = record.text.length;
+    }
+
+    if (end > record.text.length) {
+      end = record.text.length;
+    }
+
+    var className = ANNOTATION_ATTRIBUTE_PREFIX + annotation.source;
+    var id = ANNOTATION_ATTRIBUTE_PREFIX + annotation.id;
+    record = Object(external_this_wp_richText_["applyFormat"])(record, {
+      type: FORMAT_NAME,
+      attributes: {
+        className: className,
+        id: id
+      }
+    }, start, end);
+  });
+  return record;
+}
+/**
+ * Removes annotations from the given record.
+ *
+ * @param {Object} record Record to remove annotations from.
+ * @return {Object} The cleaned record.
+ */
+
+function removeAnnotations(record) {
+  return Object(external_this_wp_richText_["removeFormat"])(record, 'core/annotation', 0, record.text.length);
+}
+/**
+ * Retrieves the positions of annotations inside an array of formats.
+ *
+ * @param {Array} formats Formats with annotations in there.
+ * @return {Object} ID keyed positions of annotations.
+ */
+
+function retrieveAnnotationPositions(formats) {
+  var positions = {};
+  formats.forEach(function (characterFormats, i) {
+    characterFormats = characterFormats || [];
+    characterFormats = characterFormats.filter(function (format) {
+      return format.type === FORMAT_NAME;
+    });
+    characterFormats.forEach(function (format) {
+      var id = format.attributes.id;
+      id = id.replace(ANNOTATION_ATTRIBUTE_PREFIX, '');
+
+      if (!positions.hasOwnProperty(id)) {
+        positions[id] = {
+          start: i
+        };
+      } // Annotations refer to positions between characters.
+      // Formats refer to the character themselves.
+      // So we need to adjust for that here.
+
+
+      positions[id].end = i + 1;
+    });
+  });
+  return positions;
+}
+/**
+ * Updates annotations in the state based on positions retrieved from RichText.
+ *
+ * @param {Array}    annotations                   The annotations that are currently applied.
+ * @param {Array}    positions                     The current positions of the given annotations.
+ * @param {Object}   actions
+ * @param {Function} actions.removeAnnotation      Function to remove an annotation from the state.
+ * @param {Function} actions.updateAnnotationRange Function to update an annotation range in the state.
+ */
+
+
+function updateAnnotationsWithPositions(annotations, positions, _ref) {
+  var removeAnnotation = _ref.removeAnnotation,
+      updateAnnotationRange = _ref.updateAnnotationRange;
+  annotations.forEach(function (currentAnnotation) {
+    var position = positions[currentAnnotation.id]; // If we cannot find an annotation, delete it.
+
+    if (!position) {
+      // Apparently the annotation has been removed, so remove it from the state:
+      // Remove...
+      removeAnnotation(currentAnnotation.id);
+      return;
+    }
+
+    var start = currentAnnotation.start,
+        end = currentAnnotation.end;
+
+    if (start !== position.start || end !== position.end) {
+      updateAnnotationRange(currentAnnotation.id, position.start, position.end);
+    }
+  });
+}
+
+var annotation_annotation = {
+  name: FORMAT_NAME,
+  title: Object(external_this_wp_i18n_["__"])('Annotation'),
+  tagName: 'mark',
+  className: 'annotation-text',
+  attributes: {
+    className: 'class',
+    id: 'id'
+  },
+  edit: function edit() {
+    return null;
+  },
+  __experimentalGetPropsForEditableTreePreparation: function __experimentalGetPropsForEditableTreePreparation(select, _ref2) {
+    var richTextIdentifier = _ref2.richTextIdentifier,
+        blockClientId = _ref2.blockClientId;
+    return {
+      annotations: select(STORE_KEY).__experimentalGetAnnotationsForRichText(blockClientId, richTextIdentifier)
+    };
+  },
+  __experimentalCreatePrepareEditableTree: function __experimentalCreatePrepareEditableTree(_ref3) {
+    var annotations = _ref3.annotations;
+    return function (formats, text) {
+      if (annotations.length === 0) {
+        return formats;
+      }
+
+      var record = {
+        formats: formats,
+        text: text
+      };
+      record = applyAnnotations(record, annotations);
+      return record.formats;
+    };
+  },
+  __experimentalGetPropsForEditableTreeChangeHandler: function __experimentalGetPropsForEditableTreeChangeHandler(dispatch) {
+    return {
+      removeAnnotation: dispatch(STORE_KEY).__experimentalRemoveAnnotation,
+      updateAnnotationRange: dispatch(STORE_KEY).__experimentalUpdateAnnotationRange
+    };
+  },
+  __experimentalCreateOnChangeEditableValue: function __experimentalCreateOnChangeEditableValue(props) {
+    return function (formats) {
+      var positions = retrieveAnnotationPositions(formats);
+      var removeAnnotation = props.removeAnnotation,
+          updateAnnotationRange = props.updateAnnotationRange,
+          annotations = props.annotations;
+      updateAnnotationsWithPositions(annotations, positions, {
+        removeAnnotation: removeAnnotation,
+        updateAnnotationRange: updateAnnotationRange
+      });
+    };
+  }
+};
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/format/index.js
+
+
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Internal dependencies
+ */
+
+
+
+var format_name = annotation_annotation.name,
+    settings = Object(objectWithoutProperties["a" /* default */])(annotation_annotation, ["name"]);
+
+Object(external_this_wp_richText_["registerFormatType"])(format_name, settings);
+
+// EXTERNAL MODULE: external {"this":["wp","hooks"]}
+var external_this_wp_hooks_ = __webpack_require__(27);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/block/index.js
+/**
+ * WordPress dependencies
+ */
+
+
+/**
+ * Adds annotation className to the block-list-block component.
+ *
+ * @param {Object} OriginalComponent The original BlockListBlock component.
+ * @return {Object} The enhanced component.
+ */
+
+var block_addAnnotationClassName = function addAnnotationClassName(OriginalComponent) {
+  return Object(external_this_wp_data_["withSelect"])(function (select, _ref) {
+    var clientId = _ref.clientId;
+
+    var annotations = select('core/annotations').__experimentalGetAnnotationsForBlock(clientId);
+
+    return {
+      className: annotations.map(function (annotation) {
+        return 'is-annotated-by-' + annotation.source;
+      }).join(' ')
+    };
+  })(OriginalComponent);
+};
+
+Object(external_this_wp_hooks_["addFilter"])('editor.BlockListBlock', 'core/annotations', block_addAnnotationClassName);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/index.js
+/**
+ * Internal dependencies
+ */
+
+
+
+
+
+/***/ }),
+
+/***/ 36:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -496,766 +1097,18 @@ function isShallowEqual( a, b, fromIndex ) {
 
 /***/ }),
 
-/***/ 34:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _iterableToArray; });
-function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
-}
-
-/***/ }),
-
-/***/ 370:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-__webpack_require__.r(__webpack_exports__);
-var selectors_namespaceObject = {};
-__webpack_require__.r(selectors_namespaceObject);
-__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAnnotationsForBlock", function() { return __experimentalGetAnnotationsForBlock; });
-__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAllAnnotationsForBlock", function() { return selectors_experimentalGetAllAnnotationsForBlock; });
-__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAnnotationsForRichText", function() { return __experimentalGetAnnotationsForRichText; });
-__webpack_require__.d(selectors_namespaceObject, "__experimentalGetAnnotations", function() { return __experimentalGetAnnotations; });
-var actions_namespaceObject = {};
-__webpack_require__.r(actions_namespaceObject);
-__webpack_require__.d(actions_namespaceObject, "__experimentalAddAnnotation", function() { return __experimentalAddAnnotation; });
-__webpack_require__.d(actions_namespaceObject, "__experimentalRemoveAnnotation", function() { return __experimentalRemoveAnnotation; });
-__webpack_require__.d(actions_namespaceObject, "__experimentalUpdateAnnotationRange", function() { return __experimentalUpdateAnnotationRange; });
-__webpack_require__.d(actions_namespaceObject, "__experimentalRemoveAnnotationsBySource", function() { return __experimentalRemoveAnnotationsBySource; });
-
-// EXTERNAL MODULE: external {"this":["wp","data"]}
-var external_this_wp_data_ = __webpack_require__(5);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
-var defineProperty = __webpack_require__(15);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules
-var toConsumableArray = __webpack_require__(17);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectSpread.js
-var objectSpread = __webpack_require__(7);
-
-// EXTERNAL MODULE: external "lodash"
-var external_lodash_ = __webpack_require__(2);
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/reducer.js
-
-
-
-
-/**
- * External dependencies
- */
-
-/**
- * Filters an array based on the predicate, but keeps the reference the same if
- * the array hasn't changed.
- *
- * @param {Array}    collection The collection to filter.
- * @param {Function} predicate  Function that determines if the item should stay
- *                              in the array.
- * @return {Array} Filtered array.
- */
-
-function filterWithReference(collection, predicate) {
-  var filteredCollection = collection.filter(predicate);
-  return collection.length === filteredCollection.length ? collection : filteredCollection;
-}
-/**
- * Verifies whether the given annotations is a valid annotation.
- *
- * @param {Object} annotation The annotation to verify.
- * @return {boolean} Whether the given annotation is valid.
- */
-
-
-function isValidAnnotationRange(annotation) {
-  return Object(external_lodash_["isNumber"])(annotation.start) && Object(external_lodash_["isNumber"])(annotation.end) && annotation.start <= annotation.end;
-}
-/**
- * Reducer managing annotations.
- *
- * @param {Array} state The annotations currently shown in the editor.
- * @param {Object} action Dispatched action.
- *
- * @return {Array} Updated state.
- */
-
-
-function reducer_annotations() {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
-  switch (action.type) {
-    case 'ANNOTATION_ADD':
-      var blockClientId = action.blockClientId;
-      var newAnnotation = {
-        id: action.id,
-        blockClientId: blockClientId,
-        richTextIdentifier: action.richTextIdentifier,
-        source: action.source,
-        selector: action.selector,
-        range: action.range
-      };
-
-      if (newAnnotation.selector === 'range' && !isValidAnnotationRange(newAnnotation.range)) {
-        return state;
-      }
-
-      var previousAnnotationsForBlock = Object(external_lodash_["get"])(state, blockClientId, []);
-      return Object(objectSpread["a" /* default */])({}, state, Object(defineProperty["a" /* default */])({}, blockClientId, [].concat(Object(toConsumableArray["a" /* default */])(previousAnnotationsForBlock), [newAnnotation])));
-
-    case 'ANNOTATION_REMOVE':
-      return Object(external_lodash_["mapValues"])(state, function (annotationsForBlock) {
-        return filterWithReference(annotationsForBlock, function (annotation) {
-          return annotation.id !== action.annotationId;
-        });
-      });
-
-    case 'ANNOTATION_UPDATE_RANGE':
-      return Object(external_lodash_["mapValues"])(state, function (annotationsForBlock) {
-        var hasChangedRange = false;
-        var newAnnotations = annotationsForBlock.map(function (annotation) {
-          if (annotation.id === action.annotationId) {
-            hasChangedRange = true;
-            return Object(objectSpread["a" /* default */])({}, annotation, {
-              range: {
-                start: action.start,
-                end: action.end
-              }
-            });
-          }
-
-          return annotation;
-        });
-        return hasChangedRange ? newAnnotations : annotationsForBlock;
-      });
-
-    case 'ANNOTATION_REMOVE_SOURCE':
-      return Object(external_lodash_["mapValues"])(state, function (annotationsForBlock) {
-        return filterWithReference(annotationsForBlock, function (annotation) {
-          return annotation.source !== action.source;
-        });
-      });
-  }
-
-  return state;
-}
-/* harmony default export */ var reducer = (reducer_annotations);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js + 1 modules
-var objectWithoutProperties = __webpack_require__(21);
-
-// EXTERNAL MODULE: ./node_modules/rememo/es/rememo.js
-var rememo = __webpack_require__(30);
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/selectors.js
-
-
-
-/**
- * External dependencies
- */
-
-
-/**
- * Shared reference to an empty array for cases where it is important to avoid
- * returning a new array reference on every invocation, as in a connected or
- * other pure component which performs `shouldComponentUpdate` check on props.
- * This should be used as a last resort, since the normalized data should be
- * maintained by the reducer result in state.
- *
- * @type {Array}
- */
-
-var EMPTY_ARRAY = [];
-/**
- * Returns the annotations for a specific client ID.
- *
- * @param {Object} state Editor state.
- * @param {string} clientId The ID of the block to get the annotations for.
- *
- * @return {Array} The annotations applicable to this block.
- */
-
-var __experimentalGetAnnotationsForBlock = Object(rememo["a" /* default */])(function (state, blockClientId) {
-  return Object(external_lodash_["get"])(state, blockClientId, []).filter(function (annotation) {
-    return annotation.selector === 'block';
-  });
-}, function (state, blockClientId) {
-  return [Object(external_lodash_["get"])(state, blockClientId, EMPTY_ARRAY)];
-});
-var selectors_experimentalGetAllAnnotationsForBlock = function __experimentalGetAllAnnotationsForBlock(state, blockClientId) {
-  return Object(external_lodash_["get"])(state, blockClientId, EMPTY_ARRAY);
-};
-/**
- * Returns the annotations that apply to the given RichText instance.
- *
- * Both a blockClientId and a richTextIdentifier are required. This is because
- * a block might have multiple `RichText` components. This does mean that every
- * block needs to implement annotations itself.
- *
- * @param {Object} state              Editor state.
- * @param {string} blockClientId      The client ID for the block.
- * @param {string} richTextIdentifier Unique identifier that identifies the given RichText.
- * @return {Array} All the annotations relevant for the `RichText`.
- */
-
-var __experimentalGetAnnotationsForRichText = Object(rememo["a" /* default */])(function (state, blockClientId, richTextIdentifier) {
-  return Object(external_lodash_["get"])(state, blockClientId, []).filter(function (annotation) {
-    return annotation.selector === 'range' && richTextIdentifier === annotation.richTextIdentifier;
-  }).map(function (annotation) {
-    var range = annotation.range,
-        other = Object(objectWithoutProperties["a" /* default */])(annotation, ["range"]);
-
-    return Object(objectSpread["a" /* default */])({}, range, other);
-  });
-}, function (state, blockClientId) {
-  return [Object(external_lodash_["get"])(state, blockClientId, EMPTY_ARRAY)];
-});
-/**
- * Returns all annotations in the editor state.
- *
- * @param {Object} state Editor state.
- * @return {Array} All annotations currently applied.
- */
-
-function __experimentalGetAnnotations(state) {
-  return Object(external_lodash_["flatMap"])(state, function (annotations) {
-    return annotations;
-  });
-}
-
-// EXTERNAL MODULE: ./node_modules/uuid/v4.js
-var v4 = __webpack_require__(65);
-var v4_default = /*#__PURE__*/__webpack_require__.n(v4);
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/actions.js
-/**
- * External dependencies
- */
-
-/**
- * Adds an annotation to a block.
- *
- * The `block` attribute refers to a block ID that needs to be annotated.
- * `isBlockAnnotation` controls whether or not the annotation is a block
- * annotation. The `source` is the source of the annotation, this will be used
- * to identity groups of annotations.
- *
- * The `range` property is only relevant if the selector is 'range'.
- *
- * @param {Object} annotation         The annotation to add.
- * @param {string} blockClientId      The blockClientId to add the annotation to.
- * @param {string} richTextIdentifier Identifier for the RichText instance the annotation applies to.
- * @param {Object} range              The range at which to apply this annotation.
- * @param {number} range.start        The offset where the annotation should start.
- * @param {number} range.end          The offset where the annotation should end.
- * @param {string} [selector="range"] The way to apply this annotation.
- * @param {string} [source="default"] The source that added the annotation.
- * @param {string} [id=uuid()]        The ID the annotation should have.
- *                                    Generates a UUID by default.
- *
- * @return {Object} Action object.
- */
-
-function __experimentalAddAnnotation(_ref) {
-  var blockClientId = _ref.blockClientId,
-      _ref$richTextIdentifi = _ref.richTextIdentifier,
-      richTextIdentifier = _ref$richTextIdentifi === void 0 ? null : _ref$richTextIdentifi,
-      _ref$range = _ref.range,
-      range = _ref$range === void 0 ? null : _ref$range,
-      _ref$selector = _ref.selector,
-      selector = _ref$selector === void 0 ? 'range' : _ref$selector,
-      _ref$source = _ref.source,
-      source = _ref$source === void 0 ? 'default' : _ref$source,
-      _ref$id = _ref.id,
-      id = _ref$id === void 0 ? v4_default()() : _ref$id;
-  var action = {
-    type: 'ANNOTATION_ADD',
-    id: id,
-    blockClientId: blockClientId,
-    richTextIdentifier: richTextIdentifier,
-    source: source,
-    selector: selector
-  };
-
-  if (selector === 'range') {
-    action.range = range;
-  }
-
-  return action;
-}
-/**
- * Removes an annotation with a specific ID.
- *
- * @param {string} annotationId The annotation to remove.
- *
- * @return {Object} Action object.
- */
-
-function __experimentalRemoveAnnotation(annotationId) {
-  return {
-    type: 'ANNOTATION_REMOVE',
-    annotationId: annotationId
-  };
-}
-/**
- * Updates the range of an annotation.
- *
- * @param {string} annotationId ID of the annotation to update.
- * @param {number} start The start of the new range.
- * @param {number} end The end of the new range.
- *
- * @return {Object} Action object.
- */
-
-function __experimentalUpdateAnnotationRange(annotationId, start, end) {
-  return {
-    type: 'ANNOTATION_UPDATE_RANGE',
-    annotationId: annotationId,
-    start: start,
-    end: end
-  };
-}
-/**
- * Removes all annotations of a specific source.
- *
- * @param {string} source The source to remove.
- *
- * @return {Object} Action object.
- */
-
-function __experimentalRemoveAnnotationsBySource(source) {
-  return {
-    type: 'ANNOTATION_REMOVE_SOURCE',
-    source: source
-  };
-}
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/store/index.js
-/**
- * WordPress dependencies
- */
-
-/**
- * Internal dependencies
- */
-
-
-
-
-/**
- * Module Constants
- */
-
-var MODULE_KEY = 'core/annotations';
-var store = Object(external_this_wp_data_["registerStore"])(MODULE_KEY, {
-  reducer: reducer,
-  selectors: selectors_namespaceObject,
-  actions: actions_namespaceObject
-});
-/* harmony default export */ var build_module_store = (store);
-
-// EXTERNAL MODULE: external {"this":["wp","richText"]}
-var external_this_wp_richText_ = __webpack_require__(20);
-
-// EXTERNAL MODULE: ./node_modules/memize/index.js
-var memize = __webpack_require__(41);
-var memize_default = /*#__PURE__*/__webpack_require__.n(memize);
-
-// EXTERNAL MODULE: external {"this":["wp","i18n"]}
-var external_this_wp_i18n_ = __webpack_require__(1);
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/format/annotation.js
-/**
- * External dependencies
- */
-
-/**
- * WordPress dependencies
- */
-
-
-
-var FORMAT_NAME = 'core/annotation';
-var ANNOTATION_ATTRIBUTE_PREFIX = 'annotation-text-';
-var STORE_KEY = 'core/annotations';
-/**
- * Applies given annotations to the given record.
- *
- * @param {Object} record The record to apply annotations to.
- * @param {Array} annotations The annotation to apply.
- * @return {Object} A record with the annotations applied.
- */
-
-function applyAnnotations(record) {
-  var annotations = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : [];
-  annotations.forEach(function (annotation) {
-    var start = annotation.start,
-        end = annotation.end;
-
-    if (start > record.text.length) {
-      start = record.text.length;
-    }
-
-    if (end > record.text.length) {
-      end = record.text.length;
-    }
-
-    var className = ANNOTATION_ATTRIBUTE_PREFIX + annotation.source;
-    var id = ANNOTATION_ATTRIBUTE_PREFIX + annotation.id;
-    record = Object(external_this_wp_richText_["applyFormat"])(record, {
-      type: FORMAT_NAME,
-      attributes: {
-        className: className,
-        id: id
-      }
-    }, start, end);
-  });
-  return record;
-}
-/**
- * Removes annotations from the given record.
- *
- * @param {Object} record Record to remove annotations from.
- * @return {Object} The cleaned record.
- */
-
-function removeAnnotations(record) {
-  return Object(external_this_wp_richText_["removeFormat"])(record, 'core/annotation', 0, record.text.length);
-}
-/**
- * Retrieves the positions of annotations inside an array of formats.
- *
- * @param {Array} formats Formats with annotations in there.
- * @return {Object} ID keyed positions of annotations.
- */
-
-function retrieveAnnotationPositions(formats) {
-  var positions = {};
-  formats.forEach(function (characterFormats, i) {
-    characterFormats = characterFormats || [];
-    characterFormats = characterFormats.filter(function (format) {
-      return format.type === FORMAT_NAME;
-    });
-    characterFormats.forEach(function (format) {
-      var id = format.attributes.id;
-      id = id.replace(ANNOTATION_ATTRIBUTE_PREFIX, '');
-
-      if (!positions.hasOwnProperty(id)) {
-        positions[id] = {
-          start: i
-        };
-      } // Annotations refer to positions between characters.
-      // Formats refer to the character themselves.
-      // So we need to adjust for that here.
-
-
-      positions[id].end = i + 1;
-    });
-  });
-  return positions;
-}
-/**
- * Updates annotations in the state based on positions retrieved from RichText.
- *
- * @param {Array}    annotations           The annotations that are currently applied.
- * @param {Array}    positions             The current positions of the given annotations.
- * @param {Function} removeAnnotation      Function to remove an annotation from the state.
- * @param {Function} updateAnnotationRange Function to update an annotation range in the state.
- */
-
-
-function updateAnnotationsWithPositions(annotations, positions, _ref) {
-  var removeAnnotation = _ref.removeAnnotation,
-      updateAnnotationRange = _ref.updateAnnotationRange;
-  annotations.forEach(function (currentAnnotation) {
-    var position = positions[currentAnnotation.id]; // If we cannot find an annotation, delete it.
-
-    if (!position) {
-      // Apparently the annotation has been removed, so remove it from the state:
-      // Remove...
-      removeAnnotation(currentAnnotation.id);
-      return;
-    }
-
-    var start = currentAnnotation.start,
-        end = currentAnnotation.end;
-
-    if (start !== position.start || end !== position.end) {
-      updateAnnotationRange(currentAnnotation.id, position.start, position.end);
-    }
-  });
-}
-/**
- * Create prepareEditableTree memoized based on the annotation props.
- *
- * @param {Object} The props with annotations in them.
- *
- * @return {Function} The prepareEditableTree.
- */
-
-
-var createPrepareEditableTree = memize_default()(function (props) {
-  var annotations = props.annotations;
-  return function (formats, text) {
-    if (annotations.length === 0) {
-      return formats;
-    }
-
-    var record = {
-      formats: formats,
-      text: text
-    };
-    record = applyAnnotations(record, annotations);
-    return record.formats;
-  };
-});
-/**
- * Returns the annotations as a props object. Memoized to prevent re-renders.
- *
- * @param {Array} The annotations to put in the object.
- *
- * @return {Object} The annotations props object.
- */
-
-var getAnnotationObject = memize_default()(function (annotations) {
-  return {
-    annotations: annotations
-  };
-});
-var annotation_annotation = {
-  name: FORMAT_NAME,
-  title: Object(external_this_wp_i18n_["__"])('Annotation'),
-  tagName: 'mark',
-  className: 'annotation-text',
-  attributes: {
-    className: 'class',
-    id: 'id'
-  },
-  edit: function edit() {
-    return null;
-  },
-  __experimentalGetPropsForEditableTreePreparation: function __experimentalGetPropsForEditableTreePreparation(select, _ref2) {
-    var richTextIdentifier = _ref2.richTextIdentifier,
-        blockClientId = _ref2.blockClientId;
-    return getAnnotationObject(select(STORE_KEY).__experimentalGetAnnotationsForRichText(blockClientId, richTextIdentifier));
-  },
-  __experimentalCreatePrepareEditableTree: createPrepareEditableTree,
-  __experimentalGetPropsForEditableTreeChangeHandler: function __experimentalGetPropsForEditableTreeChangeHandler(dispatch) {
-    return {
-      removeAnnotation: dispatch(STORE_KEY).__experimentalRemoveAnnotation,
-      updateAnnotationRange: dispatch(STORE_KEY).__experimentalUpdateAnnotationRange
-    };
-  },
-  __experimentalCreateOnChangeEditableValue: function __experimentalCreateOnChangeEditableValue(props) {
-    return function (formats) {
-      var positions = retrieveAnnotationPositions(formats);
-      var removeAnnotation = props.removeAnnotation,
-          updateAnnotationRange = props.updateAnnotationRange,
-          annotations = props.annotations;
-      updateAnnotationsWithPositions(annotations, positions, {
-        removeAnnotation: removeAnnotation,
-        updateAnnotationRange: updateAnnotationRange
-      });
-    };
-  }
-};
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/format/index.js
-
-
-/**
- * WordPress dependencies
- */
-
-/**
- * Internal dependencies
- */
-
-
-
-var format_name = annotation_annotation.name,
-    settings = Object(objectWithoutProperties["a" /* default */])(annotation_annotation, ["name"]);
-
-Object(external_this_wp_richText_["registerFormatType"])(format_name, settings);
-
-// EXTERNAL MODULE: external {"this":["wp","hooks"]}
-var external_this_wp_hooks_ = __webpack_require__(26);
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/block/index.js
-/**
- * WordPress dependencies
- */
-
-
-/**
- * Adds annotation className to the block-list-block component.
- *
- * @param {Object} OriginalComponent The original BlockListBlock component.
- * @return {Object} The enhanced component.
- */
-
-var block_addAnnotationClassName = function addAnnotationClassName(OriginalComponent) {
-  return Object(external_this_wp_data_["withSelect"])(function (select, _ref) {
-    var clientId = _ref.clientId;
-
-    var annotations = select('core/annotations').__experimentalGetAnnotationsForBlock(clientId);
-
-    return {
-      className: annotations.map(function (annotation) {
-        return 'is-annotated-by-' + annotation.source;
-      }).join(' ')
-    };
-  })(OriginalComponent);
-};
-
-Object(external_this_wp_hooks_["addFilter"])('editor.BlockListBlock', 'core/annotations', block_addAnnotationClassName);
-
-// CONCATENATED MODULE: ./node_modules/@wordpress/annotations/build-module/index.js
-/**
- * Internal dependencies
- */
-
-
-
-
-
-/***/ }),
-
-/***/ 41:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = function memize( fn, options ) {
-	var size = 0,
-		maxSize, head, tail;
-
-	if ( options && options.maxSize ) {
-		maxSize = options.maxSize;
-	}
-
-	function memoized( /* ...args */ ) {
-		var node = head,
-			len = arguments.length,
-			args, i;
-
-		searchCache: while ( node ) {
-			// Perform a shallow equality test to confirm that whether the node
-			// under test is a candidate for the arguments passed. Two arrays
-			// are shallowly equal if their length matches and each entry is
-			// strictly equal between the two sets. Avoid abstracting to a
-			// function which could incur an arguments leaking deoptimization.
-
-			// Check whether node arguments match arguments length
-			if ( node.args.length !== arguments.length ) {
-				node = node.next;
-				continue;
-			}
-
-			// Check whether node arguments match arguments values
-			for ( i = 0; i < len; i++ ) {
-				if ( node.args[ i ] !== arguments[ i ] ) {
-					node = node.next;
-					continue searchCache;
-				}
-			}
-
-			// At this point we can assume we've found a match
-
-			// Surface matched node to head if not already
-			if ( node !== head ) {
-				// As tail, shift to previous. Must only shift if not also
-				// head, since if both head and tail, there is no previous.
-				if ( node === tail ) {
-					tail = node.prev;
-				}
-
-				// Adjust siblings to point to each other. If node was tail,
-				// this also handles new tail's empty `next` assignment.
-				node.prev.next = node.next;
-				if ( node.next ) {
-					node.next.prev = node.prev;
-				}
-
-				node.next = head;
-				node.prev = null;
-				head.prev = node;
-				head = node;
-			}
-
-			// Return immediately
-			return node.val;
-		}
-
-		// No cached value found. Continue to insertion phase:
-
-		// Create a copy of arguments (avoid leaking deoptimization)
-		args = new Array( len );
-		for ( i = 0; i < len; i++ ) {
-			args[ i ] = arguments[ i ];
-		}
-
-		node = {
-			args: args,
-
-			// Generate the result from original function
-			val: fn.apply( null, args )
-		};
-
-		// Don't need to check whether node is already head, since it would
-		// have been returned above already if it was
-
-		// Shift existing head down list
-		if ( head ) {
-			head.prev = node;
-			node.next = head;
-		} else {
-			// If no head, follows that there's no tail (at initial or reset)
-			tail = node;
-		}
-
-		// Trim tail if we're reached max size and are pending cache insertion
-		if ( size === maxSize ) {
-			tail = tail.prev;
-			tail.next = null;
-		} else {
-			size++;
-		}
-
-		head = node;
-
-		return node.val;
-	}
-
-	memoized.clear = function() {
-		head = null;
-		tail = null;
-		size = 0;
-	};
-
-	if ( false ) {}
-
-	return memoized;
-};
-
-
-/***/ }),
-
-/***/ 5:
+/***/ 4:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["data"]; }());
 
 /***/ }),
 
-/***/ 65:
+/***/ 67:
 /***/ (function(module, exports, __webpack_require__) {
 
-var rng = __webpack_require__(87);
-var bytesToUuid = __webpack_require__(88);
+var rng = __webpack_require__(85);
+var bytesToUuid = __webpack_require__(86);
 
 function v4(options, buf, offset) {
   var i = buf && offset || 0;
@@ -1292,7 +1145,7 @@ module.exports = v4;
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectSpread; });
-/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 
 function _objectSpread(target) {
   for (var i = 1; i < arguments.length; i++) {
@@ -1315,7 +1168,7 @@ function _objectSpread(target) {
 
 /***/ }),
 
-/***/ 87:
+/***/ 85:
 /***/ (function(module, exports) {
 
 // Unique ID creation requires a high quality random # generator.  In the
@@ -1356,7 +1209,7 @@ if (getRandomValues) {
 
 /***/ }),
 
-/***/ 88:
+/***/ 86:
 /***/ (function(module, exports) {
 
 /**

@@ -7,7 +7,17 @@
  */
 
 /**
- * Map meta capabilities to primitive capabilities.
+ * Maps meta capabilities to primitive capabilities.
+ *
+ * This function also accepts an ID of an object to map against if the capability is a meta capability. Meta
+ * capabilities such as `edit_post` and `edit_user` are capabilities used by this function to map to primitive
+ * capabilities that a user or role has, such as `edit_posts` and `edit_others_posts`.
+ *
+ * Example usage:
+ *
+ *     map_meta_cap( 'edit_posts', $user->ID );
+ *     map_meta_cap( 'edit_post', $user->ID, $post->ID );
+ *     map_meta_cap( 'edit_post_meta', $user->ID, $post->ID, $meta_key );
  *
  * This does not actually compare whether the user ID has the actual capability,
  * just what the capability or capabilities are. Meta capability list value can
@@ -15,19 +25,17 @@
  * 'delete_page', 'edit_post', 'edit_page', 'read_post', or 'read_page'.
  *
  * @since 2.0.0
+ * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
+ *              by adding it to the function signature.
  *
  * @global array $post_type_meta_caps Used to get post type meta capabilities.
  *
- * @param string $cap       Capability name.
- * @param int    $user_id   User ID.
- * @param int    $object_id Optional. ID of the specific object to check against if `$cap` is a "meta" cap.
- *                          "Meta" capabilities, e.g. 'edit_post', 'edit_user', etc., are capabilities used
- *                          by map_meta_cap() to map to other "primitive" capabilities, e.g. 'edit_posts',
- *                          'edit_others_posts', etc. The parameter is accessed via func_get_args().
+ * @param string $cap     Capability name.
+ * @param int    $user_id User ID.
+ * @param mixed  ...$args Optional further parameters, typically starting with an object ID.
  * @return array Actual capabilities for meta capability.
  */
-function map_meta_cap( $cap, $user_id ) {
-	$args = array_slice( func_get_args(), 2 );
+function map_meta_cap( $cap, $user_id, ...$args ) {
 	$caps = array();
 
 	switch ( $cap ) {
@@ -66,11 +74,8 @@ function map_meta_cap( $cap, $user_id ) {
 			}
 
 			if ( 'revision' == $post->post_type ) {
-				$post = get_post( $post->post_parent );
-				if ( ! $post ) {
-					$caps[] = 'do_not_allow';
-					break;
-				}
+				$caps[] = 'do_not_allow';
+				break;
 			}
 
 			if ( ( get_option( 'page_for_posts' ) == $post->ID ) || ( get_option( 'page_on_front' ) == $post->ID ) ) {
@@ -80,7 +85,7 @@ function map_meta_cap( $cap, $user_id ) {
 
 			$post_type = get_post_type_object( $post->post_type );
 			if ( ! $post_type ) {
-				/* translators: 1: post type, 2: capability name */
+				/* translators: 1: Post type, 2: Capability name. */
 				_doing_it_wrong( __FUNCTION__, sprintf( __( 'The post type %1$s is not registered, so it may not be reliable to check the capability "%2$s" against a post of that type.' ), $post->post_type, $cap ), '4.4.0' );
 				$caps[] = 'edit_others_posts';
 				break;
@@ -151,7 +156,7 @@ function map_meta_cap( $cap, $user_id ) {
 
 			$post_type = get_post_type_object( $post->post_type );
 			if ( ! $post_type ) {
-				/* translators: 1: post type, 2: capability name */
+				/* translators: 1: Post type, 2: Capability name. */
 				_doing_it_wrong( __FUNCTION__, sprintf( __( 'The post type %1$s is not registered, so it may not be reliable to check the capability "%2$s" against a post of that type.' ), $post->post_type, $cap ), '4.4.0' );
 				$caps[] = 'edit_others_posts';
 				break;
@@ -220,7 +225,7 @@ function map_meta_cap( $cap, $user_id ) {
 
 			$post_type = get_post_type_object( $post->post_type );
 			if ( ! $post_type ) {
-				/* translators: 1: post type, 2: capability name */
+				/* translators: 1: Post type, 2: Capability name. */
 				_doing_it_wrong( __FUNCTION__, sprintf( __( 'The post type %1$s is not registered, so it may not be reliable to check the capability "%2$s" against a post of that type.' ), $post->post_type, $cap ), '4.4.0' );
 				$caps[] = 'edit_others_posts';
 				break;
@@ -258,7 +263,7 @@ function map_meta_cap( $cap, $user_id ) {
 
 			$post_type = get_post_type_object( $post->post_type );
 			if ( ! $post_type ) {
-				/* translators: 1: post type, 2: capability name */
+				/* translators: 1: Post type, 2: Capability name. */
 				_doing_it_wrong( __FUNCTION__, sprintf( __( 'The post type %1$s is not registered, so it may not be reliable to check the capability "%2$s" against a post of that type.' ), $post->post_type, $cap ), '4.4.0' );
 				$caps[] = 'edit_others_posts';
 				break;
@@ -576,8 +581,7 @@ function map_meta_cap( $cap, $user_id ) {
 			// Handle meta capabilities for custom post types.
 			global $post_type_meta_caps;
 			if ( isset( $post_type_meta_caps[ $cap ] ) ) {
-				$args = array_merge( array( $post_type_meta_caps[ $cap ], $user_id ), $args );
-				return call_user_func_array( 'map_meta_cap', $args );
+				return map_meta_cap( $post_type_meta_caps[ $cap ], $user_id, ...$args );
 			}
 
 			// Block capabilities map to their post equivalent.
@@ -615,7 +619,17 @@ function map_meta_cap( $cap, $user_id ) {
 }
 
 /**
- * Whether the current user has a specific capability.
+ * Returns whether the current user has the specified capability.
+ *
+ * This function also accepts an ID of an object to check against if the capability is a meta capability. Meta
+ * capabilities such as `edit_post` and `edit_user` are capabilities used by the `map_meta_cap()` function to
+ * map to primitive capabilities that a user or role has, such as `edit_posts` and `edit_others_posts`.
+ *
+ * Example usage:
+ *
+ *     current_user_can( 'edit_posts' );
+ *     current_user_can( 'edit_post', $post->ID );
+ *     current_user_can( 'edit_post_meta', $post->ID, $meta_key );
  *
  * While checking against particular roles in place of a capability is supported
  * in part, this practice is discouraged as it may produce unreliable results.
@@ -623,42 +637,50 @@ function map_meta_cap( $cap, $user_id ) {
  * Note: Will always return true if the current user is a super admin, unless specifically denied.
  *
  * @since 2.0.0
+ * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
+ *              by adding it to the function signature.
  *
  * @see WP_User::has_cap()
  * @see map_meta_cap()
  *
  * @param string $capability Capability name.
- * @param int    $object_id  Optional. ID of the specific object to check against if `$capability` is a "meta" cap.
- *                           "Meta" capabilities, e.g. 'edit_post', 'edit_user', etc., are capabilities used
- *                           by map_meta_cap() to map to other "primitive" capabilities, e.g. 'edit_posts',
- *                           'edit_others_posts', etc. Accessed via func_get_args() and passed to WP_User::has_cap(),
- *                           then map_meta_cap().
+ * @param mixed  ...$args    Optional further parameters, typically starting with an object ID.
  * @return bool Whether the current user has the given capability. If `$capability` is a meta cap and `$object_id` is
  *              passed, whether the current user has the given meta capability for the given object.
  */
-function current_user_can( $capability ) {
+function current_user_can( $capability, ...$args ) {
 	$current_user = wp_get_current_user();
 
 	if ( empty( $current_user ) ) {
 		return false;
 	}
 
-	$args = array_slice( func_get_args(), 1 );
-	$args = array_merge( array( $capability ), $args );
-
-	return call_user_func_array( array( $current_user, 'has_cap' ), $args );
+	return $current_user->has_cap( $capability, ...$args );
 }
 
 /**
- * Whether the current user has a specific capability for a given site.
+ * Returns whether the current user has the specified capability for a given site.
+ *
+ * This function also accepts an ID of an object to check against if the capability is a meta capability. Meta
+ * capabilities such as `edit_post` and `edit_user` are capabilities used by the `map_meta_cap()` function to
+ * map to primitive capabilities that a user or role has, such as `edit_posts` and `edit_others_posts`.
+ *
+ * Example usage:
+ *
+ *     current_user_can_for_blog( $blog_id, 'edit_posts' );
+ *     current_user_can_for_blog( $blog_id, 'edit_post', $post->ID );
+ *     current_user_can_for_blog( $blog_id, 'edit_post_meta', $post->ID, $meta_key );
  *
  * @since 3.0.0
+ * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
+ *              by adding it to the function signature.
  *
  * @param int    $blog_id    Site ID.
  * @param string $capability Capability name.
+ * @param mixed  ...$args    Optional further parameters, typically starting with an object ID.
  * @return bool Whether the user has the given capability.
  */
-function current_user_can_for_blog( $blog_id, $capability ) {
+function current_user_can_for_blog( $blog_id, $capability, ...$args ) {
 	$switched = is_multisite() ? switch_to_blog( $blog_id ) : false;
 
 	$current_user = wp_get_current_user();
@@ -670,10 +692,7 @@ function current_user_can_for_blog( $blog_id, $capability ) {
 		return false;
 	}
 
-	$args = array_slice( func_get_args(), 2 );
-	$args = array_merge( array( $capability ), $args );
-
-	$can = call_user_func_array( array( $current_user, 'has_cap' ), $args );
+	$can = $current_user->has_cap( $capability, ...$args );
 
 	if ( $switched ) {
 		restore_current_blog();
@@ -683,16 +702,30 @@ function current_user_can_for_blog( $blog_id, $capability ) {
 }
 
 /**
- * Whether the author of the supplied post has a specific capability.
+ * Returns whether the author of the supplied post has the specified capability.
+ *
+ * This function also accepts an ID of an object to check against if the capability is a meta capability. Meta
+ * capabilities such as `edit_post` and `edit_user` are capabilities used by the `map_meta_cap()` function to
+ * map to primitive capabilities that a user or role has, such as `edit_posts` and `edit_others_posts`.
+ *
+ * Example usage:
+ *
+ *     author_can( $post, 'edit_posts' );
+ *     author_can( $post, 'edit_post', $post->ID );
+ *     author_can( $post, 'edit_post_meta', $post->ID, $meta_key );
  *
  * @since 2.9.0
+ * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
+ *              by adding it to the function signature.
  *
  * @param int|WP_Post $post       Post ID or post object.
  * @param string      $capability Capability name.
+ * @param mixed       ...$args    Optional further parameters, typically starting with an object ID.
  * @return bool Whether the post author has the given capability.
  */
-function author_can( $post, $capability ) {
-	if ( ! $post = get_post( $post ) ) {
+function author_can( $post, $capability, ...$args ) {
+	$post = get_post( $post );
+	if ( ! $post ) {
 		return false;
 	}
 
@@ -702,22 +735,32 @@ function author_can( $post, $capability ) {
 		return false;
 	}
 
-	$args = array_slice( func_get_args(), 2 );
-	$args = array_merge( array( $capability ), $args );
-
-	return call_user_func_array( array( $author, 'has_cap' ), $args );
+	return $author->has_cap( $capability, ...$args );
 }
 
 /**
- * Whether a particular user has a specific capability.
+ * Returns whether a particular user has the specified capability.
+ *
+ * This function also accepts an ID of an object to check against if the capability is a meta capability. Meta
+ * capabilities such as `edit_post` and `edit_user` are capabilities used by the `map_meta_cap()` function to
+ * map to primitive capabilities that a user or role has, such as `edit_posts` and `edit_others_posts`.
+ *
+ * Example usage:
+ *
+ *     user_can( $user->ID, 'edit_posts' );
+ *     user_can( $user->ID, 'edit_post', $post->ID );
+ *     user_can( $user->ID, 'edit_post_meta', $post->ID, $meta_key );
  *
  * @since 3.1.0
+ * @since 5.3.0 Formalized the existing and already documented `...$args` parameter
+ *              by adding it to the function signature.
  *
  * @param int|WP_User $user       User ID or object.
  * @param string      $capability Capability name.
+ * @param mixed       ...$args    Optional further parameters, typically starting with an object ID.
  * @return bool Whether the user has the given capability.
  */
-function user_can( $user, $capability ) {
+function user_can( $user, $capability, ...$args ) {
 	if ( ! is_object( $user ) ) {
 		$user = get_userdata( $user );
 	}
@@ -726,10 +769,7 @@ function user_can( $user, $capability ) {
 		return false;
 	}
 
-	$args = array_slice( func_get_args(), 2 );
-	$args = array_merge( array( $capability ), $args );
-
-	return call_user_func_array( array( $user, 'has_cap' ), $args );
+	return $user->has_cap( $capability, ...$args );
 }
 
 /**
@@ -737,7 +777,7 @@ function user_can( $user, $capability ) {
  *
  * @since 4.3.0
  *
- * @global WP_Roles $wp_roles WP_Roles global instance.
+ * @global WP_Roles $wp_roles WordPress role management object.
  *
  * @return WP_Roles WP_Roles global instance if not already instantiated.
  */
@@ -920,7 +960,8 @@ function revoke_super_admin( $user_id ) {
 
 	$user = get_userdata( $user_id );
 	if ( $user && 0 !== strcasecmp( $user->user_email, get_site_option( 'admin_email' ) ) ) {
-		if ( false !== ( $key = array_search( $user->user_login, $super_admins ) ) ) {
+		$key = array_search( $user->user_login, $super_admins );
+		if ( false !== $key ) {
 			unset( $super_admins[ $key ] );
 			update_site_option( 'site_admins', $super_admins );
 
@@ -1007,13 +1048,13 @@ function wp_maybe_grant_site_health_caps( $allcaps, $caps, $args, $user ) {
 return;
 
 // Dummy gettext calls to get strings in the catalog.
-/* translators: user role for administrators  */
+/* translators: User role for administrators. */
 _x( 'Administrator', 'User role' );
-/* translators: user role for editors */
+/* translators: User role for editors. */
 _x( 'Editor', 'User role' );
-/* translators: user role for authors */
+/* translators: User role for authors. */
 _x( 'Author', 'User role' );
-/* translators: user role for contributors */
+/* translators: User role for contributors. */
 _x( 'Contributor', 'User role' );
-/* translators: user role for subscriber */
+/* translators: User role for subscribers. */
 _x( 'Subscriber', 'User role' );

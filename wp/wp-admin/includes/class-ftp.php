@@ -185,8 +185,8 @@ class ftp_base {
 			$lcount=count($lucifer);
 			if ($lcount<8) return '';
 			$b = array();
-			$b['isdir'] = $lucifer[0]{0} === "d";
-			$b['islink'] = $lucifer[0]{0} === "l";
+			$b['isdir'] = $lucifer[0][0] === "d";
+			$b['islink'] = $lucifer[0][0] === "l";
 			if ( $b['isdir'] )
 				$b['type'] = 'd';
 			elseif ( $b['islink'] )
@@ -207,7 +207,7 @@ class ftp_base {
 				$b['month'] = $lucifer[5];
 				$b['day'] = $lucifer[6];
 				if (preg_match("/([0-9]{2}):([0-9]{2})/",$lucifer[7],$l2)) {
-					$b['year'] = date("Y");
+					$b['year'] = gmdate("Y");
 					$b['hour'] = $l2[1];
 					$b['minute'] = $l2[2];
 				} else {
