@@ -1,0 +1,1 @@
+jQuery(function(n){var a=n("#language"),e=n("#language-continue");n("body").hasClass("language-chooser")&&(a.focus().on("change",function(){var n=a.children("option:selected");e.attr({value:n.data("continue"),lang:n.attr("lang")})}),n("form").submit(function(){a.children("option:selected").data("installed")||n(this).find(".step .spinner").css("visibility","visible")}))});
