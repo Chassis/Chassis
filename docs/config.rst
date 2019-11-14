@@ -30,6 +30,35 @@ Changing your Chassis box is a quick two-step process:
 and should take care of updating everything internally.
 
 -------------
+Base Box Mode
+-------------
+By default, we use a box built with the default settings. This speeds up
+initial provisioning time and reduces disk usage by sharing the common parts
+of the VM.
+
+The ``normal`` box will use the Chassis box that we've built and uploaded to
+Vagrant Cloud which uses PHP 7.3.
+
+To create a customised base box for your project you could have create a `config.local.yaml` file as follows::
+
+    hosts:
+        - client.local
+
+    # PHP version
+    php: 7.2
+
+    # Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
+    upload_size: 512M
+
+    # Values: normal, base
+    _mode: base
+
+    extensions:
+        - chassis/mailhog
+        - chassis/xdebug
+        - chassis/tester
+        - chassis/sequelpro
+
 wp-config.php
 -------------
 
@@ -130,7 +159,6 @@ on easily.
 * For multisite in subdirectories, set ``multisite: Yes``
 * For multisite on subdomains, set ``multisite: subdomains``
 
-Then just reprovision.
 
 When multisite is turned on, Chassis will set up WordPress in "subdirectory"
 mode; that is, sites will be created under the root, but using the same domain.
@@ -139,9 +167,22 @@ A site called "test" would be created at ``/test/``, for example.
 Subdirectory mode is great, but subdomain mode is even better. With subdomains,
 a site called "test" would be available at ``test.vagrant.local``. This is one of
 the most common ways that multisite is set up, since it also means you're
-separating your sites more cleanly. Simply set the value to ``subdomains`` and
-reprovision. Once this is done, subdomains will work automatically in your
+separating your sites more cleanly.
+
+
+If you're using ``subdomains`` then add your subdomains you'd like to use to a yaml file. e.g. ::
+
+   hosts:
+     - vagrant.local
+     - wat.vagrant.local
+     - moo.vagrant.local
+
+Then run ``vagrant provision``. Once this is done, subdomains will work automatically in your
 browser. Create and remove sites at will, and Chassis will ensure it just works.
+
+Each time you add a new subdomain you will need to add the subdomain to your yaml file and run `vagrant provision`.
+
+These subdomains will be added to ``/lib/systemd/system/chassis-hosts.service``
 
 .. note::
    Changing from multisite back to single site requires creating the box from

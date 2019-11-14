@@ -12,7 +12,10 @@ class chassis::php (
 	}
 
 	apt::ppa { 'ppa:ondrej/php':
-		require => [ Package[ $::apt::ppa_package ] ],
+		require => [
+			Package[ $::apt::ppa_package ],
+			Class['apt'],
+		],
 	}
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
@@ -62,11 +65,11 @@ class chassis::php (
 		# Hold at the given version
 		ensure          => 'latest',
 		install_options => '--force-yes',
-
 		notify          => Service["${php_package}-fpm"],
 		require         => [
 			Apt::Pin[$packages],
 			Apt::Ppa['ppa:ondrej/php'],
+			Class['apt::update'],
 		],
 	}
 
@@ -95,11 +98,13 @@ class chassis::php (
 			'7.4': {
 				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
 					ensure => absent,
+					notify => Class['apt::update'],
 				}
 			}
 			default: {
 				package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
 					ensure => absent,
+					notify => Class['apt::update'],
 				}
 			}
 		}

@@ -212,16 +212,20 @@ module Chassis
 		if config["extensions"]
 			config["extensions"].each { |ext| self.install_extension(ext) }
 		end
+	end
 
-		# For each of the extensions in our folder, read the extension config and
-		# install dependencies, etc for that extension.
-		self.get_extensions(2).each do |extension|
-			ext_config = self.get_extension_config(extension)
+	def self.install_dependencies(extension)
+		# Install dependencies from extension config
+		ext_name = extension.split('/').last.gsub(/\.git$/, '').downcase
+		ext_config = self.get_extension_config(ext_name)
 
-			# If we have dependencies, then install them.
-			if ext_config["dependencies"]
-				ext_config["dependencies"].each { |ext| self.install_extension(ext) }
-			end
+		# If we have dependencies, then install them.
+		if ext_config["dependencies"]
+			ext_config["dependencies"].each { |dep|
+				dep_name = dep.split('/').last.gsub(/\.git$/, '').downcase
+				next if File.exist?( @@dir + '/extensions/' + dep_name )
+				self.install_extension(dep)
+			}
 		end
 	end
 
@@ -241,8 +245,8 @@ module Chassis
 			# Check for existing extensions that have a hyphen and remove them.
 			old_extensions = Dir.glob(@@dir + '/extensions/*')
 			old_extensions.each { |extension|
-			# Remove @@dir before "-" include check in case of hyphenated parent directories.
-			next unless extension.gsub(@@dir, '').include? "-"
+				# Remove @@dir before "-" include check in case of hyphenated parent directories.
+				next unless extension.gsub(@@dir, '').include? "-"
 				# Delete the old extension if it has a hyphen in it.
 				FileUtils.remove_dir(extension)
 				# Swap "-" for "_" in the non-parent-directory part of the path.
@@ -265,6 +269,9 @@ module Chassis
 		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
+
+		# Install dependencies for this extension.
+		self.install_dependencies(extension)
 	end
 
 	def self.make_relative(base, paths)

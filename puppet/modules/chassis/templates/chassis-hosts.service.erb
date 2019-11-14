@@ -1,0 +1,14 @@
+[Unit]
+Description=Avahi/mDNS CNAME publisher to publish .local URLS
+Wants=network-online.target
+After=network-online.target
+
+[Service]
+Type=simple
+ExecStart=/usr/local/bin/mdns-publish-cname --ttl 20<% @aliases.each do |site| -%> <%= site %><% end %>
+Restart=no
+PrivateTmp=true
+PrivateDevices=true
+
+[Install]
+WantedBy=multi-user.target

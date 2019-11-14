@@ -536,7 +536,8 @@ $_old_files = array(
 	'wp-admin/images/screenshots/twitter-embed-1.png',
 	'wp-admin/images/screenshots/twitter-embed-2.png',
 	'wp-admin/js/utils.js',
-	'wp-admin/options-privacy.php',
+	// Added back in 5.3 [45448], see #43895
+	// 'wp-admin/options-privacy.php',
 	'wp-app.php',
 	'wp-includes/class-wp-atom-server.php',
 	'wp-includes/js/tinymce/themes/advanced/skins/wp_theme/ui.css',
@@ -785,6 +786,9 @@ $_old_files = array(
 	// 5.1
 	'wp-includes/random_compat/random_bytes_openssl.php',
 	'wp-includes/js/tinymce/wp-tinymce.js.gz',
+	// 5.3
+	'wp-includes/js/wp-a11y.js', // Moved to: wp-includes/js/dist/a11y.js
+	'wp-includes/js/wp-a11y.min.js', // Moved to: wp-includes/js/dist/a11y.min.js
 );
 
 /**
@@ -821,6 +825,7 @@ $_new_bundled_files = array(
 	'themes/twentysixteen/'   => '4.4',
 	'themes/twentyseventeen/' => '4.7',
 	'themes/twentynineteen/'  => '5.0',
+	'themes/twentytwenty/'    => '5.3',
 );
 
 /**
@@ -868,7 +873,7 @@ $_new_bundled_files = array(
  * @global WP_Filesystem_Base $wp_filesystem          WordPress filesystem subclass.
  * @global array              $_old_files
  * @global array              $_new_bundled_files
- * @global wpdb               $wpdb
+ * @global wpdb               $wpdb                   WordPress database abstraction object.
  * @global string             $wp_version
  * @global string             $required_php_version
  * @global string             $required_mysql_version
@@ -880,7 +885,7 @@ $_new_bundled_files = array(
 function update_core( $from, $to ) {
 	global $wp_filesystem, $_old_files, $_new_bundled_files, $wpdb;
 
-	@set_time_limit( 300 );
+	set_time_limit( 300 );
 
 	/**
 	 * Filters feedback messages displayed during the core update process.
@@ -948,7 +953,7 @@ function update_core( $from, $to ) {
 
 	$php_update_message = '';
 	if ( function_exists( 'wp_get_update_php_url' ) ) {
-		/* translators: %s: Update PHP page URL */
+		/* translators: %s: URL to Update PHP page. */
 		$php_update_message = '</p><p>' . sprintf( __( '<a href="%s">Learn more about updating PHP</a>.' ), esc_url( wp_get_update_php_url() ) );
 
 		if ( function_exists( 'wp_get_update_php_annotation' ) ) {
@@ -960,11 +965,53 @@ function update_core( $from, $to ) {
 	}
 
 	if ( ! $mysql_compat && ! $php_compat ) {
-		return new WP_Error( 'php_mysql_not_compatible', sprintf( __( 'The update cannot be installed because WordPress %1$s requires PHP version %2$s or higher and MySQL version %3$s or higher. You are running PHP version %4$s and MySQL version %5$s.' ), $wp_version, $required_php_version, $required_mysql_version, $php_version, $mysql_version ) . $php_update_message );
+		return new WP_Error(
+			'php_mysql_not_compatible',
+			sprintf(
+				/* translators: 1: WordPress version number, 2: Minimum required PHP version number, 3: Minimum required MySQL version number, 4: Current PHP version number, 5: Current MySQL version number. */
+				__( 'The update cannot be installed because WordPress %1$s requires PHP version %2$s or higher and MySQL version %3$s or higher. You are running PHP version %4$s and MySQL version %5$s.' ),
+				$wp_version,
+				$required_php_version,
+				$required_mysql_version,
+				$php_version,
+				$mysql_version
+			) . $php_update_message
+		);
 	} elseif ( ! $php_compat ) {
-		return new WP_Error( 'php_not_compatible', sprintf( __( 'The update cannot be installed because WordPress %1$s requires PHP version %2$s or higher. You are running version %3$s.' ), $wp_version, $required_php_version, $php_version ) . $php_update_message );
+		return new WP_Error(
+			'php_not_compatible',
+			sprintf(
+				/* translators: 1: WordPress version number, 2: Minimum required PHP version number, 3: Current PHP version number. */
+				__( 'The update cannot be installed because WordPress %1$s requires PHP version %2$s or higher. You are running version %3$s.' ),
+				$wp_version,
+				$required_php_version,
+				$php_version
+			) . $php_update_message
+		);
 	} elseif ( ! $mysql_compat ) {
-		return new WP_Error( 'mysql_not_compatible', sprintf( __( 'The update cannot be installed because WordPress %1$s requires MySQL version %2$s or higher. You are running version %3$s.' ), $wp_version, $required_mysql_version, $mysql_version ) );
+		return new WP_Error(
+			'mysql_not_compatible',
+			sprintf(
+				/* translators: 1: WordPress version number, 2: Minimum required MySQL version number, 3: Current MySQL version number. */
+				__( 'The update cannot be installed because WordPress %1$s requires MySQL version %2$s or higher. You are running version %3$s.' ),
+				$wp_version,
+				$required_mysql_version,
+				$mysql_version
+			)
+		);
+	}
+
+	// Add a warning when the JSON PHP extension is missing.
+	if ( ! extension_loaded( 'json' ) ) {
+		return new WP_Error(
+			'php_not_compatible_json',
+			sprintf(
+				/* translators: 1: WordPress version number, 2: The PHP extension name needed. */
+				__( 'The update cannot be installed because WordPress %1$s requires the %2$s PHP extension.' ),
+				$wp_version,
+				'JSON'
+			)
+		);
 	}
 
 	/** This filter is documented in wp-admin/includes/update-core.php */
@@ -1278,7 +1325,7 @@ function _copy_dir( $from, $to, $skip_list = array() ) {
 	$to   = trailingslashit( $to );
 
 	foreach ( (array) $dirlist as $filename => $fileinfo ) {
-		if ( in_array( $filename, $skip_list ) ) {
+		if ( in_array( $filename, $skip_list, true ) ) {
 			continue;
 		}
 
@@ -1353,8 +1400,22 @@ function _redirect_to_about_wordpress( $new_version ) {
 	show_message( __( 'WordPress updated successfully' ) );
 
 	// self_admin_url() won't exist when upgrading from <= 3.0, so relative URLs are intentional.
-	show_message( '<span class="hide-if-no-js">' . sprintf( __( 'Welcome to WordPress %1$s. You will be redirected to the About WordPress screen. If not, click <a href="%2$s">here</a>.' ), $new_version, 'about.php?updated' ) . '</span>' );
-	show_message( '<span class="hide-if-js">' . sprintf( __( 'Welcome to WordPress %1$s. <a href="%2$s">Learn more</a>.' ), $new_version, 'about.php?updated' ) . '</span>' );
+	show_message(
+		'<span class="hide-if-no-js">' . sprintf(
+			/* translators: 1: WordPress version, 2: URL to About screen. */
+			__( 'Welcome to WordPress %1$s. You will be redirected to the About WordPress screen. If not, click <a href="%2$s">here</a>.' ),
+			$new_version,
+			'about.php?updated'
+		) . '</span>'
+	);
+	show_message(
+		'<span class="hide-if-js">' . sprintf(
+			/* translators: 1: WordPress version, 2: URL to About screen. */
+			__( 'Welcome to WordPress %1$s. <a href="%2$s">Learn more</a>.' ),
+			$new_version,
+			'about.php?updated'
+		) . '</span>'
+	);
 	echo '</div>';
 	?>
 <script type="text/javascript">

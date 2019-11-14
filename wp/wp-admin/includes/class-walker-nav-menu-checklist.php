@@ -94,13 +94,15 @@ class Walker_Nav_Menu_Checklist extends Walker_Nav_Menu {
 		} elseif ( isset( $item->post_type ) ) {
 			/** This filter is documented in wp-includes/post-template.php */
 			$title = apply_filters( 'the_title', $item->post_title, $item->ID );
-			if ( ! empty( $item->front_or_home ) && _x( 'Home', 'nav menu home label' ) !== $title ) {
-				/* translators: %s: front page title */
-				$title = sprintf( _x( 'Home: %s', 'nav menu front page title' ), $title );
-			}
 		}
 
 		$output .= isset( $title ) ? esc_html( $title ) : esc_html( $item->title );
+
+		if ( empty( $item->label ) && isset( $item->post_type ) && 'page' === $item->post_type ) {
+			// Append post states.
+			$output .= _post_states( $item, false );
+		}
+
 		$output .= '</label>';
 
 		// Menu item hidden fields
@@ -111,7 +113,7 @@ class Walker_Nav_Menu_Checklist extends Walker_Nav_Menu {
 		$output .= '<input type="hidden" class="menu-item-title" name="menu-item[' . $possible_object_id . '][menu-item-title]" value="' . esc_attr( $item->title ) . '" />';
 		$output .= '<input type="hidden" class="menu-item-url" name="menu-item[' . $possible_object_id . '][menu-item-url]" value="' . esc_attr( $item->url ) . '" />';
 		$output .= '<input type="hidden" class="menu-item-target" name="menu-item[' . $possible_object_id . '][menu-item-target]" value="' . esc_attr( $item->target ) . '" />';
-		$output .= '<input type="hidden" class="menu-item-attr_title" name="menu-item[' . $possible_object_id . '][menu-item-attr_title]" value="' . esc_attr( $item->attr_title ) . '" />';
+		$output .= '<input type="hidden" class="menu-item-attr-title" name="menu-item[' . $possible_object_id . '][menu-item-attr-title]" value="' . esc_attr( $item->attr_title ) . '" />';
 		$output .= '<input type="hidden" class="menu-item-classes" name="menu-item[' . $possible_object_id . '][menu-item-classes]" value="' . esc_attr( implode( ' ', $item->classes ) ) . '" />';
 		$output .= '<input type="hidden" class="menu-item-xfn" name="menu-item[' . $possible_object_id . '][menu-item-xfn]" value="' . esc_attr( $item->xfn ) . '" />';
 	}
