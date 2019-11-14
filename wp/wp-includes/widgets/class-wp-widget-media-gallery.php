@@ -12,6 +12,7 @@
  *
  * @since 4.9.0
  *
+ * @see WP_Widget_Media
  * @see WP_Widget
  */
 class WP_Widget_Media_Gallery extends WP_Widget_Media {
@@ -199,7 +200,7 @@ class WP_Widget_Media_Gallery extends WP_Widget_Media {
 											<?php
 											echo esc_attr(
 												sprintf(
-													/* translators: %s: the image file name. */
+													/* translators: %s: The image file name. */
 													__( 'The current image has no alternative text. The file name is: %s' ),
 													'{{ attachment.filename }}'
 												)
@@ -213,7 +214,7 @@ class WP_Widget_Media_Gallery extends WP_Widget_Media {
 										<p class="gallery-icon-placeholder-text" aria-label="
 										<?php
 											printf(
-												/* translators: %s: the amount of additional, not visible images in the gallery widget preview. */
+												/* translators: %s: The amount of additional, not visible images in the gallery widget preview. */
 												__( 'Additional images added to this gallery: %s' ),
 												'{{ data.ids.length - 5 }}'
 											);

@@ -102,8 +102,13 @@ Vagrant.configure("2") do |config|
 		vb.customize [ "guestproperty", "set", :id, "/Chassis/synced_folders", JSON.dump( full_synced ), "--flags", "TRANSIENT,RDONLYGUEST" ]
 	end
 
-	# We <3 Ubuntu LTS
-	config.vm.box = "bento/ubuntu-18.04"
+	if CONF['_mode'] == "normal"
+		# Use the Chassis box we've built with the default config.
+		config.vm.box = "chassis/chassis"
+	else
+		# We <3 Ubuntu LTS
+		config.vm.box = "bento/ubuntu-16.04"
+	end
 
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
@@ -165,7 +170,11 @@ Vagrant.configure("2") do |config|
 
 	# Help the user out the first time they provision
 	config.vm.provision :shell do |shell|
-		shell.path = "puppet/postprovision.sh"
+		if CONF['_mode'] == "base"
+			shell.path = "puppet/preparebox.sh"
+		else
+			shell.path = "puppet/postprovision.sh"
+		end
 		shell.args = [
 			# 0 = hostname
 			CONF['hosts'][0],

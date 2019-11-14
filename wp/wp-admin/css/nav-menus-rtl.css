@@ -413,6 +413,10 @@ ul.add-menu-item-tabs li {
 	margin-top: -4px;
 }
 
+.menu-item-title .post-state {
+	font-weight: 600;
+}
+
 /* Nav Menu */
 #menu-container .inside {
 	padding-bottom: 10px;
@@ -450,7 +454,7 @@ ul.add-menu-item-tabs li {
 	height: auto;
 	min-height: 20px;
 	width: 382px;
-	line-height: 2.4;
+	line-height: 2.30769230;
 	overflow: hidden;
 	word-wrap: break-word;
 }
@@ -480,7 +484,7 @@ ul.add-menu-item-tabs li {
 .menu-item-handle .item-title {
 	font-size: 13px;
 	font-weight: 600;
-	line-height: 1.6;
+	line-height: 1.53846153;
 	display: block;
 	/* @todo: responsive view. */
 	margin-left: 13em;
@@ -647,7 +651,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 	padding: 10px 10px 10px 0;
 	position: relative;
 	z-index: 10; /* Keep .item-title's shadow from appearing on top of .menu-item-settings */
-	border: 1px solid #e5e5e5;
+	border: 1px solid #ccd0d4;
 	border-top: none;
 	box-shadow: 0 1px 1px rgba(0, 0, 0, 0.04);
 }
@@ -737,7 +741,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 .nav-menus-php .major-publishing-actions {
 	clear: both;
 	padding: 10px 0;
-	line-height: 2.1;
+	line-height: 2.15384615;
 }
 
 .nav-menus-php .major-publishing-actions .publishing-action {
@@ -841,7 +845,7 @@ body.menu-max-depth-11 { min-width: 1280px !important; }
 
 	.nav-menus-php .delete-action {
 		font-size: 14px;
-		line-height: 2.1;
+		line-height: 2.14285714;
 	}
 
 	.menu-item-bar .menu-item-handle,

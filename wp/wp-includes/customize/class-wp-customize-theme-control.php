@@ -57,13 +57,13 @@ class WP_Customize_Theme_Control extends WP_Customize_Control {
 	 * @since 4.2.0
 	 */
 	public function content_template() {
-		/* translators: %s: theme name */
+		/* translators: %s: Theme name. */
 		$details_label = sprintf( __( 'Details for theme: %s' ), '{{ data.theme.name }}' );
-		/* translators: %s: theme name */
+		/* translators: %s: Theme name. */
 		$customize_label = sprintf( __( 'Customize theme: %s' ), '{{ data.theme.name }}' );
-		/* translators: %s: theme name */
+		/* translators: %s: Theme name. */
 		$preview_label = sprintf( __( 'Live preview theme: %s' ), '{{ data.theme.name }}' );
-		/* translators: %s: theme name */
+		/* translators: %s: Theme name. */
 		$install_label = sprintf( __( 'Install and preview theme: %s' ), '{{ data.theme.name }}' );
 		?>
 		<# if ( data.theme.active ) { #>
@@ -84,7 +84,7 @@ class WP_Customize_Theme_Control extends WP_Customize_Control {
 
 			<div class="theme-author">
 			<?php
-				/* translators: Theme author name */
+				/* translators: Theme author name. */
 				printf( _x( 'By %s', 'theme author' ), '{{ data.theme.author }}' );
 			?>
 			</div>
@@ -97,7 +97,7 @@ class WP_Customize_Theme_Control extends WP_Customize_Control {
 							_e( 'New version available.' );
 						} else {
 							printf(
-								/* translators: %s: "Update now" button */
+								/* translators: %s: "Update now" button. */
 								__( 'New version available. %s' ),
 								'<button class="button-link update-theme" type="button">' . __( 'Update now' ) . '</button>'
 							);
@@ -110,10 +110,7 @@ class WP_Customize_Theme_Control extends WP_Customize_Control {
 			<# if ( data.theme.active ) { #>
 				<div class="theme-id-container">
 					<h3 class="theme-name" id="{{ data.section }}-{{ data.theme.id }}-name">
-						<?php
-						/* translators: %s: theme name */
-						printf( __( '<span>Previewing:</span> %s' ), '{{ data.theme.name }}' );
-						?>
+						<span><?php _e( 'Previewing:' ); ?></span> {{ data.theme.name }}
 					</h3>
 					<div class="theme-actions">
 						<button type="button" class="button button-primary customize-theme" aria-label="<?php echo esc_attr( $customize_label ); ?>"><?php _e( 'Customize' ); ?></button>

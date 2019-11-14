@@ -81,14 +81,24 @@ class WP_Customize_Themes_Section extends WP_Customize_Section {
 						<?php $this->filter_bar_content_template(); ?>
 					</div>
 					<?php $this->filter_drawer_content_template(); ?>
-					<div class="error unexpected-error" style="display: none; "><p><?php _e( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="https://wordpress.org/support/">support forums</a>.' ); ?></p></div>
+					<div class="error unexpected-error" style="display: none; ">
+						<p>
+							<?php
+							printf(
+								/* translators: %s: Support forums URL. */
+								__( 'An unexpected error occurred. Something may be wrong with WordPress.org or this server&#8217;s configuration. If you continue to have problems, please try the <a href="%s">support forums</a>.' ),
+								__( 'https://wordpress.org/support/forums/' )
+							);
+							?>
+						</p>
+					</div>
 					<ul class="themes">
 					</ul>
 					<p class="no-themes"><?php _e( 'No themes found. Try a different search.' ); ?></p>
 					<p class="no-themes-local">
 						<?php
 						printf(
-							/* translators: %s: "Search WordPress.org themes" button text */
+							/* translators: %s: "Search WordPress.org themes" button text. */
 							__( 'No themes found. Try a different search, or %s.' ),
 							sprintf( '<button type="button" class="button-link search-dotorg-themes">%s</button>', __( 'Search WordPress.org themes' ) )
 						);
@@ -122,7 +132,7 @@ class WP_Customize_Themes_Section extends WP_Customize_Section {
 			<button type="button" class="button feature-filter-toggle">
 				<span class="filter-count-0"><?php _e( 'Filter themes' ); ?></span><span class="filter-count-filters">
 				<?php
-				/* translators: %s: number of filters selected. */
+				/* translators: %s: Number of filters selected. */
 				printf( __( 'Filter themes (%s)' ), '<span class="theme-filter-count">0</span>' );
 				?>
 				</span>
@@ -138,7 +148,7 @@ class WP_Customize_Themes_Section extends WP_Customize_Section {
 		<div class="filter-themes-count">
 			<span class="themes-displayed">
 				<?php
-				/* translators: %s: number of themes displayed. */
+				/* translators: %s: Number of themes displayed. */
 				echo sprintf( __( '%s themes' ), '<span class="theme-count">0</span>' );
 				?>
 			</span>
