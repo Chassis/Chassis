@@ -499,7 +499,7 @@ Auto Updates
         extensions: true
         global_extensions: true
 
-Chassis will automatically check for updates to Chassis core, Chassis core submodules (Apt, MySQL and Stdlib), Chassis extensions and Chassis global extensions. You can stop one of more of the updates from triggering by changing the value(s) to ``false``.
+Chassis will automatically check for updates to Chassis core, Chassis core submodules (Apt, MySQL and Stdlib), Chassis extensions and Chassis global extensions. You can stop one or more of the updates from triggering by changing the value(s) to ``false``.
 
 To disable all the auto update, you can do the following:
 
