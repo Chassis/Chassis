@@ -43,7 +43,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 
 		// On some setups GD library does not provide imagerotate() - Ticket #11536
 		if ( isset( $args['methods'] ) &&
-			in_array( 'rotate', $args['methods'] ) &&
+			in_array( 'rotate', $args['methods'], true ) &&
 			! function_exists( 'imagerotate' ) ) {
 
 				return false;
@@ -178,9 +178,11 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 */
 	protected function _resize( $max_w, $max_h, $crop = false ) {
 		$dims = image_resize_dimensions( $this->size['width'], $this->size['height'], $max_w, $max_h, $crop );
+
 		if ( ! $dims ) {
 			return new WP_Error( 'error_getting_dimensions', __( 'Could not calculate resized image dimensions' ), $this->file );
 		}
+
 		list( $dst_x, $dst_y, $src_x, $src_y, $dst_w, $dst_h, $src_w, $src_h ) = $dims;
 
 		$resized = wp_imagecreatetruecolor( $dst_w, $dst_h );
@@ -195,16 +197,24 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	}
 
 	/**
-	 * Resize multiple images from a single source.
+	 * Create multiple smaller images from a single source.
+	 *
+	 * Attempts to create all sub-sizes and returns the meta data at the end. This
+	 * may result in the server running out of resources. When it fails there may be few
+	 * "orphaned" images left over as the meta data is never returned and saved.
+	 *
+	 * As of 5.3.0 the preferred way to do this is with `make_subsize()`. It creates
+	 * the new images one at a time and allows for the meta data to be saved after
+	 * each new image is created.
 	 *
 	 * @since 3.5.0
 	 *
 	 * @param array $sizes {
-	 *     An array of image size arrays. Default sizes are 'small', 'medium', 'medium_large', 'large'.
+	 *     An array of image size data arrays.
 	 *
 	 *     Either a height or width must be provided.
 	 *     If one of the two is set to null, the resize will
-	 *     maintain aspect ratio according to the provided dimension.
+	 *     maintain aspect ratio according to the source image.
 	 *
 	 *     @type array $size {
 	 *         Array of height, width values, and whether to crop.
@@ -217,43 +227,62 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 	 * @return array An array of resized images' metadata by size.
 	 */
 	public function multi_resize( $sizes ) {
-		$metadata  = array();
-		$orig_size = $this->size;
+		$metadata = array();
 
 		foreach ( $sizes as $size => $size_data ) {
-			if ( ! isset( $size_data['width'] ) && ! isset( $size_data['height'] ) ) {
-				continue;
+			$meta = $this->make_subsize( $size_data );
+
+			if ( ! is_wp_error( $meta ) ) {
+				$metadata[ $size ] = $meta;
 			}
-
-			if ( ! isset( $size_data['width'] ) ) {
-				$size_data['width'] = null;
-			}
-			if ( ! isset( $size_data['height'] ) ) {
-				$size_data['height'] = null;
-			}
-
-			if ( ! isset( $size_data['crop'] ) ) {
-				$size_data['crop'] = false;
-			}
-
-			$image     = $this->_resize( $size_data['width'], $size_data['height'], $size_data['crop'] );
-			$duplicate = ( ( $orig_size['width'] == $size_data['width'] ) && ( $orig_size['height'] == $size_data['height'] ) );
-
-			if ( ! is_wp_error( $image ) && ! $duplicate ) {
-				$resized = $this->_save( $image );
-
-				imagedestroy( $image );
-
-				if ( ! is_wp_error( $resized ) && $resized ) {
-					unset( $resized['path'] );
-					$metadata[ $size ] = $resized;
-				}
-			}
-
-			$this->size = $orig_size;
 		}
 
 		return $metadata;
+	}
+
+	/**
+	 * Create an image sub-size and return the image meta data value for it.
+	 *
+	 * @since 5.3.0
+	 *
+	 * @param array $size_data Array of width, height, and whether to crop.
+	 * @return WP_Error|array WP_Error on error, or the image data array for inclusion in the `sizes` array in the image meta.
+	 */
+	public function make_subsize( $size_data ) {
+		if ( ! isset( $size_data['width'] ) && ! isset( $size_data['height'] ) ) {
+			return new WP_Error( 'image_subsize_create_error', __( 'Cannot resize the image. Both width and height are not set.' ) );
+		}
+
+		$orig_size = $this->size;
+
+		if ( ! isset( $size_data['width'] ) ) {
+			$size_data['width'] = null;
+		}
+
+		if ( ! isset( $size_data['height'] ) ) {
+			$size_data['height'] = null;
+		}
+
+		if ( ! isset( $size_data['crop'] ) ) {
+			$size_data['crop'] = false;
+		}
+
+		$resized = $this->_resize( $size_data['width'], $size_data['height'], $size_data['crop'] );
+
+		if ( is_wp_error( $resized ) ) {
+			$saved = $resized;
+		} else {
+			$saved = $this->_save( $resized );
+			imagedestroy( $resized );
+		}
+
+		$this->size = $orig_size;
+
+		if ( ! is_wp_error( $saved ) ) {
+			unset( $saved['path'] );
+		}
+
+		return $saved;
 	}
 
 	/**
@@ -391,11 +420,11 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 			$filename = $this->generate_filename( null, null, $extension );
 		}
 
-		if ( 'image/gif' == $mime_type ) {
+		if ( 'image/gif' === $mime_type ) {
 			if ( ! $this->make_image( $filename, 'imagegif', array( $image, $filename ) ) ) {
 				return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed' ) );
 			}
-		} elseif ( 'image/png' == $mime_type ) {
+		} elseif ( 'image/png' === $mime_type ) {
 			// convert from full colors to index colors, like original PNG.
 			if ( function_exists( 'imageistruecolor' ) && ! imageistruecolor( $image ) ) {
 				imagetruecolortopalette( $image, false, imagecolorstotal( $image ) );
@@ -404,7 +433,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 			if ( ! $this->make_image( $filename, 'imagepng', array( $image, $filename ) ) ) {
 				return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed' ) );
 			}
-		} elseif ( 'image/jpeg' == $mime_type ) {
+		} elseif ( 'image/jpeg' === $mime_type ) {
 			if ( ! $this->make_image( $filename, 'imagejpeg', array( $image, $filename, $this->get_quality() ) ) ) {
 				return new WP_Error( 'image_save_error', __( 'Image Editor Save Failed' ) );
 			}
@@ -415,7 +444,7 @@ class WP_Image_Editor_GD extends WP_Image_Editor {
 		// Set correct file permissions
 		$stat  = stat( dirname( $filename ) );
 		$perms = $stat['mode'] & 0000666; //same permissions as parent folder, strip off the executable bits
-		@ chmod( $filename, $perms );
+		chmod( $filename, $perms );
 
 		/**
 		 * Filters the name of the saved image file.

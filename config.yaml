@@ -139,3 +139,14 @@ auto_update:
     submodules: true
     extensions: true
     global_extensions: true
+
+# Base box mode
+#
+# By default, we use a box built with the default settings. This speeds up
+# initial provisioning time and reduces disk usage by sharing the common
+# parts of the VM.
+#
+# Set this to `base` to build your own base box.
+
+# Values: normal, base
+_mode: normal

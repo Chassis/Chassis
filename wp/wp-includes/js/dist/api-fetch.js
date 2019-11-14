@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["apiFetch"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 369);
+/******/ 	return __webpack_require__(__webpack_require__.s = 353);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -94,7 +94,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["apiFetch"] =
 
 /***/ }),
 
-/***/ 15:
+/***/ 10:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -113,6 +113,14 @@ function _defineProperty(obj, key, value) {
 
   return obj;
 }
+
+/***/ }),
+
+/***/ 20:
+/***/ (function(module, exports, __webpack_require__) {
+
+module.exports = __webpack_require__(47);
+
 
 /***/ }),
 
@@ -160,22 +168,14 @@ function _objectWithoutProperties(source, excluded) {
 
 /***/ }),
 
-/***/ 23:
-/***/ (function(module, exports, __webpack_require__) {
-
-module.exports = __webpack_require__(54);
-
-
-/***/ }),
-
-/***/ 25:
+/***/ 26:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["url"]; }());
 
 /***/ }),
 
-/***/ 369:
+/***/ 353:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -186,9 +186,6 @@ var objectSpread = __webpack_require__(7);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js + 1 modules
 var objectWithoutProperties = __webpack_require__(21);
-
-// EXTERNAL MODULE: external {"this":["wp","i18n"]}
-var external_this_wp_i18n_ = __webpack_require__(1);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/api-fetch/build-module/middlewares/nonce.js
 
@@ -334,14 +331,14 @@ var createPreloadingMiddleware = function createPreloadingMiddleware(preloadedDa
 /* harmony default export */ var preloading = (createPreloadingMiddleware);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/regenerator/index.js
-var regenerator = __webpack_require__(23);
+var regenerator = __webpack_require__(20);
 var regenerator_default = /*#__PURE__*/__webpack_require__.n(regenerator);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/asyncToGenerator.js
-var asyncToGenerator = __webpack_require__(44);
+var asyncToGenerator = __webpack_require__(43);
 
 // EXTERNAL MODULE: external {"this":["wp","url"]}
-var external_this_wp_url_ = __webpack_require__(25);
+var external_this_wp_url_ = __webpack_require__(26);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/api-fetch/build-module/middlewares/fetch-all-middleware.js
 
@@ -366,7 +363,7 @@ var fetch_all_middleware_modifyQuery = function modifyQuery(_ref, queryArgs) {
 }; // Duplicates parsing functionality from apiFetch.
 
 
-var fetch_all_middleware_parseResponse = function parseResponse(response) {
+var parseResponse = function parseResponse(response) {
   return response.json ? response.json() : Promise.reject(response);
 };
 
@@ -435,7 +432,7 @@ function () {
           case 6:
             response = _context.sent;
             _context.next = 9;
-            return fetch_all_middleware_parseResponse(response);
+            return parseResponse(response);
 
           case 9:
             results = _context.sent;
@@ -479,7 +476,7 @@ function () {
           case 19:
             nextResponse = _context.sent;
             _context.next = 22;
-            return fetch_all_middleware_parseResponse(nextResponse);
+            return parseResponse(nextResponse);
 
           case 22:
             nextResults = _context.sent;
@@ -496,7 +493,7 @@ function () {
             return _context.stop();
         }
       }
-    }, _callee, this);
+    }, _callee);
   }));
 
   return function fetchAllMiddleware(_x, _x2) {
@@ -581,8 +578,84 @@ function userLocaleMiddleware(options, next) {
 
 /* harmony default export */ var user_locale = (userLocaleMiddleware);
 
-// CONCATENATED MODULE: ./node_modules/@wordpress/api-fetch/build-module/index.js
+// EXTERNAL MODULE: external {"this":["wp","i18n"]}
+var external_this_wp_i18n_ = __webpack_require__(1);
 
+// CONCATENATED MODULE: ./node_modules/@wordpress/api-fetch/build-module/utils/response.js
+/**
+ * WordPress dependencies
+ */
+
+/**
+ * Parses the apiFetch response.
+ *
+ * @param {Response} response
+ * @param {boolean}  shouldParseResponse
+ *
+ * @return {Promise} Parsed response
+ */
+
+var response_parseResponse = function parseResponse(response) {
+  var shouldParseResponse = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+  if (shouldParseResponse) {
+    if (response.status === 204) {
+      return null;
+    }
+
+    return response.json ? response.json() : Promise.reject(response);
+  }
+
+  return response;
+};
+
+var response_parseJsonAndNormalizeError = function parseJsonAndNormalizeError(response) {
+  var invalidJsonError = {
+    code: 'invalid_json',
+    message: Object(external_this_wp_i18n_["__"])('The response is not a valid JSON response.')
+  };
+
+  if (!response || !response.json) {
+    throw invalidJsonError;
+  }
+
+  return response.json().catch(function () {
+    throw invalidJsonError;
+  });
+};
+/**
+ * Parses the apiFetch response properly and normalize response errors.
+ *
+ * @param {Response} response
+ * @param {boolean}  shouldParseResponse
+ *
+ * @return {Promise} Parsed response.
+ */
+
+
+var parseResponseAndNormalizeError = function parseResponseAndNormalizeError(response) {
+  var shouldParseResponse = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+  return Promise.resolve(response_parseResponse(response, shouldParseResponse)).catch(function (res) {
+    return parseAndThrowError(res, shouldParseResponse);
+  });
+};
+function parseAndThrowError(response) {
+  var shouldParseResponse = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : true;
+
+  if (!shouldParseResponse) {
+    throw response;
+  }
+
+  return response_parseJsonAndNormalizeError(response).then(function (error) {
+    var unknownError = {
+      code: 'unknown_error',
+      message: Object(external_this_wp_i18n_["__"])('An unknown error occurred.')
+    };
+    throw error || unknownError;
+  });
+}
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/api-fetch/build-module/middlewares/media-upload.js
 
 
 /**
@@ -592,6 +665,83 @@ function userLocaleMiddleware(options, next) {
 /**
  * Internal dependencies
  */
+
+
+/**
+ * Middleware handling media upload failures and retries.
+ *
+ * @param {Object}   options Fetch options.
+ * @param {Function} next    [description]
+ *
+ * @return {*} The evaluated result of the remaining middleware chain.
+ */
+
+function mediaUploadMiddleware(options, next) {
+  var isMediaUploadRequest = options.path && options.path.indexOf('/wp/v2/media') !== -1 || options.url && options.url.indexOf('/wp/v2/media') !== -1;
+
+  if (!isMediaUploadRequest) {
+    return next(options, next);
+  }
+
+  var retries = 0;
+  var maxRetries = 5;
+
+  var postProcess = function postProcess(attachmentId) {
+    retries++;
+    return next({
+      path: "/wp/v2/media/".concat(attachmentId, "/post-process"),
+      method: 'POST',
+      data: {
+        action: 'create-image-subsizes'
+      },
+      parse: false
+    }).catch(function () {
+      if (retries < maxRetries) {
+        return postProcess(attachmentId);
+      }
+
+      next({
+        path: "/wp/v2/media/".concat(attachmentId, "?force=true"),
+        method: 'DELETE'
+      });
+      return Promise.reject();
+    });
+  };
+
+  return next(Object(objectSpread["a" /* default */])({}, options, {
+    parse: false
+  })).catch(function (response) {
+    var attachmentId = response.headers.get('x-wp-upload-attachment-id');
+
+    if (response.status >= 500 && response.status < 600 && attachmentId) {
+      return postProcess(attachmentId).catch(function () {
+        if (options.parse !== false) {
+          return Promise.reject({
+            code: 'post_process',
+            message: Object(external_this_wp_i18n_["__"])('Media upload failed. If this is a photo or a large image, please scale it down and try again.')
+          });
+        }
+
+        return Promise.reject(response);
+      });
+    }
+
+    return parseAndThrowError(response, options.parse);
+  }).then(function (response) {
+    return parseResponseAndNormalizeError(response, options.parse);
+  });
+}
+
+/* harmony default export */ var media_upload = (mediaUploadMiddleware);
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/api-fetch/build-module/index.js
+
+
+
+/**
+ * Internal dependencies
+ */
+
 
 
 
@@ -630,6 +780,14 @@ function registerMiddleware(middleware) {
   middlewares.unshift(middleware);
 }
 
+var checkStatus = function checkStatus(response) {
+  if (response.status >= 200 && response.status < 300) {
+    return response;
+  }
+
+  throw response;
+};
+
 var build_module_defaultFetchHandler = function defaultFetchHandler(nextOptions) {
   var url = nextOptions.url,
       path = nextOptions.path,
@@ -652,50 +810,10 @@ var build_module_defaultFetchHandler = function defaultFetchHandler(nextOptions)
     body: body,
     headers: headers
   }));
-
-  var checkStatus = function checkStatus(response) {
-    if (response.status >= 200 && response.status < 300) {
-      return response;
-    }
-
-    throw response;
-  };
-
-  var parseResponse = function parseResponse(response) {
-    if (parse) {
-      if (response.status === 204) {
-        return null;
-      }
-
-      return response.json ? response.json() : Promise.reject(response);
-    }
-
-    return response;
-  };
-
-  return responsePromise.then(checkStatus).then(parseResponse).catch(function (response) {
-    if (!parse) {
-      throw response;
-    }
-
-    var invalidJsonError = {
-      code: 'invalid_json',
-      message: Object(external_this_wp_i18n_["__"])('The response is not a valid JSON response.')
-    };
-
-    if (!response || !response.json) {
-      throw invalidJsonError;
-    }
-
-    return response.json().catch(function () {
-      throw invalidJsonError;
-    }).then(function (error) {
-      var unknownError = {
-        code: 'unknown_error',
-        message: Object(external_this_wp_i18n_["__"])('An unknown error occurred.')
-      };
-      throw error || unknownError;
-    });
+  return responsePromise.then(checkStatus).catch(function (response) {
+    return parseAndThrowError(response, parse);
+  }).then(function (response) {
+    return parseResponseAndNormalizeError(response, parse);
   });
 };
 
@@ -727,7 +845,21 @@ function apiFetch(options) {
     };
   };
 
-  return createRunStep(0)(options);
+  return new Promise(function (resolve, reject) {
+    createRunStep(0)(options).then(resolve).catch(function (error) {
+      if (error.code !== 'rest_cookie_invalid_nonce') {
+        return reject(error);
+      } // If the nonce is invalid, refresh it and try again.
+
+
+      window.fetch(apiFetch.nonceEndpoint).then(checkStatus).then(function (data) {
+        return data.text();
+      }).then(function (text) {
+        apiFetch.nonceMiddleware.nonce = text;
+        apiFetch(options).then(resolve).catch(reject);
+      }).catch(reject);
+    });
+  });
 }
 
 apiFetch.use = registerMiddleware;
@@ -736,12 +868,13 @@ apiFetch.createNonceMiddleware = middlewares_nonce;
 apiFetch.createPreloadingMiddleware = preloading;
 apiFetch.createRootURLMiddleware = root_url;
 apiFetch.fetchAllMiddleware = fetch_all_middleware;
+apiFetch.mediaUploadMiddleware = media_upload;
 /* harmony default export */ var build_module = __webpack_exports__["default"] = (apiFetch);
 
 
 /***/ }),
 
-/***/ 44:
+/***/ 43:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -784,7 +917,7 @@ function _asyncToGenerator(fn) {
 
 /***/ }),
 
-/***/ 54:
+/***/ 47:
 /***/ (function(module, exports, __webpack_require__) {
 
 /**
@@ -794,51 +927,7 @@ function _asyncToGenerator(fn) {
  * LICENSE file in the root directory of this source tree.
  */
 
-// This method of obtaining a reference to the global object needs to be
-// kept identical to the way it is obtained in runtime.js
-var g = (function() {
-  return this || (typeof self === "object" && self);
-})() || Function("return this")();
-
-// Use `getOwnPropertyNames` because not all browsers support calling
-// `hasOwnProperty` on the global `self` object in a worker. See #183.
-var hadRuntime = g.regeneratorRuntime &&
-  Object.getOwnPropertyNames(g).indexOf("regeneratorRuntime") >= 0;
-
-// Save the old regeneratorRuntime in case it needs to be restored later.
-var oldRuntime = hadRuntime && g.regeneratorRuntime;
-
-// Force reevalutation of runtime.js.
-g.regeneratorRuntime = undefined;
-
-module.exports = __webpack_require__(55);
-
-if (hadRuntime) {
-  // Restore the original runtime.
-  g.regeneratorRuntime = oldRuntime;
-} else {
-  // Remove the global property added by runtime.js.
-  try {
-    delete g.regeneratorRuntime;
-  } catch(e) {
-    g.regeneratorRuntime = undefined;
-  }
-}
-
-
-/***/ }),
-
-/***/ 55:
-/***/ (function(module, exports) {
-
-/**
- * Copyright (c) 2014-present, Facebook, Inc.
- *
- * This source code is licensed under the MIT license found in the
- * LICENSE file in the root directory of this source tree.
- */
-
-!(function(global) {
+var runtime = (function (exports) {
   "use strict";
 
   var Op = Object.prototype;
@@ -848,23 +937,6 @@ if (hadRuntime) {
   var iteratorSymbol = $Symbol.iterator || "@@iterator";
   var asyncIteratorSymbol = $Symbol.asyncIterator || "@@asyncIterator";
   var toStringTagSymbol = $Symbol.toStringTag || "@@toStringTag";
-
-  var inModule = typeof module === "object";
-  var runtime = global.regeneratorRuntime;
-  if (runtime) {
-    if (inModule) {
-      // If regeneratorRuntime is defined globally and we're in a module,
-      // make the exports object identical to regeneratorRuntime.
-      module.exports = runtime;
-    }
-    // Don't bother evaluating the rest of this file if the runtime was
-    // already defined globally.
-    return;
-  }
-
-  // Define the runtime globally (as expected by generated code) as either
-  // module.exports (if we're in a module) or a new, empty object.
-  runtime = global.regeneratorRuntime = inModule ? module.exports : {};
 
   function wrap(innerFn, outerFn, self, tryLocsList) {
     // If outerFn provided and outerFn.prototype is a Generator, then outerFn.prototype instanceof Generator.
@@ -878,7 +950,7 @@ if (hadRuntime) {
 
     return generator;
   }
-  runtime.wrap = wrap;
+  exports.wrap = wrap;
 
   // Try/catch helper to minimize deoptimizations. Returns a completion
   // record like context.tryEntries[i].completion. This interface could
@@ -949,7 +1021,7 @@ if (hadRuntime) {
     });
   }
 
-  runtime.isGeneratorFunction = function(genFun) {
+  exports.isGeneratorFunction = function(genFun) {
     var ctor = typeof genFun === "function" && genFun.constructor;
     return ctor
       ? ctor === GeneratorFunction ||
@@ -959,7 +1031,7 @@ if (hadRuntime) {
       : false;
   };
 
-  runtime.mark = function(genFun) {
+  exports.mark = function(genFun) {
     if (Object.setPrototypeOf) {
       Object.setPrototypeOf(genFun, GeneratorFunctionPrototype);
     } else {
@@ -976,7 +1048,7 @@ if (hadRuntime) {
   // `yield regeneratorRuntime.awrap(x)`, so that the runtime can test
   // `hasOwn.call(value, "__await")` to determine if the yielded value is
   // meant to be awaited.
-  runtime.awrap = function(arg) {
+  exports.awrap = function(arg) {
     return { __await: arg };
   };
 
@@ -1051,17 +1123,17 @@ if (hadRuntime) {
   AsyncIterator.prototype[asyncIteratorSymbol] = function () {
     return this;
   };
-  runtime.AsyncIterator = AsyncIterator;
+  exports.AsyncIterator = AsyncIterator;
 
   // Note that simple async functions are implemented on top of
   // AsyncIterator objects; they just return a Promise for the value of
   // the final result produced by the iterator.
-  runtime.async = function(innerFn, outerFn, self, tryLocsList) {
+  exports.async = function(innerFn, outerFn, self, tryLocsList) {
     var iter = new AsyncIterator(
       wrap(innerFn, outerFn, self, tryLocsList)
     );
 
-    return runtime.isGeneratorFunction(outerFn)
+    return exports.isGeneratorFunction(outerFn)
       ? iter // If outerFn is a generator, return the full iterator.
       : iter.next().then(function(result) {
           return result.done ? result.value : iter.next();
@@ -1158,7 +1230,8 @@ if (hadRuntime) {
       context.delegate = null;
 
       if (context.method === "throw") {
-        if (delegate.iterator.return) {
+        // Note: ["return"] must be used for ES3 parsing compatibility.
+        if (delegate.iterator["return"]) {
           // If the delegate iterator has a return method, give it a
           // chance to clean up.
           context.method = "return";
@@ -1278,7 +1351,7 @@ if (hadRuntime) {
     this.reset(true);
   }
 
-  runtime.keys = function(object) {
+  exports.keys = function(object) {
     var keys = [];
     for (var key in object) {
       keys.push(key);
@@ -1339,7 +1412,7 @@ if (hadRuntime) {
     // Return an iterator with no values.
     return { next: doneResult };
   }
-  runtime.values = values;
+  exports.values = values;
 
   function doneResult() {
     return { value: undefined, done: true };
@@ -1544,14 +1617,35 @@ if (hadRuntime) {
       return ContinueSentinel;
     }
   };
-})(
-  // In sloppy mode, unbound `this` refers to the global object, fallback to
-  // Function constructor if we're in global strict mode. That is sadly a form
-  // of indirect eval which violates Content Security Policy.
-  (function() {
-    return this || (typeof self === "object" && self);
-  })() || Function("return this")()
-);
+
+  // Regardless of whether this script is executing as a CommonJS module
+  // or not, return the runtime object so that we can declare the variable
+  // regeneratorRuntime in the outer scope, which allows this module to be
+  // injected easily by `bin/regenerator --include-runtime script.js`.
+  return exports;
+
+}(
+  // If this script is executing as a CommonJS module, use module.exports
+  // as the regeneratorRuntime namespace. Otherwise create a new empty
+  // object. Either way, the resulting object will be used to initialize
+  // the regeneratorRuntime variable at the top of this file.
+   true ? module.exports : undefined
+));
+
+try {
+  regeneratorRuntime = runtime;
+} catch (accidentalStrictMode) {
+  // This module should not be running in strict mode, so the above
+  // assignment should always work unless something is misconfigured. Just
+  // in case runtime.js accidentally runs in strict mode, we can escape
+  // strict mode using a global Function call. This could conceivably fail
+  // if a Content Security Policy forbids using Function, but in that case
+  // the proper solution is to fix the accidental strict mode problem. If
+  // you've misconfigured your bundler to force strict mode and applied a
+  // CSP to forbid Function, and you're not willing to fix either of those
+  // problems, please detail your unique predicament in a GitHub issue.
+  Function("r", "regeneratorRuntime = r")(runtime);
+}
 
 
 /***/ }),
@@ -1561,7 +1655,7 @@ if (hadRuntime) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectSpread; });
-/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(15);
+/* harmony import */ var _defineProperty__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(10);
 
 function _objectSpread(target) {
   for (var i = 1; i < arguments.length; i++) {

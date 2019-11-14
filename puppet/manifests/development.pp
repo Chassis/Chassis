@@ -18,7 +18,6 @@ if $loadable_extensions {
 		config => $config,
 	}
 }
-
 include apt
 
 class { 'chassis::php':
@@ -27,7 +26,7 @@ class { 'chassis::php':
 	upload_size => $config[upload_size],
 	require => [
 		Class['apt'],
-	],
+	]
 }
 
 package { 'git-core':

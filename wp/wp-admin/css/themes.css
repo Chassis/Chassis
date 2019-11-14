@@ -34,9 +34,7 @@ body.js .theme-browser.search-loading {
 	left: 20px;
 	margin: 0;
 	width: 280px;
-	font-size: 16px;
-	font-weight: 300;
-	line-height: 1.5;
+	font-size: inherit;
 }
 
 /* Position admin messages */
@@ -826,7 +824,7 @@ body.folded .theme-browser ~ .theme-overlay .theme-wrap {
 }
 
 /* Admin menu is folded */
-@media only screen and (max-width: 900px) {
+@media only screen and (max-width: 960px) {
 	.theme-overlay .theme-wrap {
 		left: 65px;
 	}
@@ -1048,7 +1046,7 @@ body.folded .theme-browser ~ .theme-overlay .theme-wrap {
 .upload-theme .wp-upload-form,
 .upload-plugin .wp-upload-form {
 	background: #fafafa;
-	border: 1px solid #e5e5e5;
+	border: 1px solid #ccd0d4;
 	padding: 30px;
 	margin: 30px auto;
 	max-width: 380px;
@@ -1416,7 +1414,6 @@ body.full-overlay-active {
 	float: left;
 	width: 45px;
 	height: 45px;
-	padding-right: 2px;
 	background: #eee;
 	border-right: 1px solid #ddd;
 	color: #444;
