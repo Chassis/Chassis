@@ -17,7 +17,7 @@ if [ ! $VM_STATUS ]; then
 fi
 
 # Delete the chassis-provisioned and any custom config files as we don't want that in the base box.
-/usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
+/usr/local/bin/vagrant ssh -- -t 'sudo apt-get update; sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
 
 echo "\033[0;32mAny custom .yaml files have now been deleted.\033[0m"
 
