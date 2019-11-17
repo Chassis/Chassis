@@ -22,11 +22,8 @@ module Chassis
 		end
 	end
 
-	def self.get_global_extension_config(extension, global_ext_dir = @@global_ext_dir)
-		# Use cache if we can.
-		return @@global_extension_config[extension] if @@global_extension_config.key?(extension)
-
-		path = File.join(extension, 'chassis.yaml')
+	def self.get_global_extension_config()
+		path = File.join(Dir.home, '.chassis/extensions/config.yaml')
 		begin
 			YAML.load_file(path)
 		rescue Errno::ENOENT
@@ -40,6 +37,8 @@ module Chassis
 
 		# Remove dummy _global if found
 		all.delete("_global")
+		# Remove global config
+		all.delete("config.yaml")
 
 		return all if ! version
 
@@ -50,12 +49,12 @@ module Chassis
 	end
 
 	def self.get_global_extensions_for_dir(version = nil)
-		all = Dir.glob(@@global_ext_dir + '/*')
-		return all if ! version
+		global = self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
 
-		all.select { |extension|
-			config = get_global_extension_config(extension, @@global_ext_dir)
-			config['version'] == version
+		# Remove extensions which are installed locally
+		regular = self.get_extensions(version)
+		global.reject { |item|
+			regular.include?( item )
 		}
 	end
 
@@ -130,12 +129,9 @@ module Chassis
 
 	def self.load_global_extension_config()
 		global_ext_config = {}
-		# For each of the extensions in our folder, read the extension config for that extension.
-		self.get_global_extensions(2).each do |extension|
-			global_ext_config.merge!(self.get_global_extension_config(extension))
-			# Remove the extension version so we don't override the version number for Chassis core.
-			global_ext_config.delete('version')
-		end
+		global_ext_config.merge!(self.get_global_extension_config())
+		# Remove the extension version so we don't override the version number for Chassis core.
+		global_ext_config.delete('version')
 		return global_ext_config
 	end
 
