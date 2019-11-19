@@ -107,7 +107,7 @@ Vagrant.configure("2") do |config|
 		config.vm.box = "chassis/chassis"
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-18.04"
+		config.vm.box = "bento/ubuntu-16.04"
 	end
 
 	# Enable SSH forwarding
@@ -146,8 +146,12 @@ Vagrant.configure("2") do |config|
 		# Set up the module paths
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
 		# Set up the global extension paths
-		global_ext_modules.map! { |rel_path| "/vagrant/extensions/_global/" + rel_path }
-		extensions = module_paths + global_ext_modules
+		if ( global_ext_modules )
+			global_ext_modules.map! { |rel_path| "/vagrant/extensions/_global/" + rel_path }
+			extensions = module_paths + global_ext_modules
+		else
+			extensions = module_paths
+		end
 		shell.args.push("--basemodulepath /vagrant/puppet/modules:" +  extensions.join( ':' ).inspect)
 
 		# Set up the full environment
