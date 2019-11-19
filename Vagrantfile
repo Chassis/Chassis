@@ -107,7 +107,7 @@ Vagrant.configure("2") do |config|
 		config.vm.box = "chassis/chassis"
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-16.04"
+		config.vm.box = "bento/ubuntu-18.04"
 	end
 
 	# Enable SSH forwarding
