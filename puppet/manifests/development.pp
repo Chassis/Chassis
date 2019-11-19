@@ -18,12 +18,7 @@ if $loadable_extensions {
 		config => $config,
 	}
 }
-
-class { 'apt':
-	update => {
-		frequency => 'weekly',
-	},
-}
+include apt
 
 class { 'chassis::php':
 	extensions  => $php_extensions,
