@@ -29,8 +29,40 @@ Changing your Chassis box is a quick two-step process:
 ``vagrant provision`` tells Vagrant to update the box with your new settings,
 and should take care of updating everything internally.
 
+-------------
+Base Box Mode
+-------------
+By default, we use a box built with the default settings. This speeds up
+initial provisioning time and reduces disk usage by sharing the common parts
+of the VM.
+
+The ``normal`` box will use the Chassis box that we've built and uploaded to
+Vagrant Cloud which uses PHP 7.3.
+
+To create a customised base box for your project you could have create a `config.local.yaml` file as follows::
+
+    hosts:
+        - client.local
+
+    # PHP version
+    php: 7.2
+
+    # Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
+    upload_size: 512M
+
+    # Values: normal, base
+    _mode: base
+
+    extensions:
+        - chassis/mailhog
+        - chassis/xdebug
+        - chassis/tester
+        - chassis/sequelpro
+
 wp-config.php
 -------------
+
+.. py:data:: wp-config.php
 
 WordPress developers will often require customisation of optional constants that are defined in ``wp-config.php``.
 
@@ -40,11 +72,11 @@ contain custom constants and overrides for WordPress.
 If ``local-config.php`` exists it will be loaded before ``wp-config.php`` so any constants that you define in
 ``local-config.php`` will be the defaults.
 
-
+-----------
 PHP Version
 -----------
 
-**Key**: ``php``
+.. py:data:: php
 
 PHP 7.2 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
@@ -60,10 +92,11 @@ You can use either a two-part version (``5.6``) or a three-part version
 (``5.6.1``) if you want to pick specifc versions. We support any version between
 5.6.0 and 7.3.x.
 
+--------------------
 PHP File Upload Size
 --------------------
 
-**Key**: ``upload_size``
+.. py:data:: upload_size
 
 A file upload size of 1024M is included with Chassis by default. This sets
 ``post_max_size`` and ``upload_max_filesize`` in ``php.ini`` and sets
@@ -78,12 +111,13 @@ To switch to 100M for example:
 
 .. _Chassis Phpini: https://github.com/Chassis/phpini
 
+-------------------
 WordPress Directory
 -------------------
 
-**Note**: Deprecated; use ``paths.wp`` instead.
+.. py:data:: wpdir
 
-**Key**: ``wpdir``
+**Note**: Deprecated; use ``paths.wp`` instead.
 
 Chassis also includes the latest-released version of WordPress by default, but
 we also allow swapping this out completely for users who want the flexibility.
@@ -112,10 +146,11 @@ any of these steps if you don't need to.
      bash puppet/update-wp.sh 4.2.1
 
 
+---------
 Multisite
 ---------
 
-**Key**: ``multisite``
+.. py:data:: multisite
 
 Chassis includes built-in support for WordPress multisite, with both
 subdirectories and subdomains. This is turned off by default, but can be turned
@@ -124,7 +159,6 @@ on easily.
 * For multisite in subdirectories, set ``multisite: Yes``
 * For multisite on subdomains, set ``multisite: subdomains``
 
-Then just reprovision.
 
 When multisite is turned on, Chassis will set up WordPress in "subdirectory"
 mode; that is, sites will be created under the root, but using the same domain.
@@ -133,9 +167,22 @@ A site called "test" would be created at ``/test/``, for example.
 Subdirectory mode is great, but subdomain mode is even better. With subdomains,
 a site called "test" would be available at ``test.vagrant.local``. This is one of
 the most common ways that multisite is set up, since it also means you're
-separating your sites more cleanly. Simply set the value to ``subdomains`` and
-reprovision. Once this is done, subdomains will work automatically in your
+separating your sites more cleanly.
+
+
+If you're using ``subdomains`` then add your subdomains you'd like to use to a yaml file. e.g. ::
+
+   hosts:
+     - vagrant.local
+     - wat.vagrant.local
+     - moo.vagrant.local
+
+Then run ``vagrant provision``. Once this is done, subdomains will work automatically in your
 browser. Create and remove sites at will, and Chassis will ensure it just works.
+
+Each time you add a new subdomain you will need to add the subdomain to your yaml file and run `vagrant provision`.
+
+These subdomains will be added to ``/lib/systemd/system/chassis-hosts.service``
 
 .. note::
    Changing from multisite back to single site requires creating the box from
@@ -145,11 +192,11 @@ browser. Create and remove sites at will, and Chassis will ensure it just works.
    This will wipe your database, so make sure you export any sites' content that
    you need (via the WordPress exporter).
 
-
+-------------
 Default Admin
 -------------
 
-**Key**: ``admin``
+.. py:data:: admin
 
 When you first set up your site, Chassis will install WordPress and create the
 default admin user for you. By default, this user is set up as `admin` with the
@@ -173,11 +220,11 @@ values, like so::
    Note also that the indentation must be done with **spaces, not tabs** in
    YAML configuration.
 
-
+----------------------
 Database Configuration
 ----------------------
 
-**Key**: ``database``
+.. py:data:: database
 
 Similar to the admin user configuration, you can also override the default MySQL
 username and password::
@@ -189,11 +236,11 @@ username and password::
 
 (Again, don't forget to include all lines, and use spaces for indentation.)
 
-
+-----------------
 Custom Host Names
 -----------------
 
-**Key**: ``hosts``
+.. py:data:: hosts
 
 By default, Chassis will set up ``vagrant.local`` as your main domain. If you'd
 like to change this, you can override the ``hosts`` configuration item. Note
@@ -218,10 +265,11 @@ be redirected by WordPress depending on your configuration or plugins.
 
 .. _config-ip:
 
+----------
 IP Address
 ----------
 
-**Key**: ``ip``
+.. py:data:: ip
 
 Chassis picks an IP address for your box automatically, using DHCP. If you'd
 prefer a static IP, you can specify this here with ``ip: 192.168.1.114``
@@ -229,11 +277,11 @@ prefer a static IP, you can specify this here with ``ip: 192.168.1.114``
 (Typically, this should be in the private routing range; either ``192.168.x.x``
 or ``10.x.x.x``)
 
-
+----------
 APT Mirror
 ----------
 
-**Key**: ``apt_mirror``
+.. py:data:: apt_mirror
 
 To speed up package installation, Chassis can tell Ubuntu to use the closest
 mirror to you, rather than the main mirror (``ubuntu.com``). This typically
@@ -249,11 +297,11 @@ instead, such as:
 
    apt_mirror: http://mirror.optus.net/ubuntu/
 
-
+--------------
 Synced Folders
 --------------
 
-**Key**: ``synced_folders``
+.. py:data:: synced_folders
 
 By default Chassis syncs the ``php`` and ``nginx`` logs for you onto your local machine in the ``logs`` folder.
 
@@ -268,10 +316,11 @@ into the generated VM like so:
      a/host/directory: a/vm/directory
      "this:ones:got:colons": another/vm/directory
 
+---
 NFS
-~~~
+---
 
-**Key**: ``nfs``
+.. py:data:: nfs
 
 Under the hood, Vagrant uses the default synced folders implementation for your system.
 In certain cases and uses, this might be too slow for everyday usage.
@@ -286,10 +335,11 @@ If you're experiencing permissions errors, try installing this before anything e
 
 .. _vagrant-bindfs: https://github.com/gael-ian/vagrant-bindfs
 
+-----
 Paths
 -----
 
-**Key**: ``paths``
+.. py:data:: paths
 
 If you're transplanting Chassis into an existing project, you can manually set some paths.
 These can be set to absolute paths, or relative paths.
@@ -319,10 +369,11 @@ There is a workaround for that, which is to use the ``VAGRANT_CWD`` variable, eg
 .. note::
    When you change the ``paths`` configuration you will need to run ``vagrant provision`` for the changes to be applied.
 
+-------
 Plugins
 -------
 
-**Key**: ``plugins``
+.. py:data:: plugins
 
 If you're using plugins from the WordPress.org repository you can add them in a list using the plugins slug.
 These will be downloaded, installed and activated for you.
@@ -338,10 +389,11 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
       - user-switching
       - https://github.com/humanmade/S3-Uploads/archive/master.zip
 
+------
 Themes
 ------
 
-**Key**: ``themes``
+.. py:data:: themes
 
 If you're using themes from the WordPress.org repository you can add them in a list using the themes slug.
 These will be downloaded for you. The last theme in the list will be the theme that is activated for your site.
@@ -360,10 +412,11 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
 
 .. _extension-format-ref:
 
+----------
 Site Title
 ----------
 
-**Key**: ``site``
+.. py:data:: site
 
 You can customize the title Chassis uses when installing your local WordPress site.
 
@@ -372,10 +425,11 @@ You can customize the title Chassis uses when installing your local WordPress si
    site:
       name: My Local WordPress Site
 
+----------
 Extensions
 ----------
 
-**Key**: ``extensions``
+.. py:data:: extensions
 
 You can enable official Chassis extensions and third party extensions by listing their repo name in the ``extensions`` section:
 
@@ -401,16 +455,17 @@ To remove an extension simply add new section to one of your `.yaml` configurati
    disabled_extensions:
       - chassis/mailhog
 
-
+----------------------
 Machine Customisations
 ----------------------
 
 The underlying virtual machine managed by Vagrant can be customised, but depends on which provider you are using.
 
+----------
 VirtualBox
-~~~~~~~~~~
+----------
 
-**Key**: ``virtualbox``
+.. py:data:: virtualbox
 
 When using VirtualBox, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the VirtualBox defaults (1024 MB of RAM, and 2 vCPUs).
 
@@ -420,7 +475,7 @@ When using VirtualBox, you can customise how much memory (in megabytes) and how 
       memory: null
       cpus: null
 
-**Key**: ``machine_name``
+.. py:data:: machine_name
 
 By default the machine name is "default". This can make it difficult to distinguish between virtual machines in the VirtualBox GUI or when listing VMs on the command line. Overriding the machine name makes it easier to tell which one is which.
 

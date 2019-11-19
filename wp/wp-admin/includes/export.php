@@ -25,7 +25,7 @@ define( 'WXR_VERSION', '1.2' );
  * @since 2.1.0
  *
  * @global wpdb    $wpdb WordPress database abstraction object.
- * @global WP_Post $post Global `$post`.
+ * @global WP_Post $post Global post object.
  *
  * @param array $args {
  *     Optional. Arguments for generating the WXR export file for download. Default empty array.
@@ -79,7 +79,7 @@ function export_wp( $args = array() ) {
 	if ( ! empty( $sitename ) ) {
 		$sitename .= '.';
 	}
-	$date        = date( 'Y-m-d' );
+	$date        = gmdate( 'Y-m-d' );
 	$wp_filename = $sitename . 'WordPress.' . $date . '.xml';
 	/**
 	 * Filters the export filename.
@@ -106,7 +106,9 @@ function export_wp( $args = array() ) {
 	} else {
 		$post_types = get_post_types( array( 'can_export' => true ) );
 		$esses      = array_fill( 0, count( $post_types ), '%s' );
-		$where      = $wpdb->prepare( "{$wpdb->posts}.post_type IN (" . implode( ',', $esses ) . ')', $post_types );
+
+		// phpcs:ignore WordPress.DB.PreparedSQLPlaceholders.UnfinishedPrepare
+		$where = $wpdb->prepare( "{$wpdb->posts}.post_type IN (" . implode( ',', $esses ) . ')', $post_types );
 	}
 
 	if ( $args['status'] && ( 'post' == $args['content'] || 'page' == $args['content'] ) ) {
@@ -117,7 +119,8 @@ function export_wp( $args = array() ) {
 
 	$join = '';
 	if ( $args['category'] && 'post' == $args['content'] ) {
-		if ( $term = term_exists( $args['category'], 'category' ) ) {
+		$term = term_exists( $args['category'], 'category' );
+		if ( $term ) {
 			$join   = "INNER JOIN {$wpdb->term_relationships} ON ({$wpdb->posts}.ID = {$wpdb->term_relationships}.object_id)";
 			$where .= $wpdb->prepare( " AND {$wpdb->term_relationships}.term_taxonomy_id = %d", $term['term_taxonomy_id'] );
 		}
@@ -129,11 +132,11 @@ function export_wp( $args = array() ) {
 		}
 
 		if ( $args['start_date'] ) {
-			$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_date >= %s", date( 'Y-m-d', strtotime( $args['start_date'] ) ) );
+			$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_date >= %s", gmdate( 'Y-m-d', strtotime( $args['start_date'] ) ) );
 		}
 
 		if ( $args['end_date'] ) {
-			$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_date < %s", date( 'Y-m-d', strtotime( '+1 month', strtotime( $args['end_date'] ) ) ) );
+			$where .= $wpdb->prepare( " AND {$wpdb->posts}.post_date < %s", gmdate( 'Y-m-d', strtotime( '+1 month', strtotime( $args['end_date'] ) ) ) );
 		}
 	}
 
@@ -144,7 +147,9 @@ function export_wp( $args = array() ) {
 	 * Get the requested terms ready, empty unless posts filtered by category
 	 * or all content.
 	 */
-	$cats = $tags = $terms = array();
+	$cats  = array();
+	$tags  = array();
+	$terms = array();
 	if ( isset( $term ) && $term ) {
 		$cat  = get_term( $term['term_id'], 'category' );
 		$cats = array( $cat->term_id => $cat );
@@ -154,7 +159,12 @@ function export_wp( $args = array() ) {
 		$tags       = (array) get_tags( array( 'get' => 'all' ) );
 
 		$custom_taxonomies = get_taxonomies( array( '_builtin' => false ) );
-		$custom_terms      = (array) get_terms( $custom_taxonomies, array( 'get' => 'all' ) );
+		$custom_terms      = (array) get_terms(
+			array(
+				'taxonomy' => $custom_taxonomies,
+				'get'      => 'all',
+			)
+		);
 
 		// Put categories in order with no child going before its parent.
 		while ( $cat = array_shift( $categories ) ) {
@@ -458,7 +468,7 @@ function export_wp( $args = array() ) {
 	<title><?php bloginfo_rss( 'name' ); ?></title>
 	<link><?php bloginfo_rss( 'url' ); ?></link>
 	<description><?php bloginfo_rss( 'description' ); ?></description>
-	<pubDate><?php echo date( 'D, d M Y H:i:s +0000' ); ?></pubDate>
+	<pubDate><?php echo gmdate( 'D, d M Y H:i:s +0000' ); ?></pubDate>
 	<language><?php bloginfo_rss( 'language' ); ?></language>
 	<wp:wxr_version><?php echo WXR_VERSION; ?></wp:wxr_version>
 	<wp:base_site_url><?php echo wxr_site_url(); ?></wp:base_site_url>
@@ -515,7 +525,7 @@ function export_wp( $args = array() ) {
 	<?php
 	if ( $post_ids ) {
 		/**
-		 * @global WP_Query $wp_query
+		 * @global WP_Query $wp_query WordPress Query object.
 		 */
 		global $wp_query;
 

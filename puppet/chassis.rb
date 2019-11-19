@@ -5,7 +5,9 @@ require "open3"
 module Chassis
 	@@dir = File.dirname(File.dirname(__FILE__))
 	@@extension_dir = File.join(@@dir, 'extensions')
+	@@global_ext_dir = File.join(Dir.home, ".chassis", "extensions")
 	@@extension_config = {}
+	@@global_extension_config = {}
 
 	def self.get_extension_config(extension, base_dir = @@extension_dir)
 		# Use cache if we can.
@@ -13,6 +15,19 @@ module Chassis
 
 		path = File.join(base_dir, extension, 'chassis.yaml')
 
+		begin
+			YAML.load_file(path)
+		rescue Errno::ENOENT
+			# No configuration, legacy.
+			{ "version" => 1 }
+		end
+	end
+
+	def self.get_global_extension_config(extension, global_ext_dir = @@global_ext_dir)
+		# Use cache if we can.
+		return @@global_extension_config[extension] if @@global_extension_config.key?(extension)
+
+		path = File.join(extension, 'chassis.yaml')
 		begin
 			YAML.load_file(path)
 		rescue Errno::ENOENT
@@ -35,23 +50,39 @@ module Chassis
 		}
 	end
 
+	def self.get_global_extensions_for_dir(version = nil)
+		all = Dir.glob(@@global_ext_dir + '/*')
+		return all if ! version
+
+		all.select { |extension|
+			config = get_global_extension_config(extension, @@global_ext_dir)
+			config['version'] == version
+		}
+	end
+
 	def self.get_extensions(version = nil)
 		self.get_extensions_for_dir(@@extension_dir, version)
 	end
 
 	def self.get_global_extensions(version = nil)
-		global = self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
-
-		# Remove extensions which are installed locally
-		regular = self.get_extensions(version)
-		global.reject { |item|
-			regular.include?( item )
-		}
+		self.get_global_extensions_for_dir(version)
 	end
 
 	def self.load_config()
+		# Get the extension configurations.
+		ext_config = self.load_extension_config()
+		global_ext_config = self.load_global_extension_config()
+		# Merge the hashes together.
+		extension_vars = ext_config.merge(global_ext_config)
+
 		# Load git-managed configuration
-		_config = YAML.load_file(File.join(@@dir, "config.yaml"))
+		git_config = YAML.load_file(File.join(@@dir, "config.yaml"))
+
+		# Merge the extension config with the git config.
+		if git_config.is_a?(Hash)
+			merged_config = extension_vars.merge!(git_config)
+		end
+
 		has_custom_prefix = false
 
 		# Load other configuration files
@@ -62,8 +93,9 @@ module Chassis
 			begin
 				confvars = YAML.load_file(path)
 
+				# Merge the overrides from the other configuration files.
 				if confvars.is_a?(Hash)
-					_config.merge!(confvars)
+					merged_config.merge!(confvars)
 
 					# Check for prefix.
 					has_custom_prefix = true if confvars.has_key? "database" and confvars["database"].has_key? "prefix"
@@ -77,13 +109,35 @@ module Chassis
 			end
 		end
 
-		unless _config["database"].has_key? "prefix"
+		unless merged_config["database"].has_key? "prefix"
 			puts "ERROR: database.prefix is required as of 2016-11-25 but was not found."
 			raise "Could not load Chassis configuration"
 		end
 
-		_config["database"]["has_custom_prefix"] = has_custom_prefix
-		return _config
+		merged_config["database"]["has_custom_prefix"] = has_custom_prefix
+		return merged_config
+	end
+
+	def self.load_extension_config()
+		ext_config = {}
+		# For each of the extensions in our folder, read the extension config for that extension.
+		self.get_extensions(2).each do |extension|
+			ext_config.merge!(self.get_extension_config(extension))
+			# Remove the extension version so we don't override the version number for Chassis core.
+			ext_config.delete('version')
+		end
+		return ext_config
+	end
+
+	def self.load_global_extension_config()
+		global_ext_config = {}
+		# For each of the extensions in our folder, read the extension config for that extension.
+		self.get_global_extensions(2).each do |extension|
+			global_ext_config.merge!(self.get_global_extension_config(extension))
+			# Remove the extension version so we don't override the version number for Chassis core.
+			global_ext_config.delete('version')
+		end
+		return global_ext_config
 	end
 
 	def self.normalize_config(config)
@@ -146,6 +200,13 @@ module Chassis
 		config["php"] = config["php"].to_s
 		config["machine_name"] = config["machine_name"].to_s
 		config["upload_size"] = config["upload_size"].to_s
+		# Lowercase the extension configurations.
+		if config["disabled_extensions"]
+			config["disabled_extensions"].map!(&:downcase)
+		end
+		if config["extensions"]
+			config["extensions"].map!(&:downcase)
+		end
 
 		return config
 	end
@@ -159,16 +220,20 @@ module Chassis
 		if config["extensions"]
 			config["extensions"].each { |ext| self.install_extension(ext) }
 		end
+	end
 
-		# For each of the extensions in our folder, read the extension config and
-		# install dependencies, etc for that extension.
-		self.get_extensions(2).each do |extension|
-			ext_config = self.get_extension_config(extension)
+	def self.install_dependencies(extension)
+		# Install dependencies from extension config
+		ext_name = extension.split('/').last.gsub(/\.git$/, '').downcase
+		ext_config = self.get_extension_config(ext_name)
 
-			# If we have dependencies, then install them.
-			if ext_config["dependencies"]
-				ext_config["dependencies"].each { |ext| self.install_extension(ext) }
-			end
+		# If we have dependencies, then install them.
+		if ext_config["dependencies"]
+			ext_config["dependencies"].each { |dep|
+				dep_name = dep.split('/').last.gsub(/\.git$/, '').downcase
+				next if File.exist?( @@dir + '/extensions/' + dep_name )
+				self.install_extension(dep)
+			}
 		end
 	end
 
@@ -188,8 +253,8 @@ module Chassis
 			# Check for existing extensions that have a hyphen and remove them.
 			old_extensions = Dir.glob(@@dir + '/extensions/*')
 			old_extensions.each { |extension|
-			# Remove @@dir before "-" include check in case of hyphenated parent directories.
-			next unless extension.gsub(@@dir, '').include? "-"
+				# Remove @@dir before "-" include check in case of hyphenated parent directories.
+				next unless extension.gsub(@@dir, '').include? "-"
 				# Delete the old extension if it has a hyphen in it.
 				FileUtils.remove_dir(extension)
 				# Swap "-" for "_" in the non-parent-directory part of the path.
@@ -212,6 +277,9 @@ module Chassis
 		end
 
 		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
+
+		# Install dependencies for this extension.
+		self.install_dependencies(extension)
 	end
 
 	def self.make_relative(base, paths)

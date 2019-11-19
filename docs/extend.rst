@@ -151,6 +151,9 @@ Extensions may also specify the following options:
 - ``dependencies``: Extensions that the extension depends on. List of strings,
   where each string is an extension name (see :ref:`extension-format-ref`).
 
+- You can also add custom configuration variables to your extension configuration and use them in your extension. e.g.::
+
+	your_variable: your_value
 
 Puppet Class
 ~~~~~~~~~~~~
@@ -159,6 +162,10 @@ To integrate into Chassis' provisioning, Chassis loads a class with the same
 name as your extension. This class must be defined in
 ``extensions/{name}/modules/{name}/manifests/init.pp``, and the name of the
 class must match the extension's directory name.
+
+.. note::
+   You can't use hyphens in your extension name as Puppet interpolates those as minus signs. Please use underscores as
+   this will ensure your extension will work in future versions of Puppet and Chassis.
 
 This class receives a single hash parameter of ``$config``, which contains the
 Chassis configuration specified in the ``config.yaml`` files.

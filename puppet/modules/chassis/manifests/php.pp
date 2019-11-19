@@ -12,7 +12,10 @@ class chassis::php (
 	}
 
 	apt::ppa { 'ppa:ondrej/php':
-		require => [ Package[ $::apt::ppa_package ] ],
+		require => [
+			Package[ $::apt::ppa_package ],
+			Class['apt'],
+		],
 	}
 
 	if $version =~ /^(\d+)\.(\d+)$/ {
@@ -62,11 +65,11 @@ class chassis::php (
 		# Hold at the given version
 		ensure          => 'latest',
 		install_options => '--force-yes',
-
 		notify          => Service["${php_package}-fpm"],
 		require         => [
 			Apt::Pin[$packages],
 			Apt::Ppa['ppa:ondrej/php'],
+			Class['apt::update'],
 		],
 	}
 
@@ -87,15 +90,34 @@ class chassis::php (
 	# Any array of all the versions of php that we support.
 	$php_versions = [ '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ]
 
+	# Add a type we can use to remove old php versions.
+	define remove_php_fpm {
+		case $name {
+			'5.6',
+			'7.0',
+			'7.1',
+			'7.2',
+			'7.3',
+			'7.4': {
+				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
+					ensure => absent,
+					notify => Class['apt::update'],
+				}
+			}
+			default: {
+				package { [ 'php5-fpm', 'php5-cli', 'php5-common' ]:
+					ensure => absent,
+					notify => Class['apt::update'],
+				}
+			}
+		}
+	}
+
 	# Work out which version of php we should remove if we've swapped versions.
 	$php_versions_to_remove = delete( $php_versions, $short_ver )
 
-	$php_versions_to_remove.each | Integer $index, String $value | {
-		package { [ "php${value}-fpm", "php${value}-cli", "php${value}-common" ]:
-			ensure  => absent,
-			notify  => Service["${php_package}-fpm"],
-			require => Package["${php_package}-fpm"]
-		}
+	remove_php_fpm { $php_versions_to_remove:
+		notify => Service["${php_package}-fpm"],
 	}
 
 	# Install the extensions we need
