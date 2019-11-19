@@ -353,7 +353,7 @@ module Chassis
 			end
 			Open3.capture3("git remote -v update")
 			stdout, _, _ = Open3.capture3("git status --porcelain=2 --branch")
-			if stdout =~ /^# branch.ab \+\d+ -([1-9]\d*)$/
+			if stdout !~ /^# branch.ab \+0 -0/
 				updates.push folder
 			end
 		end
