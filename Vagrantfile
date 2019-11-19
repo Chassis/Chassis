@@ -145,6 +145,7 @@ Vagrant.configure("2") do |config|
 
 		# Set up the module paths
 		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
+
 		# Set up the global extension paths
 		if ( global_ext_modules )
 			global_ext_modules.map! { |rel_path| "/vagrant/extensions/_global/" + rel_path }
@@ -156,8 +157,6 @@ Vagrant.configure("2") do |config|
 
 		# Set up the full environment
 		shell.args.push("--confdir /vagrant/puppet")
-		#shell.args.push("--environment development")
-		#shell.args.push("--hiera_config /dev/null")
 
 		# Set the actual manifest to provision with
 		shell.args.push("/vagrant/puppet/manifests")
