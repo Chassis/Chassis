@@ -321,6 +321,8 @@ module Chassis
 			puts "\033[A\e[32mChecking for Chassis extension updates...\e[0m"
 			extensions = Dir.glob(@@extension_dir + '/*').map { |directory| File.basename( directory ) }
 			updates = self.updates_check(extensions, @@extension_dir)
+			# Remove the _global folder as it's a synced folder.
+			updates.delete('_global')
 			if updates.empty?
 				puts "\033[A\r\e[K"
 			else
