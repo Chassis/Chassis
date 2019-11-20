@@ -27,6 +27,14 @@ CONF = Chassis.config
 # Install extensions defined in config file
 Chassis.install_extensions(CONF)
 
+# Maybe update Chassis
+if CONF['auto_update'] != false
+	Chassis.update_core(CONF)
+	Chassis.update_extensions(CONF)
+	Chassis.update_submodules(CONF)
+	Chassis.update_global_extensions(CONF)
+end
+
 # Add extra extension modules
 base_path = Pathname.new( File.dirname( __FILE__ ) )
 module_paths = [ base_path.to_s + "/puppet/modules" ]
@@ -105,6 +113,7 @@ Vagrant.configure("2") do |config|
 	if CONF['_mode'] == "normal"
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
+		config.vm.box_version = ">= 1.0, < 2.0"
 	else
 		# We <3 Ubuntu LTS
 		config.vm.box = "bento/ubuntu-16.04"
