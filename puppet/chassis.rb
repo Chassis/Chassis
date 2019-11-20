@@ -68,10 +68,9 @@ module Chassis
 	end
 
 	def self.load_config()
-		# Get the path to the global configuration.
-		_config =  YAML.load_file(File.join(Dir.home, ".chassis", "config.yaml"))
 		# Get the extension configurations.
 		ext_config = self.load_extension_config()
+		# Get the path to the global configuration.
 		global_ext_config = self.load_global_extension_config()
 		# Merge the hashes together.
 		extension_vars = ext_config.merge(global_ext_config)
