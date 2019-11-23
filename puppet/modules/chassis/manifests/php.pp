@@ -87,6 +87,13 @@ class chassis::php (
 		require => Package["${php_package}-fpm"]
 	}
 
+	# Make sure the symlink is to the correct version.
+	file { '/usr/bin/php':
+		ensure  => 'link',
+		target  => "/usr/bin/${php_package}",
+		require => Package["${php_package}-cli"]
+	}
+
 	# Add a type we can use to remove old php versions.
 	define remove_php_fpm {
 		case $name {
@@ -96,9 +103,15 @@ class chassis::php (
 			'7.2',
 			'7.3',
 			'7.4': {
-				package { [ "php${name}-fpm", "php${name}-cli", "php${name}-common" ]:
+				package { [
+					"php${name}-fpm",
+					"php${name}-cli",
+					"php${name}-common"]:
 					ensure => absent,
 					notify => Class['apt::update'],
+				}
+				service { "php${name}-fpm":
+					ensure => stopped
 				}
 			}
 			default: {
@@ -172,8 +185,7 @@ class chassis::php (
 		owner   => 'root',
 		group   => 'root',
 		mode    => '0644',
-		require => Package["${php_package}-fpm"],
-		notify  => Service["${php_package}-fpm"]
+		require => Package["${php_package}-cli"]
 	}
 
 	file { "/etc/${php_dir}/fpm/pool.d/www.conf":
@@ -182,7 +194,10 @@ class chassis::php (
 		owner   => 'root',
 		group   => 'root',
 		mode    => '0644',
-		require => Package["${php_package}-fpm"],
+		require => [
+			Package["${php_package}-fpm"],
+			Package["${php_package}-cli"],
+		],
 		notify  => Service["${php_package}-fpm"]
 	}
 }
