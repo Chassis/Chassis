@@ -485,23 +485,3 @@ Note that if the machine name is changed after it has already been created vagra
 .. code-block:: yaml
 
    machine_name: project.local
-
-Auto Updates
-------------
-
-**Key**: ``auto_updates``
-
-.. code-block:: yaml
-
-    auto_update:
-    core: true
-        submodules: true
-        extensions: true
-        global_extensions: true
-
-Chassis will automatically check for updates to Chassis core, Chassis core submodules (Apt, MySQL and Stdlib), Chassis extensions and Chassis global extensions. You can stop one or more of the updates from triggering by changing the value(s) to ``false``.
-
-To disable all the auto update, you can do the following:
-
-.. code-block:: yaml
-    auto_update: false
