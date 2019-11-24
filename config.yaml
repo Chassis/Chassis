@@ -10,7 +10,7 @@
 
 # Add a version for Chassis for when we upgrade Ubuntu distributions.
 # We did start tagging releases a while back: https://github.com/Chassis/Chassis/releases
-version: 3
+version: 3.0.0
 
 # Domain names to use for Vagrant
 #
@@ -133,13 +133,6 @@ virtualbox:
 
 # NFS support. You should change this to Yes if you use VMWare
 nfs: No
-
-# Auto update configuration. Set to false to disable entirely, or set each item to true/false as needed.
-auto_update:
-    core: true
-    submodules: true
-    extensions: true
-    global_extensions: true
 
 # Base box mode
 #

@@ -148,8 +148,7 @@ class chassis::php (
 		owner   => 'root',
 		group   => 'root',
 		mode    => '0644',
-		require => Package["${php_package}-fpm"],
-		notify  => Service["${php_package}-fpm"]
+		require => Package["${php_package}-cli"]
 	}
 
 	file { "/etc/${php_dir}/fpm/pool.d/www.conf":
@@ -158,7 +157,10 @@ class chassis::php (
 		owner   => 'root',
 		group   => 'root',
 		mode    => '0644',
-		require => Package["${php_package}-fpm"],
+		require => [
+			Package["${php_package}-fpm"],
+			Package["${php_package}-cli"],
+		],
 		notify  => Service["${php_package}-fpm"]
 	}
 }

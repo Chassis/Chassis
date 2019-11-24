@@ -38,13 +38,13 @@ echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0
 vagrant halt
 
 # The version number of the base box.
-VERSION=3.1.0
+VERSION=3.0.0
 
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
 
 echo "\n\033[0;32mCommencing upload of the new Chassis box to Vagrant Cloud..."
 
-vagrant cloud publish chassis/chassis $VERSION virtualbox chassis-$NOW.box --release 
+vagrant cloud publish chassis/chassis $VERSION virtualbox chassis-$NOW.box --release
 
 echo "\n\033[0;32mUpload complete!"
