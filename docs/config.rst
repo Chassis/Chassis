@@ -16,7 +16,7 @@ configuration while still allowing overriding:
 * ``project/content/config.yaml`` - project-specific defaults
 * ``project/config.local.yaml`` - global overrides
 * ``project/config.yaml`` - global defaults
-* ``~/.chassis/config.yml`` - global update defaults
+* ``~/.chassis/config.yaml`` - global defaults
 
 This allows you to (e.g.) enable multisite for the entire project, while
 allowing specific users to override the hostname if it conflicts with existing
