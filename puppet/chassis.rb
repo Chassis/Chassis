@@ -50,12 +50,17 @@ module Chassis
 	end
 
 	def self.get_global_extensions_for_dir(version = nil)
-		global = self.get_extensions_for_dir(File.join(@@extension_dir, '_global'), version)
+		global = self.get_extensions_for_dir(File.join(@@global_ext_dir), version)
 
 		# Remove extensions which are installed locally
 		regular = self.get_extensions(version)
 		global.reject { |item|
 			regular.include?( item )
+		}
+
+		global.select { |extension|
+			config = get_extension_config(extension, @@global_ext_dir)
+			config['version'] == version
 		}
 	end
 
@@ -130,10 +135,12 @@ module Chassis
 	end
 
 	def self.load_global_extension_config()
-		global_ext_config = {}
-		global_ext_config.merge!(self.get_global_extension_config())
-		# Remove the extension version so we don't override the version number for Chassis core.
-		global_ext_config.delete('version')
+		global_ext_config = get_global_extension_config()
+		self.get_global_extensions(2).each do |extension|
+			global_ext_config.merge!(self.get_extension_config(extension, @@global_ext_dir))
+			# Remove the extension version so we don't override the version number for Chassis core.
+			global_ext_config.delete('version')
+		end
 		return global_ext_config
 	end
 
