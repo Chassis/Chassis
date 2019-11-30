@@ -24,7 +24,7 @@ module Chassis
 	end
 
 	def self.get_global_extension_config()
-		path = File.join(Dir.home, '.chassis/extensions/config.yaml')
+		path = File.join(Dir.home, '.chassis/config.yaml')
 		begin
 			YAML.load_file(path)
 		rescue Errno::ENOENT
