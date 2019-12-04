@@ -278,6 +278,21 @@ prefer a static IP, you can specify this here with ``ip: 192.168.1.114``
 (Typically, this should be in the private routing range; either ``192.168.x.x``
 or ``10.x.x.x``)
 
+-------------
+Hosts Updater
+-------------
+
+.. py:data:: hostsupdater
+
+Some operating systems have issues with Avahi so the Chassis host names don't
+automatically resolve. As a workaround you can install the Vagrant Hostsupdater plugin
+by running ``vagrant plugin install vagrant-hostsupdater`` and then add the following
+to one of your configuration files:
+
+.. code-block:: yaml
+
+   hostsupdater: yes
+
 ----------
 APT Mirror
 ----------
