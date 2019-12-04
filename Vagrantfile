@@ -123,8 +123,11 @@ Vagrant.configure("2") do |config|
 	config.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
 
 	# Having access would be nice.
-	if CONF['ip'] == "dhcp"
+	if CONF['ip'] == "dhcp" and CONF['hostsupdater'].nil?
 		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
+	elsif CONF['ip'] == "dhcp" and CONF['hostsupdater'] == true and Vagrant.has_plugin?("vagrant-hostsupdater")
+		config.vm.network :private_network, ip: "192.168.33.10"
+		config.hostsupdater.aliases = CONF['hosts']
 	else
 		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
 	end
