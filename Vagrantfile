@@ -127,7 +127,9 @@ Vagrant.configure("2") do |config|
 		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
 	elsif CONF['ip'] == "dhcp" and CONF['hostsupdater'] == true and Vagrant.has_plugin?("vagrant-hostsupdater")
 		config.vm.network :private_network, ip: "192.168.33.10"
-		config.hostsupdater.aliases = CONF['hosts']
+		if CONF['hosts'].count > 1
+			config.hostsupdater.aliases = CONF['hosts']
+		end
 	else
 		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
 	end
