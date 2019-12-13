@@ -1665,7 +1665,7 @@ function wp_kses_html_error( $string ) {
  */
 function wp_kses_bad_protocol_once( $string, $allowed_protocols, $count = 1 ) {
 	$string  = preg_replace( '/(&#0*58(?![;0-9])|&#x0*3a(?![;a-f0-9]))/i', '$1;', $string );
-	$string2 = preg_split( '/:|&#0*58;|&#x0*3a;/i', $string, 2 );
+	$string2 = preg_split( '/:|&#0*58;|&#x0*3a;|&colon;/i', $string, 2 );
 	if ( isset( $string2[1] ) && ! preg_match( '%/\?%', $string2[0] ) ) {
 		$string   = trim( $string2[1] );
 		$protocol = wp_kses_bad_protocol_once2( $string2[0], $allowed_protocols );
@@ -2073,6 +2073,7 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 	 * @since 5.2.0 Added support for `background-position` and `grid-template-columns`
 	 * @since 5.3.0 Added support for `grid`, `flex` and `column` layout properties.
 	 *              Extend `background-*` support of individual properties.
+	 * @since 5.3.1 Added support for gradient backgrounds.
 	 *
 	 * @param string[] $attr Array of allowed CSS attributes.
 	 */
@@ -2209,6 +2210,15 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 		'list-style-image',
 	);
 
+	/*
+	 * CSS attributes that accept gradient data types.
+	 *
+	 */
+	$css_gradient_data_types = array(
+		'background',
+		'background-image',
+	);
+
 	if ( empty( $allowed_attr ) ) {
 		return $css;
 	}
@@ -2223,6 +2233,7 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 		$css_test_string = $css_item;
 		$found           = false;
 		$url_attr        = false;
+		$gradient_attr   = false;
 
 		if ( strpos( $css_item, ':' ) === false ) {
 			$found = true;
@@ -2231,8 +2242,9 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 			$css_selector = trim( $parts[0] );
 
 			if ( in_array( $css_selector, $allowed_attr, true ) ) {
-				$found    = true;
-				$url_attr = in_array( $css_selector, $css_url_data_types, true );
+				$found         = true;
+				$url_attr      = in_array( $css_selector, $css_url_data_types, true );
+				$gradient_attr = in_array( $css_selector, $css_gradient_data_types, true );
 			}
 		}
 
@@ -2258,6 +2270,14 @@ function safecss_filter_attr( $css, $deprecated = '' ) {
 					// Remove the whole `url(*)` bit that was matched above from the CSS.
 					$css_test_string = str_replace( $url_match, '', $css_test_string );
 				}
+			}
+		}
+
+		if ( $found && $gradient_attr ) {
+			$css_value = trim( $parts[1] );
+			if ( preg_match( '/^(repeating-)?(linear|radial|conic)-gradient\(([^()]|rgb[a]?\([^()]*\))*\)$/', $css_value ) ) {
+				// Remove the whole `gradient` bit that was matched above from the CSS.
+				$css_test_string = str_replace( $css_value, '', $css_test_string );
 			}
 		}
 
