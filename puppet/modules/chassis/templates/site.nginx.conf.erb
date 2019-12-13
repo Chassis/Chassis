@@ -24,7 +24,7 @@ server {
 	}
 
 	location /content/ {
-		alias <%= contentdir %>/;
+		alias <%= @contentdir %>/;
 
 		# Duplicated here, to ensure it matches correctly
 		location ~* \.(js|css|png|jpe?g|gif|ico)$ {
@@ -32,7 +32,7 @@ server {
 		}
 	}
 
-	<% if @wpdir != "#{location}/wp" %>
+	<% if @wpdir != "@location/wp" %>
 	# WP isn't under the root, so this makes our FastCGI a little complex...
 	location /wp/ {
 		alias <%= @wpdir %>/;

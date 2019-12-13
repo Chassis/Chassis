@@ -105,10 +105,10 @@ Vagrant.configure("2") do |config|
 	if CONF['_mode'] == "normal"
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
-		config.vm.box_version = ">= 1.0, < 2.0"
+		config.vm.box_version = ">= 3.0, < 4.0"
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-16.04"
+		config.vm.box = "bento/ubuntu-18.04"
 	end
 
 	# Enable SSH forwarding
@@ -143,27 +143,35 @@ Vagrant.configure("2") do |config|
 	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
 
 	# Provision our setup with Puppet
-	config.vm.provision :puppet do |puppet|
-		puppet.manifests_path = "puppet/manifests"
-		puppet.manifest_file  = "development.pp"
+	config.vm.provision :shell do |shell|
+		shell.inline = "puppet apply $@"
+		shell.keep_color = true
 
-		# Broken due to https://github.com/mitchellh/vagrant/issues/2902
-		## puppet.module_path    = module_paths
-		# Workaround:
-		machine_rel_module_paths = module_paths.map { |rel_path| "/vagrant/" + rel_path }
-		if use_global_ext
-			prefixed_global = global_ext_modules.map { |rel_path| "/vagrant/extensions/_global/" + rel_path }
-			machine_rel_module_paths.concat prefixed_global
+		shell.args = []
+
+		# Set up the module paths
+		module_paths.map! { |rel_path| "/vagrant/" + rel_path }
+
+		# Set up the global extension paths
+		if ( global_ext_modules )
+			global_ext_modules.map! { |rel_path| "/vagrant/extensions/_global/" + rel_path }
+			extensions = module_paths + global_ext_modules
+		else
+			extensions = module_paths
 		end
-		puppet.options = "--modulepath " +  machine_rel_module_paths.join( ':' ).inspect
+		shell.args.push("--basemodulepath /vagrant/puppet/modules:" +  extensions.join( ':' ).inspect)
 
-		# Disable Hiera configuration file
-		puppet.options += " --hiera_config /dev/null"
+		# Set up the full environment
+		shell.args.push("--confdir /vagrant/puppet")
 
-		# Disable Puppet warnings
-		puppet.options += " --disable_warnings=deprecations"
+		# Set the actual manifest to provision with
+		shell.args.push("/vagrant/puppet/manifests")
 
-		#puppet.options = puppet.options + " --verbose --debug"
+		# Uncomment this line to turn debugging on:
+		# shell.args.push("--verbose --debug")
+
+		# Ensure Puppet doesn't escape our arguments
+		shell.args = shell.args.join(" ")
 	end
 
 	# Help the user out the first time they provision

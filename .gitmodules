@@ -10,3 +10,9 @@
 [submodule "puppet/modules/wp"]
 	path = puppet/modules/wp
 	url = https://github.com/Chassis/puppet-wp.git
+[submodule "puppet/modules/translate"]
+	path = puppet/modules/translate
+	url = https://github.com/puppetlabs/puppetlabs-translate.git
+[submodule "puppet/modules/staging"]
+	path = puppet/modules/staging
+	url = https://github.com/voxpupuli/puppet-staging.git

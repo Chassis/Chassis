@@ -77,15 +77,21 @@ module Chassis
 		ext_config = self.load_extension_config()
 		# Get the path to the global configuration.
 		global_ext_config = self.load_global_extension_config()
-		# Merge the hashes together.
-		extension_vars = ext_config.merge(global_ext_config)
+		# Merge the global config with the git config.
+		if global_ext_config.is_a?(Hash)
+			# Merge the hashes together.
+			extension_vars = ext_config.merge(global_ext_config)
+		end
 
 		# Load git-managed configuration
 		git_config = YAML.load_file(File.join(@@dir, "config.yaml"))
 
 		# Merge the extension config with the git config.
-		if git_config.is_a?(Hash)
+		if git_config.is_a?(Hash) and extension_vars
 			merged_config = extension_vars.merge!(git_config)
+		else
+			# Fallback in case we only have a git-managed config.
+			merged_config = git_config
 		end
 
 		has_custom_prefix = false
@@ -136,10 +142,11 @@ module Chassis
 
 	def self.load_global_extension_config()
 		global_ext_config = get_global_extension_config()
-		self.get_global_extensions(2).each do |extension|
-			global_ext_config.merge!(self.get_extension_config(extension, @@global_ext_dir))
-			# Remove the extension version so we don't override the version number for Chassis core.
-			global_ext_config.delete('version')
+		# Check that the global config is a hash.
+		if global_ext_config.is_a?(Hash)
+			self.get_global_extensions(2).each do |extension|
+				global_ext_config.merge!(self.get_extension_config(extension, @@global_ext_dir))
+			end
 		end
 		return global_ext_config
 	end
@@ -211,6 +218,7 @@ module Chassis
 		config["php"] = config["php"].to_s
 		config["machine_name"] = config["machine_name"].to_s
 		config["upload_size"] = config["upload_size"].to_s
+		config["version"] = config["version"].to_i
 		# Lowercase the extension configurations.
 		if config["disabled_extensions"]
 			config["disabled_extensions"].map!(&:downcase)

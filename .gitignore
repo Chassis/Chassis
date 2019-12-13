@@ -21,3 +21,8 @@ config.local.yaml
 /*.cert
 /phpmemcachedadmin
 /webgrind
+
+# Ignore symlinked Puppet manifests
+/puppet/manifests/*.pp
+# Ignore multisite functions.
+/local-config-hosts.php
