@@ -19749,7 +19749,7 @@ function (_Component) {
         return;
       }
 
-      var diff = currentCaretRect.y - this.caretRect.y;
+      var diff = currentCaretRect.top - this.caretRect.top;
 
       if (diff === 0) {
         return;
@@ -19763,8 +19763,8 @@ function (_Component) {
 
       var windowScroll = scrollContainer === document.body;
       var scrollY = windowScroll ? window.scrollY : scrollContainer.scrollTop;
-      var scrollContainerY = windowScroll ? 0 : scrollContainer.getBoundingClientRect().y;
-      var relativeScrollPosition = windowScroll ? this.caretRect.y / window.innerHeight : (this.caretRect.y - scrollContainerY) / (window.innerHeight - scrollContainerY); // If the scroll position is at the start, the active editable element
+      var scrollContainerY = windowScroll ? 0 : scrollContainer.getBoundingClientRect().top;
+      var relativeScrollPosition = windowScroll ? this.caretRect.top / window.innerHeight : (this.caretRect.top - scrollContainerY) / (window.innerHeight - scrollContainerY); // If the scroll position is at the start, the active editable element
       // is the last one, and the caret is positioned within the initial
       // trigger percentage of the page, do not scroll the page.
       // The typewriter effect should not kick in until an empty page has been
@@ -19781,8 +19781,8 @@ function (_Component) {
       // view.
 
       if ( // The caret is under the lower fold.
-      this.caretRect.y + this.caretRect.height > scrollContainerY + scrollContainerHeight || // The caret is above the upper fold.
-      this.caretRect.y < scrollContainerY) {
+      this.caretRect.top + this.caretRect.height > scrollContainerY + scrollContainerHeight || // The caret is above the upper fold.
+      this.caretRect.top < scrollContainerY) {
         // Reset the caret position to maintain.
         this.caretRect = currentCaretRect;
         return;
