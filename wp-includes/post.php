@@ -3747,13 +3747,14 @@ function wp_insert_post( $postarr, $wp_error = false ) {
 	}
 
 	if ( 'attachment' !== $post_type ) {
+		$now = gmdate( 'Y-m-d H:i:s' );
+
 		if ( 'publish' === $post_status ) {
-			// String comparison to work around far future dates (year 2038+) on 32-bit systems.
-			if ( $post_date_gmt > gmdate( 'Y-m-d H:i:59' ) ) {
+			if ( strtotime( $post_date_gmt ) - strtotime( $now ) >= MINUTE_IN_SECONDS ) {
 				$post_status = 'future';
 			}
 		} elseif ( 'future' === $post_status ) {
-			if ( $post_date_gmt <= gmdate( 'Y-m-d H:i:59' ) ) {
+			if ( strtotime( $post_date_gmt ) - strtotime( $now ) < MINUTE_IN_SECONDS ) {
 				$post_status = 'publish';
 			}
 		}
@@ -6385,7 +6386,7 @@ function get_posts_by_author_sql( $post_type, $full = true, $post_author = null,
  *                          'gmt' uses the `post_date_gmt` field.
  *                          Default 'server'.
  * @param string $post_type Optional. The post type to check. Default 'any'.
- * @return string The date of the last post.
+ * @return string The date of the last post, or false on failure.
  */
 function get_lastpostdate( $timezone = 'server', $post_type = 'any' ) {
 	/**
@@ -6393,9 +6394,9 @@ function get_lastpostdate( $timezone = 'server', $post_type = 'any' ) {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param string $date     Date the last post was published.
-	 * @param string $timezone Location to use for getting the post published date.
-	 *                         See get_lastpostdate() for accepted `$timezone` values.
+	 * @param string|false $date     Date the last post was published. False on failure.
+	 * @param string       $timezone Location to use for getting the post published date.
+	 *                               See get_lastpostdate() for accepted `$timezone` values.
 	 */
 	return apply_filters( 'get_lastpostdate', _get_last_post_time( $timezone, 'date', $post_type ), $timezone );
 }
@@ -6414,7 +6415,7 @@ function get_lastpostdate( $timezone = 'server', $post_type = 'any' ) {
  *                          for information on accepted values.
  *                          Default 'server'.
  * @param string $post_type Optional. The post type to check. Default 'any'.
- * @return string The timestamp in 'Y-m-d H:i:s' format.
+ * @return string The timestamp in 'Y-m-d H:i:s' format, or false on failure.
  */
 function get_lastpostmodified( $timezone = 'server', $post_type = 'any' ) {
 	/**
@@ -6445,9 +6446,10 @@ function get_lastpostmodified( $timezone = 'server', $post_type = 'any' ) {
 	 *
 	 * @since 2.3.0
 	 *
-	 * @param string $lastpostmodified The most recent time that a post was modified, in 'Y-m-d H:i:s' format.
-	 * @param string $timezone         Location to use for getting the post modified date.
-	 *                                 See get_lastpostdate() for accepted `$timezone` values.
+	 * @param string|false $lastpostmodified The most recent time that a post was modified, in 'Y-m-d H:i:s' format.
+	 *                                       False on failure.
+	 * @param string       $timezone         Location to use for getting the post modified date.
+	 *                                       See get_lastpostdate() for accepted `$timezone` values.
 	 */
 	return apply_filters( 'get_lastpostmodified', $lastpostmodified, $timezone );
 }
@@ -6465,7 +6467,7 @@ function get_lastpostmodified( $timezone = 'server', $post_type = 'any' ) {
  *                          for information on accepted values.
  * @param string $field     Post field to check. Accepts 'date' or 'modified'.
  * @param string $post_type Optional. The post type to check. Default 'any'.
- * @return string|false The timestamp in 'Y-m-d H:i:s' format, or false on error.
+ * @return string|false The timestamp in 'Y-m-d H:i:s' format, or false on failure.
  */
 function _get_last_post_time( $timezone, $field, $post_type = 'any' ) {
 	global $wpdb;
