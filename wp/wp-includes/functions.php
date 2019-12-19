@@ -2410,6 +2410,7 @@ function _wp_upload_dir( $time = null ) {
 function wp_unique_filename( $dir, $filename, $unique_filename_callback = null ) {
 	// Sanitize the file name before we begin processing.
 	$filename = sanitize_file_name( $filename );
+	$ext2     = null;
 
 	// Separate the filename into a name and extension.
 	$ext  = pathinfo( $filename, PATHINFO_EXTENSION );
@@ -2472,17 +2473,32 @@ function wp_unique_filename( $dir, $filename, $unique_filename_callback = null )
 
 		// Prevent collisions with existing file names that contain dimension-like strings
 		// (whether they are subsizes or originals uploaded prior to #42437).
+		$upload_dir = wp_get_upload_dir();
 
 		// The (resized) image files would have name and extension, and will be in the uploads dir.
-		if ( @is_dir( $dir ) && $name && $ext ) {
-			// List of all files and directories contained in $dir (with the "dot" files removed).
-			$files = array_diff( scandir( $dir ), array( '.', '..' ) );
+		if ( $name && $ext && @is_dir( $dir ) && false !== strpos( $dir, $upload_dir['basedir'] ) ) {
+			// List of all files and directories contained in $dir.
+			$files = @scandir( $dir );
 
 			if ( ! empty( $files ) ) {
-				while ( _wp_check_existing_file_names( $filename, $files ) ) {
+				// Remove "dot" dirs.
+				$files = array_diff( $files, array( '.', '..' ) );
+			}
+
+			if ( ! empty( $files ) ) {
+				// The extension case may have changed above.
+				$new_ext = ! empty( $ext2 ) ? $ext2 : $ext;
+
+				// Ensure this never goes into infinite loop
+				// as it uses pathinfo() and regex in the check but string replacement for the changes.
+				$count = count( $files );
+				$i     = 0;
+
+				while ( $i <= $count && _wp_check_existing_file_names( $filename, $files ) ) {
 					$new_number = (int) $number + 1;
-					$filename   = str_replace( array( "-{$number}{$ext}", "{$number}{$ext}" ), "-{$new_number}{$ext}", $filename );
+					$filename   = str_replace( array( "-{$number}{$new_ext}", "{$number}{$new_ext}" ), "-{$new_number}{$new_ext}", $filename );
 					$number     = $new_number;
+					$i++;
 				}
 			}
 		}
@@ -2524,7 +2540,7 @@ function _wp_check_existing_file_names( $filename, $files ) {
 		$ext = ".$ext";
 	}
 
-	$regex = '/^' . preg_quote( $fname ) . '-(?:\d+x\d+|scaled|rotated)' . preg_quote( $ext ) . '$/';
+	$regex = '/^' . preg_quote( $fname ) . '-(?:\d+x\d+|scaled|rotated)' . preg_quote( $ext ) . '$/i';
 
 	foreach ( $files as $file ) {
 		if ( preg_match( $regex, $file ) ) {
