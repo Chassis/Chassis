@@ -35,10 +35,24 @@ echo "\033[0;32mThe WordPress database has been successfully dropped.\033[0m"
 
 echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0m"
 
+# Clean up the items on the box we don't need.
+
+echo "\033[0;32mInitialising box cleanup...\033[0m"
+
+/usr/local/bin/vagrant ssh -- -t 'sudo sh /vagrant/cleanup.sh'
+
+echo "\033[0;32mBox cleanup completed.\033[0m"
+
+echo "\033[0;32mInitialising box minimisation...\033[0m"
+
+/usr/local/bin/vagrant ssh -- -t 'sudo sh /vagrant/minimise.sh'
+
+echo "\033[0;32mBox minimisation completed.\033[0m"
+
 vagrant halt
 
 # The version number of the base box.
-VERSION=3.0.0
+VERSION=3.0.1
 
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
