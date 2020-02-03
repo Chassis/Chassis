@@ -9,6 +9,13 @@ if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
 	exit 1
 end
 
+# See https://github.com/hashicorp/vagrant/issues/8878 and https://github.com/Chassis/Chassis/issues/771
+class VagrantPlugins::ProviderVirtualBox::Action::Network
+	def dhcp_server_matches_config?(dhcp_server, config)
+		true
+	end
+end
+
 # Check that submodules have been loaded
 if not File.exist?(File.join(File.dirname(__FILE__), "puppet", "modules", "apt", ".git"))
 	puts "NOTICE: Submodules not found, updating for you"
