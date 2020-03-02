@@ -116,4 +116,4 @@ Alternatively you can set the path for VirtualBox to a directory that doesn't ha
 Server IP address could not be found. (DNS_PROBE_FINISHED_NXDOMAIN)
 ---------------------------------------------------------------------
 
-This happens typically with Mac when the DNS configuration has not been setup properly during the installation. SSH into the Chassis machine and run ``sudo service avahi-daemon restart``
+This typically occurs on Mac when the DNS configuration has not been set up properly during the installation. SSH into the Chassis machine and run ``sudo service avahi-daemon restart``
