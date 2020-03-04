@@ -74,7 +74,6 @@ if ( file_exists( WP_CONTENT_DIR . '/themes' ) ) {
 	$GLOBALS['wp_theme_directories'][] = WP_CONTENT_DIR . '/themes';
 }
 $GLOBALS['wp_theme_directories'][] = ABSPATH . 'wp-content/themes';
-$GLOBALS['wp_theme_directories'][] = ABSPATH . 'wp-content/themes';
 
 // =============================
 // Configuration for the Content
