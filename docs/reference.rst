@@ -112,3 +112,8 @@ To resolve this issue you'll need to create a symlink and set the VAGRANT_HOME p
   $ setx VAGRANT_HOME "C:/users/username"
 
 Alternatively you can set the path for VirtualBox to a directory that doesn't have special characters. To do this open the VirtualBox application, select 'File' -> 'Settings' -> 'General' and change the default path for VM's (e.g. to "C:\VirtualBox VMs").
+
+Server IP address could not be found. (DNS_PROBE_FINISHED_NXDOMAIN)
+---------------------------------------------------------------------
+
+This typically occurs on Mac when the DNS configuration has not been set up properly during the installation. SSH into the Chassis machine and run ``sudo service avahi-daemon restart``
