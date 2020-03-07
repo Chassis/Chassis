@@ -52,7 +52,7 @@ echo "\033[0;32mBox minimisation completed.\033[0m"
 vagrant halt
 
 # The version number of the base box.
-VERSION=3.0.1
+VERSION=3.0.2
 
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
