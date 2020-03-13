@@ -459,7 +459,7 @@ Extension names can be specified in one of three ways:
 
    extensions:
       - Tester
-      - javorszky/chassis-openssl
+      - chassis/chassis-openssl
       - https://bitbucket.org/some/example.git
 
 You can also remove extensions that you have previously installed. All configuration files will be remove from your Chassis server.
