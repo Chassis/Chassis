@@ -37,18 +37,19 @@ function wp_styles() {
  * @since 2.6.0
  *
  * @param string|bool|array $handles Styles to be printed. Default 'false'.
- * @return array On success, a processed array of WP_Dependencies items; otherwise, an empty array.
+ * @return string[] On success, an array of handles of processed WP_Dependencies items; otherwise, an empty array.
  */
 function wp_print_styles( $handles = false ) {
-	if ( '' === $handles ) { // for wp_head
+	if ( '' === $handles ) { // For 'wp_head'.
 		$handles = false;
 	}
-	/**
-	 * Fires before styles in the $handles queue are printed.
-	 *
-	 * @since 2.6.0
-	 */
+
 	if ( ! $handles ) {
+		/**
+		 * Fires before styles in the $handles queue are printed.
+		 *
+		 * @since 2.6.0
+		 */
 		do_action( 'wp_print_styles' );
 	}
 
@@ -112,7 +113,7 @@ function wp_add_inline_style( $handle, $data ) {
  * @param string           $handle Name of the stylesheet. Should be unique.
  * @param string|bool      $src    Full URL of the stylesheet, or path of the stylesheet relative to the WordPress root directory.
  *                                 If source is set to false, stylesheet is an alias of other stylesheets it depends on.
- * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+ * @param string[]         $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
  * @param string|bool|null $ver    Optional. String specifying stylesheet version number, if it has one, which is added to the URL
  *                                 as a query string for cache busting purposes. If version is set to false, a version
  *                                 number is automatically added equal to current installed WordPress version.
@@ -157,7 +158,7 @@ function wp_deregister_style( $handle ) {
  * @param string           $handle Name of the stylesheet. Should be unique.
  * @param string           $src    Full URL of the stylesheet, or path of the stylesheet relative to the WordPress root directory.
  *                                 Default empty.
- * @param array            $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
+ * @param string[]         $deps   Optional. An array of registered stylesheet handles this stylesheet depends on. Default empty array.
  * @param string|bool|null $ver    Optional. String specifying stylesheet version number, if it has one, which is added to the URL
  *                                 as a query string for cache busting purposes. If version is set to false, a version
  *                                 number is automatically added equal to current installed WordPress version.
@@ -221,7 +222,7 @@ function wp_style_is( $handle, $list = 'enqueued' ) {
  * 'alt'         bool        For rel="alternate stylesheet".
  * 'title'       string      For preferred/alternate stylesheets.
  *
- * @see WP_Dependency::add_data()
+ * @see WP_Dependencies::add_data()
  *
  * @since 3.6.0
  *

@@ -7,14 +7,14 @@
  */
 
 /** Load WordPress Bootstrap */
-require_once( dirname( __FILE__ ) . '/admin.php' );
+require_once __DIR__ . '/admin.php';
 
 if ( ! current_user_can( 'export' ) ) {
 	wp_die( __( 'Sorry, you are not allowed to export the content of this site.' ) );
 }
 
 /** Load WordPress export API */
-require_once( ABSPATH . 'wp-admin/includes/export.php' );
+require_once ABSPATH . 'wp-admin/includes/export.php';
 $title = __( 'Export' );
 
 /**
@@ -122,7 +122,7 @@ if ( isset( $_GET['download'] ) ) {
 	die();
 }
 
-require_once( ABSPATH . 'wp-admin/admin-header.php' );
+require_once ABSPATH . 'wp-admin/admin-header.php';
 
 /**
  * Create the date options fields for exporting a given post type.
@@ -180,7 +180,7 @@ function export_date_options( $post_type = 'post' ) {
 <p><label><input type="radio" name="content" value="all" checked="checked" aria-describedby="all-content-desc" /> <?php _e( 'All content' ); ?></label></p>
 <p class="description" id="all-content-desc"><?php _e( 'This will contain all of your posts, pages, comments, custom fields, terms, navigation menus, and custom posts.' ); ?></p>
 
-<p><label><input type="radio" name="content" value="posts" /> <?php _e( 'Posts' ); ?></label></p>
+<p><label><input type="radio" name="content" value="posts" /> <?php _ex( 'Posts', 'post type general name' ); ?></label></p>
 <ul id="post-filters" class="export-filters">
 	<li>
 		<label><span class="label-responsive"><?php _e( 'Categories:' ); ?></span>
@@ -321,4 +321,4 @@ do_action( 'export_filters' );
 </form>
 </div>
 
-<?php include( ABSPATH . 'wp-admin/admin-footer.php' ); ?>
+<?php require_once ABSPATH . 'wp-admin/admin-footer.php'; ?>

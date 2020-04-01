@@ -270,7 +270,8 @@ final class WP_Customize_Manager {
 			$args['changeset_uuid'] = wp_generate_uuid4();
 		}
 
-		// The theme and messenger_channel should be supplied via $args, but they are also looked at in the $_REQUEST global here for back-compat.
+		// The theme and messenger_channel should be supplied via $args,
+		// but they are also looked at in the $_REQUEST global here for back-compat.
 		if ( ! isset( $args['theme'] ) ) {
 			if ( isset( $_REQUEST['customize_theme'] ) ) {
 				$args['theme'] = wp_unslash( $_REQUEST['customize_theme'] );
@@ -293,46 +294,44 @@ final class WP_Customize_Manager {
 			}
 		}
 
-		require_once( ABSPATH . WPINC . '/class-wp-customize-setting.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-panel.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-section.php' );
-		require_once( ABSPATH . WPINC . '/class-wp-customize-control.php' );
+		require_once ABSPATH . WPINC . '/class-wp-customize-setting.php';
+		require_once ABSPATH . WPINC . '/class-wp-customize-panel.php';
+		require_once ABSPATH . WPINC . '/class-wp-customize-section.php';
+		require_once ABSPATH . WPINC . '/class-wp-customize-control.php';
 
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-color-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-media-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-upload-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-image-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-background-image-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-background-position-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-cropped-image-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-site-icon-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-header-image-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-theme-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-code-editor-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-widget-area-customize-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-widget-form-customize-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-item-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-location-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-name-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-locations-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-auto-add-control.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-new-menu-control.php' ); // @todo Remove in a future release. See #42364.
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-color-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-media-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-upload-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-image-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-background-image-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-background-position-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-cropped-image-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-site-icon-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-header-image-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-theme-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-code-editor-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-widget-area-customize-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-widget-form-customize-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-item-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-location-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-name-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-locations-control.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-auto-add-control.php';
 
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menus-panel.php' );
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menus-panel.php';
 
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-themes-panel.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-themes-section.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-sidebar-section.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-section.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-new-menu-section.php' ); // @todo Remove in a future release. See #42364.
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-themes-panel.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-themes-section.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-sidebar-section.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-section.php';
 
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-custom-css-setting.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-filter-setting.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-header-image-setting.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-background-image-setting.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-item-setting.php' );
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-setting.php' );
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-custom-css-setting.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-filter-setting.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-header-image-setting.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-background-image-setting.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-item-setting.php';
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-setting.php';
 
 		/**
 		 * Filters the core Customizer components to load.
@@ -351,16 +350,16 @@ final class WP_Customize_Manager {
 		 */
 		$components = apply_filters( 'customize_loaded_components', $this->components, $this );
 
-		require_once( ABSPATH . WPINC . '/customize/class-wp-customize-selective-refresh.php' );
+		require_once ABSPATH . WPINC . '/customize/class-wp-customize-selective-refresh.php';
 		$this->selective_refresh = new WP_Customize_Selective_Refresh( $this );
 
 		if ( in_array( 'widgets', $components, true ) ) {
-			require_once( ABSPATH . WPINC . '/class-wp-customize-widgets.php' );
+			require_once ABSPATH . WPINC . '/class-wp-customize-widgets.php';
 			$this->widgets = new WP_Customize_Widgets( $this );
 		}
 
 		if ( in_array( 'nav_menus', $components, true ) ) {
-			require_once( ABSPATH . WPINC . '/class-wp-customize-nav-menus.php' );
+			require_once ABSPATH . WPINC . '/class-wp-customize-nav-menus.php';
 			$this->nav_menus = new WP_Customize_Nav_Menus( $this );
 		}
 
@@ -385,7 +384,7 @@ final class WP_Customize_Manager {
 		add_action( 'wp_ajax_customize_dismiss_autosave_or_lock', array( $this, 'handle_dismiss_autosave_or_lock_request' ) );
 
 		add_action( 'customize_register', array( $this, 'register_controls' ) );
-		add_action( 'customize_register', array( $this, 'register_dynamic_settings' ), 11 ); // allow code to create settings first
+		add_action( 'customize_register', array( $this, 'register_dynamic_settings' ), 11 ); // Allow code to create settings first.
 		add_action( 'customize_controls_init', array( $this, 'prepare_controls' ) );
 		add_action( 'customize_controls_enqueue_scripts', array( $this, 'enqueue_control_scripts' ) );
 
@@ -438,8 +437,8 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 3.4.0
 	 *
-	 * @param mixed $ajax_message Ajax return
-	 * @param mixed $message UI message
+	 * @param string|WP_Error $ajax_message Ajax return.
+	 * @param string          $message      Optional. UI message.
 	 */
 	protected function wp_die( $ajax_message, $message = null ) {
 		if ( $this->doing_ajax() ) {
@@ -506,7 +505,7 @@ final class WP_Customize_Manager {
 	public function setup_theme() {
 		global $pagenow;
 
-		// Check permissions for customize.php access since this method is called before customize.php can run any code,
+		// Check permissions for customize.php access since this method is called before customize.php can run any code.
 		if ( 'customize.php' === $pagenow && ! current_user_can( 'customize' ) ) {
 			if ( ! is_user_logged_in() ) {
 				auth_redirect();
@@ -565,8 +564,8 @@ final class WP_Customize_Manager {
 			// Once the theme is loaded, we'll validate it.
 			add_action( 'after_setup_theme', array( $this, 'after_setup_theme' ) );
 		} else {
-			// If the requested theme is not the active theme and the user doesn't have the
-			// switch_themes cap, bail.
+			// If the requested theme is not the active theme and the user doesn't have
+			// the switch_themes cap, bail.
 			if ( ! current_user_can( 'switch_themes' ) ) {
 				$this->wp_die( -1, __( 'Sorry, you are not allowed to edit theme options on this site.' ) );
 			}
@@ -900,7 +899,8 @@ final class WP_Customize_Manager {
 	 */
 	public function wp_loaded() {
 
-		// Unconditionally register core types for panels, sections, and controls in case plugin unhooks all customize_register actions.
+		// Unconditionally register core types for panels, sections, and controls
+		// in case plugin unhooks all customize_register actions.
 		$this->register_panel_type( 'WP_Customize_Panel' );
 		$this->register_panel_type( 'WP_Customize_Themes_Panel' );
 		$this->register_section_type( 'WP_Customize_Section' );
@@ -1641,9 +1641,9 @@ final class WP_Customize_Manager {
 		}
 
 		// Such is The WordPress Way.
-		require_once( ABSPATH . 'wp-admin/includes/file.php' );
-		require_once( ABSPATH . 'wp-admin/includes/media.php' );
-		require_once( ABSPATH . 'wp-admin/includes/image.php' );
+		require_once ABSPATH . 'wp-admin/includes/file.php';
+		require_once ABSPATH . 'wp-admin/includes/media.php';
+		require_once ABSPATH . 'wp-admin/includes/image.php';
 
 		foreach ( $attachments as $symbol => $attachment ) {
 
@@ -2541,7 +2541,7 @@ final class WP_Customize_Manager {
 				$this->dismiss_user_auto_draft_changesets();
 			}
 
-			// Note that if the changeset status was publish, then it will get set to trash if revisions are not supported.
+			// Note that if the changeset status was publish, then it will get set to Trash if revisions are not supported.
 			$response['changeset_status'] = $changeset_post->post_status;
 			if ( $is_publish && 'trash' === $response['changeset_status'] ) {
 				$response['changeset_status'] = 'publish';
@@ -2943,13 +2943,17 @@ final class WP_Customize_Manager {
 			if ( $args['autosave'] && 'auto-draft' !== get_post_status( $changeset_post_id ) ) {
 				// See _wp_translate_postdata() for why this is required as it will use the edit_post meta capability.
 				add_filter( 'map_meta_cap', array( $this, 'grant_edit_post_capability_for_changeset' ), 10, 4 );
+
 				$post_array['post_ID']   = $post_array['ID'];
 				$post_array['post_type'] = 'customize_changeset';
-				$r                       = wp_create_post_autosave( wp_slash( $post_array ) );
+
+				$r = wp_create_post_autosave( wp_slash( $post_array ) );
+
 				remove_filter( 'map_meta_cap', array( $this, 'grant_edit_post_capability_for_changeset' ), 10 );
 			} else {
 				$post_array['edit_date'] = true; // Prevent date clearing.
-				$r                       = wp_update_post( wp_slash( $post_array ), true );
+
+				$r = wp_update_post( wp_slash( $post_array ), true );
 
 				// Delete autosave revision for user when the changeset is updated.
 				if ( ! empty( $args['user_id'] ) ) {
@@ -3156,7 +3160,7 @@ final class WP_Customize_Manager {
 	 * @param string   $cap     Capability name.
 	 * @param int      $user_id The user ID.
 	 * @param array    $args    Adds the context to the cap. Typically the object ID.
-	 * @return array   Capabilities.
+	 * @return array Capabilities.
 	 */
 	public function grant_edit_post_capability_for_changeset( $caps, $cap, $user_id, $args ) {
 		if ( 'edit_post' === $cap && ! empty( $args[0] ) && 'customize_changeset' === get_post_type( $args[0] ) ) {
@@ -3352,7 +3356,6 @@ final class WP_Customize_Manager {
 	 * @param bool    $post_has_changed Whether the post has changed.
 	 * @param WP_Post $last_revision    The last revision post object.
 	 * @param WP_Post $post             The post object.
-	 *
 	 * @return bool Whether a revision should be made.
 	 */
 	public function _filter_revision_post_has_changed( $post_has_changed, $last_revision, $post ) {
@@ -3676,26 +3679,14 @@ final class WP_Customize_Manager {
 	 * @since 3.4.0
 	 * @since 4.5.0 Return added WP_Customize_Setting instance.
 	 *
-	 * @param WP_Customize_Setting|string $id   Customize Setting object, or ID.
-	 * @param array                       $args {
-	 *  Optional. Array of properties for the new WP_Customize_Setting. Default empty array.
-	 *
-	 *  @type string       $type                  Type of the setting. Default 'theme_mod'.
-	 *  @type string       $capability            Capability required for the setting. Default 'edit_theme_options'
-	 *  @type string|array $theme_supports        Theme features required to support the panel. Default is none.
-	 *  @type string       $default               Default value for the setting. Default is empty string.
-	 *  @type string       $transport             Options for rendering the live preview of changes in Customizer.
-	 *                                            Using 'refresh' makes the change visible by reloading the whole preview.
-	 *                                            Using 'postMessage' allows a custom JavaScript to handle live changes.
+	 * @see WP_Customize_Setting::__construct()
 	 * @link https://developer.wordpress.org/themes/customize-api
-	 *                                            Default is 'refresh'
-	 *  @type callable     $validate_callback     Server-side validation callback for the setting's value.
-	 *  @type callable     $sanitize_callback     Callback to filter a Customize setting value in un-slashed form.
-	 *  @type callable     $sanitize_js_callback  Callback to convert a Customize PHP setting value to a value that is
-	 *                                            JSON serializable.
-	 *  @type bool         $dirty                 Whether or not the setting is initially dirty when created.
-	 * }
-	 * @return WP_Customize_Setting             The instance of the setting that was added.
+	 *
+	 * @param WP_Customize_Setting|string $id   Customize Setting object, or ID.
+	 * @param array                       $args Optional. Array of properties for the new Setting object.
+	 *                                          See WP_Customize_Setting::__construct() for information
+	 *                                          on accepted arguments. Default empty array.
+	 * @return WP_Customize_Setting The instance of the setting that was added.
 	 */
 	public function add_setting( $id, $args = array() ) {
 		if ( $id instanceof WP_Customize_Setting ) {
@@ -3733,7 +3724,7 @@ final class WP_Customize_Manager {
 	public function add_dynamic_settings( $setting_ids ) {
 		$new_settings = array();
 		foreach ( $setting_ids as $setting_id ) {
-			// Skip settings already created
+			// Skip settings already created.
 			if ( $this->get_setting( $setting_id ) ) {
 				continue;
 			}
@@ -3794,6 +3785,8 @@ final class WP_Customize_Manager {
 	/**
 	 * Remove a customize setting.
 	 *
+	 * Note that removing the setting doesn't destroy the WP_Customize_Setting instance or remove its filters.
+	 *
 	 * @since 3.4.0
 	 *
 	 * @param string $id Customize Setting ID.
@@ -3808,19 +3801,13 @@ final class WP_Customize_Manager {
 	 * @since 4.0.0
 	 * @since 4.5.0 Return added WP_Customize_Panel instance.
 	 *
-	 * @param WP_Customize_Panel|string $id   Customize Panel object, or Panel ID.
-	 * @param array                     $args {
-	 *  Optional. Array of properties for the new Panel object. Default empty array.
-	 *  @type int          $priority              Priority of the panel, defining the display order of panels and sections.
-	 *                                            Default 160.
-	 *  @type string       $capability            Capability required for the panel. Default `edit_theme_options`
-	 *  @type string|array $theme_supports        Theme features required to support the panel.
-	 *  @type string       $title                 Title of the panel to show in UI.
-	 *  @type string       $description           Description to show in the UI.
-	 *  @type string       $type                  Type of the panel.
-	 *  @type callable     $active_callback       Active callback.
-	 * }
-	 * @return WP_Customize_Panel             The instance of the panel that was added.
+	 * @see WP_Customize_Panel::__construct()
+	 *
+	 * @param WP_Customize_Panel|string $id   Customize Panel object, or ID.
+	 * @param array                     $args Optional. Array of properties for the new Panel object.
+	 *                                        See WP_Customize_Panel::__construct() for information
+	 *                                        on accepted arguments. Default empty array.
+	 * @return WP_Customize_Panel The instance of the panel that was added.
 	 */
 	public function add_panel( $id, $args = array() ) {
 		if ( $id instanceof WP_Customize_Panel ) {
@@ -3849,6 +3836,8 @@ final class WP_Customize_Manager {
 
 	/**
 	 * Remove a customize panel.
+	 *
+	 * Note that removing the panel doesn't destroy the WP_Customize_Panel instance or remove its filters.
 	 *
 	 * @since 4.0.0
 	 *
@@ -3902,21 +3891,13 @@ final class WP_Customize_Manager {
 	 * @since 3.4.0
 	 * @since 4.5.0 Return added WP_Customize_Section instance.
 	 *
-	 * @param WP_Customize_Section|string $id   Customize Section object, or Section ID.
-	 * @param array                     $args {
-	 *  Optional. Array of properties for the new Section object. Default empty array.
-	 *  @type int          $priority              Priority of the section, defining the display order of panels and sections.
-	 *                                            Default 160.
-	 *  @type string       $panel                 The panel this section belongs to (if any). Default empty.
-	 *  @type string       $capability            Capability required for the section. Default 'edit_theme_options'
-	 *  @type string|array $theme_supports        Theme features required to support the section.
-	 *  @type string       $title                 Title of the section to show in UI.
-	 *  @type string       $description           Description to show in the UI.
-	 *  @type string       $type                  Type of the section.
-	 *  @type callable     $active_callback       Active callback.
-	 *  @type bool         $description_hidden    Hide the description behind a help icon, instead of inline above the first control. Default false.
-	 * }
-	 * @return WP_Customize_Section             The instance of the section that was added.
+	 * @see WP_Customize_Section::__construct()
+	 *
+	 * @param WP_Customize_Section|string $id   Customize Section object, or ID.
+	 * @param array                       $args Optional. Array of properties for the new Section object.
+	 *                                          See WP_Customize_Section::__construct() for information
+	 *                                          on accepted arguments. Default empty array.
+	 * @return WP_Customize_Section The instance of the section that was added.
 	 */
 	public function add_section( $id, $args = array() ) {
 		if ( $id instanceof WP_Customize_Section ) {
@@ -3945,6 +3926,8 @@ final class WP_Customize_Manager {
 
 	/**
 	 * Remove a customize section.
+	 *
+	 * Note that removing the section doesn't destroy the WP_Customize_Section instance or remove its filters.
 	 *
 	 * @since 3.4.0
 	 *
@@ -3987,28 +3970,13 @@ final class WP_Customize_Manager {
 	 * @since 3.4.0
 	 * @since 4.5.0 Return added WP_Customize_Control instance.
 	 *
-	 * @param WP_Customize_Control|string $id   Customize Control object, or ID.
-	 * @param array                       $args {
-	 *  Optional. Array of properties for the new Control object. Default empty array.
+	 * @see WP_Customize_Control::__construct()
 	 *
-	 *  @type array        $settings              All settings tied to the control. If undefined, defaults to `$setting`.
-	 *                                            IDs in the array correspond to the ID of a registered `WP_Customize_Setting`.
-	 *  @type string       $setting               The primary setting for the control (if there is one). Default is 'default'.
-	 *  @type string       $capability            Capability required to use this control. Normally derived from `$settings`.
-	 *  @type int          $priority              Order priority to load the control. Default 10.
-	 *  @type string       $section               The section this control belongs to. Default empty.
-	 *  @type string       $label                 Label for the control. Default empty.
-	 *  @type string       $description           Description for the control. Default empty.
-	 *  @type array        $choices               List of choices for 'radio' or 'select' type controls, where values
-	 *                                            are the keys, and labels are the values. Default empty array.
-	 *  @type array        $input_attrs           List of custom input attributes for control output, where attribute
-	 *                                            names are the keys and values are the values. Default empty array.
-	 *  @type bool         $allow_addition        Show UI for adding new content, currently only used for the
-	 *                                            dropdown-pages control. Default false.
-	 *  @type string       $type                  The type of the control. Default 'text'.
-	 *  @type callback     $active_callback       Active callback.
-	 * }
-	 * @return WP_Customize_Control             The instance of the control that was added.
+	 * @param WP_Customize_Control|string $id   Customize Control object, or ID.
+	 * @param array                       $args Optional. Array of properties for the new Control object.
+	 *                                          See WP_Customize_Control::__construct() for information
+	 *                                          on accepted arguments. Default empty array.
+	 * @return WP_Customize_Control The instance of the control that was added.
 	 */
 	public function add_control( $id, $args = array() ) {
 		if ( $id instanceof WP_Customize_Control ) {
@@ -4037,6 +4005,8 @@ final class WP_Customize_Manager {
 
 	/**
 	 * Remove a customize control.
+	 *
+	 * Note that removing the control doesn't destroy the WP_Customize_Control instance or remove its filters.
 	 *
 	 * @since 3.4.0
 	 *
@@ -4570,7 +4540,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 4.7.0
 	 *
-	 * @returns array Allowed URLs.
+	 * @return array Allowed URLs.
 	 */
 	public function get_allowed_urls() {
 		$allowed_urls = array( home_url( '/' ) );
@@ -4623,9 +4593,13 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 4.4.0
 	 *
+	 * @global array $_registered_pages
+	 *
 	 * @return string URL for link to close Customizer.
 	 */
 	public function get_return_url() {
+		global $_registered_pages;
+
 		$referer                    = wp_get_referer();
 		$excluded_referer_basenames = array( 'customize.php', 'wp-login.php' );
 
@@ -4638,6 +4612,22 @@ final class WP_Customize_Manager {
 		} else {
 			$return_url = home_url( '/' );
 		}
+
+		$return_url_basename = wp_basename( parse_url( $this->return_url, PHP_URL_PATH ) );
+		$return_url_query    = parse_url( $this->return_url, PHP_URL_QUERY );
+
+		if ( 'themes.php' === $return_url_basename && $return_url_query ) {
+			parse_str( $return_url_query, $query_vars );
+
+			/*
+			 * If the return URL is a page added by a theme to the Appearance menu via add_submenu_page(),
+			 * verify that belongs to the active theme, otherwise fall back to the Themes screen.
+			 */
+			if ( isset( $query_vars['page'] ) && ! isset( $_registered_pages[ "appearance_page_{$query_vars['page']}" ] ) ) {
+				$return_url = admin_url( 'themes.php' );
+			}
+		}
+
 		return $return_url;
 	}
 
@@ -5183,8 +5173,8 @@ final class WP_Customize_Manager {
 			)
 		);
 
-		// Input type: checkbox
-		// With custom value
+		// Input type: checkbox.
+		// With custom value.
 		$this->add_control(
 			'display_header_text',
 			array(
@@ -5207,8 +5197,8 @@ final class WP_Customize_Manager {
 			)
 		);
 
-		// Input type: Color
-		// With sanitize_callback
+		// Input type: color.
+		// With sanitize_callback.
 		$this->add_setting(
 			'background_color',
 			array(
@@ -5681,7 +5671,7 @@ final class WP_Customize_Manager {
 	 *
 	 * @since 4.7.0
 	 *
-	 * @returns bool Whether there are published (or to be published) pages.
+	 * @return bool Whether there are published (or to be published) pages.
 	 */
 	public function has_published_pages() {
 

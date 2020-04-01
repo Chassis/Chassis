@@ -92,8 +92,8 @@ class WP_Http_Encoding {
 	 *
 	 * @since 2.8.1
 	 * @link https://core.trac.wordpress.org/ticket/18273
-	 * @link https://secure.php.net/manual/en/function.gzinflate.php#70875
-	 * @link https://secure.php.net/manual/en/function.gzinflate.php#77336
+	 * @link https://www.php.net/manual/en/function.gzinflate.php#70875
+	 * @link https://www.php.net/manual/en/function.gzinflate.php#77336
 	 *
 	 * @param string $gzData String to decompress.
 	 * @return string|bool False on failure.
@@ -174,10 +174,9 @@ class WP_Http_Encoding {
 		 *
 		 * @since 3.6.0
 		 *
-		 * @param array  $type Encoding types allowed. Accepts 'gzinflate',
-		 *                     'gzuncompress', 'gzdecode'.
-		 * @param string $url  URL of the HTTP request.
-		 * @param array  $args HTTP request arguments.
+		 * @param string[] $type Array of what encoding types to accept and their priority values.
+		 * @param string   $url  URL of the HTTP request.
+		 * @param array    $args HTTP request arguments.
 		 */
 		$type = apply_filters( 'wp_http_accept_encoding', $type, $url, $args );
 

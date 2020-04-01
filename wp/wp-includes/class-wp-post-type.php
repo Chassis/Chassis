@@ -250,7 +250,7 @@ final class WP_Post_Type {
 	/**
 	 * Whether to delete posts of this type when deleting a user.
 	 *
-	 * If true, posts of this type belonging to the user will be moved to trash when then user is deleted.
+	 * If true, posts of this type belonging to the user will be moved to Trash when then user is deleted.
 	 * If false, posts of this type belonging to the user will *not* be trashed or deleted.
 	 * If not set (the default), posts are trashed if post_type_supports( 'author' ).
 	 * Otherwise posts are not trashed or deleted. Default null.
@@ -423,27 +423,27 @@ final class WP_Post_Type {
 
 		$args['name'] = $this->name;
 
-		// If not set, default to the setting for public.
+		// If not set, default to the setting for 'public'.
 		if ( null === $args['publicly_queryable'] ) {
 			$args['publicly_queryable'] = $args['public'];
 		}
 
-		// If not set, default to the setting for public.
+		// If not set, default to the setting for 'public'.
 		if ( null === $args['show_ui'] ) {
 			$args['show_ui'] = $args['public'];
 		}
 
-		// If not set, default to the setting for show_ui.
+		// If not set, default to the setting for 'show_ui'.
 		if ( null === $args['show_in_menu'] || ! $args['show_ui'] ) {
 			$args['show_in_menu'] = $args['show_ui'];
 		}
 
-		// If not set, default to the whether the full UI is shown.
+		// If not set, default to the setting for 'show_in_menu'.
 		if ( null === $args['show_in_admin_bar'] ) {
 			$args['show_in_admin_bar'] = (bool) $args['show_in_menu'];
 		}
 
-		// If not set, default to the setting for public.
+		// If not set, default to the setting for 'public'.
 		if ( null === $args['show_in_nav_menus'] ) {
 			$args['show_in_nav_menus'] = $args['public'];
 		}

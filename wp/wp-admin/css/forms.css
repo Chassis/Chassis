@@ -396,6 +396,10 @@ input[type="radio"].disabled:checked:before {
 	max-width: 100%;
 }
 
+.meta-box-sortables input {
+	vertical-align: middle;
+}
+
 .misc-pub-post-status select {
 	margin-top: 0;
 }
@@ -464,6 +468,7 @@ input.small-text {
 
 input[type="number"].small-text {
 	width: 65px;
+	padding-right: 0;
 }
 
 input.tiny-text {
@@ -472,6 +477,7 @@ input.tiny-text {
 
 input[type="number"].tiny-text {
 	width: 45px;
+	padding-right: 0;
 }
 
 #doaction,
@@ -1032,7 +1038,7 @@ table.form-table td .updated p {
 
 #search-users,
 #search-sites {
-	max-width: 100%;
+	max-width: 60%;
 }
 
 /*------------------------------------------------------------------------------
@@ -1200,6 +1206,10 @@ table.form-table td .updated p {
 	color: #72777c;
 }
 
+.privacy_requests .row-actions.processing {
+	position: static;
+}
+
 .privacy_requests tbody .has-request-results th {
 	box-shadow: none;
 }
@@ -1218,8 +1228,8 @@ table.form-table td .updated p {
 }
 
 .privacy_requests .next_steps .button {
-	word-break: break-all;
-	white-space: unset;
+	word-wrap: break-word;
+	white-space: normal;
 }
 
 .privacy_requests .status-request-confirmed th,
@@ -1627,6 +1637,13 @@ table.form-table td .updated p {
 	.wp-list-table.privacy_requests.widefat thead td input {
 		margin-left: 5px;
 	}
+
+	.wp-privacy-request-form-field input[type="text"] {
+		width: 100%;
+		margin-bottom: 10px;
+		vertical-align: middle;
+	}
+
 	.regular-text {
 		max-width: 100%;
 	}

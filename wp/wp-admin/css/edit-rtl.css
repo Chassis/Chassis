@@ -1,3 +1,4 @@
+/*! This file is auto-generated */
 #poststuff {
 	padding-top: 10px;
 	min-width: 763px;
@@ -421,7 +422,7 @@ form#tags-filter {
 #timestampdiv select {
 	vertical-align: top;
 	font-size: 12px;
-	line-height: 1.5; /* 18px */
+	line-height: 2.33333333; /* 28px */
 }
 
 #aa, #jj, #hh, #mn {
@@ -447,14 +448,18 @@ form#tags-filter {
 #post-body .misc-pub-post-status:before,
 #post-body #visibility:before,
 .curtime #timestamp:before,
-#post-body .misc-pub-revisions:before {
+#post-body .misc-pub-revisions:before,
+#post-body .misc-pub-response-to:before, 
+#post-body .misc-pub-comment-status:before {
 	color: #82878c;
 }
 
 #post-body .misc-pub-post-status:before,
 #post-body #visibility:before,
 .curtime #timestamp:before,
-#post-body .misc-pub-revisions:before {
+#post-body .misc-pub-revisions:before,
+#post-body .misc-pub-response-to:before, 
+#post-body .misc-pub-comment-status:before {
 	font: normal 20px/1 dashicons;
 	speak: none;
 	display: inline-block;
@@ -465,7 +470,8 @@ form#tags-filter {
 	-moz-osx-font-smoothing: grayscale;
 }
 
-#post-body .misc-pub-post-status:before {
+#post-body .misc-pub-post-status:before, 
+#post-body .misc-pub-comment-status:before {
 	content: "\f173";
 }
 
@@ -481,6 +487,10 @@ form#tags-filter {
 
 #post-body .misc-pub-revisions:before {
 	content: "\f321";
+}
+
+#post-body .misc-pub-response-to:before {
+	content: "\f101";
 }
 
 #timestampdiv {
@@ -609,6 +619,10 @@ form#tags-filter {
 	padding: 8px 10px;
 }
 
+#poststuff .stuffbox > h2 {
+	border-bottom: 1px solid #eee;
+}
+
 #poststuff .inside {
 	margin: 6px 0 0 0;
 }
@@ -636,7 +650,8 @@ form#tags-filter {
 	font-weight: 600;
 }
 
-#post-visibility-select {
+#post-visibility-select,
+#comment-status-radio {
 	line-height: 1.5;
 	margin-top: 3px;
 }
@@ -729,16 +744,38 @@ form#tags-filter {
 	margin-top: 6px;
 }
 
+.hide-privacy-policy-tutorial {
+	background-color: #fff;
+}
+
+.hide-privacy-policy-tutorial .wp-policy-help, /* For back-compat, see #49282 */
 .hide-privacy-policy-tutorial .privacy-policy-tutorial {
-	visibility: hidden;
+	display: none;
 }
 
-.wp-suggested-text p {
-	font-style: italic;
+.policy-text {
+	margin-bottom: 1em;
 }
 
-.wp-suggested-text p.privacy-policy-tutorial {
-	font-style: normal;
+.policy-text p:not(.privacy-policy-tutorial):not(.wp-policy-help) {
+	background-color: #fff;
+	margin: 0;
+	padding: 1em;
+}
+
+.policy-text p:not(.privacy-policy-tutorial):not(.wp-policy-help) + p:not(.privacy-policy-tutorial):not(.wp-policy-help) {
+	padding-top: 0;
+}
+
+.hide-privacy-policy-tutorial p:not(.privacy-policy-tutorial):not(.wp-policy-help) {
+	margin: 1em 0;
+	padding: 0;
+}
+
+strong.wp-policy-help, /* For back-compat, see #49282 */
+strong.privacy-policy-tutorial {
+	display: block;
+	margin: 0 0 1em;
 }
 
 .notice.wp-pp-notice {
@@ -977,6 +1014,11 @@ div.tabs-panel-active {
 
 div.tabs-panel-inactive {
 	display: none;
+}
+
+div.tabs-panel-active:focus {
+	box-shadow: inset 0 0 0 1px #5b9dd9, inset 0 0 2px 1px rgba(30, 140, 190, 0.8);
+	outline: 0 none;
 }
 
 #front-page-warning,
@@ -1384,6 +1426,40 @@ table.links-table {
 	.rtl #post-body .wp_themeSkin .mceStatusbar a.mceResize {
 		background-image: url(../images/resize-rtl-2x.gif);
 		background-position: left bottom;
+	}
+}
+
+/* one column on the attachment editor screen */
+@media only screen and (max-width: 1200px) {
+	.post-type-attachment #poststuff {
+		min-width: 0;
+	}
+
+	.post-type-attachment #wpbody-content #poststuff #post-body {
+		margin: 0;
+	}
+
+	.post-type-attachment #wpbody-content #post-body.columns-2 #postbox-container-1 {
+		margin-left: 0;
+		width: 100%;
+	}
+
+	.post-type-attachment #poststuff #postbox-container-1 .empty-container,
+	.post-type-attachment #poststuff #postbox-container-1 #side-sortables:empty {
+		border: 0 none;
+		height: 0;
+		min-height: 0;
+	}
+
+	.post-type-attachment #poststuff #post-body.columns-2 #side-sortables {
+		min-height: 0;
+		width: auto;
+	}
+
+	/* hide the radio buttons for column prefs */
+	.post-type-attachment .screen-layout,
+	.post-type-attachment .columns-prefs {
+		display: none;
 	}
 }
 
