@@ -123,7 +123,7 @@ class Plugin_Upgrader extends WP_Upgrader {
 			return $this->result;
 		}
 
-		// Force refresh of plugin update information
+		// Force refresh of plugin update information.
 		wp_clean_plugins_cache( $parsed_args['clear_update_cache'] );
 
 		return true;
@@ -163,12 +163,15 @@ class Plugin_Upgrader extends WP_Upgrader {
 			return false;
 		}
 
-		// Get the URL to the zip file
+		// Get the URL to the zip file.
 		$r = $current->response[ $plugin ];
 
 		add_filter( 'upgrader_pre_install', array( $this, 'deactivate_plugin_before_upgrade' ), 10, 2 );
+		add_filter( 'upgrader_pre_install', array( $this, 'active_before' ), 10, 2 );
 		add_filter( 'upgrader_clear_destination', array( $this, 'delete_old_plugin' ), 10, 4 );
-		//'source_selection' => array($this, 'source_selection'), //there's a trac ticket to move up the directory for zip's which are made a bit differently, useful for non-.org plugins.
+		add_filter( 'upgrader_post_install', array( $this, 'active_after' ), 10, 2 );
+		// There's a Trac ticket to move up the directory for zips which are made a bit differently, useful for non-.org plugins.
+		// 'source_selection' => array( $this, 'source_selection' ),
 		if ( $parsed_args['clear_update_cache'] ) {
 			// Clear cache so wp_update_plugins() knows about the new plugin.
 			add_action( 'upgrader_process_complete', 'wp_clean_plugins_cache', 9, 0 );
@@ -191,13 +194,15 @@ class Plugin_Upgrader extends WP_Upgrader {
 		// Cleanup our hooks, in case something else does a upgrade on this connection.
 		remove_action( 'upgrader_process_complete', 'wp_clean_plugins_cache', 9 );
 		remove_filter( 'upgrader_pre_install', array( $this, 'deactivate_plugin_before_upgrade' ) );
+		remove_filter( 'upgrader_pre_install', array( $this, 'active_before' ) );
 		remove_filter( 'upgrader_clear_destination', array( $this, 'delete_old_plugin' ) );
+		remove_filter( 'upgrader_post_install', array( $this, 'active_after' ) );
 
 		if ( ! $this->result || is_wp_error( $this->result ) ) {
 			return $this->result;
 		}
 
-		// Force refresh of plugin update information
+		// Force refresh of plugin update information.
 		wp_clean_plugins_cache( $parsed_args['clear_update_cache'] );
 
 		return true;
@@ -234,7 +239,7 @@ class Plugin_Upgrader extends WP_Upgrader {
 
 		$this->skin->header();
 
-		// Connect to the Filesystem first.
+		// Connect to the filesystem first.
 		$res = $this->fs_connect( array( WP_CONTENT_DIR, WP_PLUGIN_DIR ) );
 		if ( ! $res ) {
 			$this->skin->footer();
@@ -247,7 +252,7 @@ class Plugin_Upgrader extends WP_Upgrader {
 		 * Only start maintenance mode if:
 		 * - running Multisite and there are one or more plugins specified, OR
 		 * - a plugin with an update available is currently active.
-		 * @TODO: For multisite, maintenance mode should only kick in for individual sites if at all possible.
+		 * @todo For multisite, maintenance mode should only kick in for individual sites if at all possible.
 		 */
 		$maintenance = ( is_multisite() && ! empty( $plugins ) );
 		foreach ( $plugins as $plugin ) {
@@ -294,11 +299,11 @@ class Plugin_Upgrader extends WP_Upgrader {
 
 			$results[ $plugin ] = $this->result;
 
-			// Prevent credentials auth screen from displaying multiple times
+			// Prevent credentials auth screen from displaying multiple times.
 			if ( false === $result ) {
 				break;
 			}
-		} //end foreach $plugins
+		} // End foreach $plugins.
 
 		$this->maintenance_mode( false );
 
@@ -353,7 +358,7 @@ class Plugin_Upgrader extends WP_Upgrader {
 			return $source;
 		}
 
-		// Check the folder contains at least 1 valid plugin.
+		// Check that the folder contains at least 1 valid plugin.
 		$plugins_found = false;
 		$files         = glob( $working_directory . '*.php' );
 		if ( $files ) {
@@ -390,12 +395,14 @@ class Plugin_Upgrader extends WP_Upgrader {
 			return false;
 		}
 
-		$plugin = get_plugins( '/' . $this->result['destination_name'] ); //Ensure to pass with leading slash
+		// Ensure to pass with leading slash.
+		$plugin = get_plugins( '/' . $this->result['destination_name'] );
 		if ( empty( $plugin ) ) {
 			return false;
 		}
 
-		$pluginfiles = array_keys( $plugin ); //Assume the requested plugin is the first in the list
+		// Assume the requested plugin is the first in the list.
+		$pluginfiles = array_keys( $plugin );
 
 		return $this->result['destination_name'] . '/' . $pluginfiles[0];
 	}
@@ -408,17 +415,17 @@ class Plugin_Upgrader extends WP_Upgrader {
 	 * @since 2.8.0
 	 * @since 4.1.0 Added a return value.
 	 *
-	 * @param bool|WP_Error  $return Upgrade offer return.
-	 * @param array          $plugin Plugin package arguments.
+	 * @param bool|WP_Error $return Upgrade offer return.
+	 * @param array         $plugin Plugin package arguments.
 	 * @return bool|WP_Error The passed in $return param or WP_Error.
 	 */
 	public function deactivate_plugin_before_upgrade( $return, $plugin ) {
 
-		if ( is_wp_error( $return ) ) { //Bypass.
+		if ( is_wp_error( $return ) ) { // Bypass.
 			return $return;
 		}
 
-		// When in cron (background updates) don't deactivate the plugin, as we require a browser to reactivate it
+		// When in cron (background updates) don't deactivate the plugin, as we require a browser to reactivate it.
 		if ( wp_doing_cron() ) {
 			return $return;
 		}
@@ -429,7 +436,7 @@ class Plugin_Upgrader extends WP_Upgrader {
 		}
 
 		if ( is_plugin_active( $plugin ) ) {
-			//Deactivate the plugin silently, Prevent deactivation hooks from running.
+			// Deactivate the plugin silently, Prevent deactivation hooks from running.
 			deactivate_plugins( $plugin, true );
 		}
 
@@ -437,7 +444,79 @@ class Plugin_Upgrader extends WP_Upgrader {
 	}
 
 	/**
-	 * Delete the old plugin during an upgrade.
+	 * Turns on maintenance mode before attempting to background update an active plugin.
+	 *
+	 * Hooked to the {@see 'upgrader_pre_install'} filter by Plugin_Upgrader::upgrade().
+	 *
+	 * @since 5.4.0
+	 *
+	 * @param bool|WP_Error $return Upgrade offer return.
+	 * @param array         $plugin Plugin package arguments.
+	 * @return bool|WP_Error The passed in $return param or WP_Error.
+	 */
+	public function active_before( $return, $plugin ) {
+		if ( is_wp_error( $return ) ) {
+			return $return;
+		}
+
+		// Only enable maintenance mode when in cron (background update).
+		if ( ! wp_doing_cron() ) {
+			return $return;
+		}
+
+		$plugin = isset( $plugin['plugin'] ) ? $plugin['plugin'] : '';
+
+		// Only run if plugin is active.
+		if ( ! is_plugin_active( $plugin ) ) {
+			return $return;
+		}
+
+		// Change to maintenance mode. Bulk edit handles this separately.
+		if ( ! $this->bulk ) {
+			$this->maintenance_mode( true );
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Turns off maintenance mode after upgrading an active plugin.
+	 *
+	 * Hooked to the {@see 'upgrader_post_install'} filter by Plugin_Upgrader::upgrade().
+	 *
+	 * @since 5.4.0
+	 *
+	 * @param bool|WP_Error $return Upgrade offer return.
+	 * @param array         $plugin Plugin package arguments.
+	 * @return bool|WP_Error The passed in $return param or WP_Error.
+	 */
+	public function active_after( $return, $plugin ) {
+		if ( is_wp_error( $return ) ) {
+			return $return;
+		}
+
+		// Only disable maintenance mode when in cron (background update).
+		if ( ! wp_doing_cron() ) {
+			return $return;
+		}
+
+		$plugin = isset( $plugin['plugin'] ) ? $plugin['plugin'] : '';
+
+		// Only run if plugin is active
+		if ( ! is_plugin_active( $plugin ) ) {
+			return $return;
+		}
+
+		// Time to remove maintenance mode. Bulk edit handles this separately.
+		if ( ! $this->bulk ) {
+			$this->maintenance_mode( false );
+		}
+
+		return $return;
+	}
+
+	/**
+	 * Deletes the old plugin during an upgrade.
 	 *
 	 * Hooked to the {@see 'upgrader_clear_destination'} filter by
 	 * Plugin_Upgrader::upgrade() and Plugin_Upgrader::bulk_upgrade().
@@ -446,17 +525,18 @@ class Plugin_Upgrader extends WP_Upgrader {
 	 *
 	 * @global WP_Filesystem_Base $wp_filesystem WordPress filesystem subclass.
 	 *
-	 * @param bool|WP_Error $removed
-	 * @param string        $local_destination
-	 * @param string        $remote_destination
-	 * @param array         $plugin
-	 * @return WP_Error|bool
+	 * @param bool|WP_Error $removed            Whether the destination was cleared.
+	 *                                          True on success, WP_Error on failure.
+	 * @param string        $local_destination  The local package destination.
+	 * @param string        $remote_destination The remote package destination.
+	 * @param array         $plugin             Extra arguments passed to hooked filters.
+	 * @return bool|WP_Error
 	 */
 	public function delete_old_plugin( $removed, $local_destination, $remote_destination, $plugin ) {
 		global $wp_filesystem;
 
 		if ( is_wp_error( $removed ) ) {
-			return $removed; //Pass errors through.
+			return $removed; // Pass errors through.
 		}
 
 		$plugin = isset( $plugin['plugin'] ) ? $plugin['plugin'] : '';
@@ -467,12 +547,13 @@ class Plugin_Upgrader extends WP_Upgrader {
 		$plugins_dir     = $wp_filesystem->wp_plugins_dir();
 		$this_plugin_dir = trailingslashit( dirname( $plugins_dir . $plugin ) );
 
-		if ( ! $wp_filesystem->exists( $this_plugin_dir ) ) { //If it's already vanished.
+		if ( ! $wp_filesystem->exists( $this_plugin_dir ) ) { // If it's already vanished.
 			return $removed;
 		}
 
 		// If plugin is in its own directory, recursively delete the directory.
-		if ( strpos( $plugin, '/' ) && $this_plugin_dir != $plugins_dir ) { //base check on if plugin includes directory separator AND that it's not the root plugin folder
+		// Base check on if plugin includes directory separator AND that it's not the root plugin folder.
+		if ( strpos( $plugin, '/' ) && $this_plugin_dir != $plugins_dir ) {
 			$deleted = $wp_filesystem->delete( $this_plugin_dir, true );
 		} else {
 			$deleted = $wp_filesystem->delete( $plugins_dir . $plugin );

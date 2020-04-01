@@ -147,9 +147,10 @@ class WP_Roles {
 	 *
 	 * @since 2.0.0
 	 *
-	 * @param string $role Role name.
+	 * @param string $role         Role name.
 	 * @param string $display_name Role display name.
-	 * @param array $capabilities List of role capabilities in the above format.
+	 * @param bool[] $capabilities List of capabilities keyed by the capability name,
+	 *                             e.g. array( 'edit_posts' => true, 'delete_posts' => false ).
 	 * @return WP_Role|void WP_Role object, if role is added.
 	 */
 	public function add_role( $role, $display_name, $capabilities = array() ) {
@@ -355,7 +356,7 @@ class WP_Roles {
 			return $wp_user_roles;
 		}
 
-		if ( is_multisite() && $this->site_id != get_current_blog_id() ) {
+		if ( is_multisite() && get_current_blog_id() != $this->site_id ) {
 			remove_action( 'switch_blog', 'wp_switch_roles_and_user', 1 );
 
 			$roles = get_blog_option( $this->site_id, $this->role_key, array() );

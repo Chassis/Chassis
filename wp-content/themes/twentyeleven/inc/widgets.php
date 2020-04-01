@@ -38,6 +38,7 @@ class Twenty_Eleven_Ephemera_Widget extends WP_Widget {
 	 * PHP4 constructor.
 	 *
 	 * @since Twenty Eleven 1.0
+	 * @deprecated Twenty Eleven 2.2
 	 */
 	function Twenty_Eleven_Ephemera_Widget() {
 		self::__construct();
@@ -136,10 +137,10 @@ class Twenty_Eleven_Ephemera_Widget extends WP_Widget {
 
 			echo $args['after_widget'];
 
-			// Reset the post globals as this query will have stomped on it
+			// Reset the post globals as this query will have stomped on it.
 			wp_reset_postdata();
 
-			// end check for ephemeral posts
+			// End check for ephemeral posts.
 		endif;
 
 		$cache[ $args['widget_id'] ] = ob_get_flush();

@@ -6,7 +6,7 @@
  *
  * @package WordPress
  * @subpackage Twenty_Twenty
- * @since 1.0.0
+ * @since Twenty Twenty 1.0
  */
 
 /**
@@ -118,6 +118,9 @@ function twentytwenty_theme_support() {
 
 	// Add support for full and wide align images.
 	add_theme_support( 'align-wide' );
+
+	// Add support for responsive embeds.
+	add_theme_support( 'responsive-embeds' );
 
 	/*
 	 * Adds starter content to highlight the theme on fresh sites.
@@ -232,7 +235,7 @@ add_action( 'wp_print_footer_scripts', 'twentytwenty_skip_link_focus_fix' );
 
 /** Enqueue non-latin language styles
  *
- * @since 1.0.0
+ * @since Twenty Twenty 1.0
  *
  * @return void
  */
@@ -324,7 +327,7 @@ add_filter( 'get_custom_logo', 'twentytwenty_get_custom_logo' );
 if ( ! function_exists( 'wp_body_open' ) ) {
 
 	/**
-	 * Shim for wp_body_open, ensuring backwards compatibility with versions of WordPress older than 5.2.
+	 * Shim for wp_body_open, ensuring backward compatibility with versions of WordPress older than 5.2.
 	 */
 	function wp_body_open() {
 		do_action( 'wp_body_open' );
@@ -578,7 +581,7 @@ add_filter( 'the_content_more_link', 'twentytwenty_read_more_tag' );
 /**
  * Enqueues scripts for customizer controls & settings.
  *
- * @since 1.0.0
+ * @since Twenty Twenty 1.0
  *
  * @return void
  */
@@ -601,7 +604,7 @@ add_action( 'customize_controls_enqueue_scripts', 'twentytwenty_customize_contro
 /**
  * Enqueue scripts for the customizer preview.
  *
- * @since 1.0.0
+ * @since Twenty Twenty 1.0
  *
  * @return void
  */
@@ -627,7 +630,7 @@ add_action( 'customize_preview_init', 'twentytwenty_customize_preview_init' );
 /**
  * Get accessible color for an area.
  *
- * @since 1.0.0
+ * @since Twenty Twenty 1.0
  *
  * @param string $area The area we want to get the colors for.
  * @param string $context Can be 'text' or 'accent'.
@@ -666,7 +669,7 @@ function twentytwenty_get_color_for_area( $area = 'content', $context = 'text' )
 /**
  * Returns an array of variables for the customizer preview.
  *
- * @since 1.0.0
+ * @since Twenty Twenty 1.0
  *
  * @return array
  */
@@ -685,7 +688,7 @@ function twentytwenty_get_customizer_color_vars() {
 /**
  * Get an array of elements.
  *
- * @since 1.0
+ * @since Twenty Twenty 1.0
  *
  * @return array
  */
@@ -749,7 +752,7 @@ function twentytwenty_get_elements_array() {
 	/**
 	* Filters Twenty Twenty theme elements
 	*
-	* @since 1.0.0
+	* @since Twenty Twenty 1.0
 	*
 	* @param array Array of elements
 	*/
