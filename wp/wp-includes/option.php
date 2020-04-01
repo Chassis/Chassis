@@ -69,7 +69,7 @@ function get_option( $option, $default = false ) {
 	$passed_default = func_num_args() > 1;
 
 	if ( ! wp_installing() ) {
-		// prevent non-existent options from triggering multiple queries
+		// Prevent non-existent options from triggering multiple queries.
 		$notoptions = wp_cache_get( 'notoptions', 'options' );
 		if ( isset( $notoptions[ $option ] ) ) {
 			/**
@@ -99,11 +99,11 @@ function get_option( $option, $default = false ) {
 			if ( false === $value ) {
 				$row = $wpdb->get_row( $wpdb->prepare( "SELECT option_value FROM $wpdb->options WHERE option_name = %s LIMIT 1", $option ) );
 
-				// Has to be get_row instead of get_var because of funkiness with 0, false, null values
+				// Has to be get_row() instead of get_var() because of funkiness with 0, false, null values.
 				if ( is_object( $row ) ) {
 					$value = $row->option_value;
 					wp_cache_add( $option, $value, 'options' );
-				} else { // option does not exist, so we must cache its non-existence
+				} else { // Option does not exist, so we must cache its non-existence.
 					if ( ! is_array( $notoptions ) ) {
 						$notoptions = array();
 					}
@@ -127,7 +127,7 @@ function get_option( $option, $default = false ) {
 		}
 	}
 
-	// If home is not set use siteurl.
+	// If home is not set, use siteurl.
 	if ( 'home' == $option && '' == $value ) {
 		return get_option( 'siteurl' );
 	}
@@ -153,7 +153,7 @@ function get_option( $option, $default = false ) {
 }
 
 /**
- * Protect WordPress special option from being modified.
+ * Protects WordPress special option from being modified.
  *
  * Will die if $option is in protected list. Protected options are 'alloptions'
  * and 'notoptions' options.
@@ -175,7 +175,7 @@ function wp_protect_special_option( $option ) {
 }
 
 /**
- * Print option value after sanitizing for forms.
+ * Prints option value after sanitizing for forms.
  *
  * @since 1.5.0
  *
@@ -277,14 +277,13 @@ function wp_load_core_site_options( $network_id = null ) {
 }
 
 /**
- * Update the value of an option that was already added.
+ * Updates the value of an option that was already added.
  *
- * You do not need to serialize values. If the value needs to be serialized, then
- * it will be serialized before it is inserted into the database. Remember,
- * resources can not be serialized or added as an option.
+ * You do not need to serialize values. If the value needs to be serialized,
+ * then it will be serialized before it is inserted into the database.
+ * Remember, resources cannot be serialized or added as an option.
  *
- * If the option does not exist, then the option will be added with the option value,
- * with an `$autoload` value of 'yes'.
+ * If the option does not exist, it will be created.
 
  * This function is designed to work with or without a logged-in user. In terms of security,
  * plugin developers should check the current user's capabilities before updating any options.
@@ -437,11 +436,11 @@ function update_option( $option, $value, $autoload = null ) {
 }
 
 /**
- * Add a new option.
+ * Adds a new option.
  *
- * You do not need to serialize values. If the value needs to be serialized, then
- * it will be serialized before it is inserted into the database. Remember,
- * resources can not be serialized or added as an option.
+ * You do not need to serialize values. If the value needs to be serialized,
+ * then it will be serialized before it is inserted into the database.
+ * Remember, resources cannot be serialized or added as an option.
  *
  * You can create options without values and then update the values later.
  * Existing options will not be updated and checks are performed to ensure that you
@@ -479,7 +478,8 @@ function add_option( $option, $value = '', $deprecated = '', $autoload = 'yes' )
 
 	$value = sanitize_option( $option, $value );
 
-	// Make sure the option doesn't already exist. We can check the 'notoptions' cache before we ask for a db query
+	// Make sure the option doesn't already exist.
+	// We can check the 'notoptions' cache before we ask for a DB query.
 	$notoptions = wp_cache_get( 'notoptions', 'options' );
 	if ( ! is_array( $notoptions ) || ! isset( $notoptions[ $option ] ) ) {
 		/** This filter is documented in wp-includes/option.php */
@@ -516,8 +516,8 @@ function add_option( $option, $value = '', $deprecated = '', $autoload = 'yes' )
 		}
 	}
 
-	// This option exists now
-	$notoptions = wp_cache_get( 'notoptions', 'options' ); // yes, again... we need it to be fresh
+	// This option exists now.
+	$notoptions = wp_cache_get( 'notoptions', 'options' ); // Yes, again... we need it to be fresh.
 	if ( is_array( $notoptions ) && isset( $notoptions[ $option ] ) ) {
 		unset( $notoptions[ $option ] );
 		wp_cache_set( 'notoptions', $notoptions, 'options' );
@@ -568,7 +568,7 @@ function delete_option( $option ) {
 
 	wp_protect_special_option( $option );
 
-	// Get the ID, if no ID then return
+	// Get the ID, if no ID then return.
 	$row = $wpdb->get_row( $wpdb->prepare( "SELECT autoload FROM $wpdb->options WHERE option_name = %s", $option ) );
 	if ( is_null( $row ) ) {
 		return false;
@@ -622,7 +622,7 @@ function delete_option( $option ) {
 }
 
 /**
- * Delete a transient.
+ * Deletes a transient.
  *
  * @since 2.8.0
  *
@@ -669,7 +669,7 @@ function delete_transient( $transient ) {
 }
 
 /**
- * Get the value of a transient.
+ * Retrieves the value of a transient.
  *
  * If the transient does not exist, does not have a value, or has expired,
  * then the return value will be false.
@@ -707,7 +707,7 @@ function get_transient( $transient ) {
 	} else {
 		$transient_option = '_transient_' . $transient;
 		if ( ! wp_installing() ) {
-			// If option is not in alloptions, it is not autoloaded and thus has a timeout
+			// If option is not in alloptions, it is not autoloaded and thus has a timeout.
 			$alloptions = wp_load_alloptions();
 			if ( ! isset( $alloptions[ $transient_option ] ) ) {
 				$transient_timeout = '_transient_timeout_' . $transient;
@@ -740,10 +740,10 @@ function get_transient( $transient ) {
 }
 
 /**
- * Set/update the value of a transient.
+ * Sets/updates the value of a transient.
  *
- * You do not need to serialize values. If the value needs to be serialized, then
- * it will be serialized before it is set.
+ * You do not need to serialize values. If the value needs to be serialized,
+ * then it will be serialized before it is set.
  *
  * @since 2.8.0
  *
@@ -881,7 +881,7 @@ function delete_expired_transients( $force_db = false ) {
 	);
 
 	if ( ! is_multisite() ) {
-		// non-Multisite stores site transients in the options table.
+		// Single site stores site transients in the options table.
 		$wpdb->query(
 			$wpdb->prepare(
 				"DELETE a, b FROM {$wpdb->options} a, {$wpdb->options} b
@@ -940,7 +940,7 @@ function wp_user_settings() {
 	if ( isset( $_COOKIE[ 'wp-settings-' . $user_id ] ) ) {
 		$cookie = preg_replace( '/[^A-Za-z0-9=&_]/', '', $_COOKIE[ 'wp-settings-' . $user_id ] );
 
-		// No change or both empty
+		// No change or both empty.
 		if ( $cookie == $settings ) {
 			return;
 		}
@@ -948,7 +948,7 @@ function wp_user_settings() {
 		$last_saved = (int) get_user_option( 'user-settings-time', $user_id );
 		$current    = isset( $_COOKIE[ 'wp-settings-time-' . $user_id ] ) ? preg_replace( '/[^0-9]/', '', $_COOKIE[ 'wp-settings-time-' . $user_id ] ) : 0;
 
-		// The cookie is newer than the saved value. Update the user_option and leave the cookie as-is
+		// The cookie is newer than the saved value. Update the user_option and leave the cookie as-is.
 		if ( $current > $last_saved ) {
 			update_user_option( $user_id, 'user-settings', $cookie, false );
 			update_user_option( $user_id, 'user-settings-time', time() - 5, false );
@@ -964,7 +964,7 @@ function wp_user_settings() {
 }
 
 /**
- * Retrieve user interface setting value based on setting name.
+ * Retrieves user interface setting value based on setting name.
  *
  * @since 2.7.0
  *
@@ -979,7 +979,7 @@ function get_user_setting( $name, $default = false ) {
 }
 
 /**
- * Add or update user interface setting.
+ * Adds or updates user interface setting.
  *
  * Both $name and $value can contain only ASCII letters, numbers, hyphens, and underscores.
  *
@@ -1003,7 +1003,7 @@ function set_user_setting( $name, $value ) {
 }
 
 /**
- * Delete user interface settings.
+ * Deletes user interface settings.
  *
  * Deleting settings would reset them to the defaults.
  *
@@ -1038,7 +1038,7 @@ function delete_user_setting( $names ) {
 }
 
 /**
- * Retrieve all user interface settings.
+ * Retrieves all user interface settings.
  *
  * @since 2.7.0
  *
@@ -1063,7 +1063,7 @@ function get_all_user_settings() {
 	if ( isset( $_COOKIE[ 'wp-settings-' . $user_id ] ) ) {
 		$cookie = preg_replace( '/[^A-Za-z0-9=&_-]/', '', $_COOKIE[ 'wp-settings-' . $user_id ] );
 
-		if ( strpos( $cookie, '=' ) ) { // '=' cannot be 1st char
+		if ( strpos( $cookie, '=' ) ) { // '=' cannot be 1st char.
 			parse_str( $cookie, $user_settings );
 		}
 	} else {
@@ -1079,7 +1079,7 @@ function get_all_user_settings() {
 }
 
 /**
- * Private. Set all user interface settings.
+ * Private. Sets all user interface settings.
  *
  * @since 2.8.0
  * @access private
@@ -1122,7 +1122,7 @@ function wp_set_all_user_settings( $user_settings ) {
 }
 
 /**
- * Delete the user settings of the current user.
+ * Deletes the user settings of the current user.
  *
  * @since 2.7.0
  */
@@ -1155,7 +1155,7 @@ function get_site_option( $option, $default = false, $deprecated = true ) {
 }
 
 /**
- * Add a new option for the current network.
+ * Adds a new option for the current network.
  *
  * Existing options will not be updated. Note that prior to 3.3 this wasn't the case.
  *
@@ -1188,7 +1188,7 @@ function delete_site_option( $option ) {
 }
 
 /**
- * Update the value of an option that was already added for the current network.
+ * Updates the value of an option that was already added for the current network.
  *
  * @since 2.8.0
  * @since 4.4.0 Modified into wrapper for update_network_option()
@@ -1204,7 +1204,7 @@ function update_site_option( $option, $value ) {
 }
 
 /**
- * Retrieve a network's option value based on the option name.
+ * Retrieves a network's option value based on the option name.
  *
  * @since 4.4.0
  *
@@ -1260,7 +1260,7 @@ function get_network_option( $network_id, $option, $default = false ) {
 		return $pre;
 	}
 
-	// prevent non-existent options from triggering multiple queries
+	// Prevent non-existent options from triggering multiple queries.
 	$notoptions_key = "$network_id:notoptions";
 	$notoptions     = wp_cache_get( $notoptions_key, 'site-options' );
 
@@ -1294,7 +1294,7 @@ function get_network_option( $network_id, $option, $default = false ) {
 		if ( ! isset( $value ) || false === $value ) {
 			$row = $wpdb->get_row( $wpdb->prepare( "SELECT meta_value FROM $wpdb->sitemeta WHERE meta_key = %s AND site_id = %d", $option, $network_id ) );
 
-			// Has to be get_row instead of get_var because of funkiness with 0, false, null values
+			// Has to be get_row() instead of get_var() because of funkiness with 0, false, null values.
 			if ( is_object( $row ) ) {
 				$value = $row->meta_value;
 				$value = maybe_unserialize( $value );
@@ -1335,7 +1335,7 @@ function get_network_option( $network_id, $option, $default = false ) {
 }
 
 /**
- * Add a new network option.
+ * Adds a new network option.
  *
  * Existing options will not be updated.
  *
@@ -1389,7 +1389,8 @@ function add_network_option( $network_id, $option, $value ) {
 	} else {
 		$cache_key = "$network_id:$option";
 
-		// Make sure the option doesn't already exist. We can check the 'notoptions' cache before we ask for a db query
+		// Make sure the option doesn't already exist.
+		// We can check the 'notoptions' cache before we ask for a DB query.
 		$notoptions = wp_cache_get( $notoptions_key, 'site-options' );
 		if ( ! is_array( $notoptions ) || ! isset( $notoptions[ $option ] ) ) {
 			if ( false !== get_network_option( $network_id, $option, false ) ) {
@@ -1415,8 +1416,8 @@ function add_network_option( $network_id, $option, $value ) {
 
 		wp_cache_set( $cache_key, $value, 'site-options' );
 
-		// This option exists now
-		$notoptions = wp_cache_get( $notoptions_key, 'site-options' ); // yes, again... we need it to be fresh
+		// This option exists now.
+		$notoptions = wp_cache_get( $notoptions_key, 'site-options' ); // Yes, again... we need it to be fresh.
 		if ( is_array( $notoptions ) && isset( $notoptions[ $option ] ) ) {
 			unset( $notoptions[ $option ] );
 			wp_cache_set( $notoptions_key, $notoptions, 'site-options' );
@@ -1552,7 +1553,7 @@ function delete_network_option( $network_id, $option ) {
 }
 
 /**
- * Update the value of a network option that was already added.
+ * Updates the value of a network option that was already added.
  *
  * @since 4.4.0
  *
@@ -1683,7 +1684,7 @@ function update_network_option( $network_id, $option, $value ) {
 }
 
 /**
- * Delete a site transient.
+ * Deletes a site transient.
  *
  * @since 2.9.0
  *
@@ -1729,7 +1730,7 @@ function delete_site_transient( $transient ) {
 }
 
 /**
- * Get the value of a site transient.
+ * Retrieves the value of a site transient.
  *
  * If the transient does not exist, does not have a value, or has expired,
  * then the return value will be false.
@@ -1801,10 +1802,10 @@ function get_site_transient( $transient ) {
 }
 
 /**
- * Set/update the value of a site transient.
+ * Sets/updates the value of a site transient.
  *
- * You do not need to serialize values, if the value needs to be serialize, then
- * it will be serialized before it is set.
+ * You do not need to serialize values. If the value needs to be serialized,
+ * then it will be serialized before it is set.
  *
  * @since 2.9.0
  *
@@ -1894,7 +1895,7 @@ function set_site_transient( $transient, $value, $expiration = 0 ) {
 }
 
 /**
- * Register default settings available in WordPress.
+ * Registers default settings available in WordPress.
  *
  * The settings registered here are primarily useful for the REST API, so this
  * does not encompass all settings available in WordPress.
@@ -2087,7 +2088,7 @@ function register_initial_settings() {
 }
 
 /**
- * Register a setting and its data.
+ * Registers a setting and its data.
  *
  * @since 2.7.0
  * @since 4.7.0 `$args` can be passed to set flags on the setting, similar to `register_meta()`.
@@ -2096,17 +2097,20 @@ function register_initial_settings() {
  * @global array $wp_registered_settings
  *
  * @param string $option_group A settings group name. Should correspond to a whitelisted option key name.
- *  Default whitelisted option key names include "general," "discussion," and "reading," among others.
+ *                             Default whitelisted option key names include 'general', 'discussion', 'media',
+ *                             'reading', 'writing', 'misc', 'options', and 'privacy'.
  * @param string $option_name The name of an option to sanitize and save.
  * @param array  $args {
  *     Data used to describe the setting when registered.
  *
- *     @type string   $type              The type of data associated with this setting.
- *                                       Valid values are 'string', 'boolean', 'integer', and 'number'.
- *     @type string   $description       A description of the data attached to this setting.
- *     @type callable $sanitize_callback A callback function that sanitizes the option's value.
- *     @type bool     $show_in_rest      Whether data associated with this setting should be included in the REST API.
- *     @type mixed    $default           Default value when calling `get_option()`.
+ *     @type string     $type              The type of data associated with this setting.
+ *                                         Valid values are 'string', 'boolean', 'integer', 'number', 'array', and 'object'.
+ *     @type string     $description       A description of the data attached to this setting.
+ *     @type callable   $sanitize_callback A callback function that sanitizes the option's value.
+ *     @type bool|array $show_in_rest      Whether data associated with this setting should be included in the REST API.
+ *                                         When registering complex settings, this argument may optionally be an
+ *                                         array with a 'schema' key.
+ *     @type mixed      $default           Default value when calling `get_option()`.
  * }
  */
 function register_setting( $option_group, $option_name, $args = array() ) {
@@ -2139,6 +2143,11 @@ function register_setting( $option_group, $option_name, $args = array() ) {
 	 */
 	$args = apply_filters( 'register_setting_args', $args, $defaults, $option_group, $option_name );
 	$args = wp_parse_args( $args, $defaults );
+
+	// Require an item schema when registering settings with an array type.
+	if ( false !== $args['show_in_rest'] && 'array' === $args['type'] && ( ! is_array( $args['show_in_rest'] ) || ! isset( $args['show_in_rest']['schema']['items'] ) ) ) {
+		_doing_it_wrong( __FUNCTION__, __( 'When registering an "array" setting to show in the REST API, you must specify the schema for each array item in "show_in_rest.schema.items".' ), '5.4.0' );
+	}
 
 	if ( ! is_array( $wp_registered_settings ) ) {
 		$wp_registered_settings = array();
@@ -2182,7 +2191,7 @@ function register_setting( $option_group, $option_name, $args = array() ) {
 }
 
 /**
- * Unregister a setting.
+ * Unregisters a setting.
  *
  * @since 2.7.0
  * @since 4.7.0 `$sanitize_callback` was deprecated. The callback from `register_setting()` is now used instead.
@@ -2224,7 +2233,7 @@ function unregister_setting( $option_group, $option_name, $deprecated = '' ) {
 	}
 
 	$pos = array_search( $option_name, (array) $new_whitelist_options[ $option_group ] );
-	if ( $pos !== false ) {
+	if ( false !== $pos ) {
 		unset( $new_whitelist_options[ $option_group ][ $pos ] );
 	}
 	if ( '' !== $deprecated ) {
@@ -2276,7 +2285,7 @@ function get_registered_settings() {
 }
 
 /**
- * Filter the default value for the option.
+ * Filters the default value for the option.
  *
  * For settings which register a default setting in `register_setting()`, this
  * function is added as a filter to `default_option_{$option}`.

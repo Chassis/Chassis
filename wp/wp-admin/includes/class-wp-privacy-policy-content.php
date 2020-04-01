@@ -318,9 +318,10 @@ final class WP_Privacy_Policy_Content {
 			return;
 		}
 
+		$current_screen = get_current_screen();
 		$policy_page_id = (int) get_option( 'wp_page_for_privacy_policy' );
 
-		if ( ! $policy_page_id || $policy_page_id !== $post->ID ) {
+		if ( 'post' !== $current_screen->base || $policy_page_id !== $post->ID ) {
 			return;
 		}
 
@@ -705,10 +706,10 @@ final class WP_Privacy_Policy_Content {
 		 * @since 4.9.6
 		 * @since 5.0.0 Added the `$strings`, `$description`, and `$blocks` parameters.
 		 *
-		 * @param string $content     The default policy content.
-		 * @param array  $strings     An array of privacy policy content strings.
-		 * @param bool   $description Whether policy descriptions should be included.
-		 * @param bool   $blocks      Whether the content should be formatted for the block editor.
+		 * @param string   $content     The default policy content.
+		 * @param string[] $strings     An array of privacy policy content strings.
+		 * @param bool     $description Whether policy descriptions should be included.
+		 * @param bool     $blocks      Whether the content should be formatted for the block editor.
 		 */
 		return apply_filters( 'wp_get_default_privacy_policy_content', $content, $strings, $description, $blocks );
 	}

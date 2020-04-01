@@ -82,56 +82,93 @@ this["wp"] = this["wp"] || {}; this["wp"]["dataControls"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 317);
+/******/ 	return __webpack_require__(__webpack_require__.s = 398);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 17:
+/***/ 18:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) {
-    for (var i = 0, arr2 = new Array(arr.length); i < arr.length; i++) {
-      arr2[i] = arr[i];
-    }
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
+var arrayLikeToArray = __webpack_require__(25);
 
-    return arr2;
-  }
+// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return Object(arrayLikeToArray["a" /* default */])(arr);
 }
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-var iterableToArray = __webpack_require__(30);
+var iterableToArray = __webpack_require__(35);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
+var unsupportedIterableToArray = __webpack_require__(27);
 
 // CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
 function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance");
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 // CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _toConsumableArray; });
 
 
 
+
 function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || Object(iterableToArray["a" /* default */])(arr) || _nonIterableSpread();
+  return _arrayWithoutHoles(arr) || Object(iterableToArray["a" /* default */])(arr) || Object(unsupportedIterableToArray["a" /* default */])(arr) || _nonIterableSpread();
 }
 
 /***/ }),
 
-/***/ 30:
+/***/ 25:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _arrayLikeToArray; });
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+/***/ }),
+
+/***/ 27:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _unsupportedIterableToArray; });
+/* harmony import */ var _arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(n);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
+}
+
+/***/ }),
+
+/***/ 35:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _iterableToArray; });
 function _iterableToArray(iter) {
-  if (Symbol.iterator in Object(iter) || Object.prototype.toString.call(iter) === "[object Arguments]") return Array.from(iter);
+  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
 }
 
 /***/ }),
 
-/***/ 317:
+/***/ 398:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -140,8 +177,8 @@ __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "select", function() { return select; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "dispatch", function() { return dispatch; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "controls", function() { return controls; });
-/* harmony import */ var _babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(17);
-/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(34);
+/* harmony import */ var _babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(18);
+/* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1__ = __webpack_require__(42);
 /* harmony import */ var _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1___default = /*#__PURE__*/__webpack_require__.n(_wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1__);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2__ = __webpack_require__(4);
 /* harmony import */ var _wordpress_data__WEBPACK_IMPORTED_MODULE_2___default = /*#__PURE__*/__webpack_require__.n(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__);
@@ -162,10 +199,10 @@ __webpack_require__.r(__webpack_exports__);
  * import { apiFetch } from '@wordpress/data-controls';
  *
  * // Action generator using apiFetch
- * export function* myAction {
- *		const path = '/v2/my-api/items';
- *		const items = yield apiFetch( { path } );
- *		// do something with the items.
+ * export function* myAction() {
+ * 	const path = '/v2/my-api/items';
+ * 	const items = yield apiFetch( { path } );
+ * 	// do something with the items.
  * }
  * ```
  *
@@ -194,9 +231,9 @@ var apiFetch = function apiFetch(request) {
  * import { select } from '@wordpress/data-controls';
  *
  * // Action generator using select
- * export function* myAction {
- *		const isSidebarOpened = yield select( 'core/edit-post', 'isEditorSideBarOpened' );
- *		// do stuff with the result from the select.
+ * export function* myAction() {
+ * 	const isSidebarOpened = yield select( 'core/edit-post', 'isEditorSideBarOpened' );
+ * 	// do stuff with the result from the select.
  * }
  * ```
  *
@@ -227,9 +264,9 @@ function select(storeKey, selectorName) {
  * import { dispatch } from '@wordpress/data-controls';
  *
  * // Action generator using dispatch
- * export function* myAction {
- *   yield dispatch( 'core/edit-post' ).togglePublishSidebar();
- *   // do some other things.
+ * export function* myAction() {
+ * 	yield dispatch( 'core/edit-post', 'togglePublishSidebar' );
+ * 	// do some other things.
  * }
  * ```
  *
@@ -249,46 +286,6 @@ function dispatch(storeKey, actionName) {
   };
 }
 /**
- * Utility for returning a promise that handles a selector with a resolver.
- *
- * @param {Object} registry             The data registry.
- * @param {Object} options
- * @param {string} options.storeKey     The store the selector belongs to
- * @param {string} options.selectorName The selector name
- * @param {Array}  options.args         The arguments fed to the selector
- *
- * @return {Promise}  A promise for resolving the given selector.
- */
-
-var resolveSelect = function resolveSelect(registry, _ref) {
-  var storeKey = _ref.storeKey,
-      selectorName = _ref.selectorName,
-      args = _ref.args;
-  return new Promise(function (resolve) {
-    var hasFinished = function hasFinished() {
-      return registry.select('core/data').hasFinishedResolution(storeKey, selectorName, args);
-    };
-
-    var getResult = function getResult() {
-      return registry.select(storeKey)[selectorName].apply(null, args);
-    }; // trigger the selector (to trigger the resolver)
-
-
-    var result = getResult();
-
-    if (hasFinished()) {
-      return resolve(result);
-    }
-
-    var unsubscribe = registry.subscribe(function () {
-      if (hasFinished()) {
-        unsubscribe();
-        resolve(getResult());
-      }
-    });
-  });
-};
-/**
  * The default export is what you use to register the controls with your custom
  * store.
  *
@@ -304,7 +301,7 @@ var resolveSelect = function resolveSelect(registry, _ref) {
  * import * as actions from './actions';
  * import * as resolvers from './resolvers';
  *
- * registerStore ( 'my-custom-store', {
+ * registerStore( 'my-custom-store', {
  * 	reducer,
  * 	controls,
  * 	actions,
@@ -317,33 +314,28 @@ var resolveSelect = function resolveSelect(registry, _ref) {
  *                  store.
  */
 
-
 var controls = {
-  API_FETCH: function API_FETCH(_ref2) {
-    var request = _ref2.request;
+  API_FETCH: function API_FETCH(_ref) {
+    var request = _ref.request;
     return _wordpress_api_fetch__WEBPACK_IMPORTED_MODULE_1___default()(request);
   },
   SELECT: Object(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__["createRegistryControl"])(function (registry) {
-    return function (_ref3) {
-      var _registry$select;
+    return function (_ref2) {
+      var _registry;
 
-      var storeKey = _ref3.storeKey,
-          selectorName = _ref3.selectorName,
-          args = _ref3.args;
-      return registry.select(storeKey)[selectorName].hasResolver ? resolveSelect(registry, {
-        storeKey: storeKey,
-        selectorName: selectorName,
-        args: args
-      }) : (_registry$select = registry.select(storeKey))[selectorName].apply(_registry$select, Object(_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(args));
+      var storeKey = _ref2.storeKey,
+          selectorName = _ref2.selectorName,
+          args = _ref2.args;
+      return (_registry = registry[registry.select(storeKey)[selectorName].hasResolver ? '__experimentalResolveSelect' : 'select'](storeKey))[selectorName].apply(_registry, Object(_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(args));
     };
   }),
   DISPATCH: Object(_wordpress_data__WEBPACK_IMPORTED_MODULE_2__["createRegistryControl"])(function (registry) {
-    return function (_ref4) {
+    return function (_ref3) {
       var _registry$dispatch;
 
-      var storeKey = _ref4.storeKey,
-          actionName = _ref4.actionName,
-          args = _ref4.args;
+      var storeKey = _ref3.storeKey,
+          actionName = _ref3.actionName,
+          args = _ref3.args;
       return (_registry$dispatch = registry.dispatch(storeKey))[actionName].apply(_registry$dispatch, Object(_babel_runtime_helpers_esm_toConsumableArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(args));
     };
   })
@@ -352,17 +344,17 @@ var controls = {
 
 /***/ }),
 
-/***/ 34:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["wp"]["apiFetch"]; }());
-
-/***/ }),
-
 /***/ 4:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["data"]; }());
+
+/***/ }),
+
+/***/ 42:
+/***/ (function(module, exports) {
+
+(function() { module.exports = this["wp"]["apiFetch"]; }());
 
 /***/ })
 

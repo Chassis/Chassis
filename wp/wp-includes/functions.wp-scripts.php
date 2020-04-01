@@ -65,7 +65,7 @@ function _wp_scripts_maybe_doing_it_wrong( $function ) {
  * @since 2.1.0
  *
  * @param string|bool|array $handles Optional. Scripts to be printed. Default 'false'.
- * @return array On success, a processed array of WP_Dependencies items; otherwise, an empty array.
+ * @return string[] On success, an array of handles of processed WP_Dependencies items; otherwise, an empty array.
  */
 function wp_print_scripts( $handles = false ) {
 	/**
@@ -74,7 +74,7 @@ function wp_print_scripts( $handles = false ) {
 	 * @since 2.1.0
 	 */
 	do_action( 'wp_print_scripts' );
-	if ( '' === $handles ) { // for wp_head
+	if ( '' === $handles ) { // For 'wp_head'.
 		$handles = false;
 	}
 
@@ -142,7 +142,7 @@ function wp_add_inline_script( $handle, $data, $position = 'after' ) {
  * @param string           $handle    Name of the script. Should be unique.
  * @param string|bool      $src       Full URL of the script, or path of the script relative to the WordPress root directory.
  *                                    If source is set to false, script is an alias of other scripts it depends on.
- * @param array            $deps      Optional. An array of registered script handles this script depends on. Default empty array.
+ * @param string[]         $deps      Optional. An array of registered script handles this script depends on. Default empty array.
  * @param string|bool|null $ver       Optional. String specifying script version number, if it has one, which is added to the URL
  *                                    as a query string for cache busting purposes. If version is set to false, a version
  *                                    number is automatically added equal to current installed WordPress version.
@@ -306,7 +306,7 @@ function wp_deregister_script( $handle ) {
  * @param string           $handle    Name of the script. Should be unique.
  * @param string           $src       Full URL of the script, or path of the script relative to the WordPress root directory.
  *                                    Default empty.
- * @param array            $deps      Optional. An array of registered script handles this script depends on. Default empty array.
+ * @param string[]         $deps      Optional. An array of registered script handles this script depends on. Default empty array.
  * @param string|bool|null $ver       Optional. String specifying script version number, if it has one, which is added to the URL
  *                                    as a query string for cache busting purposes. If version is set to false, a version
  *                                    number is automatically added equal to current installed WordPress version.

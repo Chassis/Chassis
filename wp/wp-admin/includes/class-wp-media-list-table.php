@@ -222,7 +222,11 @@ class WP_Media_List_Table extends WP_List_Table {
 	/**
 	 */
 	public function no_items() {
-		_e( 'No media files found.' );
+		if ( $this->is_trash ) {
+			_e( 'No media files found in Trash.' );
+		} else {
+			_e( 'No media files found.' );
+		}
 	}
 
 	/**
@@ -626,8 +630,8 @@ class WP_Media_List_Table extends WP_List_Table {
 		while ( have_posts() ) :
 			the_post();
 			if (
-				( $this->is_trash && $post->post_status != 'trash' )
-				|| ( ! $this->is_trash && $post->post_status === 'trash' )
+				( $this->is_trash && 'trash' !== $post->post_status )
+				|| ( ! $this->is_trash && 'trash' === $post->post_status )
 			) {
 				continue;
 			}
@@ -781,7 +785,8 @@ class WP_Media_List_Table extends WP_List_Table {
 	 * @param object $post        Attachment being acted upon.
 	 * @param string $column_name Current column name.
 	 * @param string $primary     Primary column name.
-	 * @return string Row actions output for media attachments.
+	 * @return string Row actions output for media attachments, or an empty string
+	 *                if the current column is not the primary column.
 	 */
 	protected function handle_row_actions( $post, $column_name, $primary ) {
 		if ( $primary !== $column_name ) {
@@ -789,6 +794,7 @@ class WP_Media_List_Table extends WP_List_Table {
 		}
 
 		$att_title = _draft_or_post_title();
+
 		return $this->row_actions( $this->_get_row_actions( $post, $att_title ) );
 	}
 }

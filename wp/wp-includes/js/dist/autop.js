@@ -82,12 +82,12 @@ this["wp"] = this["wp"] || {}; this["wp"]["autop"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 233);
+/******/ 	return __webpack_require__(__webpack_require__.s = 279);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 23:
+/***/ 20:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -97,6 +97,7 @@ var arrayWithHoles = __webpack_require__(38);
 
 // CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArrayLimit.js
 function _iterableToArrayLimit(arr, i) {
+  if (typeof Symbol === "undefined" || !(Symbol.iterator in Object(arr))) return;
   var _arr = [];
   var _n = true;
   var _d = false;
@@ -121,6 +122,9 @@ function _iterableToArrayLimit(arr, i) {
 
   return _arr;
 }
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
+var unsupportedIterableToArray = __webpack_require__(27);
+
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
 var nonIterableRest = __webpack_require__(39);
 
@@ -129,20 +133,56 @@ var nonIterableRest = __webpack_require__(39);
 
 
 
+
 function _slicedToArray(arr, i) {
-  return Object(arrayWithHoles["a" /* default */])(arr) || _iterableToArrayLimit(arr, i) || Object(nonIterableRest["a" /* default */])();
+  return Object(arrayWithHoles["a" /* default */])(arr) || _iterableToArrayLimit(arr, i) || Object(unsupportedIterableToArray["a" /* default */])(arr, i) || Object(nonIterableRest["a" /* default */])();
 }
 
 /***/ }),
 
-/***/ 233:
+/***/ 25:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _arrayLikeToArray; });
+function _arrayLikeToArray(arr, len) {
+  if (len == null || len > arr.length) len = arr.length;
+
+  for (var i = 0, arr2 = new Array(len); i < len; i++) {
+    arr2[i] = arr[i];
+  }
+
+  return arr2;
+}
+
+/***/ }),
+
+/***/ 27:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _unsupportedIterableToArray; });
+/* harmony import */ var _arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
+
+function _unsupportedIterableToArray(o, minLen) {
+  if (!o) return;
+  if (typeof o === "string") return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
+  var n = Object.prototype.toString.call(o).slice(8, -1);
+  if (n === "Object" && o.constructor) n = o.constructor.name;
+  if (n === "Map" || n === "Set") return Array.from(n);
+  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
+}
+
+/***/ }),
+
+/***/ 279:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 __webpack_require__.r(__webpack_exports__);
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "autop", function() { return autop; });
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "removep", function() { return removep; });
-/* harmony import */ var _babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(23);
+/* harmony import */ var _babel_runtime_helpers_esm_slicedToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(20);
 
 
 /**
@@ -302,9 +342,9 @@ function autop(text) {
   text = text.replace(/<br\s*\/?>\s*<br\s*\/?>/g, '\n\n');
   var allBlocks = '(?:table|thead|tfoot|caption|col|colgroup|tbody|tr|td|th|div|dl|dd|dt|ul|ol|li|pre|form|map|area|blockquote|address|math|style|p|h[1-6]|hr|fieldset|legend|section|article|aside|hgroup|header|footer|nav|figure|figcaption|details|menu|summary)'; // Add a double line break above block-level opening tags.
 
-  text = text.replace(new RegExp('(<' + allBlocks + '[\\s\/>])', 'g'), '\n\n$1'); // Add a double line break below block-level closing tags.
+  text = text.replace(new RegExp('(<' + allBlocks + '[\\s/>])', 'g'), '\n\n$1'); // Add a double line break below block-level closing tags.
 
-  text = text.replace(new RegExp('(<\/' + allBlocks + '>)', 'g'), '$1\n\n'); // Standardize newline characters to "\n".
+  text = text.replace(new RegExp('(</' + allBlocks + '>)', 'g'), '$1\n\n'); // Standardize newline characters to "\n".
 
   text = text.replace(/\r\n|\r/g, '\n'); // Find newlines in all elements and add placeholders.
 
@@ -360,16 +400,16 @@ function autop(text) {
 
   text = text.replace(/<p>([^<]+)<\/(div|address|form)>/g, '<p>$1</p></$2>'); // If an opening or closing block element tag is wrapped in a <p>, unwrap it.
 
-  text = text.replace(new RegExp('<p>\\s*(<\/?' + allBlocks + '[^>]*>)\\s*<\/p>', 'g'), '$1'); // In some cases <li> may get wrapped in <p>, fix them.
+  text = text.replace(new RegExp('<p>\\s*(</?' + allBlocks + '[^>]*>)\\s*</p>', 'g'), '$1'); // In some cases <li> may get wrapped in <p>, fix them.
 
   text = text.replace(/<p>(<li.+?)<\/p>/g, '$1'); // If a <blockquote> is wrapped with a <p>, move it inside the <blockquote>.
 
   text = text.replace(/<p><blockquote([^>]*)>/gi, '<blockquote$1><p>');
   text = text.replace(/<\/blockquote><\/p>/g, '</p></blockquote>'); // If an opening or closing block element tag is preceded by an opening <p> tag, remove it.
 
-  text = text.replace(new RegExp('<p>\\s*(<\/?' + allBlocks + '[^>]*>)', 'g'), '$1'); // If an opening or closing block element tag is followed by a closing <p> tag, remove it.
+  text = text.replace(new RegExp('<p>\\s*(</?' + allBlocks + '[^>]*>)', 'g'), '$1'); // If an opening or closing block element tag is followed by a closing <p> tag, remove it.
 
-  text = text.replace(new RegExp('(<\/?' + allBlocks + '[^>]*>)\\s*<\/p>', 'g'), '$1'); // Optionally insert line breaks.
+  text = text.replace(new RegExp('(</?' + allBlocks + '[^>]*>)\\s*</p>', 'g'), '$1'); // Optionally insert line breaks.
 
   if (br) {
     // Replace newlines that shouldn't be touched with a placeholder.
@@ -387,7 +427,7 @@ function autop(text) {
   } // If a <br /> tag is after an opening or closing block tag, remove it.
 
 
-  text = text.replace(new RegExp('(<\/?' + allBlocks + '[^>]*>)\\s*<br \/>', 'g'), '$1'); // If a <br /> tag is before a subset of opening or closing block tags, remove it.
+  text = text.replace(new RegExp('(</?' + allBlocks + '[^>]*>)\\s*<br />', 'g'), '$1'); // If a <br /> tag is before a subset of opening or closing block tags, remove it.
 
   text = text.replace(/<br \/>(\s*<\/?(?:p|li|div|dl|dd|dt|th|pre|td|ul|ol)[^>]*>)/g, '$1');
   text = text.replace(/\n<\/p>$/g, '</p>'); // Replace placeholder <pre> tags with their original content.
@@ -556,7 +596,7 @@ function _arrayWithHoles(arr) {
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _nonIterableRest; });
 function _nonIterableRest() {
-  throw new TypeError("Invalid attempt to destructure non-iterable instance");
+  throw new TypeError("Invalid attempt to destructure non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
 }
 
 /***/ })

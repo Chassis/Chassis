@@ -121,7 +121,7 @@ function has_block( $block_name, $post = null ) {
  *
  * @since 5.0.0
  *
- * @return array Array of dynamic block names.
+ * @return string[] Array of dynamic block names.
  */
 function get_dynamic_block_names() {
 	$dynamic_block_names = array();
@@ -311,12 +311,12 @@ function filter_block_kses( $block, $allowed_html, $allowed_protocols = array() 
  *
  * @since 5.3.1
  *
- * @param mixed          $value             The attribute value to filter.
- * @param array[]|string $allowed_html      An array of allowed HTML elements
- *                                          and attributes, or a context name
- *                                          such as 'post'.
- * @param string[]       $allowed_protocols Array of allowed URL protocols.
- * @return array The filtered and sanitized result.
+ * @param string[]|string $value             The attribute value to filter.
+ * @param array[]|string  $allowed_html      An array of allowed HTML elements
+ *                                           and attributes, or a context name
+ *                                           such as 'post'.
+ * @param string[]        $allowed_protocols Array of allowed URL protocols.
+ * @return string[]|string The filtered and sanitized result.
  */
 function filter_block_kses_value( $value, $allowed_html, $allowed_protocols = array() ) {
 	if ( is_array( $value ) ) {
@@ -505,7 +505,7 @@ function render_block( $block ) {
  * @since 5.0.0
  *
  * @param string $content Post content.
- * @return array Array of parsed block objects.
+ * @return array[] Array of parsed block objects.
  */
 function parse_blocks( $content ) {
 	/**

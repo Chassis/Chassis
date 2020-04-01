@@ -436,7 +436,6 @@ table.media .column-title .filename {
 #commentsdiv .comments-box thead td {
 	background: transparent;
 	padding: 0 7px 4px;
-	font-style: italic;
 }
 
 #commentsdiv .comments-box tr:last-child td {
@@ -1020,11 +1019,6 @@ tr.inline-edit-row td,
 	text-transform: uppercase;
 }
 
-.inline-edit-row fieldset span.title,
-.inline-edit-row fieldset span.checkbox-title {
-	font-style: italic;
-}
-
 /*	Specific Elements */
 .inline-edit-row fieldset .inline-edit-date {
 	float: left;
@@ -1318,8 +1312,7 @@ ul.cat-checklist {
 .plugins .paused .error-display p,
 .plugins .paused .error-display code {
 	font-size: 90%;
-	font-style: italic;
-	color: rgb( 0, 0, 0, 0.7 );
+	color: rgba( 0, 0, 0, 0.7 );
 }
 
 .plugins .resume-link {
@@ -1749,10 +1742,6 @@ div.action-links,
 		display: none;
 	}
 
-	.comment-count {
-		font-size: 14px;
-	}
-
 	.wp-list-table th.column-primary ~ th,
 	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td.column-primary ~ td:not(.check-column) {
 		display: none;
@@ -1778,7 +1767,6 @@ div.action-links,
 	.wp-list-table tr:not(.inline-edit-row):not(.no-items) td:not(.check-column) {
 		position: relative;
 		clear: both;
-		display: block;
 		width: auto !important; /* needs to override some columns that are more specifically targeted */
 	}
 
@@ -1897,10 +1885,6 @@ div.action-links,
 	.widefat thead td.check-column,
 	.widefat tfoot td.check-column {
 		padding-top: 10px;
-	}
-
-	.widefat * {
-		word-wrap: normal;
 	}
 
 	/* Make row actions more easy to select on mobile */
