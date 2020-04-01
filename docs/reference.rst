@@ -76,7 +76,7 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 
 .. _Chassis base boxes: https://app.vagrantup.com/chassis
 .. _SEM Versioning 2.0.0: https://semver.org/
-.. _version number: https://github.com/Chassis/Chassis/blob/basebox/buildbox.sh#L41
+.. _version number: https://github.com/Chassis/Chassis/blob/master/buildbox.sh#L41
 
 Troubleshooting
 ---------------
