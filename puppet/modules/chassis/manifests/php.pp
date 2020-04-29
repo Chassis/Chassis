@@ -78,15 +78,6 @@ class chassis::php (
 		php_package => "${php_package}-cli",
 	}
 
-	# Ensure we always do common before fpm/cli
-	Package["${php_package}-common"] -> Package["${php_package}-fpm"]
-	Package["${php_package}-common"] -> Package["${php_package}-cli"]
-
-	service { "${php_package}-fpm":
-		ensure  => running,
-		require => Package["${php_package}-fpm"]
-	}
-
 	# Any array of all the versions of php that we support.
 	$php_versions = [ '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ]
 
@@ -95,6 +86,15 @@ class chassis::php (
 
 	chassis::remove_php_version { $php_versions_to_remove:
 		notify => Service["${php_package}-fpm"],
+	}
+
+	# Ensure we always do common before fpm/cli
+	Package["${php_package}-common"] -> Package["${php_package}-fpm"]
+	Package["${php_package}-common"] -> Package["${php_package}-cli"]
+
+	service { "${php_package}-fpm":
+		ensure  => running,
+		require => [ Package["${php_package}-fpm"], Chassis::Remove_php_version[$php_versions_to_remove] ]
 	}
 
 	# Install the extensions we need
