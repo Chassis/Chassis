@@ -237,6 +237,22 @@ username and password::
 
 (Again, don't forget to include all lines, and use spaces for indentation.)
 
+-------------------
+MySQL Configuration
+-------------------
+
+.. py:data:: mysql
+
+Similar to the admin user configuration, you can also override the default MySQL
+options::
+
+   mysql:
+       mysqld:
+           sql_mode:
+               - 'ERROR_FOR_DIVISION_BY_ZERO,NO_ZERO_DATE,NO_ZERO_IN_DATE'
+
+(Again, don't forget to include all lines, and use spaces for indentation.)
+
 -----------------
 Custom Host Names
 -----------------
