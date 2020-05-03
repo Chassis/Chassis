@@ -32,6 +32,20 @@ package { 'git-core':
 
 class { 'mysql::server':
 	root_password => 'password',
+	restart       => true,
+	override_options => {
+		client => {
+			'default-character-set' => 'utf8'
+		},
+		mysql => {
+			'default-character-set' => 'utf8'
+		},
+		mysqld => {
+			'collation-server'              => 'utf8_unicode_ci',
+			'character-set-server'          => 'utf8',
+			'default_authentication_plugin' => 'mysql_native_password'
+		}
+	}
 }
 
 class { 'chassis':
