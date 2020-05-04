@@ -65,7 +65,7 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 2. Create a new branch off ``master`` for the base box updates.
 3. Backup any custom yaml configuration files you have as they will be deleted during this process.
 4. Delete any extensions in your ``extensions`` folder (apart from ``example`` as it's required).
-5. Bump the `version number`_ of the base box.
+5. Bump the version number of the base box in the `build script`_ and `yaml file`_.
 6. Change ``_mode: normal`` to ``_mode: base`` in ``config.yaml``.
 7. Run ``vagrant destroy -f``.
 8. Run ``vagrant up``.
@@ -76,7 +76,9 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 
 .. _Chassis base boxes: https://app.vagrantup.com/chassis
 .. _SEM Versioning 2.0.0: https://semver.org/
-.. _version number: https://github.com/Chassis/Chassis/blob/master/buildbox.sh#L55
+.. _build script: https://github.com/Chassis/Chassis/blob/master/buildbox.sh#L55
+.. _yaml file: https://github.com/Chassis/Chassis/blob/master/config.yaml#L13
+
 
 Troubleshooting
 ---------------
