@@ -32,14 +32,14 @@ package { 'git-core':
 
 $mysql_defaults = {
 	client => {
-		'default-character-set' => 'utf8'
+		'default-character-set' => 'utf8mb4'
 	},
 	mysql => {
-		'default-character-set' => 'utf8'
+		'default-character-set' => 'utf8mb4'
 	},
 	mysqld => {
-		'collation-server'              => 'utf8_unicode_ci',
-		'character-set-server'          => 'utf8',
+		'collation-server'              => 'utf8mb4_unicode_ci',
+		'character-set-server'          => 'utf8mb4',
 		'default_authentication_plugin' => 'mysql_native_password'
 	}
 }
