@@ -48,6 +48,12 @@ class chassis::php (
 
 	$prefixed_extensions = prefix( $extensions, "${php_package}-" )
 
+	# Any array of all the versions of php that we support.
+	$php_versions = [ '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ]
+
+	# Work out which version of php we should remove if we've swapped versions.
+	$php_versions_to_remove = delete( $php_versions, $short_ver )
+
 	# Hold the packages at the necessary version.
 	apt::pin { $packages:
 		packages => $packages,
@@ -70,6 +76,7 @@ class chassis::php (
 			Apt::Pin[$packages],
 			Apt::Ppa['ppa:ondrej/php'],
 			Class['apt::update'],
+			Chassis::Remove_php_version[$php_versions_to_remove]
 		],
 	}
 
@@ -77,12 +84,6 @@ class chassis::php (
 	class { 'wp':
 		php_package => "${php_package}-cli",
 	}
-
-	# Any array of all the versions of php that we support.
-	$php_versions = [ '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ]
-
-	# Work out which version of php we should remove if we've swapped versions.
-	$php_versions_to_remove = delete( $php_versions, $short_ver )
 
 	chassis::remove_php_version { $php_versions_to_remove:
 		notify => Service["${php_package}-fpm"],
