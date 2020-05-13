@@ -2,18 +2,17 @@
 # vi: set ft=ruby :
 
 # Warn the user if we're on an old version of Vagrant
-if Gem::Version.new(Vagrant::VERSION) < Gem::Version.new("1.5.0")
-	puts "ERROR: Outdated version of Vagrant"
-	puts "  Chassis requires Vagrant 1.5.0+ "
+if Gem::Version.new(Vagrant::VERSION) == Gem::Version.new("2.2.7")
+	puts "\033[31m\e[1mERROR: You are using an outdated version of Vagrant.\e[0m\e[22m"
+	puts "\033[31m\e[1mThere is a known networking bug in Vagrant 2.2.7. Please update Vagrant!\033[31m\e[1m"
 	puts
-	exit 1
-end
 
-# See https://github.com/hashicorp/vagrant/issues/8878 and https://github.com/Chassis/Chassis/issues/771
-class VagrantPlugins::ProviderVirtualBox::Action::Network
-	def dhcp_server_matches_config?(dhcp_server, config)
-		true
-	end
+    # See https://github.com/hashicorp/vagrant/issues/8878 and https://github.com/Chassis/Chassis/issues/771
+    class VagrantPlugins::ProviderVirtualBox::Action::Network
+        def dhcp_server_matches_config?(dhcp_server, config)
+            true
+        end
+    end
 end
 
 # Check that submodules have been loaded
