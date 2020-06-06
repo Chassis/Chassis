@@ -12,6 +12,7 @@
 .idea
 .vscode
 config.local.yaml
+wp-cli.yml
 /.wp-cli
 /wp-cli.local.yml
 /extensions
