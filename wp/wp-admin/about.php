@@ -40,9 +40,42 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 			</nav>
 		</div>
 
+		<div class="about__section is-feature has-accent-background-color">
+			<h1><?php _e( 'Say hello to more and better.' ); ?></h1>
+
+			<p><?php _e( 'More ways to make your pages come alive. With easier ways to get it all done and looking better than ever&mdash;and boosts in speed you can feel.' ); ?></p>
+		</div>
+
+		<hr />
+
 		<div class="about__section changelog">
 			<div class="column">
 				<h2><?php _e( 'Maintenance and Security Releases' ); ?></h2>
+				<p>
+					<?php
+					printf(
+						/* translators: 1: WordPress version number, 2: plural number of bugs. More than one security issue. */
+						_n(
+							'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug.',
+							'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs.',
+							23
+						),
+						'5.4.2',
+						number_format_i18n( 23 )
+					);
+					?>
+					<?php
+					printf(
+						/* translators: %s: HelpHub URL */
+						__( 'For more information, see <a href="%s">the release notes</a>.' ),
+						sprintf(
+							/* translators: %s: WordPress version */
+							esc_url( __( 'https://wordpress.org/support/wordpress-version/version-%s/' ) ),
+							sanitize_title( '5.4.2' )
+						)
+					);
+					?>
+				</p>
 				<p>
 					<?php
 					printf(
@@ -69,14 +102,6 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 					?>
 				</p>
 			</div>
-		</div>
-
-		<hr />
-
-		<div class="about__section is-feature has-accent-background-color">
-			<h1><?php _e( 'Say hello to more and better.' ); ?></h1>
-
-			<p><?php _e( 'More ways to make your pages come alive. With easier ways to get it all done and looking better than ever&mdash;and boosts in speed you can feel.' ); ?></p>
 		</div>
 
 		<hr />
