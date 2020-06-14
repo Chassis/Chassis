@@ -1,1 +1,5 @@
-path: <%= @wpdir %>
+# This is generated automatically by Puppet. Rather than editing,
+# override these settings in a wp-cli.local.yml file.
+# See https://make.wordpress.org/cli/handbook/references/config/
+@local:
+  ssh: vagrant:<%= @machine_name %>
