@@ -276,9 +276,6 @@ be redirected by WordPress depending on your configuration or plugins.
    them automatically, so make sure to add these to your hosts file on your
    computer (not inside the virtual machine).
 
-   A warning is displayed if a non-`.local` host domain is used, which can be
-   turned off using the config option `suppress_hosts_warning: true`.
-
    If you need to find out the IP address of your machine, run ``vagrant ssh``
    to connect, then inside the box run ``ifconfig eth1`` and look for the line
    starting with ``inet addr:``.
