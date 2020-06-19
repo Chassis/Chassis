@@ -70,8 +70,8 @@ Vagrant.configure("2") do |config|
 					deprecated_extensions << "Please change #{extension} to #{new_extension} in your yaml configuration file.\n"
 				end
 			end
+			trigger.warn = "#{deprecated_extensions}"
 		end
-		trigger.warn = "#{deprecated_extensions}"
 	end
 
 	# Show a warning that non-*.local domains will not automatically resolve.
