@@ -166,7 +166,7 @@ module Chassis
 			config["paths"]["wp"] = config["wpdir"]
 		end
 
-		if ! config["hosts"][0].include?(".local")
+		if ! config["hosts"][0].include?(".local") and config['suppress_hosts_warning'] != true
 			puts "\e[33mWARNING: The hosts URL does not contain .local. You will need to edit your hosts file for this URL to resolve.\e[0m"
 		end
 
