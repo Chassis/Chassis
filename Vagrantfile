@@ -70,8 +70,15 @@ Vagrant.configure("2") do |config|
 					deprecated_extensions << "Please change #{extension} to #{new_extension} in your yaml configuration file.\n"
 				end
 			end
+			trigger.warn = "#{deprecated_extensions}"
 		end
-		trigger.warn = "#{deprecated_extensions}"
+	end
+
+	# Show a warning that non-*.local domains will not automatically resolve.
+	config.trigger.after [ :provision, :up ] do |trigger|
+		if ! CONF['hosts'][0].include?('.local')
+			trigger.info = "\n\e[33mWARNING: The hosts URL does not contain .local.\nYou will need to edit your hosts file for this URL to resolve.\e[0m"
+		end
 	 end
 
 	# Set up synced folders.
