@@ -131,8 +131,14 @@ Vagrant.configure("2") do |config|
 	# Having access would be nice.
 	if CONF['ip'] == "dhcp" and CONF['hostsupdater'].nil?
 		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
-	elsif CONF['ip'] == "dhcp" and CONF['hostsupdater'] == true and Vagrant.has_plugin?("vagrant-hostsupdater")
-		config.vm.network :private_network, ip: "192.168.33.10"
+	elsif CONF['hostsupdater'] == true and Vagrant.has_plugin?("vagrant-hostsupdater")
+		if CONF['ip'] == "dhcp"
+			config.vm.network :private_network, ip: "192.168.33.10"
+		else
+			config.vm.network :private_network, ip: CONF['ip']
+			# IP will not change regularly, so don't remove it on halt/suspend.
+			config.hostsupdater.resume_on_suspend = false
+		end
 		if CONF['hosts'].count > 1
 			config.hostsupdater.aliases = CONF['hosts']
 		end
