@@ -5,7 +5,9 @@
 /local-config-db.php
 /local-config-extensions.php
 /local-config-hosts.php
+/local-config-tester.php
 /sql-dump-*.sql
+chassis-backup.sql
 /db-sync
 /content
 .DS_Store
@@ -20,6 +22,7 @@ wp-cli.yml
 *.box
 /xhgui
 /*.cert
+/*.key
 /phpmemcachedadmin
 /webgrind
 
