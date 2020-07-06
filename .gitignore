@@ -7,6 +7,7 @@
 /local-config-hosts.php
 /local-config-tester.php
 /sql-dump-*.sql
+chassis-backup.sql
 /db-sync
 /content
 .DS_Store
