@@ -20,6 +20,7 @@ wp-cli.yml
 *.box
 /xhgui
 /*.cert
+/*.key
 /phpmemcachedadmin
 /webgrind
 
