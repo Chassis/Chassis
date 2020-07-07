@@ -148,9 +148,9 @@ Out of the box Chassis will not meet the Site Health requirements checks in Word
 .. code-block:: php
 
    <?php
-   define( ‘AUTOMATIC_UPDATER_DISABLED’, false );
-   define( ‘WP_DEBUG_LOG’, false );
-   define( ‘WP_DEBUG’, false );
+   define( 'AUTOMATIC_UPDATER_DISABLED', false );
+   define( 'WP_DEBUG_LOG', false );
+   define( 'WP_DEBUG', false );
 
 2. Delete the inactive themes and plugins in both `content` and `wp/wp-content`.
 3. Create a yaml configuration file with the following extensions:
@@ -269,6 +269,46 @@ Vagrant Share enables the ability to generate a temporary URL which you can shar
 4. **Share your site**
 
    Navigate to the URL that ngrok generated.
+
+Testing a Chassis site from a Windows Virtual Machine
+-----------------------------------------------------
+
+When developing on a Mac or Linux host system, you may want to verify your website works properly in Internet Explorer or other windows-only browsers. Microsoft helpfully provides [virtual machine images for testing in Legacy Edge and IE11](https://developer.microsoft.com/en-us/microsoft-edge/tools/vms/). The following instructions detail how to access your Chassis site from within a browser running in a separate Windows 10 virtual machine.
+
+1. **Get your Chassis machine's IP**
+
+   From the command line within your Chassis folder, run ``vagrant ssh -c 'ifconfig'``. This sends a message into your Chassis environment to output the VM's internal network information. What we're looking for is the IP address assigned to the VM, which in our example case looks like this: 
+
+.. code-block:: txt
+   eth1      Link encap:Ethernet  HWaddr 08:00:27:5d:c7:4f  
+             inet addr:172.28.128.17  Bcast:172.28.128.255  Mask:255.255.255.0
+
+2. **Boot your Windows VM**
+
+3. **Tell Windows the IP for your Chassis VM**
+
+   Now that Windows is running and we've got our IP (``172.28.128.17`` in this example), right-click on Notepad within your Windows VM and select "run as administrator". Once Notepad is open, go to "Open a file".
+
+   In Notepad's "open file" dialogue, navigate to the folder ``C:\Windows\System32\drivers\etc`. This folder may appear empty. This is a trick: it is not empty.
+
+   Type "hosts" into the filename dialogue,
+
+.. image:: _static/windows-notepad-open-dialogue.png
+  :alt: Windows Notepad "open" dialogue screenshot showing how to access the hosts file
+   
+   then hit "Open" to open the hidden hosts file.
+
+   At the bottom of the file, add IP from step 1 and your Chassis system's hostname. For example,
+
+.. code-block:: txt
+   172.28.128.17	chassis.local
+
+   4. **Test your Chassis site in IE or Edge**
+
+   If you open a browser within your Windows VM and navigate to `chassis.local`, it should now connect to your Chassis site.
+   
+   Note: Windows will not be able to access other services running on your host OS, such as Webpack DevServer. For this reason, it is usually best to test IE and Edge using a static production build of your web application.
+
 
 Debugging
 ~~~~~~~~~
