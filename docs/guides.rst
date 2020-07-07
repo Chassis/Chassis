@@ -148,9 +148,9 @@ Out of the box Chassis will not meet the Site Health requirements checks in Word
 .. code-block:: php
 
    <?php
-   define( ‘AUTOMATIC_UPDATER_DISABLED’, false );
-   define( ‘WP_DEBUG_LOG’, false );
-   define( ‘WP_DEBUG’, false );
+   define( 'AUTOMATIC_UPDATER_DISABLED', false );
+   define( 'WP_DEBUG_LOG', false );
+   define( 'WP_DEBUG', false );
 
 2. Delete the inactive themes and plugins in both `content` and `wp/wp-content`.
 3. Create a yaml configuration file with the following extensions:
