@@ -293,7 +293,7 @@ When developing on a Mac or Linux host system, you may want to verify your websi
 
    Type "hosts" into the filename dialogue,
 
-.. image:: _static/windows-notepad-open-dialogue-screenshot.png
+.. image:: _static/windows-notepad-open-dialogue.png
   :alt: Windows Notepad "open" dialogue screenshot showing how to access the hosts file
    
    then hit "Open" to open the hidden hosts file.
