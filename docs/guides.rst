@@ -299,7 +299,7 @@ When developing on a Mac or Linux host system, you may want to verify your websi
    
    then hit "Open" to open the hidden hosts file.
 
-   At the bottom of the file, add IP from step 1 and your Chassis system's hostname. For example,
+   At the bottom of the file, add the IP from step 1 alongside your Chassis system's hostname. For example,
 
    ::
 
