@@ -62,6 +62,8 @@ WP-CLI
 We bundle the latest version of WP-CLI in Chassis. You can access WP-CLI by running ``vagrant ssh`` from a terminal. You can check the WP-CLI details by running ``wp --info`` inside the Chassis box.
 This should result in something like the following:
 
+.. code-block:: console
+
    vagrant@vagrant:~$ wp --info
    OS:	Linux 4.4.0-150-generic #176-Ubuntu SMP Wed May 29 18:56:26 UTC 2019 x86_64
    Shell:	/bin/bash

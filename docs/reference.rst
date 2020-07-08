@@ -4,15 +4,20 @@ Reference
 Dash Documentation
 ------------------
 
-The Chassis documentation can be downloaded and viewed in [Dash](https://kapeli.com/dash) on Mac. Simply search for Chassis in the User Contributed docs.
+The Chassis documentation can be downloaded and viewed in `Dash`_ on Mac. Simply search for Chassis in the User Contributed docs.
 
 .. image:: _static/dash.png
 
 Other alternatives have been developed in cooperation with Dash.app’s developer Kapeli:
 
-* [helm-dash](https://github.com/dash-docs-el/helm-dash) for Emacs.
-* [velocity](http://velocity.silverlakesoftware.com/) for Windows.
-* [zeal](https://zealdocs.org/) for Linux, macOS, and Windows.
+* `Helm Dash`_ for Emacs.
+* `Velocity`_ for Windows.
+* `Zeal`_ for Linux, macOS, and Windows.
+
+.. _Dash: https://kapeli.com/dash
+.. _Helm Dash: https://github.com/dash-docs-el/helm-dash
+.. _Velocity: http://velocity.silverlakesoftware.com/
+.. _Zeal: https://zealdocs.org/
 
 .. highlight:: console
 
