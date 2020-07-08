@@ -290,7 +290,7 @@ When developing on a Mac or Linux host system, you may want to verify your websi
 
    Now that Windows is running and we've got our IP (``172.28.128.17`` in this example), right-click on Notepad within your Windows VM and select "run as administrator". Once Notepad is open, go to "Open a file".
 
-   In Notepad's "open file" dialogue, navigate to the folder ``C:\Windows\System32\drivers\etc`. This folder may appear empty. This is a trick: it is not empty.
+   In Notepad's "open file" dialogue, navigate to the folder ``C:\Windows\System32\drivers\etc``. This folder may appear empty. This is a trick: it is not empty.
 
    Type "hosts" into the filename dialogue,
 
