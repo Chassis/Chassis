@@ -62,6 +62,8 @@ WP-CLI
 We bundle the latest version of WP-CLI in Chassis. You can access WP-CLI by running ``vagrant ssh`` from a terminal. You can check the WP-CLI details by running ``wp --info`` inside the Chassis box.
 This should result in something like the following:
 
+.. code-block:: console
+
    vagrant@vagrant:~$ wp --info
    OS:	Linux 4.4.0-150-generic #176-Ubuntu SMP Wed May 29 18:56:26 UTC 2019 x86_64
    Shell:	/bin/bash
@@ -277,11 +279,12 @@ When developing on a Mac or Linux host system, you may want to verify your websi
 
 1. **Get your Chassis machine's IP**
 
-   From the command line within your Chassis folder, run ``vagrant ssh -c 'ifconfig'``. This sends a message into your Chassis environment to output the VM's internal network information. What we're looking for is the IP address assigned to the VM, which in our example case looks like this: 
+   From the command line within your Chassis folder, run ``vagrant ssh -c 'ifconfig'``. This sends a message into your Chassis environment to output the VM's internal network information. What we're looking for is the IP address assigned to the VM, which in our example case looks like this:
 
-.. code-block:: txt
-   eth1      Link encap:Ethernet  HWaddr 08:00:27:5d:c7:4f  
-             inet addr:172.28.128.17  Bcast:172.28.128.255  Mask:255.255.255.0
+   ::
+
+       eth1      Link encap:Ethernet  HWaddr 08:00:27:5d:c7:4f  
+                 inet addr:172.28.128.17  Bcast:172.28.128.255  Mask:255.255.255.0
 
 2. **Boot your Windows VM**
 
@@ -289,21 +292,22 @@ When developing on a Mac or Linux host system, you may want to verify your websi
 
    Now that Windows is running and we've got our IP (``172.28.128.17`` in this example), right-click on Notepad within your Windows VM and select "run as administrator". Once Notepad is open, go to "Open a file".
 
-   In Notepad's "open file" dialogue, navigate to the folder ``C:\Windows\System32\drivers\etc`. This folder may appear empty. This is a trick: it is not empty.
+   In Notepad's "open file" dialogue, navigate to the folder ``C:\Windows\System32\drivers\etc``. This folder may appear empty. This is a trick: it is not empty.
 
    Type "hosts" into the filename dialogue,
 
-.. image:: _static/windows-notepad-open-dialogue.png
-  :alt: Windows Notepad "open" dialogue screenshot showing how to access the hosts file
+   .. image:: _static/windows-notepad-open-dialogue.png
+      :alt: Windows Notepad "open" dialogue screenshot showing how to access the hosts file
    
    then hit "Open" to open the hidden hosts file.
 
-   At the bottom of the file, add IP from step 1 and your Chassis system's hostname. For example,
+   At the bottom of the file, add the IP from step 1 alongside your Chassis system's hostname. For example,
 
-.. code-block:: txt
-   172.28.128.17	chassis.local
+   ::
 
-   4. **Test your Chassis site in IE or Edge**
+       172.28.128.17	chassis.local
+
+4. **Test your Chassis site in IE or Edge**
 
    If you open a browser within your Windows VM and navigate to `chassis.local`, it should now connect to your Chassis site.
    
