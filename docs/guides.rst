@@ -277,9 +277,7 @@ When developing on a Mac or Linux host system, you may want to verify your websi
 
 1. **Get your Chassis machine's IP**
 
-   From the command line within your Chassis folder, run ``vagrant ssh -c 'ifconfig'``. This sends a message into your Chassis environment to output the VM's internal network information. What we're looking for is the IP address assigned to the VM, which in our example case looks like this: 
-
-   .. code-block::
+   From the command line within your Chassis folder, run ``vagrant ssh -c 'ifconfig'``. This sends a message into your Chassis environment to output the VM's internal network information. What we're looking for is the IP address assigned to the VM, which in our example case looks like this:::
       eth1      Link encap:Ethernet  HWaddr 08:00:27:5d:c7:4f  
                 inet addr:172.28.128.17  Bcast:172.28.128.255  Mask:255.255.255.0
 
@@ -298,9 +296,7 @@ When developing on a Mac or Linux host system, you may want to verify your websi
    
    then hit "Open" to open the hidden hosts file.
 
-   At the bottom of the file, add IP from step 1 and your Chassis system's hostname. For example,
-
-   .. code-block::
+   At the bottom of the file, add IP from step 1 and your Chassis system's hostname. For example,::
       172.28.128.17	chassis.local
 
    4. **Test your Chassis site in IE or Edge**
