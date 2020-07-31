@@ -5,13 +5,16 @@
 /local-config-db.php
 /local-config-extensions.php
 /local-config-hosts.php
+/local-config-tester.php
 /sql-dump-*.sql
+chassis-backup.sql
 /db-sync
 /content
 .DS_Store
 .idea
 .vscode
 config.local.yaml
+wp-cli.yml
 /.wp-cli
 /wp-cli.local.yml
 /extensions
@@ -19,6 +22,7 @@ config.local.yaml
 *.box
 /xhgui
 /*.cert
+/*.key
 /phpmemcachedadmin
 /webgrind
 

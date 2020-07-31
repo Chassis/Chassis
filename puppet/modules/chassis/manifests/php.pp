@@ -95,7 +95,7 @@ class chassis::php (
 
 	service { "${php_package}-fpm":
 		ensure  => running,
-		require => [ Package["${php_package}-fpm"], Chassis::Remove_php_version[$php_versions_to_remove] ]
+		require => Package["${php_package}-fpm"]
 	}
 
 	# Install the extensions we need

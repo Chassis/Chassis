@@ -295,4 +295,4 @@ texinfo_documents = [
 #texinfo_no_detailmenu = False
 
 def setup(app):
-    app.add_stylesheet('_static/style.css')
+    app.add_stylesheet('style.css')

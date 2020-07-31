@@ -15,6 +15,7 @@ define chassis::wp (
 	$admin_password = 'password',
 	$sitename       = 'Chassis Site',
 	$network = false,
+	$machine_name = 'default',
 
 	$extensions = [],
 	$global_extensions = [],
@@ -81,6 +82,11 @@ define chassis::wp (
 	}
 
 	file { '/home/vagrant/.wp-cli/config.yml':
+		content => template('chassis/wp-cli-config.yml.erb')
+	}
+
+	file { '/vagrant/wp-cli.yml':
 		content => template('chassis/wp-cli.yml.erb')
 	}
+
 }

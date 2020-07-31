@@ -166,10 +166,6 @@ module Chassis
 			config["paths"]["wp"] = config["wpdir"]
 		end
 
-		if ! config["hosts"][0].include?(".local")
-			puts "\e[33mWARNING: The hosts URL does not contain .local. You will need to edit your hosts file for this URL to resolve.\e[0m"
-		end
-
 		# Set up the paths as needed
 		config["mapped_paths"] = {}
 		base = config["paths"]["base"] = File.expand_path(config["paths"]["base"], @@dir)

@@ -27,9 +27,25 @@ div.body p {
 	line-height: 1.5;
 }
 
+div.sphinxsidebarwrapper {
+	display: flex;
+	flex-direction: column;
+}
+div.sphinxsidebarwrapper > * {
+	order: 3;
+}
+div.sphinxsidebarwrapper .blurb {
+	order: 1;
+}
+div.sphinxsidebarwrapper p.logo {
+	order: 0;
+}
+#searchbox {
+	order: 2;
+}
+
 div.sphinxsidebarwrapper p.blurb {
 	margin: 1em 0;
-	text-align: center;
 }
 
 div.sphinxsidebar h3,
@@ -52,4 +68,32 @@ div.sphinxsidebar a {
 
 div.footer a {
 	border: none;
+}
+
+div.body {
+	min-width: unset;
+}
+
+@media screen and (max-width: 875px) {
+	div.body h1 {
+		margin: 0.5em 0 1em;
+	}
+	body {
+		padding: 20px;
+	}
+	div.sphinxsidebar {
+		width: unset;
+		margin: 50px -20px -20px;
+	}
+	div.sphinxsidebar p.logo {
+		display: block;
+		margin: -18px -20px 0;
+	}
+	.toctree-wrapper {
+		font-size: 0.9em;
+	}
+}
+
+.toctree-wrapper {
+	word-wrap: break-word;
 }

@@ -594,8 +594,13 @@ function comment_date( $format = '', $comment_ID = 0 ) {
  * @return string The possibly truncated comment excerpt.
  */
 function get_comment_excerpt( $comment_ID = 0 ) {
-	$comment      = get_comment( $comment_ID );
-	$comment_text = strip_tags( str_replace( array( "\n", "\r" ), ' ', $comment->comment_content ) );
+	$comment = get_comment( $comment_ID );
+
+	if ( ! post_password_required( $comment->comment_post_ID ) ) {
+		$comment_text = strip_tags( str_replace( array( "\n", "\r" ), ' ', $comment->comment_content ) );
+	} else {
+		$comment_text = __( 'Password protected' );
+	}
 
 	/* translators: Maximum number of words used in a comment excerpt. */
 	$comment_excerpt_length = intval( _x( '20', 'comment_excerpt_length' ) );
@@ -1016,7 +1021,7 @@ function comment_text( $comment_ID = 0, $args = array() ) {
 	 * @see Walker_Comment::comment()
 	 *
 	 * @param string          $comment_text Text of the current comment.
-	 * @param WP_Comment|null $comment      The comment object.
+	 * @param WP_Comment|null $comment      The comment object. Null if not found.
 	 * @param array           $args         An array of arguments.
 	 */
 	echo apply_filters( 'comment_text', $comment_text, $comment, $args );

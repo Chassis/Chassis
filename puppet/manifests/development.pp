@@ -78,6 +78,7 @@ chassis::wp { $config['hosts'][0]:
 	admin_user        => $config[admin][user],
 	admin_email       => $config[admin][email],
 	admin_password    => $config[admin][password],
+	machine_name      => $config[machine_name],
 
 	extensions        => $extensions,
 	global_extensions => $global_extensions,
