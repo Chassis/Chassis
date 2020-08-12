@@ -28,7 +28,7 @@ class WP_Comment_Query {
 	 * Metadata query container
 	 *
 	 * @since 3.5.0
-	 * @var object WP_Meta_Query
+	 * @var WP_Meta_Query A meta query instance.
 	 */
 	public $meta_query = false;
 
@@ -69,7 +69,7 @@ class WP_Comment_Query {
 	 * Date query container
 	 *
 	 * @since 3.7.0
-	 * @var object WP_Date_Query
+	 * @var WP_Date_Query A date query instance.
 	 */
 	public $date_query = false;
 
@@ -118,8 +118,8 @@ class WP_Comment_Query {
 	 *
 	 * @since 4.0.0
 	 *
-	 * @param string   $name      Method to call.
-	 * @param array    $arguments Arguments to pass when calling.
+	 * @param string $name      Method to call.
+	 * @param array  $arguments Arguments to pass when calling.
 	 * @return mixed|false Return value of the callback, false otherwise.
 	 */
 	public function __call( $name, $arguments ) {
@@ -388,7 +388,7 @@ class WP_Comment_Query {
 		 *
 		 * The expected return type from this filter depends on the value passed in the request query_vars.
 		 * When `$this->query_vars['count']` is set, the filter should return the comment count as an int.
-		 * When `'ids' == $this->query_vars['fields']`, the filter should return an array of comment ids.
+		 * When `'ids' === $this->query_vars['fields']`, the filter should return an array of comment IDs.
 		 * Otherwise the filter should return an array of WP_Comment objects.
 		 *
 		 * @since 5.3.0
@@ -444,7 +444,7 @@ class WP_Comment_Query {
 
 		$comment_ids = array_map( 'intval', $comment_ids );
 
-		if ( 'ids' == $this->query_vars['fields'] ) {
+		if ( 'ids' === $this->query_vars['fields'] ) {
 			$this->comments = $comment_ids;
 			return $this->comments;
 		}
@@ -516,7 +516,7 @@ class WP_Comment_Query {
 		}
 
 		// 'any' overrides other statuses.
-		if ( ! in_array( 'any', $statuses ) ) {
+		if ( ! in_array( 'any', $statuses, true ) ) {
 			foreach ( $statuses as $status ) {
 				switch ( $status ) {
 					case 'hold':
@@ -550,7 +550,7 @@ class WP_Comment_Query {
 			$unapproved_ids    = array();
 			$unapproved_emails = array();
 			foreach ( $include_unapproved as $unapproved_identifier ) {
-				// Numeric values are assumed to be user ids.
+				// Numeric values are assumed to be user IDs.
 				if ( is_numeric( $unapproved_identifier ) ) {
 					$approved_clauses[] = $wpdb->prepare( "( user_id = %d AND comment_approved = '0' )", $unapproved_identifier );
 				} else {
@@ -575,7 +575,7 @@ class WP_Comment_Query {
 			}
 		}
 
-		$order = ( 'ASC' == strtoupper( $this->query_vars['order'] ) ) ? 'ASC' : 'DESC';
+		$order = ( 'ASC' === strtoupper( $this->query_vars['order'] ) ) ? 'ASC' : 'DESC';
 
 		// Disable ORDER BY with 'none', an empty array, or boolean false.
 		if ( in_array( $this->query_vars['orderby'], array( 'none', array(), false ), true ) ) {
@@ -600,7 +600,7 @@ class WP_Comment_Query {
 					$_order   = $_value;
 				}
 
-				if ( ! $found_orderby_comment_id && in_array( $_orderby, array( 'comment_ID', 'comment__in' ) ) ) {
+				if ( ! $found_orderby_comment_id && in_array( $_orderby, array( 'comment_ID', 'comment__in' ), true ) ) {
 					$found_orderby_comment_id = true;
 				}
 
@@ -747,6 +747,7 @@ class WP_Comment_Query {
 					case 'comment':
 					case 'comments':
 						$comment_types[ $operator ][] = "''";
+						$comment_types[ $operator ][] = "'comment'";
 						break;
 
 					case 'pings':
@@ -781,7 +782,7 @@ class WP_Comment_Query {
 			$this->sql_clauses['where']['user_id'] = $wpdb->prepare( 'user_id = %d', $this->query_vars['user_id'] );
 		}
 
-		// Falsy search strings are ignored.
+		// Falsey search strings are ignored.
 		if ( strlen( $this->query_vars['search'] ) ) {
 			$search_sql = $this->get_search_sql(
 				$this->query_vars['search'],
@@ -1084,7 +1085,7 @@ class WP_Comment_Query {
 	 * @global wpdb $wpdb WordPress database abstraction object.
 	 *
 	 * @param string $string
-	 * @param array $cols
+	 * @param array  $cols
 	 * @return string
 	 */
 	protected function get_search_sql( $string, $cols ) {
@@ -1150,7 +1151,7 @@ class WP_Comment_Query {
 		} elseif ( 'comment__in' === $orderby ) {
 			$comment__in = implode( ',', array_map( 'absint', $this->query_vars['comment__in'] ) );
 			$parsed      = "FIELD( {$wpdb->comments}.comment_ID, $comment__in )";
-		} elseif ( in_array( $orderby, $allowed_keys ) ) {
+		} elseif ( in_array( $orderby, $allowed_keys, true ) ) {
 
 			if ( isset( $meta_query_clauses[ $orderby ] ) ) {
 				$meta_clause = $meta_query_clauses[ $orderby ];

@@ -82,85 +82,25 @@ this["wp"] = this["wp"] || {}; this["wp"]["element"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 437);
+/******/ 	return __webpack_require__(__webpack_require__.s = 453);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 18:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
-var arrayLikeToArray = __webpack_require__(25);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return Object(arrayLikeToArray["a" /* default */])(arr);
-}
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-var iterableToArray = __webpack_require__(35);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
-var unsupportedIterableToArray = __webpack_require__(27);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _toConsumableArray; });
-
-
-
-
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || Object(iterableToArray["a" /* default */])(arr) || Object(unsupportedIterableToArray["a" /* default */])(arr) || _nonIterableSpread();
-}
-
-/***/ }),
-
-/***/ 19:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectWithoutProperties; });
-/* harmony import */ var _objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(43);
-
-function _objectWithoutProperties(source, excluded) {
-  if (source == null) return {};
-  var target = Object(_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(source, excluded);
-  var key, i;
-
-  if (Object.getOwnPropertySymbols) {
-    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
-
-    for (i = 0; i < sourceSymbolKeys.length; i++) {
-      key = sourceSymbolKeys[i];
-      if (excluded.indexOf(key) >= 0) continue;
-      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
-      target[key] = source[key];
-    }
-  }
-
-  return target;
-}
-
-/***/ }),
-
-/***/ 2:
+/***/ 13:
 /***/ (function(module, exports) {
 
-(function() { module.exports = this["lodash"]; }());
+(function() { module.exports = this["React"]; }());
 
 /***/ }),
 
-/***/ 20:
+/***/ 14:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "a", function() { return /* binding */ _slicedToArray; });
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithHoles.js
 var arrayWithHoles = __webpack_require__(38);
@@ -193,13 +133,12 @@ function _iterableToArrayLimit(arr, i) {
   return _arr;
 }
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
-var unsupportedIterableToArray = __webpack_require__(27);
+var unsupportedIterableToArray = __webpack_require__(29);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableRest.js
 var nonIterableRest = __webpack_require__(39);
 
 // CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _slicedToArray; });
 
 
 
@@ -210,14 +149,86 @@ function _slicedToArray(arr, i) {
 
 /***/ }),
 
-/***/ 21:
+/***/ 144:
 /***/ (function(module, exports) {
 
-(function() { module.exports = this["React"]; }());
+(function() { module.exports = this["ReactDOM"]; }());
 
 /***/ }),
 
-/***/ 25:
+/***/ 15:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectWithoutProperties; });
+/* harmony import */ var _objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(41);
+
+function _objectWithoutProperties(source, excluded) {
+  if (source == null) return {};
+  var target = Object(_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(source, excluded);
+  var key, i;
+
+  if (Object.getOwnPropertySymbols) {
+    var sourceSymbolKeys = Object.getOwnPropertySymbols(source);
+
+    for (i = 0; i < sourceSymbolKeys.length; i++) {
+      key = sourceSymbolKeys[i];
+      if (excluded.indexOf(key) >= 0) continue;
+      if (!Object.prototype.propertyIsEnumerable.call(source, key)) continue;
+      target[key] = source[key];
+    }
+  }
+
+  return target;
+}
+
+/***/ }),
+
+/***/ 18:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "a", function() { return /* binding */ _toConsumableArray; });
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
+var arrayLikeToArray = __webpack_require__(26);
+
+// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
+
+function _arrayWithoutHoles(arr) {
+  if (Array.isArray(arr)) return Object(arrayLikeToArray["a" /* default */])(arr);
+}
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
+var iterableToArray = __webpack_require__(35);
+
+// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
+var unsupportedIterableToArray = __webpack_require__(29);
+
+// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
+function _nonIterableSpread() {
+  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
+}
+// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
+
+
+
+
+function _toConsumableArray(arr) {
+  return _arrayWithoutHoles(arr) || Object(iterableToArray["a" /* default */])(arr) || Object(unsupportedIterableToArray["a" /* default */])(arr) || _nonIterableSpread();
+}
+
+/***/ }),
+
+/***/ 2:
+/***/ (function(module, exports) {
+
+(function() { module.exports = this["lodash"]; }());
+
+/***/ }),
+
+/***/ 26:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -234,43 +245,20 @@ function _arrayLikeToArray(arr, len) {
 
 /***/ }),
 
-/***/ 27:
+/***/ 29:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _unsupportedIterableToArray; });
-/* harmony import */ var _arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(25);
+/* harmony import */ var _arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
 
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
   if (typeof o === "string") return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
   var n = Object.prototype.toString.call(o).slice(8, -1);
   if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(n);
+  if (n === "Map" || n === "Set") return Array.from(o);
   if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
-}
-
-/***/ }),
-
-/***/ 34:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _typeof; });
-function _typeof(obj) {
-  "@babel/helpers - typeof";
-
-  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
-    _typeof = function _typeof(obj) {
-      return typeof obj;
-    };
-  } else {
-    _typeof = function _typeof(obj) {
-      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
-    };
-  }
-
-  return _typeof(obj);
 }
 
 /***/ }),
@@ -308,7 +296,30 @@ function _nonIterableRest() {
 
 /***/ }),
 
-/***/ 43:
+/***/ 40:
+/***/ (function(module, __webpack_exports__, __webpack_require__) {
+
+"use strict";
+/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _typeof; });
+function _typeof(obj) {
+  "@babel/helpers - typeof";
+
+  if (typeof Symbol === "function" && typeof Symbol.iterator === "symbol") {
+    _typeof = function _typeof(obj) {
+      return typeof obj;
+    };
+  } else {
+    _typeof = function _typeof(obj) {
+      return obj && typeof Symbol === "function" && obj.constructor === Symbol && obj !== Symbol.prototype ? "symbol" : typeof obj;
+    };
+  }
+
+  return _typeof(obj);
+}
+
+/***/ }),
+
+/***/ 41:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -330,23 +341,60 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 
 /***/ }),
 
-/***/ 437:
+/***/ 453:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
 
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "createInterpolateElement", function() { return /* reexport */ create_interpolate_element; });
+__webpack_require__.d(__webpack_exports__, "Children", function() { return /* reexport */ external_this_React_["Children"]; });
+__webpack_require__.d(__webpack_exports__, "cloneElement", function() { return /* reexport */ external_this_React_["cloneElement"]; });
+__webpack_require__.d(__webpack_exports__, "Component", function() { return /* reexport */ external_this_React_["Component"]; });
+__webpack_require__.d(__webpack_exports__, "createContext", function() { return /* reexport */ external_this_React_["createContext"]; });
+__webpack_require__.d(__webpack_exports__, "createElement", function() { return /* reexport */ external_this_React_["createElement"]; });
+__webpack_require__.d(__webpack_exports__, "createRef", function() { return /* reexport */ external_this_React_["createRef"]; });
+__webpack_require__.d(__webpack_exports__, "forwardRef", function() { return /* reexport */ external_this_React_["forwardRef"]; });
+__webpack_require__.d(__webpack_exports__, "Fragment", function() { return /* reexport */ external_this_React_["Fragment"]; });
+__webpack_require__.d(__webpack_exports__, "isValidElement", function() { return /* reexport */ external_this_React_["isValidElement"]; });
+__webpack_require__.d(__webpack_exports__, "memo", function() { return /* reexport */ external_this_React_["memo"]; });
+__webpack_require__.d(__webpack_exports__, "StrictMode", function() { return /* reexport */ external_this_React_["StrictMode"]; });
+__webpack_require__.d(__webpack_exports__, "useCallback", function() { return /* reexport */ external_this_React_["useCallback"]; });
+__webpack_require__.d(__webpack_exports__, "useContext", function() { return /* reexport */ external_this_React_["useContext"]; });
+__webpack_require__.d(__webpack_exports__, "useDebugValue", function() { return /* reexport */ external_this_React_["useDebugValue"]; });
+__webpack_require__.d(__webpack_exports__, "useEffect", function() { return /* reexport */ external_this_React_["useEffect"]; });
+__webpack_require__.d(__webpack_exports__, "useImperativeHandle", function() { return /* reexport */ external_this_React_["useImperativeHandle"]; });
+__webpack_require__.d(__webpack_exports__, "useLayoutEffect", function() { return /* reexport */ external_this_React_["useLayoutEffect"]; });
+__webpack_require__.d(__webpack_exports__, "useMemo", function() { return /* reexport */ external_this_React_["useMemo"]; });
+__webpack_require__.d(__webpack_exports__, "useReducer", function() { return /* reexport */ external_this_React_["useReducer"]; });
+__webpack_require__.d(__webpack_exports__, "useRef", function() { return /* reexport */ external_this_React_["useRef"]; });
+__webpack_require__.d(__webpack_exports__, "useState", function() { return /* reexport */ external_this_React_["useState"]; });
+__webpack_require__.d(__webpack_exports__, "lazy", function() { return /* reexport */ external_this_React_["lazy"]; });
+__webpack_require__.d(__webpack_exports__, "Suspense", function() { return /* reexport */ external_this_React_["Suspense"]; });
+__webpack_require__.d(__webpack_exports__, "concatChildren", function() { return /* reexport */ concatChildren; });
+__webpack_require__.d(__webpack_exports__, "switchChildrenNodeName", function() { return /* reexport */ switchChildrenNodeName; });
+__webpack_require__.d(__webpack_exports__, "createPortal", function() { return /* reexport */ external_this_ReactDOM_["createPortal"]; });
+__webpack_require__.d(__webpack_exports__, "findDOMNode", function() { return /* reexport */ external_this_ReactDOM_["findDOMNode"]; });
+__webpack_require__.d(__webpack_exports__, "render", function() { return /* reexport */ external_this_ReactDOM_["render"]; });
+__webpack_require__.d(__webpack_exports__, "unmountComponentAtNode", function() { return /* reexport */ external_this_ReactDOM_["unmountComponentAtNode"]; });
+__webpack_require__.d(__webpack_exports__, "isEmptyElement", function() { return /* reexport */ utils_isEmptyElement; });
+__webpack_require__.d(__webpack_exports__, "Platform", function() { return /* reexport */ platform; });
+__webpack_require__.d(__webpack_exports__, "renderToString", function() { return /* reexport */ serialize; });
+__webpack_require__.d(__webpack_exports__, "RawHTML", function() { return /* reexport */ RawHTML; });
+
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js + 1 modules
-var slicedToArray = __webpack_require__(20);
+var slicedToArray = __webpack_require__(14);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-var esm_typeof = __webpack_require__(34);
+var esm_typeof = __webpack_require__(40);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules
 var toConsumableArray = __webpack_require__(18);
 
 // EXTERNAL MODULE: external {"this":"React"}
-var external_this_React_ = __webpack_require__(21);
+var external_this_React_ = __webpack_require__(13);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/create-interpolate-element.js
 
@@ -356,6 +404,8 @@ var external_this_React_ = __webpack_require__(21);
 /**
  * External dependencies
  */
+
+/** @typedef {import('./react').WPElement} WPElement */
 
 var indoc, offset, output, stack;
 /**
@@ -376,28 +426,46 @@ var indoc, offset, output, stack;
 
 var tokenizer = /<(\/)?(\w+)\s*(\/)?>/g;
 /**
+ * The stack frame tracking parse progress.
+ *
+ * @typedef Frame
+ *
+ * @property {WPElement} element            A parent element which may still have
+ * @property {number}    tokenStart         Offset at which parent element first
+ *                                          appears.
+ * @property {number}    tokenLength        Length of string marking start of parent
+ *                                          element.
+ * @property {number}    [prevOffset]       Running offset at which parsing should
+ *                                          continue.
+ * @property {number}    [leadingTextStart] Offset at which last closing element
+ *                                          finished, used for finding text between
+ *                                          elements.
+ * @property {WPElement[]} children         Children.
+ */
+
+/**
  * Tracks recursive-descent parse state.
  *
  * This is a Stack frame holding parent elements until all children have been
  * parsed.
  *
  * @private
- * @param {WPElement} element          A parent element which may still have
- *                                     nested children not yet parsed.
- * @param {number}    tokenStart       Offset at which parent element first
- *                                     appears.
- * @param {number}    tokenLength      Length of string marking start of parent
- *                                     element.
- * @param {number}    prevOffset       Running offset at which parsing should
- *                                     continue.
- * @param {number}    leadingTextStart Offset at which last closing element
- *                                     finished, used for finding text between
- *                                     elements
+ * @param {WPElement} element            A parent element which may still have
+ *                                       nested children not yet parsed.
+ * @param {number}    tokenStart         Offset at which parent element first
+ *                                       appears.
+ * @param {number}    tokenLength        Length of string marking start of parent
+ *                                       element.
+ * @param {number}    [prevOffset]       Running offset at which parsing should
+ *                                       continue.
+ * @param {number}    [leadingTextStart] Offset at which last closing element
+ *                                       finished, used for finding text between
+ *                                       elements.
  *
  * @return {Frame} The stack frame tracking parse progress.
  */
 
-function Frame(element, tokenStart, tokenLength, prevOffset, leadingTextStart) {
+function createFrame(element, tokenStart, tokenLength, prevOffset, leadingTextStart) {
   return {
     element: element,
     tokenStart: tokenStart,
@@ -526,12 +594,12 @@ function proceed(conversionMap) {
       } // otherwise we found an inner element
 
 
-      addChild(new Frame(conversionMap[name], startOffset, tokenLength));
+      addChild(createFrame(conversionMap[name], startOffset, tokenLength));
       offset = startOffset + tokenLength;
       return true;
 
     case 'opener':
-      stack.push(new Frame(conversionMap[name], startOffset, tokenLength, startOffset + tokenLength, leadingTextStart));
+      stack.push(createFrame(conversionMap[name], startOffset, tokenLength, startOffset + tokenLength, leadingTextStart));
       offset = startOffset + tokenLength;
       return true;
 
@@ -549,7 +617,7 @@ function proceed(conversionMap) {
       var text = indoc.substr(stackTop.prevOffset, startOffset - stackTop.prevOffset);
       stackTop.children.push(text);
       stackTop.prevOffset = startOffset + tokenLength;
-      var frame = new Frame(stackTop.element, stackTop.tokenStart, stackTop.tokenLength, startOffset + tokenLength);
+      var frame = createFrame(stackTop.element, stackTop.tokenStart, stackTop.tokenLength, startOffset + tokenLength);
       frame.children = stackTop.children;
       addChild(frame);
       offset = startOffset + tokenLength;
@@ -682,7 +750,7 @@ function closeOuterElement(endOffset) {
 var defineProperty = __webpack_require__(5);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js
-var objectWithoutProperties = __webpack_require__(19);
+var objectWithoutProperties = __webpack_require__(15);
 
 // EXTERNAL MODULE: external {"this":"lodash"}
 var external_this_lodash_ = __webpack_require__(2);
@@ -709,7 +777,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 /**
  * Object containing a React component.
  *
- * @typedef {import('react').Component} WPComponent
+ * @typedef {import('react').ComponentType} WPComponent
  */
 
 /**
@@ -921,7 +989,7 @@ function switchChildrenNodeName(children, nodeName) {
 }
 
 // EXTERNAL MODULE: external {"this":"ReactDOM"}
-var external_this_ReactDOM_ = __webpack_require__(66);
+var external_this_ReactDOM_ = __webpack_require__(144);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/react-platform.js
 /**
@@ -933,7 +1001,7 @@ var external_this_ReactDOM_ = __webpack_require__(66);
  *
  * @see https://github.com/facebook/react/issues/10309#issuecomment-318433235
  *
- * @param {WPElement}   child     Any renderable child, such as an element,
+ * @param {import('./react').WPElement}   child     Any renderable child, such as an element,
  *                                string, or fragment.
  * @param {HTMLElement} container DOM node into which element should be rendered.
  */
@@ -942,14 +1010,14 @@ var external_this_ReactDOM_ = __webpack_require__(66);
 /**
  * Finds the dom node of a React component.
  *
- * @param {WPComponent} component Component's instance.
+ * @param {import('./react').WPComponent} component Component's instance.
  */
 
 
 /**
  * Renders a given element into the target DOM node.
  *
- * @param {WPElement}   element Element to render.
+ * @param {import('./react').WPElement}   element Element to render.
  * @param {HTMLElement} target  DOM node into which element should be rendered.
  */
 
@@ -1024,7 +1092,7 @@ var Platform = {
 /* harmony default export */ var platform = (Platform);
 
 // EXTERNAL MODULE: external {"this":["wp","escapeHtml"]}
-var external_this_wp_escapeHtml_ = __webpack_require__(68);
+var external_this_wp_escapeHtml_ = __webpack_require__(89);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/raw-html.js
 
@@ -1037,6 +1105,13 @@ function raw_html_objectSpread(target) { for (var i = 1; i < arguments.length; i
 /**
  * Internal dependencies
  */
+ // Disable reason: JSDoc linter doesn't seem to parse the union (`&`) correctly.
+
+/* eslint-disable jsdoc/valid-types */
+
+/** @typedef {{children: string} & import('react').ComponentPropsWithoutRef<'div'>} RawHTMLProps */
+
+/* eslint-enable jsdoc/valid-types */
 
 /**
  * Component used as equivalent of Fragment with unescaped HTML, in cases where
@@ -1044,11 +1119,10 @@ function raw_html_objectSpread(target) { for (var i = 1; i < arguments.length; i
  * To preserve additional props, a `div` wrapper _will_ be created if any props
  * aside from `children` are passed.
  *
- * @param {Object} props
- * @param {string} props.children HTML to render.
- * @param {Object} props.props    Any additonal props to be set on the containing div.
+ * @param {RawHTMLProps} props Children should be a string of HTML. Other props
+ *                             will be passed through to div wrapper.
  *
- * @return {WPComponent} Dangerously-rendering component.
+ * @return {JSX.Element} Dangerously-rendering component.
  */
 
 function RawHTML(_ref) {
@@ -1115,8 +1189,9 @@ function serialize_objectSpread(target) { for (var i = 1; i < arguments.length; 
 
 
 
+/** @typedef {import('./react').WPElement} WPElement */
 
-var _createContext = Object(external_this_React_["createContext"])(),
+var _createContext = Object(external_this_React_["createContext"])(undefined),
     Provider = _createContext.Provider,
     Consumer = _createContext.Consumer;
 
@@ -1126,14 +1201,14 @@ var ForwardRef = Object(external_this_React_["forwardRef"])(function () {
 /**
  * Valid attribute types.
  *
- * @type {Set}
+ * @type {Set<string>}
  */
 
 var ATTRIBUTES_TYPES = new Set(['string', 'boolean', 'number']);
 /**
  * Element tags which can be self-closing.
  *
- * @type {Set}
+ * @type {Set<string>}
  */
 
 var SELF_CLOSING_TAGS = new Set(['area', 'base', 'br', 'col', 'command', 'embed', 'hr', 'img', 'input', 'keygen', 'link', 'meta', 'param', 'source', 'track', 'wbr']);
@@ -1150,7 +1225,7 @@ var SELF_CLOSING_TAGS = new Set(['area', 'base', 'br', 'col', 'command', 'embed'
  *         [ tr.firstChild.textContent.trim() ]: true
  *     } ), {} ) ).sort();
  *
- * @type {Set}
+ * @type {Set<string>}
  */
 
 var BOOLEAN_ATTRIBUTES = new Set(['allowfullscreen', 'allowpaymentrequest', 'allowusermedia', 'async', 'autofocus', 'autoplay', 'checked', 'controls', 'default', 'defer', 'disabled', 'download', 'formnovalidate', 'hidden', 'ismap', 'itemscope', 'loop', 'multiple', 'muted', 'nomodule', 'novalidate', 'open', 'playsinline', 'readonly', 'required', 'reversed', 'selected', 'typemustmatch']);
@@ -1172,7 +1247,7 @@ var BOOLEAN_ATTRIBUTES = new Set(['allowfullscreen', 'allowpaymentrequest', 'all
  *
  *  - `alt`: https://blog.whatwg.org/omit-alt
  *
- * @type {Set}
+ * @type {Set<string>}
  */
 
 var ENUMERATED_ATTRIBUTES = new Set(['autocapitalize', 'autocomplete', 'charset', 'contenteditable', 'crossorigin', 'decoding', 'dir', 'draggable', 'enctype', 'formenctype', 'formmethod', 'http-equiv', 'inputmode', 'kind', 'method', 'preload', 'scope', 'shape', 'spellcheck', 'translate', 'type', 'wrap']);
@@ -1192,7 +1267,7 @@ var ENUMERATED_ATTRIBUTES = new Set(['autocapitalize', 'autocomplete', 'charset'
  *     .map( ( [ key ] ) => key )
  *     .sort();
  *
- * @type {Set}
+ * @type {Set<string>}
  */
 
 var CSS_PROPERTIES_SUPPORTS_UNITLESS = new Set(['animation', 'animationIterationCount', 'baselineShift', 'borderImageOutset', 'borderImageSlice', 'borderImageWidth', 'columnCount', 'cx', 'cy', 'fillOpacity', 'flexGrow', 'flexShrink', 'floodOpacity', 'fontWeight', 'gridColumnEnd', 'gridColumnStart', 'gridRowEnd', 'gridRowStart', 'lineHeight', 'opacity', 'order', 'orphans', 'r', 'rx', 'ry', 'shapeImageThreshold', 'stopOpacity', 'strokeDasharray', 'strokeDashoffset', 'strokeMiterlimit', 'strokeOpacity', 'strokeWidth', 'tabSize', 'widows', 'x', 'y', 'zIndex', 'zoom']);
@@ -1229,7 +1304,7 @@ function isInternalAttribute(attribute) {
  * @param {string} attribute Attribute name.
  * @param {*}      value     Non-normalized attribute value.
  *
- * @return {string} Normalized attribute value.
+ * @return {*} Normalized attribute value.
  */
 
 
@@ -1306,9 +1381,9 @@ function getNormalStylePropertyValue(property, value) {
 /**
  * Serializes a React element to string.
  *
- * @param {WPElement} element       Element to serialize.
- * @param {?Object}   context       Context object.
- * @param {?Object}   legacyContext Legacy context object.
+ * @param {import('react').ReactNode} element         Element to serialize.
+ * @param {Object}                    [context]       Context object.
+ * @param {Object}                    [legacyContext] Legacy context object.
  *
  * @return {string} Serialized element.
  */
@@ -1333,7 +1408,9 @@ function renderElement(element, context) {
       return element.toString();
   }
 
-  var type = element.type,
+  var type =
+  /** @type {{type?: any, props?: any}} */
+  element.type,
       props = element.props;
 
   switch (type) {
@@ -1380,11 +1457,11 @@ function renderElement(element, context) {
 /**
  * Serializes a native component type to string.
  *
- * @param {?string} type          Native component type to serialize, or null if
- *                                rendering as fragment of children content.
- * @param {Object}  props         Props object.
- * @param {?Object} context       Context object.
- * @param {?Object} legacyContext Legacy context object.
+ * @param {?string} type            Native component type to serialize, or null if
+ *                                  rendering as fragment of children content.
+ * @param {Object}  props           Props object.
+ * @param {Object}  [context]       Context object.
+ * @param {Object}  [legacyContext] Legacy context object.
  *
  * @return {string} Serialized element.
  */
@@ -1418,23 +1495,33 @@ function renderNativeComponent(type, props, context) {
 
   return '<' + type + attributes + '>' + content + '</' + type + '>';
 }
+/** @typedef {import('./react').WPComponent} WPComponent */
+
 /**
  * Serializes a non-native component type to string.
  *
- * @param {Function} Component     Component type to serialize.
- * @param {Object}   props         Props object.
- * @param {?Object}  context       Context object.
- * @param {?Object}  legacyContext Legacy context object.
+ * @param {WPComponent} Component       Component type to serialize.
+ * @param {Object}      props           Props object.
+ * @param {Object}      [context]       Context object.
+ * @param {Object}      [legacyContext] Legacy context object.
  *
  * @return {string} Serialized element
  */
 
 function renderComponent(Component, props, context) {
   var legacyContext = arguments.length > 3 && arguments[3] !== undefined ? arguments[3] : {};
-  var instance = new Component(props, legacyContext);
+  var instance = new
+  /** @type {import('react').ComponentClass} */
+  Component(props, legacyContext);
 
-  if (typeof instance.getChildContext === 'function') {
-    Object.assign(legacyContext, instance.getChildContext());
+  if (typeof // Ignore reason: Current prettier reformats parens and mangles type assertion
+  // prettier-ignore
+
+  /** @type {{getChildContext?: () => unknown}} */
+  instance.getChildContext === 'function') {
+    Object.assign(legacyContext,
+    /** @type {{getChildContext?: () => unknown}} */
+    instance.getChildContext());
   }
 
   var html = renderElement(instance.render(), context, legacyContext);
@@ -1443,9 +1530,9 @@ function renderComponent(Component, props, context) {
 /**
  * Serializes an array of children to string.
  *
- * @param {Array}   children      Children to serialize.
- * @param {?Object} context       Context object.
- * @param {?Object} legacyContext Legacy context object.
+ * @param {import('react').ReactNodeArray} children        Children to serialize.
+ * @param {Object}                         [context]       Context object.
+ * @param {Object}                         [legacyContext] Legacy context object.
  *
  * @return {string} Serialized children.
  */
@@ -1559,40 +1646,6 @@ function renderStyle(style) {
 /* harmony default export */ var serialize = (renderElement);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/index.js
-/* concated harmony reexport __experimentalCreateInterpolateElement */__webpack_require__.d(__webpack_exports__, "__experimentalCreateInterpolateElement", function() { return create_interpolate_element; });
-/* concated harmony reexport Children */__webpack_require__.d(__webpack_exports__, "Children", function() { return external_this_React_["Children"]; });
-/* concated harmony reexport cloneElement */__webpack_require__.d(__webpack_exports__, "cloneElement", function() { return external_this_React_["cloneElement"]; });
-/* concated harmony reexport Component */__webpack_require__.d(__webpack_exports__, "Component", function() { return external_this_React_["Component"]; });
-/* concated harmony reexport createContext */__webpack_require__.d(__webpack_exports__, "createContext", function() { return external_this_React_["createContext"]; });
-/* concated harmony reexport createElement */__webpack_require__.d(__webpack_exports__, "createElement", function() { return external_this_React_["createElement"]; });
-/* concated harmony reexport createRef */__webpack_require__.d(__webpack_exports__, "createRef", function() { return external_this_React_["createRef"]; });
-/* concated harmony reexport forwardRef */__webpack_require__.d(__webpack_exports__, "forwardRef", function() { return external_this_React_["forwardRef"]; });
-/* concated harmony reexport Fragment */__webpack_require__.d(__webpack_exports__, "Fragment", function() { return external_this_React_["Fragment"]; });
-/* concated harmony reexport isValidElement */__webpack_require__.d(__webpack_exports__, "isValidElement", function() { return external_this_React_["isValidElement"]; });
-/* concated harmony reexport memo */__webpack_require__.d(__webpack_exports__, "memo", function() { return external_this_React_["memo"]; });
-/* concated harmony reexport StrictMode */__webpack_require__.d(__webpack_exports__, "StrictMode", function() { return external_this_React_["StrictMode"]; });
-/* concated harmony reexport useCallback */__webpack_require__.d(__webpack_exports__, "useCallback", function() { return external_this_React_["useCallback"]; });
-/* concated harmony reexport useContext */__webpack_require__.d(__webpack_exports__, "useContext", function() { return external_this_React_["useContext"]; });
-/* concated harmony reexport useDebugValue */__webpack_require__.d(__webpack_exports__, "useDebugValue", function() { return external_this_React_["useDebugValue"]; });
-/* concated harmony reexport useEffect */__webpack_require__.d(__webpack_exports__, "useEffect", function() { return external_this_React_["useEffect"]; });
-/* concated harmony reexport useImperativeHandle */__webpack_require__.d(__webpack_exports__, "useImperativeHandle", function() { return external_this_React_["useImperativeHandle"]; });
-/* concated harmony reexport useLayoutEffect */__webpack_require__.d(__webpack_exports__, "useLayoutEffect", function() { return external_this_React_["useLayoutEffect"]; });
-/* concated harmony reexport useMemo */__webpack_require__.d(__webpack_exports__, "useMemo", function() { return external_this_React_["useMemo"]; });
-/* concated harmony reexport useReducer */__webpack_require__.d(__webpack_exports__, "useReducer", function() { return external_this_React_["useReducer"]; });
-/* concated harmony reexport useRef */__webpack_require__.d(__webpack_exports__, "useRef", function() { return external_this_React_["useRef"]; });
-/* concated harmony reexport useState */__webpack_require__.d(__webpack_exports__, "useState", function() { return external_this_React_["useState"]; });
-/* concated harmony reexport lazy */__webpack_require__.d(__webpack_exports__, "lazy", function() { return external_this_React_["lazy"]; });
-/* concated harmony reexport Suspense */__webpack_require__.d(__webpack_exports__, "Suspense", function() { return external_this_React_["Suspense"]; });
-/* concated harmony reexport concatChildren */__webpack_require__.d(__webpack_exports__, "concatChildren", function() { return concatChildren; });
-/* concated harmony reexport switchChildrenNodeName */__webpack_require__.d(__webpack_exports__, "switchChildrenNodeName", function() { return switchChildrenNodeName; });
-/* concated harmony reexport createPortal */__webpack_require__.d(__webpack_exports__, "createPortal", function() { return external_this_ReactDOM_["createPortal"]; });
-/* concated harmony reexport findDOMNode */__webpack_require__.d(__webpack_exports__, "findDOMNode", function() { return external_this_ReactDOM_["findDOMNode"]; });
-/* concated harmony reexport render */__webpack_require__.d(__webpack_exports__, "render", function() { return external_this_ReactDOM_["render"]; });
-/* concated harmony reexport unmountComponentAtNode */__webpack_require__.d(__webpack_exports__, "unmountComponentAtNode", function() { return external_this_ReactDOM_["unmountComponentAtNode"]; });
-/* concated harmony reexport isEmptyElement */__webpack_require__.d(__webpack_exports__, "isEmptyElement", function() { return utils_isEmptyElement; });
-/* concated harmony reexport Platform */__webpack_require__.d(__webpack_exports__, "Platform", function() { return platform; });
-/* concated harmony reexport renderToString */__webpack_require__.d(__webpack_exports__, "renderToString", function() { return serialize; });
-/* concated harmony reexport RawHTML */__webpack_require__.d(__webpack_exports__, "RawHTML", function() { return RawHTML; });
 
 
 
@@ -1626,14 +1679,7 @@ function _defineProperty(obj, key, value) {
 
 /***/ }),
 
-/***/ 66:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["ReactDOM"]; }());
-
-/***/ }),
-
-/***/ 68:
+/***/ 89:
 /***/ (function(module, exports) {
 
 (function() { module.exports = this["wp"]["escapeHtml"]; }());
