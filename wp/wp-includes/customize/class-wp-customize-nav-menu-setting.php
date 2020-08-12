@@ -125,12 +125,12 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting {
 	 *
 	 * @since 4.3.0
 	 *
+	 * @throws Exception If $id is not valid for this setting type.
+	 *
 	 * @param WP_Customize_Manager $manager Customizer bootstrap instance.
 	 * @param string               $id      A specific ID of the setting.
 	 *                                      Can be a theme mod or option name.
 	 * @param array                $args    Optional. Setting arguments.
-	 *
-	 * @throws Exception If $id is not valid for this setting type.
 	 */
 	public function __construct( WP_Customize_Manager $manager, $id, array $args = array() ) {
 		if ( empty( $manager->nav_menus ) ) {
@@ -179,7 +179,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting {
 					$value['auto_add'] = false;
 
 					if ( isset( $nav_menu_options['auto_add'] ) && is_array( $nav_menu_options['auto_add'] ) ) {
-						$value['auto_add'] = in_array( $term->term_id, $nav_menu_options['auto_add'] );
+						$value['auto_add'] = in_array( $term->term_id, $nav_menu_options['auto_add'], true );
 					}
 				}
 			}
@@ -188,6 +188,7 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting {
 				$value = $this->default;
 			}
 		}
+
 		return $value;
 	}
 
@@ -602,7 +603,8 @@ class WP_Customize_Nav_Menu_Setting extends WP_Customize_Setting {
 			$nav_menu_options['auto_add'] = array();
 		}
 
-		$i = array_search( $menu_id, $nav_menu_options['auto_add'] );
+		$i = array_search( $menu_id, $nav_menu_options['auto_add'], true );
+
 		if ( $auto_add && false === $i ) {
 			array_push( $nav_menu_options['auto_add'], $this->term_id );
 		} elseif ( ! $auto_add && false !== $i ) {

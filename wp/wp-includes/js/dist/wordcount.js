@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["wordcount"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 432);
+/******/ 	return __webpack_require__(__webpack_require__.s = 450);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -94,11 +94,15 @@ this["wp"] = this["wp"] || {}; this["wp"]["wordcount"] =
 
 /***/ }),
 
-/***/ 432:
+/***/ 450:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
+// ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "count", function() { return /* binding */ count; });
 
 // EXTERNAL MODULE: external {"this":"lodash"}
 var external_this_lodash_ = __webpack_require__(2);
@@ -175,11 +179,11 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripTags = (function (settings, text) {
+function stripTags(settings, text) {
   if (settings.HTMLRegExp) {
     return text.replace(settings.HTMLRegExp, '\n');
   }
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/transposeAstralsToCountableChar.js
 /**
@@ -190,13 +194,13 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var transposeAstralsToCountableChar = (function (settings, text) {
+function transposeAstralsToCountableChar(settings, text) {
   if (settings.astralRegExp) {
     return text.replace(settings.astralRegExp, 'a');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/stripHTMLEntities.js
 /**
@@ -207,13 +211,13 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripHTMLEntities = (function (settings, text) {
+function stripHTMLEntities(settings, text) {
   if (settings.HTMLEntityRegExp) {
     return text.replace(settings.HTMLEntityRegExp, '');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/stripConnectors.js
 /**
@@ -224,13 +228,13 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripConnectors = (function (settings, text) {
+function stripConnectors(settings, text) {
   if (settings.connectorRegExp) {
     return text.replace(settings.connectorRegExp, ' ');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/stripRemovables.js
 /**
@@ -241,13 +245,13 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripRemovables = (function (settings, text) {
+function stripRemovables(settings, text) {
   if (settings.removeRegExp) {
     return text.replace(settings.removeRegExp, '');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/stripHTMLComments.js
 /**
@@ -258,13 +262,13 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripHTMLComments = (function (settings, text) {
+function stripHTMLComments(settings, text) {
   if (settings.HTMLcommentRegExp) {
     return text.replace(settings.HTMLcommentRegExp, '');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/stripShortcodes.js
 /**
@@ -275,13 +279,13 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripShortcodes = (function (settings, text) {
+function stripShortcodes(settings, text) {
   if (settings.shortcodesRegExp) {
     return text.replace(settings.shortcodesRegExp, '\n');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/stripSpaces.js
 /**
@@ -292,11 +296,11 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var stripSpaces = (function (settings, text) {
+function stripSpaces(settings, text) {
   if (settings.spaceRegExp) {
     return text.replace(settings.spaceRegExp, ' ');
   }
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/transposeHTMLEntitiesToCountableChars.js
 /**
@@ -307,16 +311,15 @@ var defaultSettings = {
  *
  * @return {string} The manipulated text.
  */
-/* harmony default export */ var transposeHTMLEntitiesToCountableChars = (function (settings, text) {
+function transposeHTMLEntitiesToCountableChars(settings, text) {
   if (settings.HTMLEntityRegExp) {
     return text.replace(settings.HTMLEntityRegExp, 'a');
   }
 
   return text;
-});
+}
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/wordcount/build-module/index.js
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "count", function() { return count; });
 /**
  * External dependencies
  */
