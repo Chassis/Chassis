@@ -281,7 +281,7 @@ class Custom_Image_Header {
 	 *                     or 'uploaded' (for the Uploaded Images control).
 	 */
 	public function show_header_selector( $type = 'default' ) {
-		if ( 'default' == $type ) {
+		if ( 'default' === $type ) {
 			$headers = $this->default_headers;
 		} else {
 			$headers = get_uploaded_header_images();
@@ -359,7 +359,7 @@ class Custom_Image_Header {
 		if ( ! checked )
 			return;
 		text_color = $('#text-color');
-		if ( '' == text_color.val().replace('#', '') ) {
+		if ( '' === text_color.val().replace('#', '') ) {
 			text_color.val( default_color );
 			pickColor( default_color );
 		} else {
@@ -1097,7 +1097,7 @@ endif;
 			return;
 		}
 
-		if ( in_array( $choice, array( 'remove-header', 'random-default-image', 'random-uploaded-image' ) ) ) {
+		if ( in_array( $choice, array( 'remove-header', 'random-default-image', 'random-uploaded-image' ), true ) ) {
 			set_theme_mod( 'header_image', $choice );
 			remove_theme_mod( 'header_image_data' );
 			return;
@@ -1244,7 +1244,7 @@ endif;
 	 * @since 3.9.0
 	 *
 	 * @param array  $object  Attachment object.
-	 * @param string $cropped Cropped image URL.
+	 * @param string $cropped File path to cropped image.
 	 * @return int Attachment ID.
 	 */
 	final public function insert_attachment( $object, $cropped ) {
@@ -1490,7 +1490,7 @@ endif;
 	 *
 	 * @since 4.9.0
 	 *
-	 * @param  array $object A crop attachment object.
+	 * @param array $object A crop attachment object.
 	 * @return int|false An attachment ID if one exists. False if none.
 	 */
 	public function get_previous_crop( $object ) {

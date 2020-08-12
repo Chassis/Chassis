@@ -61,7 +61,7 @@ class WP_Terms_List_Table extends WP_List_Table {
 		$tax = get_taxonomy( $taxonomy );
 
 		// @todo Still needed? Maybe just the show_ui part.
-		if ( empty( $post_type ) || ! in_array( $post_type, get_post_types( array( 'show_ui' => true ) ) ) ) {
+		if ( empty( $post_type ) || ! in_array( $post_type, get_post_types( array( 'show_ui' => true ) ), true ) ) {
 			$post_type = 'post';
 		}
 
@@ -269,13 +269,13 @@ class WP_Terms_List_Table extends WP_List_Table {
 
 	/**
 	 * @param string $taxonomy
-	 * @param array $terms
-	 * @param array $children
-	 * @param int   $start
-	 * @param int   $per_page
-	 * @param int   $count
-	 * @param int   $parent
-	 * @param int   $level
+	 * @param array  $terms
+	 * @param array  $children
+	 * @param int    $start
+	 * @param int    $per_page
+	 * @param int    $count
+	 * @param int    $parent
+	 * @param int    $level
 	 */
 	private function _rows( $taxonomy, $terms, &$children, $start, $per_page, &$count, $parent = 0, $level = 0 ) {
 
@@ -300,7 +300,7 @@ class WP_Terms_List_Table extends WP_List_Table {
 					$my_parent    = get_term( $p, $taxonomy );
 					$my_parents[] = $my_parent;
 					$p            = $my_parent->parent;
-					if ( in_array( $p, $parent_ids ) ) { // Prevent parent loops.
+					if ( in_array( $p, $parent_ids, true ) ) { // Prevent parent loops.
 						break;
 					}
 					$parent_ids[] = $p;
@@ -332,8 +332,8 @@ class WP_Terms_List_Table extends WP_List_Table {
 
 	/**
 	 * @global string $taxonomy
-	 * @param WP_Term $tag Term object.
-	 * @param int $level
+	 * @param WP_Term $tag   Term object.
+	 * @param int     $level
 	 */
 	public function single_row( $tag, $level = 0 ) {
 		global $taxonomy;
@@ -576,7 +576,7 @@ class WP_Terms_List_Table extends WP_List_Table {
 			);
 		}
 
-		if ( 'post' != $this->screen->post_type ) {
+		if ( 'post' !== $this->screen->post_type ) {
 			$args['post_type'] = $this->screen->post_type;
 		}
 
@@ -600,8 +600,8 @@ class WP_Terms_List_Table extends WP_List_Table {
 	}
 
 	/**
-	 * @param WP_Term $tag Term object.
-	 * @param string $column_name
+	 * @param WP_Term $tag         Term object.
+	 * @param string  $column_name Name of the column.
 	 * @return string
 	 */
 	public function column_default( $tag, $column_name ) {

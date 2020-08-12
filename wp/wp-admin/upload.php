@@ -16,7 +16,7 @@ if ( ! current_user_can( 'upload_files' ) ) {
 $mode  = get_user_option( 'media_library_mode', get_current_user_id() ) ? get_user_option( 'media_library_mode', get_current_user_id() ) : 'grid';
 $modes = array( 'grid', 'list' );
 
-if ( isset( $_GET['mode'] ) && in_array( $_GET['mode'], $modes ) ) {
+if ( isset( $_GET['mode'] ) && in_array( $_GET['mode'], $modes, true ) ) {
 	$mode = $_GET['mode'];
 	update_user_option( get_current_user_id(), 'media_library_mode', $mode );
 }
@@ -34,7 +34,7 @@ if ( 'grid' === $mode ) {
 	$vars   = wp_edit_attachments_query_vars( $q );
 	$ignore = array( 'mode', 'post_type', 'post_status', 'posts_per_page' );
 	foreach ( $vars as $key => $value ) {
-		if ( ! $value || in_array( $key, $ignore ) ) {
+		if ( ! $value || in_array( $key, $ignore, true ) ) {
 			unset( $vars[ $key ] );
 		}
 	}
@@ -120,7 +120,7 @@ $doaction = $wp_list_table->current_action();
 if ( $doaction ) {
 	check_admin_referer( 'bulk-media' );
 
-	if ( 'delete_all' == $doaction ) {
+	if ( 'delete_all' === $doaction ) {
 		$post_ids = $wpdb->get_col( "SELECT ID FROM $wpdb->posts WHERE post_type='attachment' AND post_status = 'trash'" );
 		$doaction = 'delete';
 	} elseif ( isset( $_REQUEST['media'] ) ) {
@@ -156,7 +156,7 @@ if ( $doaction ) {
 				}
 
 				if ( ! wp_trash_post( $post_id ) ) {
-					wp_die( __( 'Error in moving to Trash.' ) );
+					wp_die( __( 'Error in moving the item to Trash.' ) );
 				}
 			}
 			$location = add_query_arg(
@@ -177,7 +177,7 @@ if ( $doaction ) {
 				}
 
 				if ( ! wp_untrash_post( $post_id ) ) {
-					wp_die( __( 'Error in restoring from Trash.' ) );
+					wp_die( __( 'Error in restoring the item from Trash.' ) );
 				}
 			}
 			$location = add_query_arg( 'untrashed', count( $post_ids ), $location );
@@ -192,7 +192,7 @@ if ( $doaction ) {
 				}
 
 				if ( ! wp_delete_attachment( $post_id_del ) ) {
-					wp_die( __( 'Error in deleting.' ) );
+					wp_die( __( 'Error in deleting the attachment.' ) );
 				}
 			}
 			$location = add_query_arg( 'deleted', count( $post_ids ), $location );
