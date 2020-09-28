@@ -65,18 +65,18 @@ This should result in something like the following:
 .. code-block:: console
 
    vagrant@vagrant:~$ wp --info
-   OS:	Linux 4.4.0-150-generic #176-Ubuntu SMP Wed May 29 18:56:26 UTC 2019 x86_64
+   OS:	Linux 4.15.0-112-generic #113-Ubuntu SMP Thu Jul 9 23:41:39 UTC 2020 x86_64
    Shell:	/bin/bash
-   PHP binary:	/usr/bin/php7.3
-   PHP version:	7.3.8-1+ubuntu16.04.1+deb.sury.org+1
-   php.ini used:	/etc/php/7.3/cli/php.ini
+   PHP binary:	/usr/bin/php7.4
+   PHP version:	7.4.10
+   php.ini used:	/etc/php/7.4/cli/php.ini
    WP-CLI root dir:	phar://wp-cli.phar/vendor/wp-cli/wp-cli
    WP-CLI vendor dir:	phar://wp-cli.phar/vendor
    WP_CLI phar path:	/home/vagrant
    WP-CLI packages dir:
    WP-CLI global config:	/home/vagrant/.wp-cli/config.yml
    WP-CLI project config:
-   WP-CLI version:	2.3.0
+   WP-CLI version:	2.4.0
 
 WP-CLI Commands
 ~~~~~~~~~~~~~~~
