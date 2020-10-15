@@ -38,7 +38,7 @@ initial provisioning time and reduces disk usage by sharing the common parts
 of the VM.
 
 The ``normal`` box will use the Chassis box that we've built and uploaded to
-Vagrant Cloud which uses PHP 7.3.
+Vagrant Cloud which uses PHP 7.4.
 
 To create a customised base box for your project you could have create a `config.local.yaml` file as follows::
 
@@ -79,7 +79,7 @@ PHP Version
 
 .. py:data:: php
 
-PHP 7.2 is included with Chassis by default, plus we register the additional
+PHP 7.4 is included with Chassis by default, plus we register the additional
 repositories for the other versions. We don't download them all automatically,
 to avoid extra download times, but switching is still pretty fast as we
 pre-register the APT repositories.
@@ -91,7 +91,7 @@ To switch to 5.6 for example:
 
 You can use either a two-part version (``5.6``) or a three-part version
 (``5.6.1``) if you want to pick specifc versions. We support any version between
-5.6.0 and 7.3.x.
+5.6.0 and 8.0.x.
 
 --------------------
 PHP File Upload Size

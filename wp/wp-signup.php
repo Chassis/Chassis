@@ -9,7 +9,7 @@ require __DIR__ . '/wp-blog-header.php';
 
 nocache_headers();
 
-if ( is_array( get_site_option( 'illegal_names' ) ) && isset( $_GET['new'] ) && in_array( $_GET['new'], get_site_option( 'illegal_names' ) ) ) {
+if ( is_array( get_site_option( 'illegal_names' ) ) && isset( $_GET['new'] ) && in_array( $_GET['new'], get_site_option( 'illegal_names' ), true ) ) {
 	wp_redirect( network_home_url() );
 	die();
 }
@@ -169,7 +169,7 @@ function show_blog_form( $blogname = '', $blog_title = '', $errors = '' ) {
 			}
 
 			// Use US English if the default isn't available.
-			if ( ! in_array( $lang, $languages ) ) {
+			if ( ! in_array( $lang, $languages, true ) ) {
 				$lang = '';
 			}
 
@@ -438,7 +438,7 @@ function validate_another_blog_signup() {
 
 		$languages = signup_get_available_languages();
 
-		if ( in_array( $_POST['WPLANG'], $languages ) ) {
+		if ( in_array( $_POST['WPLANG'], $languages, true ) ) {
 			$language = wp_unslash( sanitize_text_field( $_POST['WPLANG'] ) );
 
 			if ( $language ) {
@@ -789,7 +789,7 @@ function validate_blog_signup() {
 
 		$languages = signup_get_available_languages();
 
-		if ( in_array( $_POST['WPLANG'], $languages ) ) {
+		if ( in_array( $_POST['WPLANG'], $languages, true ) ) {
 			$language = wp_unslash( sanitize_text_field( $_POST['WPLANG'] ) );
 
 			if ( $language ) {
@@ -811,12 +811,12 @@ function validate_blog_signup() {
  *
  * @since MU (3.0.0)
  *
- * @param string $domain The domain URL
- * @param string $path The site root path
- * @param string $blog_title The new site title
- * @param string $user_name The user's username
- * @param string $user_email The user's email address
- * @param array $meta Any additional meta from the {@see 'add_signup_meta'} filter in validate_blog_signup()
+ * @param string $domain     The domain URL.
+ * @param string $path       The site root path.
+ * @param string $blog_title The new site title.
+ * @param string $user_name  The user's username.
+ * @param string $user_email The user's email address.
+ * @param array  $meta       Any additional meta from the {@see 'add_signup_meta'} filter in validate_blog_signup().
  */
 function confirm_blog_signup( $domain, $path, $blog_title, $user_name = '', $user_email = '', $meta = array() ) {
 	?>

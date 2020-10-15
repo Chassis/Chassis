@@ -608,7 +608,7 @@ function get_blogs_of_user( $user_id, $all = false ) {
 	/**
 	 * Filters the list of a user's sites before it is populated.
 	 *
-	 * Passing a non-null value to the filter will effectively short circuit
+	 * Returning a non-null value from the filter will effectively short circuit
 	 * get_blogs_of_user(), returning that value instead.
 	 *
 	 * @since 4.6.0
@@ -786,8 +786,9 @@ function is_user_member_of_blog( $user_id = 0, $blog_id = 0 ) {
  *
  * @param int    $user_id    User ID.
  * @param string $meta_key   Metadata name.
- * @param mixed  $meta_value Metadata value.
- * @param bool   $unique     Optional. Whether the same key should not be added. Default false.
+ * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
+ * @param bool   $unique     Optional. Whether the same key should not be added.
+ *                           Default false.
  * @return int|false Meta ID on success, false on failure.
  */
 function add_user_meta( $user_id, $meta_key, $meta_value, $unique = false ) {
@@ -802,11 +803,14 @@ function add_user_meta( $user_id, $meta_key, $meta_value, $unique = false ) {
  * allows removing all metadata matching key, if needed.
  *
  * @since 3.0.0
+ *
  * @link https://developer.wordpress.org/reference/functions/delete_user_meta/
  *
  * @param int    $user_id    User ID
  * @param string $meta_key   Metadata name.
- * @param mixed  $meta_value Optional. Metadata value.
+ * @param mixed  $meta_value Optional. Metadata value. If provided,
+ *                           rows will only be removed that match the value.
+ *                           Must be serializable if non-scalar. Default empty.
  * @return bool True on success, false on failure.
  */
 function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
@@ -817,12 +821,17 @@ function delete_user_meta( $user_id, $meta_key, $meta_value = '' ) {
  * Retrieve user meta field for a user.
  *
  * @since 3.0.0
+ *
  * @link https://developer.wordpress.org/reference/functions/get_user_meta/
  *
  * @param int    $user_id User ID.
- * @param string $key     Optional. The meta key to retrieve. By default, returns data for all keys.
- * @param bool   $single  Whether to return a single value.
- * @return mixed Will be an array if $single is false. Will be value of meta data field if $single is true.
+ * @param string $key     Optional. The meta key to retrieve. By default,
+ *                        returns data for all keys.
+ * @param bool   $single  Optional. Whether to return a single value.
+ *                        This parameter has no effect if $key is not specified.
+ *                        Default false.
+ * @return mixed An array if $single is false. The value of meta data field
+ *               if $single is true. False for an invalid $user_id.
  */
 function get_user_meta( $user_id, $key = '', $single = false ) {
 	return get_metadata( 'user', $user_id, $key, $single );
@@ -837,13 +846,18 @@ function get_user_meta( $user_id, $key = '', $single = false ) {
  * If the meta field for the user does not exist, it will be added.
  *
  * @since 3.0.0
+ *
  * @link https://developer.wordpress.org/reference/functions/update_user_meta/
  *
  * @param int    $user_id    User ID.
  * @param string $meta_key   Metadata key.
- * @param mixed  $meta_value Metadata value.
- * @param mixed  $prev_value Optional. Previous value to check before removing.
- * @return int|bool Meta ID if the key didn't exist, true on successful update, false on failure.
+ * @param mixed  $meta_value Metadata value. Must be serializable if non-scalar.
+ * @param mixed  $prev_value Optional. Previous value to check before updating.
+ *                           If specified, only update existing metadata entries with
+ *                           this value. Otherwise, update all entries. Default empty.
+ * @return int|bool Meta ID if the key didn't exist, true on successful update,
+ *                  false on failure or if the value passed to the function
+ *                  is the same as the one that is already in the database.
  */
 function update_user_meta( $user_id, $meta_key, $meta_value, $prev_value = '' ) {
 	return update_metadata( 'user', $user_id, $meta_key, $meta_value, $prev_value );
@@ -901,7 +915,7 @@ function count_users( $strategy = 'time', $site_id = null ) {
 	$blog_prefix = $wpdb->get_blog_prefix( $site_id );
 	$result      = array();
 
-	if ( 'time' == $strategy ) {
+	if ( 'time' === $strategy ) {
 		if ( is_multisite() && get_current_blog_id() != $site_id ) {
 			switch_to_blog( $site_id );
 			$avail_roles = wp_roles()->get_names();
@@ -1238,11 +1252,11 @@ function wp_dropdown_users( $args = '' ) {
  */
 function sanitize_user_field( $field, $value, $user_id, $context ) {
 	$int_fields = array( 'ID' );
-	if ( in_array( $field, $int_fields ) ) {
+	if ( in_array( $field, $int_fields, true ) ) {
 		$value = (int) $value;
 	}
 
-	if ( 'raw' == $context ) {
+	if ( 'raw' === $context ) {
 		return $value;
 	}
 
@@ -1252,7 +1266,7 @@ function sanitize_user_field( $field, $value, $user_id, $context ) {
 
 	$prefixed = false !== strpos( $field, 'user_' );
 
-	if ( 'edit' == $context ) {
+	if ( 'edit' === $context ) {
 		if ( $prefixed ) {
 
 			/** This filter is documented in wp-includes/post.php */
@@ -1273,12 +1287,12 @@ function sanitize_user_field( $field, $value, $user_id, $context ) {
 			$value = apply_filters( "edit_user_{$field}", $value, $user_id );
 		}
 
-		if ( 'description' == $field ) {
+		if ( 'description' === $field ) {
 			$value = esc_html( $value ); // textarea_escaped?
 		} else {
 			$value = esc_attr( $value );
 		}
-	} elseif ( 'db' == $context ) {
+	} elseif ( 'db' === $context ) {
 		if ( $prefixed ) {
 			/** This filter is documented in wp-includes/post.php */
 			$value = apply_filters( "pre_{$field}", $value );
@@ -1320,13 +1334,13 @@ function sanitize_user_field( $field, $value, $user_id, $context ) {
 		}
 	}
 
-	if ( 'user_url' == $field ) {
+	if ( 'user_url' === $field ) {
 		$value = esc_url( $value );
 	}
 
-	if ( 'attribute' == $context ) {
+	if ( 'attribute' === $context ) {
 		$value = esc_attr( $value );
-	} elseif ( 'js' == $context ) {
+	} elseif ( 'js' === $context ) {
 		$value = esc_js( $value );
 	}
 	return $value;
@@ -1545,7 +1559,7 @@ function wp_insert_user( $userdata ) {
 			return new WP_Error( 'invalid_user_id', __( 'Invalid user ID.' ) );
 		}
 
-		// hashed in wp_update_user(), plaintext if called directly.
+		// Hashed in wp_update_user(), plaintext if called directly.
 		$user_pass = ! empty( $userdata['user_pass'] ) ? $userdata['user_pass'] : $old_user_data->user_pass;
 	} else {
 		$update = false;
@@ -1581,11 +1595,11 @@ function wp_insert_user( $userdata ) {
 	}
 
 	/**
-	 * Filters the list of blacklisted usernames.
+	 * Filters the list of disallowed usernames.
 	 *
 	 * @since 4.4.0
 	 *
-	 * @param array $usernames Array of blacklisted usernames.
+	 * @param array $usernames Array of disallowed usernames.
 	 */
 	$illegal_logins = (array) apply_filters( 'illegal_user_logins', array() );
 
@@ -2035,6 +2049,7 @@ All at ###SITENAME###
 			 *
 			 * @param array $pass_change_email {
 			 *            Used to build wp_mail().
+			 *
 			 *            @type string $to      The intended recipients. Add emails in a comma separated string.
 			 *            @type string $subject The subject of the email.
 			 *            @type string $message The content of the email.
@@ -2092,6 +2107,7 @@ All at ###SITENAME###
 			 *
 			 * @param array $email_change_email {
 			 *            Used to build wp_mail().
+			 *
 			 *            @type string $to      The intended recipients.
 			 *            @type string $subject The subject of the email.
 			 *            @type string $message The content of the email.
@@ -2104,7 +2120,7 @@ All at ###SITENAME###
 			 *                - ###SITEURL###     The URL to the site.
 			 *            @type string $headers Headers.
 			 *        }
-			 * @param array $user The original user array.
+			 * @param array $user     The original user array.
 			 * @param array $userdata The updated user array.
 			 */
 			$email_change_email = apply_filters( 'email_change_email', $email_change_email, $user, $userdata );
@@ -2154,7 +2170,8 @@ All at ###SITENAME###
  * complex user creation use wp_insert_user() to specify more information.
  *
  * @since 2.0.0
- * @see wp_insert_user() More complete way to create a new user
+ *
+ * @see wp_insert_user() More complete way to create a new user.
  *
  * @param string $username The user's username.
  * @param string $password The user's password.
@@ -2262,7 +2279,6 @@ function wp_get_password_hint() {
  * @global PasswordHash $wp_hasher Portable PHP password hashing framework.
  *
  * @param WP_User $user User to retrieve password reset key for.
- *
  * @return string|WP_Error Password reset key on success. WP_Error on error.
  */
 function get_password_reset_key( $user ) {
@@ -2303,8 +2319,8 @@ function get_password_reset_key( $user ) {
 	 *
 	 * @since 2.7.0
 	 *
-	 * @param bool $allow         Whether to allow the password to be reset. Default true.
-	 * @param int  $user_data->ID The ID of the user attempting to reset a password.
+	 * @param bool $allow Whether to allow the password to be reset. Default true.
+	 * @param int  $ID    The ID of the user attempting to reset a password.
 	 */
 	$allow = apply_filters( 'allow_password_reset', $allow, $user->ID );
 
@@ -2447,7 +2463,7 @@ function check_password_reset_key( $key, $login ) {
  * @since 2.5.0
  *
  * @param WP_User $user     The user
- * @param string $new_pass New password for the user in plaintext
+ * @param string  $new_pass New password for the user in plaintext
  */
 function reset_password( $user, $new_pass ) {
 	/**
@@ -2497,7 +2513,7 @@ function register_new_user( $user_login, $user_email ) {
 	$user_email = apply_filters( 'user_registration_email', $user_email );
 
 	// Check the username.
-	if ( '' == $sanitized_user_login ) {
+	if ( '' === $sanitized_user_login ) {
 		$errors->add( 'empty_username', __( '<strong>Error</strong>: Please enter a username.' ) );
 	} elseif ( ! validate_username( $user_login ) ) {
 		$errors->add( 'invalid_username', __( '<strong>Error</strong>: This username is invalid because it uses illegal characters. Please enter a valid username.' ) );
@@ -2514,13 +2530,13 @@ function register_new_user( $user_login, $user_email ) {
 	}
 
 	// Check the email address.
-	if ( '' == $user_email ) {
+	if ( '' === $user_email ) {
 		$errors->add( 'empty_email', __( '<strong>Error</strong>: Please type your email address.' ) );
 	} elseif ( ! is_email( $user_email ) ) {
 		$errors->add( 'invalid_email', __( '<strong>Error</strong>: The email address isn&#8217;t correct.' ) );
 		$user_email = '';
 	} elseif ( email_exists( $user_email ) ) {
-		$errors->add( 'email_exists', __( '<strong>Error</strong>: This email is already registered, please choose another one.' ) );
+		$errors->add( 'email_exists', __( '<strong>Error</strong>: This email is already registered. Please choose another one.' ) );
 	}
 
 	/**
@@ -2540,7 +2556,7 @@ function register_new_user( $user_login, $user_email ) {
 	 * Filters the errors encountered when a new user is being registered.
 	 *
 	 * The filtered WP_Error object may, for example, contain errors for an invalid
-	 * or existing username or email address. A WP_Error object should always returned,
+	 * or existing username or email address. A WP_Error object should always be returned,
 	 * but may or may not contain errors.
 	 *
 	 * If any errors are present in $errors, this will abort the user's registration.
@@ -2565,7 +2581,7 @@ function register_new_user( $user_login, $user_email ) {
 			'registerfail',
 			sprintf(
 				/* translators: %s: Admin email address. */
-				__( '<strong>Error</strong>: Couldn&#8217;t register you&hellip; please contact the <a href="mailto:%s">webmaster</a> !' ),
+				__( '<strong>Error</strong>: Couldn&#8217;t register you&hellip; please contact the <a href="mailto:%s">site admin</a>!' ),
 				get_option( 'admin_email' )
 			)
 		);
@@ -2620,6 +2636,7 @@ function wp_get_session_token() {
  * Retrieve a list of sessions for the current user.
  *
  * @since 4.0.0
+ *
  * @return array Array of sessions.
  */
 function wp_get_all_sessions() {
@@ -2854,11 +2871,11 @@ All at ###SITENAME###
 		 * Filters the text of the email sent when a change of user email address is attempted.
 		 *
 		 * The following strings have a special meaning and will get replaced dynamically:
-		 * ###USERNAME###  The current user's username.
-		 * ###ADMIN_URL### The link to click on to confirm the email change.
-		 * ###EMAIL###     The new email.
-		 * ###SITENAME###  The name of the site.
-		 * ###SITEURL###   The URL to the site.
+		 * - ###USERNAME###  The current user's username.
+		 * - ###ADMIN_URL### The link to click on to confirm the email change.
+		 * - ###EMAIL###     The new email.
+		 * - ###SITENAME###  The name of the site.
+		 * - ###SITEURL###   The URL to the site.
 		 *
 		 * @since MU (3.0.0)
 		 * @since 4.9.0 This filter is no longer Multisite specific.
@@ -3111,7 +3128,7 @@ function wp_user_personal_data_exporter( $email_address ) {
 			foreach ( $session_tokens_props_to_export as $key => $name ) {
 				if ( ! empty( $session_token[ $key ] ) ) {
 					$value = $session_token[ $key ];
-					if ( in_array( $key, array( 'expiration', 'login' ) ) ) {
+					if ( in_array( $key, array( 'expiration', 'login' ), true ) ) {
 						$value = date_i18n( 'F d, Y H:i A', $value );
 					}
 					$session_tokens_data_to_export[] = array(
@@ -3516,7 +3533,7 @@ All at ###SITENAME###
  * @access private
  *
  * @param int $request_id The request ID being confirmed.
- * @return string $message The confirmation message.
+ * @return string The confirmation message.
  */
 function _wp_privacy_account_request_confirmed_message( $request_id ) {
 	$request = wp_get_user_request( $request_id );
