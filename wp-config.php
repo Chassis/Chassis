@@ -8,6 +8,7 @@
 // ===================================================
 if ( file_exists( dirname( __FILE__ ) . '/local-config-db.php' ) ) {
 	define( 'WP_LOCAL_DEV', true );
+	define( 'WP_ENVIRONMENT_TYPE', 'local' );
 	include( dirname( __FILE__ ) . '/local-config-db.php' );
 }
 
