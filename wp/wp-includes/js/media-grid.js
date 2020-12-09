@@ -491,17 +491,8 @@ TwoColumn = Details.extend(/** @lends wp.media.view.Attachment.Details.TowColumn
 	/**
 	 * Noop this from parent class, doesn't apply here.
 	 */
-	toggleSelectionHandler: function() {},
+	toggleSelectionHandler: function() {}
 
-	render: function() {
-		Details.prototype.render.apply( this, arguments );
-
-		wp.media.mixin.removeAllPlayers();
-		this.$( 'audio, video' ).each( function (i, elem) {
-			var el = wp.media.view.MediaDetails.prepareSrc( elem );
-			new window.MediaElementPlayer( el, wp.media.mixin.mejsSettings );
-		} );
-	}
 });
 
 module.exports = TwoColumn;
@@ -542,7 +533,7 @@ var Router = Backbone.Router.extend(/** @lends wp.media.view.MediaFrame.Manage.R
 		}
 	},
 
-	// Respond to the search route by filling the search field and trigggering the input event.
+	// Respond to the search route by filling the search field and triggering the input event.
 	search: function( query ) {
 		jQuery( '#media-search-input' ).val( query ).trigger( 'input' );
 	},
@@ -556,9 +547,9 @@ var Router = Backbone.Router.extend(/** @lends wp.media.view.MediaFrame.Manage.R
 
 		// Trigger the media frame to open the correct item.
 		item = library.findWhere( { id: parseInt( query, 10 ) } );
-		item.set( 'skipHistory', true );
 
 		if ( item ) {
+			item.set( 'skipHistory', true );
 			frame.trigger( 'edit:attachment', item );
 		} else {
 			item = media.attachment( query );

@@ -255,7 +255,7 @@
 .media-modal-close .media-modal-icon:before {
 	content: "\f158";
 	font: normal 20px/1 dashicons;
-	speak: none;
+	speak: never;
 	vertical-align: middle;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
@@ -475,7 +475,9 @@
 .attachment-details .copy-to-clipboard-container .success {
 	padding: 0;
 	min-height: 0;
+	line-height: 2.18181818;
 	text-align: right;
+	color: #40860a;
 }
 
 .compat-item label span {
@@ -1764,6 +1766,14 @@
 	padding-bottom: 11px;
 }
 
+.attachment-info .wp-media-wrapper {
+	margin-bottom: 8px;
+}
+
+.attachment-info .wp-media-wrapper.wp-audio {
+	margin-top: 13px;
+}
+
 .attachment-info .filename {
 	font-weight: 600;
 	color: #444;
@@ -2164,7 +2174,7 @@
 
 .image-details .advanced-toggle:after {
 	font: normal 20px/1 dashicons;
-	speak: none;
+	speak: never;
 	vertical-align: top;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
