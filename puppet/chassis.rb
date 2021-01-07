@@ -254,7 +254,6 @@ module Chassis
 
 	def self.install_extension(extension)
 		# Check if we have a specific version/branch
-		puts extension
 		if extension =~ /\@/
 			branch = '-b ' + extension.split('@').last
 			extension = extension.gsub(/@.+/, '')
