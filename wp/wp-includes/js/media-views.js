@@ -8114,7 +8114,7 @@ AttachmentsBrowser = View.extend(/** @lends wp.media.view.AttachmentsBrowser.pro
 	}, 200 ),
 
 	editSelection: function( modal ) {
-		// When editing a selection, move focus to the "Return to library" button.
+		// When editing a selection, move focus to the "Go to library" button.
 		modal.$( '.media-button-backToLibrary' ).focus();
 	},
 
@@ -9194,6 +9194,7 @@ Details = Attachment.extend(/** @lends wp.media.view.Attachment.Details.prototyp
 			this.moveFocus();
 		}
 	},
+
 	/**
 	 * Untrashes an attachment.
 	 *
@@ -9253,6 +9254,16 @@ Details = Attachment.extend(/** @lends wp.media.view.Attachment.Details.prototyp
 			this.controller.trigger( 'attachment:details:shift-tab', event );
 			return false;
 		}
+	},
+
+	render: function() {
+		Attachment.prototype.render.apply( this, arguments );
+
+		wp.media.mixin.removeAllPlayers();
+		this.$( 'audio, video' ).each( function (i, elem) {
+			var el = wp.media.view.MediaDetails.prepareSrc( elem );
+			new window.MediaElementPlayer( el, wp.media.mixin.mejsSettings );
+		} );
 	}
 });
 

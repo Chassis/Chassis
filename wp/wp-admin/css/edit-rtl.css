@@ -460,6 +460,8 @@ form#tags-filter {
 #post-body .misc-pub-post-status:before,
 #post-body #visibility:before,
 .curtime #timestamp:before,
+#post-body .misc-pub-uploadedby:before,
+#post-body .misc-pub-uploadedto:before,
 #post-body .misc-pub-revisions:before,
 #post-body .misc-pub-response-to:before,
 #post-body .misc-pub-comment-status:before {
@@ -469,11 +471,13 @@ form#tags-filter {
 #post-body .misc-pub-post-status:before,
 #post-body #visibility:before,
 .curtime #timestamp:before,
+#post-body .misc-pub-uploadedby:before,
+#post-body .misc-pub-uploadedto:before,
 #post-body .misc-pub-revisions:before,
 #post-body .misc-pub-response-to:before,
 #post-body .misc-pub-comment-status:before {
 	font: normal 20px/1 dashicons;
-	speak: none;
+	speak: never;
 	display: inline-block;
 	margin-right: -1px;
 	padding-left: 3px;
@@ -493,6 +497,18 @@ form#tags-filter {
 
 .curtime #timestamp:before {
 	content: "\f145";
+	position: relative;
+	top: -1px;
+}
+
+#post-body .misc-pub-uploadedby:before {
+	content: "\f110";
+	position: relative;
+	top: -1px;
+}
+
+#post-body .misc-pub-uploadedto:before {
+	content: "\f318";
 	position: relative;
 	top: -1px;
 }
@@ -726,7 +742,19 @@ form#tags-filter {
 
 .text-removed .policy-text {
 	color: #666;
-	font-weight: 600;
+	font-weight: 300;
+	padding-right: 1em;
+	border-right: 3px solid #ffb900;
+}
+
+.text-removed .policy-text h1,
+.text-removed .policy-text h2,
+.text-removed .policy-text h3,
+.text-removed .policy-text h4,
+.text-removed .policy-text h5,
+.text-removed .policy-text h6 {
+	color: #39424a;
+	font-weight: 500;
 }
 
 .privacy-text-actions {
@@ -950,7 +978,7 @@ strong.privacy-policy-tutorial {
 	margin-left: 7px;
 	color: #ddd;
 	font: normal 20px/1 dashicons;
-	speak: none;
+	speak: never;
 	-webkit-font-smoothing: antialiased;
 	-moz-osx-font-smoothing: grayscale;
 }
@@ -1212,7 +1240,7 @@ p.popular-tags a {
 	display: inline-block;
 }
 
-/* Suggest.js autocomplete, no more used by core. */
+/* Back-compat styles from deprecated jQuery.suggest, see ticket #40260. */
 .ac_results {
 	display: none;
 	margin: -1px 0 0;
@@ -1783,6 +1811,10 @@ table.links-table {
 	.links-table th,
 	.links-table td {
 		padding: 10px 0;
+	}
+
+	.edit-term-notes {
+		display: none;
 	}
 
 	.privacy-text-box {
