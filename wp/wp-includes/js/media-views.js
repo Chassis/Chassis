@@ -4515,7 +4515,7 @@ Modal = wp.media.View.extend(/** @lends wp.media.view.Modal.prototype */{
 		}
 
 		// Set initial focus on the content instead of this view element, to avoid page scrolling.
-		this.$( '.media-modal' ).focus();
+		this.$( '.media-modal' ).trigger( 'focus' );
 
 		// Hide the page content from assistive technologies.
 		this.focusManager.setAriaHiddenOnBodyChildren( $el );
@@ -4532,11 +4532,14 @@ Modal = wp.media.View.extend(/** @lends wp.media.view.Modal.prototype */{
 			return this;
 		}
 
+		// Pause current audio/video even after closing the modal.
+		$( '.mejs-pause button' ).click();
+
 		// Enable page scrolling.
 		$( 'body' ).removeClass( 'modal-open' );
 
 		// Hide modal and remove restricted media modal tab focus once it's closed.
-		this.$el.hide().undelegate( 'keydown' );
+		this.$el.hide().off( 'keydown' );
 
 		/*
 		 * Make visible again to assistive technologies all body children that
@@ -4692,7 +4695,7 @@ var FocusManager = wp.media.View.extend(/** @lends wp.media.view.FocusManager.pr
 	 * @return {void}
 	 */
 	focus: function() {
-		this.$( '.media-modal' ).focus();
+		this.$( '.media-modal' ).trigger( 'focus' );
 	},
 
 	/**
@@ -5453,6 +5456,7 @@ UploaderInline = View.extend(/** @lends wp.media.view.UploaderInline.prototype *
 
 			$browser.detach().text( $placeholder.text() );
 			$browser[0].className = $placeholder[0].className;
+			$browser[0].setAttribute( 'aria-labelledby', $browser[0].id + ' ' + $placeholder[0].getAttribute('aria-labelledby') );
 			$placeholder.replaceWith( $browser.show() );
 		}
 
@@ -5602,8 +5606,14 @@ UploaderStatus = View.extend(/** @lends wp.media.view.UploaderStatus.prototype *
 			message:  error.get( 'message' )
 		} );
 
+		var buttonClose = this.$el.find( 'button' );
+
 		// Can show additional info here while retrying to create image sub-sizes.
 		this.views.add( '.upload-errors', statusError, { at: 0 } );
+		_.delay( function() {
+			buttonClose.trigger( 'focus' );
+			wp.a11y.speak( error.get( 'message' ), 'assertive' );
+		}, 1000 );
 	},
 
 	dismiss: function() {
@@ -9044,7 +9054,7 @@ Details = Attachment.extend(/** @lends wp.media.view.Attachment.Details.prototyp
 			// Clear the selection and move focus back to the trigger.
 			event.clearSelection();
 			// Handle ClipboardJS focus bug, see https://github.com/zenorocha/clipboard.js/issues/680
-			triggerElement.focus();
+			triggerElement.trigger( 'focus' );
 
 			// Show success visual feedback.
 			clearTimeout( successTimeout );
@@ -9101,18 +9111,18 @@ Details = Attachment.extend(/** @lends wp.media.view.Attachment.Details.prototyp
 	 */
 	moveFocus: function() {
 		if ( this.previousAttachment.length ) {
-			this.previousAttachment.focus();
+			this.previousAttachment.trigger( 'focus' );
 			return;
 		}
 
 		if ( this.nextAttachment.length ) {
-			this.nextAttachment.focus();
+			this.nextAttachment.trigger( 'focus' );
 			return;
 		}
 
 		// Fallback: move focus to the "Select Files" button in the media modal.
 		if ( this.controller.uploader && this.controller.uploader.$browser ) {
-			this.controller.uploader.$browser.focus();
+			this.controller.uploader.$browser.trigger( 'focus' );
 			return;
 		}
 
@@ -9129,7 +9139,7 @@ Details = Attachment.extend(/** @lends wp.media.view.Attachment.Details.prototyp
 		// Last fallback: make the frame focusable and move focus to it.
 		$( '.media-frame' )
 			.attr( 'tabindex', '-1' )
-			.focus();
+			.trigger( 'focus' );
 	},
 
 	/**

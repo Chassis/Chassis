@@ -82,26 +82,19 @@ this["wp"] = this["wp"] || {}; this["wp"]["element"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 485);
+/******/ 	return __webpack_require__(__webpack_require__.s = 457);
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 109:
+/***/ 105:
 /***/ (function(module, exports) {
 
-(function() { module.exports = this["wp"]["escapeHtml"]; }());
+(function() { module.exports = window["wp"]["escapeHtml"]; }());
 
 /***/ }),
 
-/***/ 111:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["ReactDOM"]; }());
-
-/***/ }),
-
-/***/ 12:
+/***/ 11:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -157,18 +150,11 @@ function _slicedToArray(arr, i) {
 /***/ }),
 
 /***/ 13:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["React"]; }());
-
-/***/ }),
-
-/***/ 14:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _objectWithoutProperties; });
-/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(43);
+/* harmony import */ var _babel_runtime_helpers_esm_objectWithoutPropertiesLoose__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(44);
 
 function _objectWithoutProperties(source, excluded) {
   if (source == null) return {};
@@ -191,7 +177,21 @@ function _objectWithoutProperties(source, excluded) {
 
 /***/ }),
 
-/***/ 17:
+/***/ 14:
+/***/ (function(module, exports) {
+
+(function() { module.exports = window["React"]; }());
+
+/***/ }),
+
+/***/ 144:
+/***/ (function(module, exports) {
+
+(function() { module.exports = window["ReactDOM"]; }());
+
+/***/ }),
+
+/***/ 15:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -200,7 +200,7 @@ function _objectWithoutProperties(source, excluded) {
 __webpack_require__.d(__webpack_exports__, "a", function() { return /* binding */ _toConsumableArray; });
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
-var arrayLikeToArray = __webpack_require__(27);
+var arrayLikeToArray = __webpack_require__(24);
 
 // CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
 
@@ -231,11 +231,11 @@ function _toConsumableArray(arr) {
 /***/ 2:
 /***/ (function(module, exports) {
 
-(function() { module.exports = this["lodash"]; }());
+(function() { module.exports = window["lodash"]; }());
 
 /***/ }),
 
-/***/ 27:
+/***/ 24:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -257,7 +257,7 @@ function _arrayLikeToArray(arr, len) {
 
 "use strict";
 /* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _unsupportedIterableToArray; });
-/* harmony import */ var _babel_runtime_helpers_esm_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(27);
+/* harmony import */ var _babel_runtime_helpers_esm_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(24);
 
 function _unsupportedIterableToArray(o, minLen) {
   if (!o) return;
@@ -303,7 +303,7 @@ function _nonIterableRest() {
 
 /***/ }),
 
-/***/ 40:
+/***/ 42:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -326,7 +326,7 @@ function _typeof(obj) {
 
 /***/ }),
 
-/***/ 43:
+/***/ 44:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -348,7 +348,7 @@ function _objectWithoutPropertiesLoose(source, excluded) {
 
 /***/ }),
 
-/***/ 485:
+/***/ 457:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -357,51 +357,51 @@ __webpack_require__.r(__webpack_exports__);
 
 // EXPORTS
 __webpack_require__.d(__webpack_exports__, "createInterpolateElement", function() { return /* reexport */ create_interpolate_element; });
-__webpack_require__.d(__webpack_exports__, "Children", function() { return /* reexport */ external_this_React_["Children"]; });
-__webpack_require__.d(__webpack_exports__, "cloneElement", function() { return /* reexport */ external_this_React_["cloneElement"]; });
-__webpack_require__.d(__webpack_exports__, "Component", function() { return /* reexport */ external_this_React_["Component"]; });
-__webpack_require__.d(__webpack_exports__, "createContext", function() { return /* reexport */ external_this_React_["createContext"]; });
-__webpack_require__.d(__webpack_exports__, "createElement", function() { return /* reexport */ external_this_React_["createElement"]; });
-__webpack_require__.d(__webpack_exports__, "createRef", function() { return /* reexport */ external_this_React_["createRef"]; });
-__webpack_require__.d(__webpack_exports__, "forwardRef", function() { return /* reexport */ external_this_React_["forwardRef"]; });
-__webpack_require__.d(__webpack_exports__, "Fragment", function() { return /* reexport */ external_this_React_["Fragment"]; });
-__webpack_require__.d(__webpack_exports__, "isValidElement", function() { return /* reexport */ external_this_React_["isValidElement"]; });
-__webpack_require__.d(__webpack_exports__, "memo", function() { return /* reexport */ external_this_React_["memo"]; });
-__webpack_require__.d(__webpack_exports__, "StrictMode", function() { return /* reexport */ external_this_React_["StrictMode"]; });
-__webpack_require__.d(__webpack_exports__, "useCallback", function() { return /* reexport */ external_this_React_["useCallback"]; });
-__webpack_require__.d(__webpack_exports__, "useContext", function() { return /* reexport */ external_this_React_["useContext"]; });
-__webpack_require__.d(__webpack_exports__, "useDebugValue", function() { return /* reexport */ external_this_React_["useDebugValue"]; });
-__webpack_require__.d(__webpack_exports__, "useEffect", function() { return /* reexport */ external_this_React_["useEffect"]; });
-__webpack_require__.d(__webpack_exports__, "useImperativeHandle", function() { return /* reexport */ external_this_React_["useImperativeHandle"]; });
-__webpack_require__.d(__webpack_exports__, "useLayoutEffect", function() { return /* reexport */ external_this_React_["useLayoutEffect"]; });
-__webpack_require__.d(__webpack_exports__, "useMemo", function() { return /* reexport */ external_this_React_["useMemo"]; });
-__webpack_require__.d(__webpack_exports__, "useReducer", function() { return /* reexport */ external_this_React_["useReducer"]; });
-__webpack_require__.d(__webpack_exports__, "useRef", function() { return /* reexport */ external_this_React_["useRef"]; });
-__webpack_require__.d(__webpack_exports__, "useState", function() { return /* reexport */ external_this_React_["useState"]; });
-__webpack_require__.d(__webpack_exports__, "lazy", function() { return /* reexport */ external_this_React_["lazy"]; });
-__webpack_require__.d(__webpack_exports__, "Suspense", function() { return /* reexport */ external_this_React_["Suspense"]; });
+__webpack_require__.d(__webpack_exports__, "Children", function() { return /* reexport */ external_React_["Children"]; });
+__webpack_require__.d(__webpack_exports__, "cloneElement", function() { return /* reexport */ external_React_["cloneElement"]; });
+__webpack_require__.d(__webpack_exports__, "Component", function() { return /* reexport */ external_React_["Component"]; });
+__webpack_require__.d(__webpack_exports__, "createContext", function() { return /* reexport */ external_React_["createContext"]; });
+__webpack_require__.d(__webpack_exports__, "createElement", function() { return /* reexport */ external_React_["createElement"]; });
+__webpack_require__.d(__webpack_exports__, "createRef", function() { return /* reexport */ external_React_["createRef"]; });
+__webpack_require__.d(__webpack_exports__, "forwardRef", function() { return /* reexport */ external_React_["forwardRef"]; });
+__webpack_require__.d(__webpack_exports__, "Fragment", function() { return /* reexport */ external_React_["Fragment"]; });
+__webpack_require__.d(__webpack_exports__, "isValidElement", function() { return /* reexport */ external_React_["isValidElement"]; });
+__webpack_require__.d(__webpack_exports__, "memo", function() { return /* reexport */ external_React_["memo"]; });
+__webpack_require__.d(__webpack_exports__, "StrictMode", function() { return /* reexport */ external_React_["StrictMode"]; });
+__webpack_require__.d(__webpack_exports__, "useCallback", function() { return /* reexport */ external_React_["useCallback"]; });
+__webpack_require__.d(__webpack_exports__, "useContext", function() { return /* reexport */ external_React_["useContext"]; });
+__webpack_require__.d(__webpack_exports__, "useDebugValue", function() { return /* reexport */ external_React_["useDebugValue"]; });
+__webpack_require__.d(__webpack_exports__, "useEffect", function() { return /* reexport */ external_React_["useEffect"]; });
+__webpack_require__.d(__webpack_exports__, "useImperativeHandle", function() { return /* reexport */ external_React_["useImperativeHandle"]; });
+__webpack_require__.d(__webpack_exports__, "useLayoutEffect", function() { return /* reexport */ external_React_["useLayoutEffect"]; });
+__webpack_require__.d(__webpack_exports__, "useMemo", function() { return /* reexport */ external_React_["useMemo"]; });
+__webpack_require__.d(__webpack_exports__, "useReducer", function() { return /* reexport */ external_React_["useReducer"]; });
+__webpack_require__.d(__webpack_exports__, "useRef", function() { return /* reexport */ external_React_["useRef"]; });
+__webpack_require__.d(__webpack_exports__, "useState", function() { return /* reexport */ external_React_["useState"]; });
+__webpack_require__.d(__webpack_exports__, "lazy", function() { return /* reexport */ external_React_["lazy"]; });
+__webpack_require__.d(__webpack_exports__, "Suspense", function() { return /* reexport */ external_React_["Suspense"]; });
 __webpack_require__.d(__webpack_exports__, "concatChildren", function() { return /* reexport */ concatChildren; });
 __webpack_require__.d(__webpack_exports__, "switchChildrenNodeName", function() { return /* reexport */ switchChildrenNodeName; });
-__webpack_require__.d(__webpack_exports__, "createPortal", function() { return /* reexport */ external_this_ReactDOM_["createPortal"]; });
-__webpack_require__.d(__webpack_exports__, "findDOMNode", function() { return /* reexport */ external_this_ReactDOM_["findDOMNode"]; });
-__webpack_require__.d(__webpack_exports__, "render", function() { return /* reexport */ external_this_ReactDOM_["render"]; });
-__webpack_require__.d(__webpack_exports__, "unmountComponentAtNode", function() { return /* reexport */ external_this_ReactDOM_["unmountComponentAtNode"]; });
+__webpack_require__.d(__webpack_exports__, "createPortal", function() { return /* reexport */ external_ReactDOM_["createPortal"]; });
+__webpack_require__.d(__webpack_exports__, "findDOMNode", function() { return /* reexport */ external_ReactDOM_["findDOMNode"]; });
+__webpack_require__.d(__webpack_exports__, "render", function() { return /* reexport */ external_ReactDOM_["render"]; });
+__webpack_require__.d(__webpack_exports__, "unmountComponentAtNode", function() { return /* reexport */ external_ReactDOM_["unmountComponentAtNode"]; });
 __webpack_require__.d(__webpack_exports__, "isEmptyElement", function() { return /* reexport */ utils_isEmptyElement; });
 __webpack_require__.d(__webpack_exports__, "Platform", function() { return /* reexport */ platform; });
 __webpack_require__.d(__webpack_exports__, "renderToString", function() { return /* reexport */ serialize; });
 __webpack_require__.d(__webpack_exports__, "RawHTML", function() { return /* reexport */ RawHTML; });
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/slicedToArray.js + 1 modules
-var slicedToArray = __webpack_require__(12);
+var slicedToArray = __webpack_require__(11);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/typeof.js
-var esm_typeof = __webpack_require__(40);
+var esm_typeof = __webpack_require__(42);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules
-var toConsumableArray = __webpack_require__(17);
+var toConsumableArray = __webpack_require__(15);
 
-// EXTERNAL MODULE: external {"this":"React"}
-var external_this_React_ = __webpack_require__(13);
+// EXTERNAL MODULE: external "React"
+var external_React_ = __webpack_require__(14);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/create-interpolate-element.js
 
@@ -409,7 +409,7 @@ var external_this_React_ = __webpack_require__(13);
 
 
 /**
- * External dependencies
+ * Internal dependencies
  */
 
 /** @typedef {import('./react').WPElement} WPElement */
@@ -525,7 +525,7 @@ var create_interpolate_element_createInterpolateElement = function createInterpo
   do {// twiddle our thumbs
   } while (proceed(conversionMap));
 
-  return external_this_React_["createElement"].apply(void 0, [external_this_React_["Fragment"], null].concat(Object(toConsumableArray["a" /* default */])(output)));
+  return external_React_["createElement"].apply(void 0, [external_React_["Fragment"], null].concat(Object(toConsumableArray["a" /* default */])(output)));
 };
 /**
  * Validate conversion map.
@@ -545,7 +545,7 @@ var create_interpolate_element_isValidConversionMap = function isValidConversion
   var isObject = Object(esm_typeof["a" /* default */])(conversionMap) === 'object';
   var values = isObject && Object.values(conversionMap);
   return isObject && values.length && values.every(function (element) {
-    return Object(external_this_React_["isValidElement"])(element);
+    return Object(external_React_["isValidElement"])(element);
   });
 };
 /**
@@ -713,7 +713,7 @@ function addChild(frame) {
     parent.children.push(text);
   }
 
-  parent.children.push(external_this_React_["cloneElement"].apply(void 0, [element, null].concat(Object(toConsumableArray["a" /* default */])(children))));
+  parent.children.push(external_React_["cloneElement"].apply(void 0, [element, null].concat(Object(toConsumableArray["a" /* default */])(children))));
   parent.prevOffset = prevOffset ? prevOffset : tokenStart + tokenLength;
 }
 /**
@@ -748,7 +748,7 @@ function closeOuterElement(endOffset) {
     output.push(indoc.substr(leadingTextStart, tokenStart - leadingTextStart));
   }
 
-  output.push(external_this_React_["cloneElement"].apply(void 0, [element, null].concat(Object(toConsumableArray["a" /* default */])(children))));
+  output.push(external_React_["cloneElement"].apply(void 0, [element, null].concat(Object(toConsumableArray["a" /* default */])(children))));
 }
 
 /* harmony default export */ var create_interpolate_element = (create_interpolate_element_createInterpolateElement);
@@ -757,10 +757,10 @@ function closeOuterElement(endOffset) {
 var defineProperty = __webpack_require__(5);
 
 // EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/objectWithoutProperties.js
-var objectWithoutProperties = __webpack_require__(14);
+var objectWithoutProperties = __webpack_require__(13);
 
-// EXTERNAL MODULE: external {"this":"lodash"}
-var external_this_lodash_ = __webpack_require__(2);
+// EXTERNAL MODULE: external "lodash"
+var external_lodash_ = __webpack_require__(2);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/react.js
 
@@ -773,6 +773,7 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
 /**
  * External dependencies
  */
+// eslint-disable-next-line no-restricted-imports
 
 
 /**
@@ -956,9 +957,9 @@ function concatChildren() {
   }
 
   return childrenArguments.reduce(function (accumulator, children, i) {
-    external_this_React_["Children"].forEach(children, function (child, j) {
+    external_React_["Children"].forEach(children, function (child, j) {
       if (child && 'string' !== typeof child) {
-        child = Object(external_this_React_["cloneElement"])(child, {
+        child = Object(external_React_["cloneElement"])(child, {
           key: [i, j].join()
         });
       }
@@ -978,9 +979,9 @@ function concatChildren() {
  */
 
 function switchChildrenNodeName(children, nodeName) {
-  return children && external_this_React_["Children"].map(children, function (elt, index) {
-    if (Object(external_this_lodash_["isString"])(elt)) {
-      return Object(external_this_React_["createElement"])(nodeName, {
+  return children && external_React_["Children"].map(children, function (elt, index) {
+    if (Object(external_lodash_["isString"])(elt)) {
+      return Object(external_React_["createElement"])(nodeName, {
         key: index
       }, elt);
     }
@@ -989,14 +990,14 @@ function switchChildrenNodeName(children, nodeName) {
         childrenProp = _elt$props.children,
         props = Object(objectWithoutProperties["a" /* default */])(_elt$props, ["children"]);
 
-    return Object(external_this_React_["createElement"])(nodeName, _objectSpread({
+    return Object(external_React_["createElement"])(nodeName, _objectSpread({
       key: index
     }, props), childrenProp);
   });
 }
 
-// EXTERNAL MODULE: external {"this":"ReactDOM"}
-var external_this_ReactDOM_ = __webpack_require__(111);
+// EXTERNAL MODULE: external "ReactDOM"
+var external_ReactDOM_ = __webpack_require__(144);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/react-platform.js
 /**
@@ -1050,11 +1051,11 @@ var external_this_ReactDOM_ = __webpack_require__(111);
  */
 
 var utils_isEmptyElement = function isEmptyElement(element) {
-  if (Object(external_this_lodash_["isNumber"])(element)) {
+  if (Object(external_lodash_["isNumber"])(element)) {
     return false;
   }
 
-  if (Object(external_this_lodash_["isString"])(element) || Object(external_this_lodash_["isArray"])(element)) {
+  if (Object(external_lodash_["isString"])(element) || Object(external_lodash_["isArray"])(element)) {
     return !element.length;
   }
 
@@ -1098,8 +1099,8 @@ var Platform = {
 
 /* harmony default export */ var platform = (Platform);
 
-// EXTERNAL MODULE: external {"this":["wp","escapeHtml"]}
-var external_this_wp_escapeHtml_ = __webpack_require__(109);
+// EXTERNAL MODULE: external ["wp","escapeHtml"]
+var external_wp_escapeHtml_ = __webpack_require__(105);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/element/build-module/raw-html.js
 
@@ -1134,7 +1135,7 @@ function RawHTML(_ref) {
 
   // The DIV wrapper will be stripped by serializer, unless there are
   // non-children props present.
-  return Object(external_this_React_["createElement"])('div', raw_html_objectSpread({
+  return Object(external_React_["createElement"])('div', raw_html_objectSpread({
     dangerouslySetInnerHTML: {
       __html: children
     }
@@ -1194,11 +1195,11 @@ function serialize_objectSpread(target) { for (var i = 1; i < arguments.length; 
 
 /** @typedef {import('./react').WPElement} WPElement */
 
-var _createContext = Object(external_this_React_["createContext"])(undefined),
+var _createContext = Object(external_React_["createContext"])(undefined),
     Provider = _createContext.Provider,
     Consumer = _createContext.Consumer;
 
-var ForwardRef = Object(external_this_React_["forwardRef"])(function () {
+var ForwardRef = Object(external_React_["forwardRef"])(function () {
   return null;
 });
 /**
@@ -1353,15 +1354,15 @@ function getNormalAttributeName(attribute) {
 
 
 function getNormalStylePropertyName(property) {
-  if (Object(external_this_lodash_["startsWith"])(property, '--')) {
+  if (Object(external_lodash_["startsWith"])(property, '--')) {
     return property;
   }
 
   if (hasPrefix(property, ['ms', 'O', 'Moz', 'Webkit'])) {
-    return '-' + Object(external_this_lodash_["kebabCase"])(property);
+    return '-' + Object(external_lodash_["kebabCase"])(property);
   }
 
-  return Object(external_this_lodash_["kebabCase"])(property);
+  return Object(external_lodash_["kebabCase"])(property);
 }
 /**
  * Returns the normal form of the style property value for HTML. Appends a
@@ -1405,7 +1406,7 @@ function renderElement(element, context) {
 
   switch (Object(esm_typeof["a" /* default */])(element)) {
     case 'string':
-      return Object(external_this_wp_escapeHtml_["escapeHTML"])(element);
+      return Object(external_wp_escapeHtml_["escapeHTML"])(element);
 
     case 'number':
       return element.toString();
@@ -1417,15 +1418,15 @@ function renderElement(element, context) {
       props = element.props;
 
   switch (type) {
-    case external_this_React_["StrictMode"]:
-    case external_this_React_["Fragment"]:
+    case external_React_["StrictMode"]:
+    case external_React_["Fragment"]:
       return renderChildren(props.children, context, legacyContext);
 
     case RawHTML:
       var children = props.children,
           wrapperProps = Object(objectWithoutProperties["a" /* default */])(props, ["children"]);
 
-      return renderNativeComponent(Object(external_this_lodash_["isEmpty"])(wrapperProps) ? null : 'div', serialize_objectSpread(serialize_objectSpread({}, wrapperProps), {}, {
+      return renderNativeComponent(Object(external_lodash_["isEmpty"])(wrapperProps) ? null : 'div', serialize_objectSpread(serialize_objectSpread({}, wrapperProps), {}, {
         dangerouslySetInnerHTML: {
           __html: children
         }
@@ -1478,7 +1479,7 @@ function renderNativeComponent(type, props, context) {
     // place of children. Ensure to omit so it is not assigned as attribute
     // as well.
     content = renderChildren(props.value, context, legacyContext);
-    props = Object(external_this_lodash_["omit"])(props, 'value');
+    props = Object(external_lodash_["omit"])(props, 'value');
   } else if (props.dangerouslySetInnerHTML && typeof props.dangerouslySetInnerHTML.__html === 'string') {
     // Dangerous content is left unescaped.
     content = props.dangerouslySetInnerHTML.__html;
@@ -1543,7 +1544,7 @@ function renderComponent(Component, props, context) {
 function renderChildren(children, context) {
   var legacyContext = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   var result = '';
-  children = Object(external_this_lodash_["castArray"])(children);
+  children = Object(external_lodash_["castArray"])(children);
 
   for (var i = 0; i < children.length; i++) {
     var child = children[i];
@@ -1567,7 +1568,7 @@ function renderAttributes(props) {
   for (var key in props) {
     var attribute = getNormalAttributeName(key);
 
-    if (!Object(external_this_wp_escapeHtml_["isValidAttributeName"])(attribute)) {
+    if (!Object(external_wp_escapeHtml_["isValidAttributeName"])(attribute)) {
       continue;
     }
 
@@ -1602,7 +1603,7 @@ function renderAttributes(props) {
     }
 
     if (typeof value === 'string') {
-      value = Object(external_this_wp_escapeHtml_["escapeAttribute"])(value);
+      value = Object(external_wp_escapeHtml_["escapeAttribute"])(value);
     }
 
     result += '="' + value + '"';
@@ -1620,7 +1621,7 @@ function renderAttributes(props) {
 
 function renderStyle(style) {
   // Only generate from object, e.g. tolerate string value.
-  if (!Object(external_this_lodash_["isPlainObject"])(style)) {
+  if (!Object(external_lodash_["isPlainObject"])(style)) {
     return style;
   }
 

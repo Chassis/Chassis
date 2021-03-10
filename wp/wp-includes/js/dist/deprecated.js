@@ -82,7 +82,7 @@ this["wp"] = this["wp"] || {}; this["wp"]["deprecated"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 449);
+/******/ 	return __webpack_require__(__webpack_require__.s = 428);
 /******/ })
 /************************************************************************/
 /******/ ({
@@ -90,11 +90,11 @@ this["wp"] = this["wp"] || {}; this["wp"]["deprecated"] =
 /***/ 33:
 /***/ (function(module, exports) {
 
-(function() { module.exports = this["wp"]["hooks"]; }());
+(function() { module.exports = window["wp"]["hooks"]; }());
 
 /***/ }),
 
-/***/ 449:
+/***/ 428:
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
@@ -111,20 +111,20 @@ __webpack_require__.r(__webpack_exports__);
  * Object map tracking messages which have been logged, for use in ensuring a
  * message is only logged once.
  *
- * @type {Object}
+ * @type {Record<string,true|undefined>}
  */
 
 var logged = Object.create(null);
 /**
  * Logs a message to notify developers about a deprecated feature.
  *
- * @param {string}  feature             Name of the deprecated feature.
- * @param {?Object} options             Personalisation options
- * @param {?string} options.version     Version in which the feature will be removed.
- * @param {?string} options.alternative Feature to use instead
- * @param {?string} options.plugin      Plugin name if it's a plugin feature
- * @param {?string} options.link        Link to documentation
- * @param {?string} options.hint        Additional message to help transition away from the deprecated feature.
+ * @param {string} feature               Name of the deprecated feature.
+ * @param {Object} [options]             Personalisation options
+ * @param {string} [options.version]     Version in which the feature will be removed.
+ * @param {string} [options.alternative] Feature to use instead
+ * @param {string} [options.plugin]      Plugin name if it's a plugin feature
+ * @param {string} [options.link]        Link to documentation
+ * @param {string} [options.hint]        Additional message to help transition away from the deprecated feature.
  *
  * @example
  * ```js
