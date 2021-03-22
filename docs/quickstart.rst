@@ -82,7 +82,7 @@ Installing
 
        $ vagrant up
 
-    **Windows**: Open a console with administrator privileges (Right-Click->Run as Administrator) and use this console to run ``vagrant up``.
+   * **Windows**: Open a console with administrator privileges (Right-Click->Run as Administrator) and use this console to run ``vagrant up``.
 
    .. note::
       New Vagrant and VirtualBox users may see this error:
