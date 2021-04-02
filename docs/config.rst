@@ -228,12 +228,13 @@ Database Configuration
 .. py:data:: database
 
 Similar to the admin user configuration, you can also override the default MySQL
-username and password::
+name, user, password and prefix::
 
    database:
        name: wordpress
        user: wordpress
        password: vagrantpassword
+       prefix: wp_
 
 (Again, don't forget to include all lines, and use spaces for indentation.)
 
