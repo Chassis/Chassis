@@ -301,8 +301,8 @@ Hosts Updater
 .. py:data:: hostsupdater
 
 Some operating systems have issues with Avahi so the Chassis host names don't
-automatically resolve. As a workaround you can install the Vagrant Hostsupdater plugin
-by running ``vagrant plugin install vagrant-hostsupdater`` and then add the following
+automatically resolve. As a workaround you can install the Vagrant Goodhosts plugin
+by running ``vagrant plugin install vagrant-goodhosts`` and then add the following
 to one of your configuration files:
 
 .. code-block:: yaml

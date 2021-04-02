@@ -23,6 +23,10 @@ Before using Chassis, this is how your system should be set up:
 
 * Install `VirtualBox`_
 * Install `Vagrant`_
+* Install the Vagrant Goodhosts plugin::
+
+        $ vagrant plugin install vagrant-goodhosts
+
 * Make sure you have Zeroconf networking (Bonjour) set up:
 
   * **OS X**: You already have Bonjour available.
