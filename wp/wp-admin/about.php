@@ -23,7 +23,7 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 
 		<div class="about__header">
 			<div class="about__header-image">
-				<img alt="<?php _e( 'Code is Poetry' ); ?>" src="images/about-badge.svg" />
+				<img alt="<?php _e( 'Code is Poetry' ); ?>" src="<?php echo admin_url( 'images/about-badge.svg' ); ?>" />
 			</div>
 
 			<div class="about__header-title">
@@ -64,6 +64,39 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 			</div>
 		</div>
 
+		<hr />
+
+		<div class="about__section changelog">
+			<div class="column has-border has-subtle-background-color">
+				<h2 class="is-smaller-heading"><?php _e( 'Maintenance and Security Releases' ); ?></h2>
+				<p>
+					<?php
+					printf(
+						/* translators: 1: WordPress version number, 2: Plural number of bugs. More than one security issue. */
+						_n(
+							'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bug.',
+							'<strong>Version %1$s</strong> addressed some security issues and fixed %2$s bugs.',
+							26
+						),
+						'5.7.1',
+						number_format_i18n( 26 )
+					);
+					?>
+					<?php
+					printf(
+						/* translators: %s: HelpHub URL. */
+						__( 'For more information, see <a href="%s">the release notes</a>.' ),
+						sprintf(
+							/* translators: %s: WordPress version. */
+							esc_url( __( 'https://wordpress.org/support/wordpress-version/version-%s/' ) ),
+							sanitize_title( '5.7.1' )
+						)
+					);
+					?>
+				</p>
+			</div>
+		</div>
+
 		<hr class="is-large" />
 
 		<div class="about__section has-2-columns">
@@ -90,7 +123,7 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 			<div class="column about__image">
 				<video controls>
 					<source src="https://s.w.org/images/core/5.7/about-57-drag-drop-image.mp4" type="video/mp4" />
-					<source src="https://s.w.org/images/core/5.7/about-57-drag-drop-image.mp4" type="video/webm" />
+					<source src="https://s.w.org/images/core/5.7/about-57-drag-drop-image.webm" type="video/webm" />
 				</video>
 			</div>
 		</div>
@@ -179,8 +212,8 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 		<div class="about__section has-subtle-background-color">
 			<div class="column about__image">
 				<picture>
-					<source media="(max-width: 600px)" srcset="images/about-color-palette-vert.svg" />
-					<img alt="" src="images/about-color-palette.svg" />
+					<source media="(max-width: 600px)" srcset="<?php echo admin_url( 'images/about-color-palette-vert.svg' ); ?>" />
+					<img alt="" src="<?php echo admin_url( 'images/about-color-palette.svg' ); ?>" />
 				</picture>
 			</div>
 		</div>
@@ -239,7 +272,7 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 <?php require_once ABSPATH . 'wp-admin/admin-footer.php'; ?>
 
 <script>
-	wp.domReady( function() {
+	window.addEventListener( 'load', function() {
 		var createElement = wp.element.createElement;
 		var Fragment = wp.element.Fragment;
 		var render = wp.element.render;
