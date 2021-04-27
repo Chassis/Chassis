@@ -10,7 +10,7 @@ MAMP/WAMP on steroids.
 
 ## Installing & Documentation
 
-Follow our [quickstart instructions](http://docs.chassis.io/en/latest/quickstart/)
+Follow our [quickstart instructions](https://docs.chassis.io/en/main/quickstart/)
 to get up and running right away!
 
 We've got tonnes more documentation available at http://chassis.io/ to peruse
