@@ -145,9 +145,11 @@ Vagrant.configure("2") do |config|
 			config.vm.network :private_network, ip: CONF['ip']
 			# IP will not change regularly, so don't remove it on halt/suspend.
 			config.hostsupdater.remove_on_suspend = false
+			config.goodhosts.remove_on_suspend = false
 		end
 		if CONF['hosts'].count > 1
 			config.hostsupdater.aliases = CONF['hosts']
+			config.goodhosts.aliases    = CONF['hosts']
 		end
 	else
 		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
