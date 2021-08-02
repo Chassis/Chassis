@@ -26,7 +26,7 @@ hostsupdater: yes
 
 # Site Configuration
 # (When overriding, include all values)
-site:
+website:
     name: Chassis Site
 
 # IP address to use on the private network
