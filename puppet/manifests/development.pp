@@ -79,7 +79,7 @@ chassis::wp { $config['hosts'][0]:
 	admin_email       => $config[admin][email],
 	admin_password    => $config[admin][password],
 	machine_name      => $config[machine_name],
-  sitename          => $config[website][name],
+	sitename          => $config[website][name],
 
 	extensions        => $extensions,
 	global_extensions => $global_extensions,
