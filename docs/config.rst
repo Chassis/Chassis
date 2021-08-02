@@ -449,13 +449,13 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
 Site Title
 ----------
 
-.. py:data:: site
+.. py:data:: website
 
 You can customize the title Chassis uses when installing your local WordPress site.
 
 .. code-block:: yaml
 
-   site:
+   website:
       name: My Local WordPress Site
 
 ----------
