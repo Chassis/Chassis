@@ -5,11 +5,13 @@ generated into the site at http://chassis.io/ by Read The Docs using Sphinx.
 
 ## Building documentation locally
 
-You'll need to grab a copy of Sphinx (the documentation generator) and
+You'll need a copy of [Python3.x](https://www.python.org/downloads/).
+
+Then you'll need to grab a copy of Sphinx (the documentation generator) and
 associated tools first:
 
 ```bash
-$ sudo -H pip install Sphinx sphinx-autobuild sphinx_rtd_theme imagesize livereload==2.3.0
+$ sudo -H pip3 install Sphinx sphinx-autobuild sphinx_rtd_theme imagesize livereload==2.3.0
 ```
 
 Then to build, run the `sphinx-build -b dirhtml . _build/dirhtml` within this documentation folder:
@@ -24,7 +26,7 @@ The [doc2dash](https://doc2dash.readthedocs.io/en/stable/) parser is built for P
 We use [doc2dash](https://doc2dash.readthedocs.io/en/stable/) to generate offline documentation for [Dash](https://kapeli.com/dash).
 If you wish to generate new documentation for Chassis then please to the following:
 
-1. Run `pip install --user doc2dash`
+1. Run `pip3 install --user doc2dash`
 1. Increase the [version number](https://github.com/Chassis/Chassis/blob/master/docs/conf.py#L57-L59) to match the release.
 1. Run `sphinx-build -b html . _build/html` inside the `docs` folder.
 1. Run `doc2dash -A _build/html/ -n Chassis -f -I index.html` to generate the new docset.

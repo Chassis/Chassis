@@ -26,7 +26,7 @@ if ( isset( $_GET['action'] ) ) {
 
 			check_admin_referer( 'deleteuser' );
 
-			$id = intval( $_GET['id'] );
+			$id = (int) $_GET['id'];
 			if ( $id > 1 ) {
 				$_POST['allusers'] = array( $id ); // confirm_delete_users() can only handle arrays.
 				$title             = __( 'Users' );
@@ -46,10 +46,10 @@ if ( isset( $_GET['action'] ) ) {
 				wp_die( __( 'Sorry, you are not allowed to access this page.' ), 403 );
 			}
 
-			if ( ( isset( $_POST['action'] ) || isset( $_POST['action2'] ) ) && isset( $_POST['allusers'] ) ) {
+			if ( isset( $_POST['action'] ) && isset( $_POST['allusers'] ) ) {
 				check_admin_referer( 'bulk-users-network' );
 
-				$doaction     = -1 != $_POST['action'] ? $_POST['action'] : $_POST['action2'];
+				$doaction     = $_POST['action'];
 				$userfunction = '';
 
 				foreach ( (array) $_POST['allusers'] as $user_id ) {
@@ -273,13 +273,18 @@ if ( isset( $_REQUEST['updated'] ) && 'true' == $_REQUEST['updated'] && ! empty(
 	<?php
 	if ( current_user_can( 'create_users' ) ) :
 		?>
-		<a href="<?php echo network_admin_url( 'user-new.php' ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add New', 'user' ); ?></a>
-							<?php
+		<a href="<?php echo esc_url( network_admin_url( 'user-new.php' ) ); ?>" class="page-title-action"><?php echo esc_html_x( 'Add New', 'user' ); ?></a>
+		<?php
 	endif;
 
 	if ( strlen( $usersearch ) ) {
-		/* translators: %s: Search query. */
-		printf( '<span class="subtitle">' . __( 'Search results for &#8220;%s&#8221;' ) . '</span>', esc_html( $usersearch ) );
+		echo '<span class="subtitle">';
+		printf(
+			/* translators: %s: Search query. */
+			__( 'Search results for: %s' ),
+			'<strong>' . esc_html( $usersearch ) . '</strong>'
+		);
+		echo '</span>';
 	}
 	?>
 

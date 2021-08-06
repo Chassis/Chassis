@@ -11,7 +11,6 @@ body {
 a {
   color: #0073aa;
 }
-
 a:hover, a:active, a:focus {
   color: #0096dd;
 }
@@ -27,7 +26,6 @@ span.wp-media-buttons-icon:before {
 .wp-core-ui .button-link {
   color: #0073aa;
 }
-
 .wp-core-ui .button-link:hover, .wp-core-ui .button-link:active, .wp-core-ui .button-link:focus {
   color: #0096dd;
 }
@@ -59,28 +57,28 @@ input[type=radio]:checked::before {
   background: #7e8993;
 }
 
-.wp-core-ui input[type="reset"]:hover,
-.wp-core-ui input[type="reset"]:active {
+.wp-core-ui input[type=reset]:hover,
+.wp-core-ui input[type=reset]:active {
   color: #0096dd;
 }
 
-input[type="text"]:focus,
-input[type="password"]:focus,
-input[type="color"]:focus,
-input[type="date"]:focus,
-input[type="datetime"]:focus,
-input[type="datetime-local"]:focus,
-input[type="email"]:focus,
-input[type="month"]:focus,
-input[type="number"]:focus,
-input[type="search"]:focus,
-input[type="tel"]:focus,
-input[type="text"]:focus,
-input[type="time"]:focus,
-input[type="url"]:focus,
-input[type="week"]:focus,
-input[type="checkbox"]:focus,
-input[type="radio"]:focus,
+input[type=text]:focus,
+input[type=password]:focus,
+input[type=color]:focus,
+input[type=date]:focus,
+input[type=datetime]:focus,
+input[type=datetime-local]:focus,
+input[type=email]:focus,
+input[type=month]:focus,
+input[type=number]:focus,
+input[type=search]:focus,
+input[type=tel]:focus,
+input[type=text]:focus,
+input[type=time]:focus,
+input[type=url]:focus,
+input[type=week]:focus,
+input[type=checkbox]:focus,
+input[type=radio]:focus,
 select:focus,
 textarea:focus {
   border-color: #04a4cc;
@@ -92,7 +90,6 @@ textarea:focus {
   border-color: #7e8993;
   color: #32373c;
 }
-
 .wp-core-ui .button.hover,
 .wp-core-ui .button:hover,
 .wp-core-ui .button.focus,
@@ -100,20 +97,17 @@ textarea:focus {
   border-color: #717c87;
   color: #262a2e;
 }
-
 .wp-core-ui .button.focus,
 .wp-core-ui .button:focus {
   border-color: #7e8993;
   color: #262a2e;
   box-shadow: 0 0 0 1px #32373c;
 }
-
 .wp-core-ui .button:active {
   border-color: #7e8993;
   color: #262a2e;
   box-shadow: none;
 }
-
 .wp-core-ui .button.active,
 .wp-core-ui .button.active:focus,
 .wp-core-ui .button.active:hover {
@@ -121,24 +115,20 @@ textarea:focus {
   color: #262a2e;
   box-shadow: inset 0 2px 5px -3px #04a4cc;
 }
-
 .wp-core-ui .button.active:focus {
   box-shadow: 0 0 0 1px #32373c;
 }
-
 .wp-core-ui .button,
 .wp-core-ui .button-secondary {
   color: #04a4cc;
   border-color: #04a4cc;
 }
-
 .wp-core-ui .button.hover,
 .wp-core-ui .button:hover,
 .wp-core-ui .button-secondary:hover {
   border-color: #037c9a;
   color: #037c9a;
 }
-
 .wp-core-ui .button.focus,
 .wp-core-ui .button:focus,
 .wp-core-ui .button-secondary:focus {
@@ -146,71 +136,57 @@ textarea:focus {
   color: #025468;
   box-shadow: 0 0 0 1px #09cafa;
 }
-
 .wp-core-ui .button-primary:hover {
   color: #fff;
 }
-
 .wp-core-ui .button-primary {
   background: #04a4cc;
   border-color: #04a4cc;
   color: #fff;
 }
-
 .wp-core-ui .button-primary:hover, .wp-core-ui .button-primary:focus {
   background: #04b0db;
   border-color: #0498bd;
   color: #fff;
 }
-
 .wp-core-ui .button-primary:focus {
   box-shadow: 0 0 0 1px #fff, 0 0 0 3px #04a4cc;
 }
-
 .wp-core-ui .button-primary:active {
   background: #0490b3;
   border-color: #0490b3;
   color: #fff;
 }
-
 .wp-core-ui .button-primary.active, .wp-core-ui .button-primary.active:focus, .wp-core-ui .button-primary.active:hover {
   background: #04a4cc;
   color: #fff;
   border-color: #036881;
   box-shadow: inset 0 2px 5px -3px black;
 }
-
 .wp-core-ui .button-group > .button.active {
   border-color: #04a4cc;
 }
-
 .wp-core-ui .wp-ui-primary {
   color: #333;
   background-color: #e5e5e5;
 }
-
 .wp-core-ui .wp-ui-text-primary {
   color: #e5e5e5;
 }
-
 .wp-core-ui .wp-ui-highlight {
   color: #fff;
   background-color: #888;
 }
-
 .wp-core-ui .wp-ui-text-highlight {
   color: #888;
 }
-
 .wp-core-ui .wp-ui-notification {
   color: #fff;
   background-color: #d64e07;
 }
-
 .wp-core-ui .wp-ui-text-notification {
   color: #d64e07;
 }
-
 .wp-core-ui .wp-ui-text-icon {
   color: #999;
 }
@@ -281,12 +257,12 @@ textarea:focus {
 #adminmenu .wp-submenu,
 #adminmenu .wp-has-current-submenu .wp-submenu,
 #adminmenu .wp-has-current-submenu.opensub .wp-submenu,
-.folded #adminmenu .wp-has-current-submenu .wp-submenu,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu {
   background: #fff;
 }
 
-#adminmenu li.wp-has-submenu.wp-not-current-submenu.opensub:hover:after {
+#adminmenu li.wp-has-submenu.wp-not-current-submenu.opensub:hover:after,
+#adminmenu li.wp-has-submenu.wp-not-current-submenu:focus-within:after {
   border-right-color: #fff;
 }
 
@@ -296,17 +272,13 @@ textarea:focus {
 
 #adminmenu .wp-submenu a,
 #adminmenu .wp-has-current-submenu .wp-submenu a,
-.folded #adminmenu .wp-has-current-submenu .wp-submenu a,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu a,
 #adminmenu .wp-has-current-submenu.opensub .wp-submenu a {
   color: #686868;
 }
-
 #adminmenu .wp-submenu a:focus, #adminmenu .wp-submenu a:hover,
 #adminmenu .wp-has-current-submenu .wp-submenu a:focus,
 #adminmenu .wp-has-current-submenu .wp-submenu a:hover,
-.folded #adminmenu .wp-has-current-submenu .wp-submenu a:focus,
-.folded #adminmenu .wp-has-current-submenu .wp-submenu a:hover,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu a:focus,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu a:hover,
 #adminmenu .wp-has-current-submenu.opensub .wp-submenu a:focus,
@@ -320,7 +292,6 @@ textarea:focus {
 #adminmenu .wp-has-current-submenu.opensub .wp-submenu li.current a {
   color: #333;
 }
-
 #adminmenu .wp-submenu li.current a:hover, #adminmenu .wp-submenu li.current a:focus,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu li.current a:hover,
 #adminmenu a.wp-has-current-submenu:focus + .wp-submenu li.current a:focus,
@@ -344,6 +315,7 @@ ul#adminmenu > li.current > a.current:after {
 
 #adminmenu li.wp-has-current-submenu div.wp-menu-image:before,
 #adminmenu a.current:hover div.wp-menu-image:before,
+#adminmenu li.current div.wp-menu-image:before,
 #adminmenu li.wp-has-current-submenu a:focus div.wp-menu-image:before,
 #adminmenu li.wp-has-current-submenu.opensub div.wp-menu-image:before,
 #adminmenu li:hover div.wp-menu-image:before,
@@ -416,7 +388,7 @@ ul#adminmenu > li.current > a.current:after {
 #wpadminbar:not(.mobile) li:hover .ab-item:before,
 #wpadminbar:not(.mobile) li:hover .ab-item:after,
 #wpadminbar:not(.mobile) li:hover #adminbarsearch:before {
-  color: #ccc;
+  color: #04a4cc;
 }
 
 /* Admin Bar: submenu */
@@ -607,6 +579,11 @@ body.more-filters-opened .more-filters:focus:before {
   color: #fff;
 }
 
+/* Nav Menus */
+.nav-menus-php .item-edit:focus:before {
+  box-shadow: 0 0 0 1px #09cafa, 0 0 2px 1px #04a4cc;
+}
+
 /* Responsive Component */
 div#wp-responsive-toggle a:before {
   color: #999;
@@ -635,119 +612,96 @@ div#wp-responsive-toggle a:before {
 }
 
 /* Customizer */
-#customize-controls .control-section:hover > .accordion-section-title,
-#customize-controls .control-section .accordion-section-title:hover,
-#customize-controls .control-section.open .accordion-section-title,
-#customize-controls .control-section .accordion-section-title:focus {
-  color: #04a4cc;
+.wp-core-ui #customize-controls .control-section:hover > .accordion-section-title,
+.wp-core-ui #customize-controls .control-section .accordion-section-title:hover,
+.wp-core-ui #customize-controls .control-section.open .accordion-section-title,
+.wp-core-ui #customize-controls .control-section .accordion-section-title:focus {
+  color: #0073aa;
   border-left-color: #04a4cc;
 }
-
-.customize-controls-close:focus,
-.customize-controls-close:hover,
-.customize-controls-preview-toggle:focus,
-.customize-controls-preview-toggle:hover {
-  color: #04a4cc;
+.wp-core-ui .customize-controls-close:focus,
+.wp-core-ui .customize-controls-close:hover,
+.wp-core-ui .customize-controls-preview-toggle:focus,
+.wp-core-ui .customize-controls-preview-toggle:hover {
+  color: #0073aa;
   border-top-color: #04a4cc;
 }
-
-.customize-panel-back:hover,
-.customize-panel-back:focus,
-.customize-section-back:hover,
-.customize-section-back:focus {
-  color: #04a4cc;
+.wp-core-ui .customize-panel-back:hover,
+.wp-core-ui .customize-panel-back:focus,
+.wp-core-ui .customize-section-back:hover,
+.wp-core-ui .customize-section-back:focus {
+  color: #0073aa;
   border-left-color: #04a4cc;
 }
-
-.customize-screen-options-toggle:hover,
-.customize-screen-options-toggle:active,
-.customize-screen-options-toggle:focus,
-.active-menu-screen-options .customize-screen-options-toggle,
-#customize-controls .customize-info.open.active-menu-screen-options .customize-help-toggle:hover,
-#customize-controls .customize-info.open.active-menu-screen-options .customize-help-toggle:active,
-#customize-controls .customize-info.open.active-menu-screen-options .customize-help-toggle:focus {
-  color: #04a4cc;
+.wp-core-ui .customize-screen-options-toggle:hover,
+.wp-core-ui .customize-screen-options-toggle:active,
+.wp-core-ui .customize-screen-options-toggle:focus,
+.wp-core-ui .active-menu-screen-options .customize-screen-options-toggle,
+.wp-core-ui #customize-controls .customize-info.open.active-menu-screen-options .customize-help-toggle:hover,
+.wp-core-ui #customize-controls .customize-info.open.active-menu-screen-options .customize-help-toggle:active,
+.wp-core-ui #customize-controls .customize-info.open.active-menu-screen-options .customize-help-toggle:focus {
+  color: #0073aa;
 }
-
-.wp-customizer .menu-item .submitbox .submitdelete:focus,
-.customize-screen-options-toggle:focus:before,
-#customize-controls .customize-info .customize-help-toggle:focus:before,
-.wp-customizer button:focus .toggle-indicator:before,
-.menu-delete:focus,
-.menu-item-bar .item-delete:focus:before,
-#available-menu-items .item-add:focus:before {
+.wp-core-ui .customize-screen-options-toggle:focus:before,
+.wp-core-ui #customize-controls .customize-info .customize-help-toggle:focus:before, .wp-core-ui.wp-customizer button:focus .toggle-indicator:before,
+.wp-core-ui .menu-item-bar .item-delete:focus:before,
+.wp-core-ui #available-menu-items .item-add:focus:before,
+.wp-core-ui #customize-save-button-wrapper .save:focus,
+.wp-core-ui #publish-settings:focus {
   box-shadow: 0 0 0 1px #09cafa, 0 0 2px 1px #04a4cc;
 }
-
-#customize-controls .customize-info.open .customize-help-toggle,
-#customize-controls .customize-info .customize-help-toggle:focus,
-#customize-controls .customize-info .customize-help-toggle:hover {
-  color: #04a4cc;
+.wp-core-ui #customize-controls .customize-info.open .customize-help-toggle,
+.wp-core-ui #customize-controls .customize-info .customize-help-toggle:focus,
+.wp-core-ui #customize-controls .customize-info .customize-help-toggle:hover {
+  color: #0073aa;
 }
-
-.control-panel-themes .customize-themes-section-title:focus,
-.control-panel-themes .customize-themes-section-title:hover {
+.wp-core-ui .control-panel-themes .customize-themes-section-title:focus,
+.wp-core-ui .control-panel-themes .customize-themes-section-title:hover {
   border-left-color: #04a4cc;
-  color: #04a4cc;
+  color: #0073aa;
 }
-
-.control-panel-themes .theme-section .customize-themes-section-title.selected:after {
+.wp-core-ui .control-panel-themes .theme-section .customize-themes-section-title.selected:after {
   background: #04a4cc;
 }
-
-.control-panel-themes .customize-themes-section-title.selected {
-  color: #04a4cc;
+.wp-core-ui .control-panel-themes .customize-themes-section-title.selected {
+  color: #0073aa;
 }
-
-#customize-theme-controls .control-section:hover > .accordion-section-title:after,
-#customize-theme-controls .control-section .accordion-section-title:hover:after,
-#customize-theme-controls .control-section.open .accordion-section-title:after,
-#customize-theme-controls .control-section .accordion-section-title:focus:after,
-#customize-outer-theme-controls .control-section:hover > .accordion-section-title:after,
-#customize-outer-theme-controls .control-section .accordion-section-title:hover:after,
-#customize-outer-theme-controls .control-section.open .accordion-section-title:after,
-#customize-outer-theme-controls .control-section .accordion-section-title:focus:after {
-  color: #04a4cc;
+.wp-core-ui #customize-theme-controls .control-section:hover > .accordion-section-title:after,
+.wp-core-ui #customize-theme-controls .control-section .accordion-section-title:hover:after,
+.wp-core-ui #customize-theme-controls .control-section.open .accordion-section-title:after,
+.wp-core-ui #customize-theme-controls .control-section .accordion-section-title:focus:after,
+.wp-core-ui #customize-outer-theme-controls .control-section:hover > .accordion-section-title:after,
+.wp-core-ui #customize-outer-theme-controls .control-section .accordion-section-title:hover:after,
+.wp-core-ui #customize-outer-theme-controls .control-section.open .accordion-section-title:after,
+.wp-core-ui #customize-outer-theme-controls .control-section .accordion-section-title:focus:after {
+  color: #0073aa;
 }
-
-.customize-control .attachment-media-view .button-add-media:focus {
+.wp-core-ui .customize-control .attachment-media-view .button-add-media:focus {
   background-color: #fbfbfc;
   border-color: #04a4cc;
   border-style: solid;
   box-shadow: 0 0 0 1px #04a4cc;
   outline: 2px solid transparent;
 }
-
-.wp-full-overlay-footer .devices button:focus,
-.wp-full-overlay-footer .devices button.active:hover {
+.wp-core-ui .wp-full-overlay-footer .devices button:focus,
+.wp-core-ui .wp-full-overlay-footer .devices button.active:hover {
   border-bottom-color: #04a4cc;
 }
-
+.wp-core-ui .wp-full-overlay-footer .devices button:hover:before,
+.wp-core-ui .wp-full-overlay-footer .devices button:focus:before {
+  color: #04a4cc;
+}
 .wp-core-ui .wp-full-overlay .collapse-sidebar:hover,
 .wp-core-ui .wp-full-overlay .collapse-sidebar:focus {
   color: #04a4cc;
 }
-
-.wp-full-overlay .collapse-sidebar:hover .collapse-sidebar-arrow,
-.wp-full-overlay .collapse-sidebar:focus .collapse-sidebar-arrow {
+.wp-core-ui .wp-full-overlay .collapse-sidebar:hover .collapse-sidebar-arrow,
+.wp-core-ui .wp-full-overlay .collapse-sidebar:focus .collapse-sidebar-arrow {
   box-shadow: 0 0 0 1px #09cafa, 0 0 2px 1px #04a4cc;
 }
-
-.wp-full-overlay-footer .devices button:hover:before,
-.wp-full-overlay-footer .devices button:focus:before {
-  color: #04a4cc;
-}
-
-/* temporary fix for admin-bar hover color */
-#wpadminbar .ab-top-menu > li:hover > .ab-item,
-#wpadminbar .ab-top-menu > li.hover > .ab-item,
-#wpadminbar > #wp-toolbar > #wp-admin-bar-root-default li:hover span.ab-label,
-#wpadminbar > #wp-toolbar > #wp-admin-bar-top-secondary li.hover span.ab-label,
-#wpadminbar .ab-top-menu > li > .ab-item:focus,
-#wpadminbar.nojq .quicklinks .ab-top-menu > li > .ab-item:focus,
-#wpadminbar.nojs .ab-top-menu > li.menupop:hover > .ab-item,
-#wpadminbar .ab-top-menu > li.menupop.hover > .ab-item {
-  color: #333;
+.wp-core-ui.wp-customizer .theme-overlay .theme-header .close:focus, .wp-core-ui.wp-customizer .theme-overlay .theme-header .close:hover, .wp-core-ui.wp-customizer .theme-overlay .theme-header .right:focus, .wp-core-ui.wp-customizer .theme-overlay .theme-header .right:hover, .wp-core-ui.wp-customizer .theme-overlay .theme-header .left:focus, .wp-core-ui.wp-customizer .theme-overlay .theme-header .left:hover {
+  border-bottom-color: #04a4cc;
+  color: #0073aa;
 }
 
 /* Override the theme filter highlight color for this scheme */

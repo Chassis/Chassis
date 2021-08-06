@@ -228,12 +228,13 @@ Database Configuration
 .. py:data:: database
 
 Similar to the admin user configuration, you can also override the default MySQL
-username and password::
+name, user, password and prefix::
 
    database:
        name: wordpress
        user: wordpress
        password: vagrantpassword
+       prefix: wp_
 
 (Again, don't forget to include all lines, and use spaces for indentation.)
 
@@ -301,8 +302,8 @@ Hosts Updater
 .. py:data:: hostsupdater
 
 Some operating systems have issues with Avahi so the Chassis host names don't
-automatically resolve. As a workaround you can install the Vagrant Hostsupdater plugin
-by running ``vagrant plugin install vagrant-hostsupdater`` and then add the following
+automatically resolve. As a workaround you can install the Vagrant Goodhosts plugin
+by running ``vagrant plugin install vagrant-goodhosts`` and then add the following
 to one of your configuration files:
 
 .. code-block:: yaml
@@ -448,13 +449,13 @@ To find the slug just copy and paste the plugins slug from your browsers. For ex
 Site Title
 ----------
 
-.. py:data:: site
+.. py:data:: website
 
 You can customize the title Chassis uses when installing your local WordPress site.
 
 .. code-block:: yaml
 
-   site:
+   website:
       name: My Local WordPress Site
 
 ----------

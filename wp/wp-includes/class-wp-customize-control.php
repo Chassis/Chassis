@@ -60,7 +60,7 @@ class WP_Customize_Control {
 	 * The primary setting for the control (if there is one).
 	 *
 	 * @since 3.4.0
-	 * @var string
+	 * @var string|WP_Customize_Setting|null
 	 */
 	public $setting = 'default';
 
@@ -795,3 +795,8 @@ require_once ABSPATH . WPINC . '/customize/class-wp-customize-nav-menu-auto-add-
  * WP_Customize_Date_Time_Control class.
  */
 require_once ABSPATH . WPINC . '/customize/class-wp-customize-date-time-control.php';
+
+/**
+ * WP_Sidebar_Block_Editor_Control class.
+ */
+require_once ABSPATH . WPINC . '/customize/class-wp-sidebar-block-editor-control.php';

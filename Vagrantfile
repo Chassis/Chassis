@@ -136,18 +136,20 @@ Vagrant.configure("2") do |config|
 	config.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
 
 	# Having access would be nice.
-	if CONF['ip'] == "dhcp" and CONF['hostsupdater'].nil?
+	if CONF['ip'] == "dhcp" and CONF['hostsupdater'] != "yes"
 		config.vm.network :private_network, type: "dhcp", hostsupdater: "skip"
-	elsif CONF['hostsupdater'] == true and Vagrant.has_plugin?("vagrant-hostsupdater")
+	elsif CONF['hostsupdater'] == true and ( Vagrant.has_plugin?("vagrant-goodhosts") or Vagrant.has_plugin?("vagrant-hostsupdater") )
 		if CONF['ip'] == "dhcp"
 			config.vm.network :private_network, ip: "192.168.33.10"
 		else
 			config.vm.network :private_network, ip: CONF['ip']
 			# IP will not change regularly, so don't remove it on halt/suspend.
 			config.hostsupdater.remove_on_suspend = false
+			config.goodhosts.remove_on_suspend = false
 		end
 		if CONF['hosts'].count > 1
 			config.hostsupdater.aliases = CONF['hosts']
+			config.goodhosts.aliases    = CONF['hosts']
 		end
 	else
 		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"

@@ -23,6 +23,10 @@ Before using Chassis, this is how your system should be set up:
 
 * Install `VirtualBox`_
 * Install `Vagrant`_
+* Install the Vagrant Goodhosts plugin::
+
+        $ vagrant plugin install vagrant-goodhosts
+
 * Make sure you have Zeroconf networking (Bonjour) set up:
 
   * **OS X**: You already have Bonjour available.
@@ -43,7 +47,7 @@ Before using Chassis, this is how your system should be set up:
 .. _VirtualBox: https://www.virtualbox.org/wiki/Downloads
 .. _Vagrant: http://www.vagrantup.com/downloads.html
 .. _install Bonjour Print Services: https://support.apple.com/kb/DL999?viewlocale=en_US&locale=en_US
-.. _Bonjour: http://help.touch-able.com/kb/network-setup-windows/make-sure-that-bonjour-is-installed-on-your-windows-pc
+.. _Bonjour: https://bonjour.en.softonic.com/
 
 
 Installing
@@ -81,6 +85,8 @@ Installing
 3. Boot up a Virtual Machine::
 
        $ vagrant up
+
+   * **Windows**: Open a console with administrator privileges (Right-Click->Run as Administrator) and use this console to run ``vagrant up``.
 
    .. note::
       New Vagrant and VirtualBox users may see this error:

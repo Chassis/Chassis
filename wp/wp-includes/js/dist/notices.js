@@ -82,114 +82,27 @@ this["wp"] = this["wp"] || {}; this["wp"]["notices"] =
 /******/
 /******/
 /******/ 	// Load entry module and return exports
-/******/ 	return __webpack_require__(__webpack_require__.s = 455);
+/******/ 	return __webpack_require__(__webpack_require__.s = "Ko7W");
 /******/ })
 /************************************************************************/
 /******/ ({
 
-/***/ 18:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-
-// EXPORTS
-__webpack_require__.d(__webpack_exports__, "a", function() { return /* binding */ _toConsumableArray; });
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayLikeToArray.js
-var arrayLikeToArray = __webpack_require__(26);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/arrayWithoutHoles.js
-
-function _arrayWithoutHoles(arr) {
-  if (Array.isArray(arr)) return Object(arrayLikeToArray["a" /* default */])(arr);
-}
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/iterableToArray.js
-var iterableToArray = __webpack_require__(35);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/unsupportedIterableToArray.js
-var unsupportedIterableToArray = __webpack_require__(29);
-
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/nonIterableSpread.js
-function _nonIterableSpread() {
-  throw new TypeError("Invalid attempt to spread non-iterable instance.\nIn order to be iterable, non-array objects must have a [Symbol.iterator]() method.");
-}
-// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js
-
-
-
-
-function _toConsumableArray(arr) {
-  return _arrayWithoutHoles(arr) || Object(iterableToArray["a" /* default */])(arr) || Object(unsupportedIterableToArray["a" /* default */])(arr) || _nonIterableSpread();
-}
-
-/***/ }),
-
-/***/ 2:
+/***/ "1ZqX":
 /***/ (function(module, exports) {
 
-(function() { module.exports = this["lodash"]; }());
+(function() { module.exports = window["wp"]["data"]; }());
 
 /***/ }),
 
-/***/ 26:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _arrayLikeToArray; });
-function _arrayLikeToArray(arr, len) {
-  if (len == null || len > arr.length) len = arr.length;
-
-  for (var i = 0, arr2 = new Array(len); i < len; i++) {
-    arr2[i] = arr[i];
-  }
-
-  return arr2;
-}
-
-/***/ }),
-
-/***/ 29:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _unsupportedIterableToArray; });
-/* harmony import */ var _arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__ = __webpack_require__(26);
-
-function _unsupportedIterableToArray(o, minLen) {
-  if (!o) return;
-  if (typeof o === "string") return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
-  var n = Object.prototype.toString.call(o).slice(8, -1);
-  if (n === "Object" && o.constructor) n = o.constructor.name;
-  if (n === "Map" || n === "Set") return Array.from(o);
-  if (n === "Arguments" || /^(?:Ui|I)nt(?:8|16|32)(?:Clamped)?Array$/.test(n)) return Object(_arrayLikeToArray__WEBPACK_IMPORTED_MODULE_0__[/* default */ "a"])(o, minLen);
-}
-
-/***/ }),
-
-/***/ 35:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
-
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _iterableToArray; });
-function _iterableToArray(iter) {
-  if (typeof Symbol !== "undefined" && Symbol.iterator in Object(iter)) return Array.from(iter);
-}
-
-/***/ }),
-
-/***/ 4:
-/***/ (function(module, exports) {
-
-(function() { module.exports = this["wp"]["data"]; }());
-
-/***/ }),
-
-/***/ 455:
+/***/ "Ko7W":
 /***/ (function(module, __webpack_exports__, __webpack_require__) {
 
 "use strict";
 // ESM COMPAT FLAG
 __webpack_require__.r(__webpack_exports__);
+
+// EXPORTS
+__webpack_require__.d(__webpack_exports__, "store", function() { return /* reexport */ store; });
 
 // NAMESPACE OBJECT: ./node_modules/@wordpress/notices/build-module/store/actions.js
 var actions_namespaceObject = {};
@@ -206,25 +119,13 @@ var selectors_namespaceObject = {};
 __webpack_require__.r(selectors_namespaceObject);
 __webpack_require__.d(selectors_namespaceObject, "getNotices", function() { return getNotices; });
 
-// EXTERNAL MODULE: external {"this":["wp","data"]}
-var external_this_wp_data_ = __webpack_require__(4);
+// EXTERNAL MODULE: external ["wp","data"]
+var external_wp_data_ = __webpack_require__("1ZqX");
 
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/toConsumableArray.js + 2 modules
-var toConsumableArray = __webpack_require__(18);
-
-// EXTERNAL MODULE: external {"this":"lodash"}
-var external_this_lodash_ = __webpack_require__(2);
-
-// EXTERNAL MODULE: ./node_modules/@babel/runtime/helpers/esm/defineProperty.js
-var defineProperty = __webpack_require__(5);
+// EXTERNAL MODULE: external "lodash"
+var external_lodash_ = __webpack_require__("YLtl");
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/notices/build-module/store/utils/on-sub-key.js
-
-
-function ownKeys(object, enumerableOnly) { var keys = Object.keys(object); if (Object.getOwnPropertySymbols) { var symbols = Object.getOwnPropertySymbols(object); if (enumerableOnly) symbols = symbols.filter(function (sym) { return Object.getOwnPropertyDescriptor(object, sym).enumerable; }); keys.push.apply(keys, symbols); } return keys; }
-
-function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { var source = arguments[i] != null ? arguments[i] : {}; if (i % 2) { ownKeys(Object(source), true).forEach(function (key) { Object(defineProperty["a" /* default */])(target, key, source[key]); }); } else if (Object.getOwnPropertyDescriptors) { Object.defineProperties(target, Object.getOwnPropertyDescriptors(source)); } else { ownKeys(Object(source)).forEach(function (key) { Object.defineProperty(target, key, Object.getOwnPropertyDescriptor(source, key)); }); } } return target; }
-
 /**
  * Higher-order reducer creator which creates a combined reducer object, keyed
  * by a property on the action object.
@@ -233,36 +134,30 @@ function _objectSpread(target) { for (var i = 1; i < arguments.length; i++) { va
  *
  * @return {Function} Higher-order reducer.
  */
-var on_sub_key_onSubKey = function onSubKey(actionProperty) {
-  return function (reducer) {
-    return function () {
-      var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
-      var action = arguments.length > 1 ? arguments[1] : undefined;
-      // Retrieve subkey from action. Do not track if undefined; useful for cases
-      // where reducer is scoped by action shape.
-      var key = action[actionProperty];
+const onSubKey = actionProperty => reducer => (state = {}, action) => {
+  // Retrieve subkey from action. Do not track if undefined; useful for cases
+  // where reducer is scoped by action shape.
+  const key = action[actionProperty];
 
-      if (key === undefined) {
-        return state;
-      } // Avoid updating state if unchanged. Note that this also accounts for a
-      // reducer which returns undefined on a key which is not yet tracked.
+  if (key === undefined) {
+    return state;
+  } // Avoid updating state if unchanged. Note that this also accounts for a
+  // reducer which returns undefined on a key which is not yet tracked.
 
 
-      var nextKeyState = reducer(state[key], action);
+  const nextKeyState = reducer(state[key], action);
 
-      if (nextKeyState === state[key]) {
-        return state;
-      }
+  if (nextKeyState === state[key]) {
+    return state;
+  }
 
-      return _objectSpread({}, state, Object(defineProperty["a" /* default */])({}, key, nextKeyState));
-    };
+  return { ...state,
+    [key]: nextKeyState
   };
 };
-/* harmony default export */ var on_sub_key = (on_sub_key_onSubKey);
+/* harmony default export */ var on_sub_key = (onSubKey);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/notices/build-module/store/reducer.js
-
-
 /**
  * External dependencies
  */
@@ -282,26 +177,23 @@ var on_sub_key_onSubKey = function onSubKey(actionProperty) {
  * @return {Object} Updated state.
  */
 
-var notices = on_sub_key('context')(function () {
-  var state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
-  var action = arguments.length > 1 ? arguments[1] : undefined;
-
+const notices = on_sub_key('context')((state = [], action) => {
   switch (action.type) {
     case 'CREATE_NOTICE':
       // Avoid duplicates on ID.
-      return [].concat(Object(toConsumableArray["a" /* default */])(Object(external_this_lodash_["reject"])(state, {
+      return [...Object(external_lodash_["reject"])(state, {
         id: action.notice.id
-      })), [action.notice]);
+      }), action.notice];
 
     case 'REMOVE_NOTICE':
-      return Object(external_this_lodash_["reject"])(state, {
+      return Object(external_lodash_["reject"])(state, {
         id: action.id
       });
   }
 
   return state;
 });
-/* harmony default export */ var store_reducer = (notices);
+/* harmony default export */ var reducer = (notices);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/notices/build-module/store/constants.js
 /**
@@ -311,14 +203,14 @@ var notices = on_sub_key('context')(function () {
  *
  * @type {string}
  */
-var DEFAULT_CONTEXT = 'global';
+const DEFAULT_CONTEXT = 'global';
 /**
  * Default notice status.
  *
  * @type {string}
  */
 
-var DEFAULT_STATUS = 'info';
+const DEFAULT_STATUS = 'info';
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/notices/build-module/store/actions.js
 /**
@@ -362,43 +254,48 @@ var DEFAULT_STATUS = 'info';
  *                                                             readers.
  * @param {Array<WPNoticeAction>} [options.actions]            User actions to be
  *                                                             presented with notice.
+ * @param {Object}                [options.icon]               An icon displayed with the notice.
+ * @param {boolean}               [options.explicitDismiss]    Whether the notice includes
+ *                                                             an explict dismiss button and
+ *                                                             can't be dismissed by clicking
+ *                                                             the body of the notice.
+ * @param {Function}              [options.onDismiss]          Called when the notice is dismissed.
  *
  * @return {Object} Action object.
  */
 
-function createNotice() {
-  var status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_STATUS;
-  var content = arguments.length > 1 ? arguments[1] : undefined;
-  var options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
-  var _options$speak = options.speak,
-      speak = _options$speak === void 0 ? true : _options$speak,
-      _options$isDismissibl = options.isDismissible,
-      isDismissible = _options$isDismissibl === void 0 ? true : _options$isDismissibl,
-      _options$context = options.context,
-      context = _options$context === void 0 ? DEFAULT_CONTEXT : _options$context,
-      _options$id = options.id,
-      id = _options$id === void 0 ? Object(external_this_lodash_["uniqueId"])(context) : _options$id,
-      _options$actions = options.actions,
-      actions = _options$actions === void 0 ? [] : _options$actions,
-      _options$type = options.type,
-      type = _options$type === void 0 ? 'default' : _options$type,
-      __unstableHTML = options.__unstableHTML; // The supported value shape of content is currently limited to plain text
+function createNotice(status = DEFAULT_STATUS, content, options = {}) {
+  const {
+    speak = true,
+    isDismissible = true,
+    context = DEFAULT_CONTEXT,
+    id = Object(external_lodash_["uniqueId"])(context),
+    actions = [],
+    type = 'default',
+    __unstableHTML,
+    icon = null,
+    explicitDismiss = false,
+    onDismiss = null
+  } = options; // The supported value shape of content is currently limited to plain text
   // strings. To avoid setting expectation that e.g. a WPElement could be
   // supported, cast to a string.
 
   content = String(content);
   return {
     type: 'CREATE_NOTICE',
-    context: context,
+    context,
     notice: {
-      id: id,
-      status: status,
-      content: content,
+      id,
+      status,
+      content,
       spokenMessage: speak ? content : null,
-      __unstableHTML: __unstableHTML,
-      isDismissible: isDismissible,
-      actions: actions,
-      type: type
+      __unstableHTML,
+      isDismissible,
+      actions,
+      type,
+      icon,
+      explicitDismiss,
+      onDismiss
     }
   };
 }
@@ -472,12 +369,11 @@ function createWarningNotice(content, options) {
  * @return {Object} Action object.
  */
 
-function removeNotice(id) {
-  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_CONTEXT;
+function removeNotice(id, context = DEFAULT_CONTEXT) {
   return {
     type: 'REMOVE_NOTICE',
-    id: id,
-    context: context
+    id,
+    context
   };
 }
 
@@ -498,7 +394,7 @@ function removeNotice(id) {
  * @type {Array}
  */
 
-var DEFAULT_NOTICES = [];
+const DEFAULT_NOTICES = [];
 /**
  * @typedef {Object} WPNotice Notice object.
  *
@@ -535,8 +431,7 @@ var DEFAULT_NOTICES = [];
  * @return {WPNotice[]} Array of notices.
  */
 
-function getNotices(state) {
-  var context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_CONTEXT;
+function getNotices(state, context = DEFAULT_CONTEXT) {
   return state[context] || DEFAULT_NOTICES;
 }
 
@@ -552,40 +447,31 @@ function getNotices(state) {
 
 
 
-/* harmony default export */ var store = (Object(external_this_wp_data_["registerStore"])('core/notices', {
-  reducer: store_reducer,
+/**
+ * Store definition for the notices namespace.
+ *
+ * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#createReduxStore
+ *
+ * @type {Object}
+ */
+
+const store = Object(external_wp_data_["createReduxStore"])('core/notices', {
+  reducer: reducer,
   actions: actions_namespaceObject,
   selectors: selectors_namespaceObject
-}));
+});
+Object(external_wp_data_["register"])(store);
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/notices/build-module/index.js
-/**
- * Internal dependencies
- */
 
 
 
 /***/ }),
 
-/***/ 5:
-/***/ (function(module, __webpack_exports__, __webpack_require__) {
+/***/ "YLtl":
+/***/ (function(module, exports) {
 
-"use strict";
-/* harmony export (binding) */ __webpack_require__.d(__webpack_exports__, "a", function() { return _defineProperty; });
-function _defineProperty(obj, key, value) {
-  if (key in obj) {
-    Object.defineProperty(obj, key, {
-      value: value,
-      enumerable: true,
-      configurable: true,
-      writable: true
-    });
-  } else {
-    obj[key] = value;
-  }
-
-  return obj;
-}
+(function() { module.exports = window["lodash"]; }());
 
 /***/ })
 
