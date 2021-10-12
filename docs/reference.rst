@@ -100,8 +100,6 @@ There are three logs that we synchronise for you:
 2. ``logs/nginx/error.log`` - This shows any errors that have occurred.
 3. ``logs/nginx/access.log`` = This shows details of any requests that Nginx has served.
 
-It is also recommended to update your Chassis box in case of package installation issues, eg: expired certificates.
-
 Character encoding on Windows machines
 --------------------------------------
 
@@ -127,3 +125,10 @@ Server IP address could not be found. (DNS_PROBE_FINISHED_NXDOMAIN)
 ---------------------------------------------------------------------
 
 This typically occurs on Mac when the DNS configuration has not been set up properly during the installation. SSH into the Chassis machine and run ``sudo service avahi-daemon restart``
+
+Further issues
+--------------
+
+In case the previous tips didn't solve your issue, it is recommended to update your copy of Virtualbox, Vagrant, Chassis, and the Chassis box ( note that updating the box will recreate your instance from scratch ), and/or create a `bug report`_ on the GitHub repo.
+
+.. _Bug report: https://github.com/Chassis/Chassis/issues
