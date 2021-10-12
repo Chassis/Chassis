@@ -100,6 +100,8 @@ There are three logs that we synchronise for you:
 2. ``logs/nginx/error.log`` - This shows any errors that have occurred.
 3. ``logs/nginx/access.log`` = This shows details of any requests that Nginx has served.
 
+It is also recommended to update your Chassis box in case of package installation issues, eg: expired certificates.
+
 Character encoding on Windows machines
 --------------------------------------
 
