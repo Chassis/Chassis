@@ -18,9 +18,9 @@ if $loadable_extensions {
 include apt
 
 class { 'chassis::php':
-	extensions  => $php_extensions,
-	version     => $config[php],
-	upload_size => $config[upload_size],
+	extensions   => $php_extensions,
+	version      => $config[php],
+	upload_size  => $config[upload_size],
 	require => [
 		Class['apt'],
 	]
