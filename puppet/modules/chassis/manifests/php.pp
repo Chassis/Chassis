@@ -2,7 +2,7 @@
 class chassis::php (
 	$upload_size,
 	$extensions = [],
-	$version = '7.0',
+	$version = '7.4',
 ) {
 	# Ensure add-apt-repository is actually available.
 	if !defined(Package[$::apt::ppa_package]) {
@@ -15,6 +15,13 @@ class chassis::php (
 		require => [
 			Package[ $::apt::ppa_package ],
 			Class['apt'],
+		],
+	}
+
+	apt::ppa { 'ppa:ondrej/php-qa':
+		require => [
+				Package[ $::apt::ppa_package ],
+				Class['apt'],
 		],
 	}
 
@@ -49,7 +56,7 @@ class chassis::php (
 	$prefixed_extensions = prefix( $extensions, "${php_package}-" )
 
 	# Any array of all the versions of php that we support.
-	$php_versions = [ '8.0', '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ]
+	$php_versions = [ '8.1', '8.0', '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ]
 
 	# Work out which version of php we should remove if we've swapped versions.
 	$php_versions_to_remove = delete( $php_versions, $short_ver )
@@ -75,6 +82,7 @@ class chassis::php (
 		require         => [
 			Apt::Pin[$packages],
 			Apt::Ppa['ppa:ondrej/php'],
+			Apt::Ppa['ppa:ondrej/php-qa'],
 			Class['apt::update'],
 			Chassis::Remove_php_version[$php_versions_to_remove]
 		],
