@@ -32,14 +32,14 @@ package { 'git-core':
 
 $mysql_defaults = {
 	client => {
-		'default-character-set' => 'utf8mb4'
+		'default-character-set' => $config[database][charset]
 	},
 	mysql => {
-		'default-character-set' => 'utf8mb4'
+		'default-character-set' => $config[database][charset]
 	},
 	mysqld => {
-		'collation-server'              => 'utf8mb4_unicode_ci',
-		'character-set-server'          => 'utf8mb4',
+		'collation-server'              => $config[database][collation],
+		'character-set-server'          => $config[database][charset],
 		'default_authentication_plugin' => 'mysql_native_password'
 	}
 }
@@ -60,29 +60,31 @@ class { 'chassis':
 $subdomains = ( $config[multisite] == 'subdomains' )
 
 class { 'chassis::hosts':
-	aliases => $config[hosts],
+	aliases    => $config[hosts],
 	subdomains => $subdomains,
 }
 
 chassis::wp { $config['hosts'][0]:
-	location          => $config[mapped_paths][base],
-	wpdir             => $config[mapped_paths][wp],
-	contentdir        => $config[mapped_paths][content],
-	upload_size       => $config[upload_size],
-	hosts             => $config[hosts],
-	database          => $config[database][name],
-	database_user     => $config[database][user],
-	database_password => $config[database][password],
-	database_prefix   => $config[database][prefix],
-	network           => $config[multisite],
-	admin_user        => $config[admin][user],
-	admin_email       => $config[admin][email],
-	admin_password    => $config[admin][password],
-	machine_name      => $config[machine_name],
-	sitename          => $config[website][name],
+	location            => $config[mapped_paths][base],
+	wpdir               => $config[mapped_paths][wp],
+	contentdir          => $config[mapped_paths][content],
+	upload_size         => $config[upload_size],
+	hosts               => $config[hosts],
+	database            => $config[database][name],
+	database_user       => $config[database][user],
+	database_password   => $config[database][password],
+	database_prefix     => $config[database][prefix],
+	database_charset    => $config[database][charset],
+	database_collation  => $config[database][collation],
+	network             => $config[multisite],
+	admin_user          => $config[admin][user],
+	admin_email         => $config[admin][email],
+	admin_password      => $config[admin][password],
+	machine_name        => $config[machine_name],
+	sitename            => $config[website][name],
 
-	extensions        => $extensions,
-	global_extensions => $global_extensions,
+	extensions          => $extensions,
+	global_extensions   => $global_extensions,
 
 	require => [
 		Class['chassis::php'],

@@ -61,6 +61,8 @@ database:
     user: wordpress
     password: vagrantpassword
     prefix: wp_
+    charset: utf8mb4
+    collation: utf8mb4_unicode_ci
 
 # Admin configuration
 # (When overriding, include all values)
