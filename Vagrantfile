@@ -118,10 +118,10 @@ Vagrant.configure("2") do |config|
 	if CONF['_mode'] == "normal"
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
-		config.vm.box_version = ">= 3.0, < 4.0"
+		config.vm.box_version = ">= 4.0, < 5.0"
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-18.04"
+		config.vm.box = "bento/ubuntu-20.04"
 	end
 
 	# Enable SSH forwarding

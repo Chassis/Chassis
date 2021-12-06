@@ -10,7 +10,7 @@
 
 # Add a version for Chassis for when we upgrade Ubuntu distributions.
 # We did start tagging releases a while back: https://github.com/Chassis/Chassis/releases
-version: 3.2.1
+version: 4.0.0
 
 # Domain names to use for Vagrant
 #

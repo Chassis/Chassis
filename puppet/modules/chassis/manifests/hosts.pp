@@ -3,20 +3,14 @@ class chassis::hosts(
 	$aliases = [],
 	$subdomains = false,
 ) {
-	package { [ 'avahi-daemon', 'python-pip', 'python-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
+	package { [ 'avahi-daemon', 'python3-pip', 'python-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
 		ensure => latest,
-	}
-
-	exec { 'upgrade pip':
-		path    => '/bin:/usr/bin',
-		command => 'pip install --upgrade pip==9.0.3',
-		require => Package['python-pip']
 	}
 
 	ensure_packages( ['mdns-publisher'], {
 		ensure   => present,
-		provider => 'pip',
-		require  => [ Package['python-pip'], Package['libdbus-glib-1-dev'], Exec['upgrade pip'] ],
+		provider => 'pip3',
+		require  => [ Package['python3-pip'], Package['libdbus-glib-1-dev'] ],
 	})
 
 	file { '/lib/systemd/system/chassis-hosts.service':

@@ -1,3 +1,5 @@
+# Suppress the warnings the Ruby warnings Puppet causes on Focal Fossa.
+echo "export RUBYOPT='-W0'" >> /etc/environment
 if [[ $1 == "false" ]]; then
 	# Ignore mirrors completely
 	MIRROR=""
@@ -14,10 +16,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 		REPOS="main restricted universe multiverse"
 
 		touch /tmp/mirrors-sources.list
-		echo "deb $MIRROR bionic $REPOS"           >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR bionic-updates $REPOS"   >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR bionic-backports $REPOS" >> /tmp/mirrors-sources.list
-		echo "deb $MIRROR bionic-security $REPOS"  >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR focal $REPOS"           >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR focal-updates $REPOS"   >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR focal-backports $REPOS" >> /tmp/mirrors-sources.list
+		echo "deb $MIRROR focal-security $REPOS"  >> /tmp/mirrors-sources.list
 
 		# Add mirrors to the start
 		cat /tmp/mirrors-sources.list /etc/apt/sources.list > /tmp/apt-sources.list
