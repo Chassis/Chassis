@@ -42,7 +42,7 @@ define chassis::site (
 		password  => $database_password,
 		host      => $database_host,
 		charset   => $database_charset,
-		collation => $database_collation,
+		collate   => $database_collation,
 		grant     => ['all'],
 	}
 
