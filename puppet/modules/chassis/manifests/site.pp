@@ -9,6 +9,8 @@ define chassis::site (
 	$database_user = 'root',
 	$database_password = 'password',
 	$database_host = 'localhost',
+	$database_charset,
+	$database_collation,
 	$admin_user     = 'admin',
 	$admin_email    = 'admin@example.com',
 	$admin_password = 'password',
@@ -36,10 +38,12 @@ define chassis::site (
 	}
 
 	mysql::db {$database:
-		user     => $database_user,
-		password => $database_password,
-		host     => $database_host,
-		grant    => ['all'],
+		user      => $database_user,
+		password  => $database_password,
+		host      => $database_host,
+		charset   => $database_charset,
+		collate   => $database_collation,
+		grant     => ['all'],
 	}
 
 	wp::site { $wpdir:
