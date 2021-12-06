@@ -67,7 +67,7 @@ For example:
 To generate and upload a new base box a Vagrant Cloud Chassis team member will need to do the following:
 
 1. Open a new issue in the Chassis repository with details about the base box updates.
-2. Create a new branch off ``master`` for the base box updates.
+2. Create a new branch off ``main`` for the base box updates.
 3. Backup any custom yaml configuration files you have as they will be deleted during this process.
 4. Delete any extensions in your ``extensions`` folder (apart from ``example`` as it's required).
 5. Bump the version number of the base box in the `build script`_, `yaml file`_ and `documentation`_.
@@ -81,8 +81,8 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 
 .. _Chassis base boxes: https://app.vagrantup.com/chassis
 .. _SEM Versioning 2.0.0: https://semver.org/
-.. _build script: https://github.com/Chassis/Chassis/blob/master/buildbox.sh#L55
-.. _yaml file: https://github.com/Chassis/Chassis/blob/master/config.yaml#L13
+.. _build script: https://github.com/Chassis/Chassis/blob/main/buildbox.sh#L55
+.. _yaml file: https://github.com/Chassis/Chassis/blob/main/config.yaml#L13
 .. _documentation: https://github.com/Chassis/Chassis/blob/main/docs/conf.py#L56-L59
 
 
