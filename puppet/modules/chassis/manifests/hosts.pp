@@ -39,7 +39,9 @@ class chassis::hosts(
 			Package[ 'avahi-daemon' ],
 			Package[ 'python-avahi' ],
 			File[ '/lib/systemd/system/chassis-hosts.service' ],
+			Exec['restart-avahi']
 		],
-		notify  => Exec['systemctl-daemon-reload'],
 	}
+
+
 }
