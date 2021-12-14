@@ -1,5 +1,5 @@
 # Suppress the warnings the Ruby warnings Puppet causes on Focal Fossa.
-echo "export RUBYOPT='-W0'" >> /etc/environment
+grep -qxF "export RUBYOPT='-W0'" /etc/environment || echo "export RUBYOPT='-W0'" >> /etc/environment
 if [[ $1 == "false" ]]; then
 	# Ignore mirrors completely
 	MIRROR=""
