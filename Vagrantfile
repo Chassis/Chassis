@@ -107,6 +107,9 @@ Vagrant.configure("2") do |config|
 			full_synced[ to ] = full_from
 		end
 		vb.customize [ "guestproperty", "set", :id, "/Chassis/synced_folders", JSON.dump( full_synced ), "--flags", "TRANSIENT,RDONLYGUEST" ]
+		# Ensure the VM has network access, see https://stackoverflow.com/a/18457420. This is another workaround for Windows.
+		vb.customize ["modifyvm", :id, "--natdnshostresolver1", "on"]
+		vb.customize ["modifyvm", :id, "--natdnsproxy1", "on"]
 	end
 
 	if CONF['_mode'] == "normal"
