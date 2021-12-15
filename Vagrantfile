@@ -113,6 +113,8 @@ Vagrant.configure("2") do |config|
 	end
 
 	if CONF['_mode'] == "normal"
+		# Allow insecure boxes for Windows
+		config.vm.box_download_insecure = true
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
 		config.vm.box_version = ">= 4.0, < 5.0"
