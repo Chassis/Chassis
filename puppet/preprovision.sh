@@ -38,9 +38,6 @@ if [[ ! -f /etc/chassis-updated ]]; then
 	# Update apt
 	sudo apt-get update
 
-	# Install/Upgrade Puppet
-	sudo apt-get -q -y install puppet
-
 	touch /etc/chassis-updated
 fi
 
