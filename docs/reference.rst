@@ -79,6 +79,17 @@ To generate and upload a new base box a Vagrant Cloud Chassis team member will n
 11. Wait for the upload to complete.
 12. Submit a Pull Request and wait for one of the Chassis team members to approve it.
 
+When you're building a new base box it's a good idea to check the versions of the following software for when write the
+release notes:
+
+1. PHP - ``php -v``
+2. software-properties-common - ``apt policy software-properties-common``
+3. curl - ``curl --version``
+4. pip - ``pip -V`
+5. avahi-daemon - ``avahi-daemon -V``
+6. puppet - ``puppet --version``
+7. ruby - ``ruby -v`
+
 .. _Chassis base boxes: https://app.vagrantup.com/chassis
 .. _SEM Versioning 2.0.0: https://semver.org/
 .. _build script: https://github.com/Chassis/Chassis/blob/main/buildbox.sh#L55
