@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
 		config.vm.define CONF['machine_name']
 	end
 
-	 config.trigger.before [ :provision, :up, :halt ] do |trigger|
+	config.trigger.before [ :provision, :up, :halt ] do |trigger|
 		deprecated_extensions = ''
 		if CONF["version"] >= 3 && ! CONF["extensions"].nil?
 			# Warn about old extensions.
@@ -73,7 +73,7 @@ Vagrant.configure("2") do |config|
 		if ! CONF['hosts'][0].include?('.local')
 			trigger.info = "\n\e[33mWARNING: The hosts URL does not contain .local.\nYou will need to edit your hosts file for this URL to resolve.\e[0m"
 		end
-	 end
+	end
 
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
@@ -166,6 +166,7 @@ Vagrant.configure("2") do |config|
 		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
 	end
 	config.vm.hostname = CONF['hosts'][0]
+	
 
 	# Before any other provisioning, ensure that we're up-to-date
 	preprovision_args = [
@@ -173,6 +174,11 @@ Vagrant.configure("2") do |config|
 		CONF['database']['has_custom_prefix'] ? "" : "check_prefix"
 	]
 	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
+
+	# check if puppet is installed, if not, install it
+	config.vm.provision :shell do |shell|
+		shell.path = "puppet/installpuppet.sh"
+	end
 
 	# Provision our setup with Puppet
 	config.vm.provision :shell do |shell|
