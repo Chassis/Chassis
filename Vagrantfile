@@ -123,6 +123,18 @@ Vagrant.configure("2") do |config|
 		config.vm.box = "bento/ubuntu-20.04"
 	end
 
+	# The Parallels Provider uses a different naming scheme.
+	config.vm.provider :parallels do |_v, override|
+		unless CONF['_mode'] == "normal"
+			# Vagrant currently runs under Rosetta on M1 devices. As a result,
+			# this seems to be the most reliable way to detect whether or not we're
+			# running under ARM64.
+			if Etc.uname[:version].include? 'ARM64'
+				override.vm.box = 'mpasternak/focal64-arm'
+			end
+		end
+	end
+
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
 
@@ -228,6 +240,13 @@ Vagrant.configure("2") do |config|
 		# Automatically use bindfs if we can.
 		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
 			config.bindfs.bind_folder to, to
+		end
+	end
+
+	config.vm.provider :parallels do |_v, override|
+		mount_opts = CONF['nfs'] ? [] : ["share"]
+		synced_folders.each do |from, to|
+			override.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs'], :group => 'www-data', :owner => 'vagrant'
 		end
 	end
 
