@@ -38,8 +38,10 @@ if [[ ! -f /etc/chassis-updated ]]; then
 	# Update apt
 	sudo apt-get update
 
-	# Install/Upgrade Puppet
-	sudo apt-get -q -y install puppet
+	if ps aux | grep "puppet agent" | grep -v grep 2> /dev/null
+		# Install/Upgrade Puppet
+		sudo apt-get -q -y install puppet
+	fi
 
 	touch /etc/chassis-updated
 fi

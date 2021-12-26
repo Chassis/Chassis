@@ -167,18 +167,12 @@ Vagrant.configure("2") do |config|
 	end
 	config.vm.hostname = CONF['hosts'][0]
 	
-
 	# Before any other provisioning, ensure that we're up-to-date
 	preprovision_args = [
 		CONF['apt_mirror'].to_s,
 		CONF['database']['has_custom_prefix'] ? "" : "check_prefix"
 	]
 	config.vm.provision :shell, :path => "puppet/preprovision.sh", :args => preprovision_args
-
-	# check if puppet is installed, if not, install it
-	config.vm.provision :shell do |shell|
-		shell.path = "puppet/installpuppet.sh"
-	end
 
 	# Provision our setup with Puppet
 	config.vm.provision :shell do |shell|
