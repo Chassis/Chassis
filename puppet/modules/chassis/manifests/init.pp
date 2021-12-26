@@ -16,6 +16,14 @@ class chassis {
 		package {'sendmail':}
 	}
 
+	if ! defined(Exec['systemctl-daemon-reload']) {
+		exec {'systemctl-daemon-reload':
+			refreshonly => true,
+			path        => '/bin',
+			command     => 'systemctl daemon-reload',
+		}
+	}
+
 	exec {'restart-avahi':
 		path        => '/bin',
 		command     => 'systemctl restart avahi-daemon.service',
