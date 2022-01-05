@@ -166,7 +166,6 @@ Vagrant.configure("2") do |config|
 		config.vm.network :private_network, ip: CONF['ip'], hostsupdater: "skip"
 	end
 	config.vm.hostname = CONF['hosts'][0]
-	
 	# Before any other provisioning, ensure that we're up-to-date
 	preprovision_args = [
 		CONF['apt_mirror'].to_s,
