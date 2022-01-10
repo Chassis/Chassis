@@ -17,6 +17,11 @@ server {
 		access_log off;	log_not_found off;	expires max;
 	}
 
+	# Handle WP-GraphQL
+	location /wp/graphql {
+		try_files $uri $uri/ /index.php?graphql;
+	}
+
 	location /content/ {
 		alias <%= @contentdir %>/;
 	}
