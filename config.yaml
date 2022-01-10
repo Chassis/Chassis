@@ -21,9 +21,6 @@ version: 4.3.1
 hosts:
     - vagrant.local
 
-# Avahi has stopped working :(
-hostsupdater: yes
-
 # Site Configuration
 # (When overriding, include all values)
 website:
@@ -34,7 +31,7 @@ website:
 # DHCP is used by default to assign IP addresses dynamically, override only if
 # you need a static IP for your box.
 #
-# Values: "dhcp", or any valid IP
+# Values: "dhcp", or any valid IP. e.g. 192.168.56.0
 ip: dhcp
 
 # Ubuntu mirror to use during provisioning
