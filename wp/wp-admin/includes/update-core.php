@@ -826,6 +826,23 @@ $_old_files = array(
 	'wp-includes/css/dist/editor/editor-styles.min.css',
 	'wp-includes/css/dist/editor/editor-styles-rtl.css',
 	'wp-includes/css/dist/editor/editor-styles-rtl.min.css',
+	// 5.9
+	'wp-includes/blocks/heading/editor.css',
+	'wp-includes/blocks/heading/editor.min.css',
+	'wp-includes/blocks/heading/editor-rtl.css',
+	'wp-includes/blocks/heading/editor-rtl.min.css',
+	'wp-includes/blocks/post-content/editor.css',
+	'wp-includes/blocks/post-content/editor.min.css',
+	'wp-includes/blocks/post-content/editor-rtl.css',
+	'wp-includes/blocks/post-content/editor-rtl.min.css',
+	'wp-includes/blocks/query-title/editor.css',
+	'wp-includes/blocks/query-title/editor.min.css',
+	'wp-includes/blocks/query-title/editor-rtl.css',
+	'wp-includes/blocks/query-title/editor-rtl.min.css',
+	'wp-includes/blocks/tag-cloud/editor.css',
+	'wp-includes/blocks/tag-cloud/editor.min.css',
+	'wp-includes/blocks/tag-cloud/editor-rtl.css',
+	'wp-includes/blocks/tag-cloud/editor-rtl.min.css',
 );
 
 /**
@@ -864,6 +881,7 @@ $_new_bundled_files = array(
 	'themes/twentynineteen/'  => '5.0',
 	'themes/twentytwenty/'    => '5.3',
 	'themes/twentytwentyone/' => '5.6',
+	'themes/twentytwentytwo/' => '5.9',
 );
 
 /**
@@ -1397,8 +1415,8 @@ function update_core( $from, $to ) {
 	// Deactivate the REST API plugin if its version is 2.0 Beta 4 or lower.
 	_upgrade_440_force_deactivate_incompatible_plugins();
 
-	// Deactivate the Gutenberg plugin if its version is 10.7 or lower.
-	_upgrade_580_force_deactivate_incompatible_plugins();
+	// Deactivate the Gutenberg plugin if its version is 11.8 or lower.
+	_upgrade_590_force_deactivate_incompatible_plugins();
 
 	// Upgrade DB with separate request.
 	/** This filter is documented in wp-admin/includes/update-core.php */
@@ -1656,6 +1674,13 @@ function _upgrade_422_find_genericons_files_in_folder( $directory ) {
 	}
 
 	$dirs = glob( $directory . '*', GLOB_ONLYDIR );
+	$dirs = array_filter(
+		$dirs,
+		static function( $dir ) {
+			// Skip any node_modules directories.
+			return false === strpos( $dir, 'node_modules' );
+		}
+	);
 
 	if ( $dirs ) {
 		foreach ( $dirs as $dir ) {
@@ -1677,15 +1702,16 @@ function _upgrade_440_force_deactivate_incompatible_plugins() {
 }
 
 /**
+ * @access private
  * @ignore
- * @since 5.8.0
+ * @since 5.9.0
  */
-function _upgrade_580_force_deactivate_incompatible_plugins() {
-	if ( defined( 'GUTENBERG_VERSION' ) && version_compare( GUTENBERG_VERSION, '10.7', '<=' ) ) {
+function _upgrade_590_force_deactivate_incompatible_plugins() {
+	if ( defined( 'GUTENBERG_VERSION' ) && version_compare( GUTENBERG_VERSION, '11.9', '<' ) ) {
 		$deactivated_gutenberg['gutenberg'] = array(
 			'plugin_name'         => 'Gutenberg',
 			'version_deactivated' => GUTENBERG_VERSION,
-			'version_compatible'  => '10.8',
+			'version_compatible'  => '11.9',
 		);
 		if ( is_plugin_active_for_network( 'gutenberg/gutenberg.php' ) ) {
 			$deactivated_plugins = get_site_option( 'wp_force_deactivated_plugins', array() );

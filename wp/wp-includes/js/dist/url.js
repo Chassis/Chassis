@@ -126,6 +126,8 @@ __webpack_require__.d(__webpack_exports__, "safeDecodeURI", function() { return 
 __webpack_require__.d(__webpack_exports__, "safeDecodeURIComponent", function() { return /* reexport */ safeDecodeURIComponent; });
 __webpack_require__.d(__webpack_exports__, "filterURLForDisplay", function() { return /* reexport */ filterURLForDisplay; });
 __webpack_require__.d(__webpack_exports__, "cleanForSlug", function() { return /* reexport */ cleanForSlug; });
+__webpack_require__.d(__webpack_exports__, "getFilename", function() { return /* reexport */ getFilename; });
+__webpack_require__.d(__webpack_exports__, "normalizePath", function() { return /* reexport */ normalizePath; });
 
 // CONCATENATED MODULE: ./node_modules/@wordpress/url/build-module/is-url.js
 /**
@@ -553,11 +555,11 @@ function setPath(object, path, value) {
 
 
 function getQueryArgs(url) {
-  return (getQueryString(url) || ''). // Normalize space encoding, accounting for PHP URL encoding
+  return (getQueryString(url) || '' // Normalize space encoding, accounting for PHP URL encoding
   // corresponding to `application/x-www-form-urlencoded`.
   //
   // See: https://tools.ietf.org/html/rfc1866#section-8.2.1
-  replace(/\+/g, '%20').split('&').reduce((accumulator, keyValue) => {
+  ).replace(/\+/g, '%20').split('&').reduce((accumulator, keyValue) => {
     const [key, value = ''] = keyValue.split('=') // Filtering avoids decoding as `undefined` for value, where
     // default is restored in destructuring assignment.
     .filter(Boolean).map(decodeURIComponent);
@@ -582,9 +584,9 @@ function getQueryArgs(url) {
  * includes query arguments, the arguments are merged with (and take precedent
  * over) the existing set.
  *
- * @param {string} [url='']  URL to which arguments should be appended. If omitted,
- *                           only the resulting querystring is returned.
- * @param {Object} [args]    Query arguments to apply to URL.
+ * @param {string} [url=''] URL to which arguments should be appended. If omitted,
+ *                          only the resulting querystring is returned.
+ * @param {Object} [args]   Query arguments to apply to URL.
  *
  * @example
  * ```js
@@ -594,7 +596,10 @@ function getQueryArgs(url) {
  * @return {string} URL with arguments applied.
  */
 
-function addQueryArgs(url = '', args) {
+function addQueryArgs() {
+  let url = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : '';
+  let args = arguments.length > 1 ? arguments[1] : undefined;
+
   // If no arguments are to be appended, return original URL.
   if (!args || !Object.keys(args).length) {
     return url;
@@ -688,7 +693,7 @@ function hasQueryArg(url, arg) {
  * @return {string} Updated URL.
  */
 
-function removeQueryArgs(url, ...args) {
+function removeQueryArgs(url) {
   const queryStringIndex = url.indexOf('?');
 
   if (queryStringIndex === -1) {
@@ -697,6 +702,11 @@ function removeQueryArgs(url, ...args) {
 
   const query = getQueryArgs(url);
   const baseURL = url.substr(0, queryStringIndex);
+
+  for (var _len = arguments.length, args = new Array(_len > 1 ? _len - 1 : 0), _key = 1; _key < _len; _key++) {
+    args[_key - 1] = arguments[_key];
+  }
+
   args.forEach(arg => delete query[arg]);
   const queryString = buildQueryString(query);
   return queryString ? baseURL + '?' + queryString : baseURL;
@@ -778,7 +788,7 @@ function safeDecodeURIComponent(uriComponent) {
 /**
  * Returns a URL for display.
  *
- * @param {string} url Original URL.
+ * @param {string}      url       Original URL.
  * @param {number|null} maxLength URL length.
  *
  * @example
@@ -789,7 +799,8 @@ function safeDecodeURIComponent(uriComponent) {
  *
  * @return {string} Displayed URL.
  */
-function filterURLForDisplay(url, maxLength = null) {
+function filterURLForDisplay(url) {
+  let maxLength = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : null;
   // Remove protocol and www prefixes.
   let filteredURL = url.replace(/^(?:https?:)\/\/(?:www\.)?/, ''); // Ends with / and only has that single slash, strip it.
 
@@ -852,7 +863,63 @@ function cleanForSlug(string) {
   return Object(external_lodash_["trim"])(Object(external_lodash_["deburr"])(string).replace(/[\s\./]+/g, '-').replace(/[^\w-]+/g, '').toLowerCase(), '-');
 }
 
+// CONCATENATED MODULE: ./node_modules/@wordpress/url/build-module/get-filename.js
+/**
+ * Returns the filename part of the URL.
+ *
+ * @param {string} url The full URL.
+ *
+ * @example
+ * ```js
+ * const filename1 = getFilename( 'http://localhost:8080/this/is/a/test.jpg' ); // 'test.jpg'
+ * const filename2 = getFilename( '/this/is/a/test.png' ); // 'test.png'
+ * ```
+ *
+ * @return {string|void} The filename part of the URL.
+ */
+function getFilename(url) {
+  let filename;
+
+  try {
+    filename = new URL(url, 'http://example.com').pathname.split('/').pop();
+  } catch (error) {}
+
+  if (filename) {
+    return filename;
+  }
+}
+
+// CONCATENATED MODULE: ./node_modules/@wordpress/url/build-module/normalize-path.js
+/**
+ * Given a path, returns a normalized path where equal query parameter values
+ * will be treated as identical, regardless of order they appear in the original
+ * text.
+ *
+ * @param {string} path Original path.
+ *
+ * @return {string} Normalized path.
+ */
+function normalizePath(path) {
+  const splitted = path.split('?');
+  const query = splitted[1];
+  const base = splitted[0];
+
+  if (!query) {
+    return base;
+  } // 'b=1&c=2&a=5'
+
+
+  return base + '?' + query // [ 'b=1', 'c=2', 'a=5' ]
+  .split('&') // [ [ 'b, '1' ], [ 'c', '2' ], [ 'a', '5' ] ]
+  .map(entry => entry.split('=')) // [ [ 'a', '5' ], [ 'b, '1' ], [ 'c', '2' ] ]
+  .sort((a, b) => a[0].localeCompare(b[0])) // [ 'a=5', 'b=1', 'c=2' ]
+  .map(pair => pair.join('=')) // 'a=5&b=1&c=2'
+  .join('&');
+}
+
 // CONCATENATED MODULE: ./node_modules/@wordpress/url/build-module/index.js
+
+
 
 
 

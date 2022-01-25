@@ -41,6 +41,12 @@
  * These variables do not appear to be used anywhere else.
  */
 /**
+*  Converts a hex value into the rgb equivalent.
+*
+* @param {string} hex - the hexadecimal value to convert
+* @return {string} comma separated rgb values
+*/
+/**
  * Breakpoint mixins
  */
 /**
@@ -88,7 +94,7 @@ figure.wp-block-image:not(.wp-block) {
   margin-top: -9px;
   margin-left: -9px;
 }
-.wp-block-image:not(.is-style-rounded) > div {
+.wp-block-image:not(.is-style-rounded) > div:not(.components-placeholder) {
   border-radius: inherit;
 }
 
@@ -115,6 +121,7 @@ figure.wp-block-image:not(.wp-block) {
 
 [data-align=wide] > .wp-block-image img,
 [data-align=full] > .wp-block-image img {
+  height: auto;
   width: 100%;
 }
 
@@ -126,6 +133,22 @@ figure.wp-block-image:not(.wp-block) {
 .wp-block[data-align=left] > .wp-block-image > figcaption,
 .wp-block[data-align=center] > .wp-block-image > figcaption,
 .wp-block[data-align=right] > .wp-block-image > figcaption {
+  display: table-caption;
+  caption-side: bottom;
+}
+
+*:not([data-align]) > .wp-block-image {
+  display: grid;
+  grid-template-columns: [image] minmax(0, max-content) [placeholder] auto;
+}
+*:not([data-align]) > .wp-block-image .components-placeholder {
+  grid-column: placeholder;
+}
+*:not([data-align]) > .wp-block-image > div:not(.components-placeholder) {
+  grid-column: image;
+}
+*:not([data-align]) > .wp-block-image > figcaption {
+  grid-column: image;
   display: table-caption;
   caption-side: bottom;
 }

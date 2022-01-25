@@ -284,7 +284,7 @@ class WP_Site_Health {
 
 			$result['description'] = sprintf(
 				'<p>%s</p>',
-				__( 'We were unable to check if any new versions of WordPress are available.' )
+				__( 'Unable to check if any new versions of WordPress are available.' )
 			);
 
 			$result['actions'] = sprintf(
@@ -467,7 +467,7 @@ class WP_Site_Health {
 					),
 					$unused_plugins
 				),
-				__( 'Inactive plugins are tempting targets for attackers. If you&#8217;re not going to use a plugin, we recommend you remove it.' )
+				__( 'Inactive plugins are tempting targets for attackers. If you&#8217;re not going to use a plugin, you should consider removing it.' )
 			);
 
 			$result['actions'] .= sprintf(
@@ -634,7 +634,7 @@ class WP_Site_Health {
 						),
 						sprintf(
 							/* translators: 1: The currently active theme. 2: The active theme's parent theme. */
-							__( 'To enhance your site&#8217;s security, we recommend you remove any themes you&#8217;re not using. You should keep your current theme, %1$s, and %2$s, its parent theme.' ),
+							__( 'To enhance your site&#8217;s security, you should consider removing any themes you&#8217;re not using. You should keep your current theme, %1$s, and %2$s, its parent theme.' ),
 							$active_theme->name,
 							$active_theme->parent()->name
 						)
@@ -653,7 +653,7 @@ class WP_Site_Health {
 						),
 						sprintf(
 							/* translators: 1: The default theme for WordPress. 2: The currently active theme. 3: The active theme's parent theme. */
-							__( 'To enhance your site&#8217;s security, we recommend you remove any themes you&#8217;re not using. You should keep %1$s, the default WordPress theme, %2$s, your current theme, and %3$s, its parent theme.' ),
+							__( 'To enhance your site&#8217;s security, you should consider removing any themes you&#8217;re not using. You should keep %1$s, the default WordPress theme, %2$s, your current theme, and %3$s, its parent theme.' ),
 							$default_theme ? $default_theme->name : WP_DEFAULT_THEME,
 							$active_theme->name,
 							$active_theme->parent()->name
@@ -679,7 +679,7 @@ class WP_Site_Health {
 							$themes_inactive,
 							$active_theme->name
 						),
-						__( 'We recommend removing any unused themes to enhance your site&#8217;s security.' )
+						__( 'You should consider removing any unused themes to enhance your site&#8217;s security.' )
 					);
 				} else {
 					$result['description'] .= sprintf(
@@ -695,7 +695,7 @@ class WP_Site_Health {
 							$default_theme ? $default_theme->name : WP_DEFAULT_THEME,
 							$active_theme->name
 						),
-						__( 'We recommend removing any unused themes to enhance your site&#8217;s security.' )
+						__( 'You should consider removing any unused themes to enhance your site&#8217;s security.' )
 					);
 				}
 			}
@@ -891,6 +891,10 @@ class WP_Site_Health {
 				'function' => 'hash',
 				'required' => false,
 			),
+			'imagick'   => array(
+				'extension' => 'imagick',
+				'required'  => false,
+			),
 			'json'      => array(
 				'function' => 'json_last_error',
 				'required' => true,
@@ -916,10 +920,6 @@ class WP_Site_Health {
 				'function' => 'preg_match',
 				'required' => false,
 			),
-			'imagick'   => array(
-				'extension' => 'imagick',
-				'required'  => false,
-			),
 			'mod_xml'   => array(
 				'extension' => 'libxml',
 				'required'  => false,
@@ -940,6 +940,10 @@ class WP_Site_Health {
 			'iconv'     => array(
 				'function' => 'iconv',
 				'required' => false,
+			),
+			'intl'      => array(
+				'extension' => 'intl',
+				'required'  => false,
 			),
 			'mcrypt'    => array(
 				'extension'    => 'mcrypt',
@@ -1196,7 +1200,7 @@ class WP_Site_Health {
 				'<p>%s</p>',
 				sprintf(
 					/* translators: 1: The database engine in use (MySQL or MariaDB). 2: Database server recommended version number. */
-					__( 'For optimal performance and security reasons, we recommend running %1$s version %2$s or higher. Contact your web hosting company to correct this.' ),
+					__( 'For optimal performance and security reasons, you should consider running %1$s version %2$s or higher. Contact your web hosting company to correct this.' ),
 					( $this->is_mariadb ? 'MariaDB' : 'MySQL' ),
 					$this->health_check_mysql_rec_version
 				)
@@ -1462,7 +1466,7 @@ class WP_Site_Health {
 
 		if ( defined( 'WP_DEBUG' ) && WP_DEBUG ) {
 			if ( defined( 'WP_DEBUG_LOG' ) && WP_DEBUG_LOG ) {
-				$result['label'] = __( 'Your site is set to log errors to a potentially public file.' );
+				$result['label'] = __( 'Your site is set to log errors to a potentially public file' );
 
 				$result['status'] = ( 0 === strpos( ini_get( 'error_log' ), ABSPATH ) ) ? 'critical' : 'recommended';
 
@@ -2108,7 +2112,7 @@ class WP_Site_Health {
 	 */
 	public function get_test_file_uploads() {
 		$result = array(
-			'label'       => __( 'Files can be uploaded.' ),
+			'label'       => __( 'Files can be uploaded' ),
 			'status'      => 'good',
 			'badge'       => array(
 				'label' => __( 'Performance' ),
@@ -2157,7 +2161,7 @@ class WP_Site_Health {
 		if ( wp_convert_hr_to_bytes( $post_max_size ) < wp_convert_hr_to_bytes( $upload_max_filesize ) ) {
 			$result['label'] = sprintf(
 				/* translators: 1: post_max_size, 2: upload_max_filesize */
-				__( 'The "%1$s" value is smaller than "%2$s".' ),
+				__( 'The "%1$s" value is smaller than "%2$s"' ),
 				'post_max_size',
 				'upload_max_filesize'
 			);
@@ -2200,7 +2204,7 @@ class WP_Site_Health {
 	 */
 	public function get_test_authorization_header() {
 		$result = array(
-			'label'       => __( 'The Authorization header is working as expected.' ),
+			'label'       => __( 'The Authorization header is working as expected' ),
 			'status'      => 'good',
 			'badge'       => array(
 				'label' => __( 'Security' ),
@@ -2215,9 +2219,9 @@ class WP_Site_Health {
 		);
 
 		if ( ! isset( $_SERVER['PHP_AUTH_USER'], $_SERVER['PHP_AUTH_PW'] ) ) {
-			$result['label'] = __( 'The authorization header is missing.' );
+			$result['label'] = __( 'The authorization header is missing' );
 		} elseif ( 'user' !== $_SERVER['PHP_AUTH_USER'] || 'pwd' !== $_SERVER['PHP_AUTH_PW'] ) {
-			$result['label'] = __( 'The authorization header is invalid.' );
+			$result['label'] = __( 'The authorization header is invalid' );
 		} else {
 			return $result;
 		}
@@ -2371,7 +2375,7 @@ class WP_Site_Health {
 		 * Add or modify which site status tests are run on a site.
 		 *
 		 * The site health is determined by a set of tests based on best practices from
-		 * both the WordPress Hosting Team, but also web standards in general.
+		 * both the WordPress Hosting Team and web standards in general.
 		 *
 		 * Some sites may not have the same requirements, for example the automatic update
 		 * checks may be handled by a host, and are therefore disabled in core.
@@ -2381,26 +2385,41 @@ class WP_Site_Health {
 		 * to complete should run asynchronously, to avoid extended loading periods within wp-admin.
 		 *
 		 * @since 5.2.0
-		 * @since 5.6.0 Added the `async_direct_test` array key.
-		 *              Added the `skip_cron` array key.
+		 * @since 5.6.0 Added the `async_direct_test` array key for asynchronous tests.
+		 *              Added the `skip_cron` array key for all tests.
 		 *
-		 * @param array $test_type {
-		 *     An associative array, where the `$test_type` is either `direct` or
-		 *     `async`, to declare if the test should run via Ajax calls after page load.
+		 * @param array[] $tests {
+		 *     An associative array of direct and asynchronous tests.
 		 *
-		 *     @type array $identifier {
-		 *         `$identifier` should be a unique identifier for the test that should run.
-		 *         Plugins and themes are encouraged to prefix test identifiers with their slug
-		 *         to avoid any collisions between tests.
+		 *     @type array[] $direct {
+		 *         An array of direct tests.
 		 *
-		 *         @type string   $label             A friendly label for your test to identify it by.
-		 *         @type mixed    $test              A callable to perform a direct test, or a string AJAX action
-		 *                                           to be called to perform an async test.
-		 *         @type boolean  $has_rest          Optional. Denote if `$test` has a REST API endpoint.
-		 *         @type boolean  $skip_cron         Whether to skip this test when running as cron.
-		 *         @type callable $async_direct_test A manner of directly calling the test marked as asynchronous,
-		 *                                           as the scheduled event can not authenticate, and endpoints
-		 *                                           may require authentication.
+		 *         @type array ...$identifier {
+		 *             `$identifier` should be a unique identifier for the test. Plugins and themes are encouraged to
+		 *             prefix test identifiers with their slug to avoid collisions between tests.
+		 *
+		 *             @type string   $label     The friendly label to identify the test.
+		 *             @type callable $test      The callback function that runs the test and returns its result.
+		 *             @type bool     $skip_cron Whether to skip this test when running as cron.
+		 *         }
+		 *     }
+		 *     @type array[] $async {
+		 *         An array of asynchronous tests.
+		 *
+		 *         @type array ...$identifier {
+		 *             `$identifier` should be a unique identifier for the test. Plugins and themes are encouraged to
+		 *             prefix test identifiers with their slug to avoid collisions between tests.
+		 *
+		 *             @type string   $label             The friendly label to identify the test.
+		 *             @type string   $test              An admin-ajax.php action to be called to perform the test, or
+		 *                                               if `$has_rest` is true, a URL to a REST API endpoint to perform
+		 *                                               the test.
+		 *             @type bool     $has_rest          Whether the `$test` property points to a REST API endpoint.
+		 *             @type bool     $skip_cron         Whether to skip this test when running as cron.
+		 *             @type callable $async_direct_test A manner of directly calling the test marked as asynchronous,
+		 *                                               as the scheduled event can not authenticate, and endpoints
+		 *                                               may require authentication.
+		 *         }
 		 *     }
 		 * }
 		 */
@@ -2549,7 +2568,7 @@ class WP_Site_Health {
 	 *
 	 * @return object The test results.
 	 */
-	function detect_plugin_theme_auto_update_issues() {
+	public function detect_plugin_theme_auto_update_issues() {
 		$mock_plugin = (object) array(
 			'id'            => 'w.org/plugins/a-fake-plugin',
 			'slug'          => 'a-fake-plugin',
@@ -2632,7 +2651,7 @@ class WP_Site_Health {
 	 *
 	 * @return object The test results.
 	 */
-	function can_perform_loopback() {
+	public function can_perform_loopback() {
 		$body    = array( 'site-health' => 'loopback-test' );
 		$cookies = wp_unslash( $_COOKIE );
 		$timeout = 10;

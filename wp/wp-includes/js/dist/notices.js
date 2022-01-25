@@ -134,7 +134,9 @@ var external_lodash_ = __webpack_require__("YLtl");
  *
  * @return {Function} Higher-order reducer.
  */
-const onSubKey = actionProperty => reducer => (state = {}, action) => {
+const onSubKey = actionProperty => reducer => function () {
+  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : {};
+  let action = arguments.length > 1 ? arguments[1] : undefined;
   // Retrieve subkey from action. Do not track if undefined; useful for cases
   // where reducer is scoped by action shape.
   const key = action[actionProperty];
@@ -177,7 +179,10 @@ const onSubKey = actionProperty => reducer => (state = {}, action) => {
  * @return {Object} Updated state.
  */
 
-const notices = on_sub_key('context')((state = [], action) => {
+const notices = on_sub_key('context')(function () {
+  let state = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : [];
+  let action = arguments.length > 1 ? arguments[1] : undefined;
+
   switch (action.type) {
     case 'CREATE_NOTICE':
       // Avoid duplicates on ID.
@@ -225,11 +230,11 @@ const DEFAULT_STATUS = 'info';
 /**
  * @typedef {Object} WPNoticeAction Object describing a user action option associated with a notice.
  *
- * @property {string}    label    Message to use as action label.
- * @property {?string}   url      Optional URL of resource if action incurs
- *                                browser navigation.
- * @property {?Function} onClick  Optional function to invoke when action is
- *                                triggered by user.
+ * @property {string}    label   Message to use as action label.
+ * @property {?string}   url     Optional URL of resource if action incurs
+ *                               browser navigation.
+ * @property {?Function} onClick Optional function to invoke when action is
+ *                               triggered by user.
  *
  */
 
@@ -264,7 +269,10 @@ const DEFAULT_STATUS = 'info';
  * @return {Object} Action object.
  */
 
-function createNotice(status = DEFAULT_STATUS, content, options = {}) {
+function createNotice() {
+  let status = arguments.length > 0 && arguments[0] !== undefined ? arguments[0] : DEFAULT_STATUS;
+  let content = arguments.length > 1 ? arguments[1] : undefined;
+  let options = arguments.length > 2 && arguments[2] !== undefined ? arguments[2] : {};
   const {
     speak = true,
     isDismissible = true,
@@ -275,7 +283,7 @@ function createNotice(status = DEFAULT_STATUS, content, options = {}) {
     __unstableHTML,
     icon = null,
     explicitDismiss = false,
-    onDismiss = null
+    onDismiss
   } = options; // The supported value shape of content is currently limited to plain text
   // strings. To avoid setting expectation that e.g. a WPElement could be
   // supported, cast to a string.
@@ -369,7 +377,8 @@ function createWarningNotice(content, options) {
  * @return {Object} Action object.
  */
 
-function removeNotice(id, context = DEFAULT_CONTEXT) {
+function removeNotice(id) {
+  let context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_CONTEXT;
   return {
     type: 'REMOVE_NOTICE',
     id,
@@ -398,26 +407,26 @@ const DEFAULT_NOTICES = [];
 /**
  * @typedef {Object} WPNotice Notice object.
  *
- * @property {string}  id               Unique identifier of notice.
- * @property {string}  status           Status of notice, one of `success`,
- *                                      `info`, `error`, or `warning`. Defaults
- *                                      to `info`.
- * @property {string}  content          Notice message.
- * @property {string}  spokenMessage    Audibly announced message text used by
- *                                      assistive technologies.
- * @property {string}  __unstableHTML   Notice message as raw HTML. Intended to
- *                                      serve primarily for compatibility of
- *                                      server-rendered notices, and SHOULD NOT
- *                                      be used for notices. It is subject to
- *                                      removal without notice.
- * @property {boolean} isDismissible    Whether the notice can be dismissed by
- *                                      user. Defaults to `true`.
- * @property {string}  type             Type of notice, one of `default`,
- *                                      or `snackbar`. Defaults to `default`.
- * @property {boolean} speak            Whether the notice content should be
- *                                      announced to screen readers. Defaults to
- *                                      `true`.
- * @property {WPNoticeAction[]} actions User actions to present with notice.
+ * @property {string}           id             Unique identifier of notice.
+ * @property {string}           status         Status of notice, one of `success`,
+ *                                             `info`, `error`, or `warning`. Defaults
+ *                                             to `info`.
+ * @property {string}           content        Notice message.
+ * @property {string}           spokenMessage  Audibly announced message text used by
+ *                                             assistive technologies.
+ * @property {string}           __unstableHTML Notice message as raw HTML. Intended to
+ *                                             serve primarily for compatibility of
+ *                                             server-rendered notices, and SHOULD NOT
+ *                                             be used for notices. It is subject to
+ *                                             removal without notice.
+ * @property {boolean}          isDismissible  Whether the notice can be dismissed by
+ *                                             user. Defaults to `true`.
+ * @property {string}           type           Type of notice, one of `default`,
+ *                                             or `snackbar`. Defaults to `default`.
+ * @property {boolean}          speak          Whether the notice content should be
+ *                                             announced to screen readers. Defaults to
+ *                                             `true`.
+ * @property {WPNoticeAction[]} actions        User actions to present with notice.
  *
  */
 
@@ -431,7 +440,8 @@ const DEFAULT_NOTICES = [];
  * @return {WPNotice[]} Array of notices.
  */
 
-function getNotices(state, context = DEFAULT_CONTEXT) {
+function getNotices(state) {
+  let context = arguments.length > 1 && arguments[1] !== undefined ? arguments[1] : DEFAULT_CONTEXT;
   return state[context] || DEFAULT_NOTICES;
 }
 

@@ -798,7 +798,7 @@ p.pagenav {
 }
 
 .row-actions {
-	color: #dcdcde;
+	color: #a7aaad;
 	font-size: 13px;
 	padding: 2px 0 0;
 	position: relative;
@@ -1255,6 +1255,11 @@ ul.cat-checklist {
 	padding: 0 0 5px;
 }
 
+.plugins .row-actions {
+	white-space: normal;
+	min-width: 12em;
+}
+
 .plugins .update .second,
 .plugins .update .row-actions,
 .plugins .updated .second,
@@ -1553,7 +1558,7 @@ div.action-links,
 }
 
 .plugin-card .notice {
-	margin: 20px 20px 0 20px;
+	margin: 20px 20px 0;
 }
 
 .plugin-icon {
@@ -1644,7 +1649,7 @@ div.action-links,
 	}
 
 	.tablenav.top {
-		margin: 20px 0 5px 0;
+		margin: 20px 0 5px;
 	}
 
 	.tablenav.bottom {

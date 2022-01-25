@@ -150,7 +150,7 @@ function download(fileName, content, contentType) {
 /**
  * Reads the textual content of the given file.
  *
- * @param  {File} file        File.
+ * @param {File} file File.
  * @return {Promise<string>}  Content of the file.
  */
 
@@ -230,7 +230,7 @@ var external_wp_compose_ = __webpack_require__("K9lf");
 /**
  * Import a reusable block from a JSON file.
  *
- * @param {File}     file File.
+ * @param {File} file File.
  * @return {Promise} Promise returning the imported reusable block.
  */
 
@@ -390,7 +390,7 @@ class import_form_ImportForm extends external_wp_element_["Component"] {
       type: "submit",
       isBusy: isLoading,
       disabled: !file || isLoading,
-      isSecondary: true,
+      variant: "secondary",
       className: "list-reusable-blocks-import-form__button"
     }, Object(external_wp_i18n_["_x"])('Import', 'button label')));
   }
@@ -418,25 +418,32 @@ class import_form_ImportForm extends external_wp_element_["Component"] {
 
 
 
-function ImportDropdown({
-  onUpload
-}) {
+function ImportDropdown(_ref) {
+  let {
+    onUpload
+  } = _ref;
   return Object(external_wp_element_["createElement"])(external_wp_components_["Dropdown"], {
     position: "bottom right",
     contentClassName: "list-reusable-blocks-import-dropdown__content",
-    renderToggle: ({
-      isOpen,
-      onToggle
-    }) => Object(external_wp_element_["createElement"])(external_wp_components_["Button"], {
-      "aria-expanded": isOpen,
-      onClick: onToggle,
-      isPrimary: true
-    }, Object(external_wp_i18n_["__"])('Import from JSON')),
-    renderContent: ({
-      onClose
-    }) => Object(external_wp_element_["createElement"])(import_form, {
-      onUpload: Object(external_lodash_["flow"])(onClose, onUpload)
-    })
+    renderToggle: _ref2 => {
+      let {
+        isOpen,
+        onToggle
+      } = _ref2;
+      return Object(external_wp_element_["createElement"])(external_wp_components_["Button"], {
+        "aria-expanded": isOpen,
+        onClick: onToggle,
+        variant: "primary"
+      }, Object(external_wp_i18n_["__"])('Import from JSON'));
+    },
+    renderContent: _ref3 => {
+      let {
+        onClose
+      } = _ref3;
+      return Object(external_wp_element_["createElement"])(import_form, {
+        onUpload: Object(external_lodash_["flow"])(onClose, onUpload)
+      });
+    }
   });
 }
 
