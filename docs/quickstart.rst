@@ -21,20 +21,40 @@ Prerequisites
 
 Before using Chassis, this is how your system should be set up:
 
+MacOS Intel chips
+-----------------
+
+* Install `VirtualBox`_
+* Install `Vagrant`_
+
+MacOS M1 chips
+--------------
+
+* Install `Parallels Desktop for Mac Pro Edition`_
+* Install `Vagrant`_
+* Install the Vagrant Parallels plugin::
+
+    $ vagrant plugin install vagrant-parallels
+* Change the `Base Box`_ mode to be ``_mode: base`` in one of your `configuration`_ files.
+
+Windows
+-------
 * Install `VirtualBox`_
 * Install `Vagrant`_
 * Make sure you have Zeroconf networking (Bonjour) set up:
 
-  * **OS X**: You already have Bonjour available.
+If you have Bonjour Print Services or Creative Cloud installed, you already have Bonjour.
 
-  * **Windows**: If you have Bonjour Print Services or Creative
-    Cloud installed, you already have Bonjour.
+Otherwise, you need to install Bonjour on your system. The easiest way to
+do this is to `install Bonjour Print Services`_. If you'd prefer not to do this, you
+can follow `these instructions <Bonjour_>`_ to install just Bonjour.
 
-    Otherwise, you need to install Bonjour on your system. The easiest way to
-    do this is to `install Bonjour Print Services`_. If you'd prefer not to do this, you
-    can follow `these instructions <Bonjour_>`_ to install just Bonjour.
-
-  * **Linux**: You need to have Avahi installed on your system.
+Linux
+-----
+* Install `VirtualBox`_
+* Install `Vagrant`_
+* Make sure you have Zeroconf networking (Bonjour) set up:
+* You need to have Avahi installed on your system.
 
     For Ubuntu::
 
@@ -44,6 +64,9 @@ Before using Chassis, this is how your system should be set up:
 .. _Vagrant: http://www.vagrantup.com/downloads.html
 .. _install Bonjour Print Services: https://support.apple.com/kb/DL999?viewlocale=en_US&locale=en_US
 .. _Bonjour: https://bonjour.en.softonic.com/
+.. _Parallels Desktop for Mac Pro Edition: https://buy.parallels.com/329/purl-pd17f-pro1y
+.. _Base Box: https://docs.chassis.io/en/latest/config/#base-box-mode
+.. _configuration: https://docs.chassis.io/en/latest/config/
 
 
 Installing
