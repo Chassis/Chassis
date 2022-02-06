@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
 		config.vm.define CONF['machine_name']
 	end
 
-	 config.trigger.before [ :provision, :up, :halt ] do |trigger|
+	config.trigger.before [ :provision, :up, :halt ] do |trigger|
 		deprecated_extensions = ''
 		if CONF["version"] >= 3 && ! CONF["extensions"].nil?
 			# Warn about old extensions.
@@ -73,7 +73,7 @@ Vagrant.configure("2") do |config|
 		if ! CONF['hosts'][0].include?('.local')
 			trigger.info = "\n\e[33mWARNING: The hosts URL does not contain .local.\nYou will need to edit your hosts file for this URL to resolve.\e[0m"
 		end
-	 end
+	end
 
 	# Set up synced folders.
 	synced_folders = CONF["synced_folders"].clone
@@ -123,6 +123,18 @@ Vagrant.configure("2") do |config|
 		config.vm.box = "bento/ubuntu-20.04"
 	end
 
+	# The Parallels Provider uses a different naming scheme.
+	config.vm.provider :parallels do |_v, override|
+		unless CONF['_mode'] == "normal"
+			# Vagrant currently runs under Rosetta on M1 devices. As a result,
+			# this seems to be the most reliable way to detect whether or not we're
+			# running under ARM64.
+			if Etc.uname[:version].include? 'ARM64'
+				override.vm.box = 'mpasternak/focal64-arm'
+			end
+		end
+	end
+
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
 
@@ -141,7 +153,6 @@ Vagrant.configure("2") do |config|
 		config.vm.network :private_network, ip: CONF['ip']
 	end
 	config.vm.hostname = CONF['hosts'][0]
-
 	# Before any other provisioning, ensure that we're up-to-date
 	preprovision_args = [
 		CONF['apt_mirror'].to_s,
@@ -215,6 +226,13 @@ Vagrant.configure("2") do |config|
 		# Automatically use bindfs if we can.
 		if CONF['nfs'] && Vagrant.has_plugin?("vagrant-bindfs")
 			config.bindfs.bind_folder to, to
+		end
+	end
+
+	config.vm.provider :parallels do |_v, override|
+		mount_opts = CONF['nfs'] ? [] : ["share"]
+		synced_folders.each do |from, to|
+			override.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs'], :group => 'www-data', :owner => 'vagrant'
 		end
 	end
 
