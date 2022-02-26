@@ -85,10 +85,10 @@ release notes:
 1. PHP - ``php -v``
 2. software-properties-common - ``apt policy software-properties-common``
 3. curl - ``curl --version``
-4. pip - ``pip -V`
+4. pip - ``pip -V``
 5. avahi-daemon - ``avahi-daemon -V``
 6. puppet - ``puppet --version``
-7. ruby - ``ruby -v`
+7. ruby - ``ruby -v``
 
 .. _Chassis base boxes: https://app.vagrantup.com/chassis
 .. _SEM Versioning 2.0.0: https://semver.org/
