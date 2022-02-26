@@ -144,5 +144,15 @@ nfs: No
 #
 # Set this to `base` to build your own base box.
 
-# Values: normal, base
+# Values: normal, base, custom
 _mode: normal
+
+# Custom Box
+#
+# You can use this setting to use any box that's available on Vagrant Cloud.
+# This is ideal if you wish to build your own custom Chassis box.
+# https://github.com/Chassis/Chassis/issues/827
+#
+# To use this you need to set Base box mode to _mode: custom
+#
+# box: bento/ubuntu-21.10

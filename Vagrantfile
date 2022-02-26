@@ -118,6 +118,8 @@ Vagrant.configure("2") do |config|
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
 		config.vm.box_version = ">= 4.0, < 5.0"
+	elsif CONF['_mode'] == "custom"
+		config.vm.box = CONF['box']
 	else
 		# We <3 Ubuntu LTS
 		config.vm.box = "bento/ubuntu-20.04"
