@@ -51,7 +51,7 @@ To create a customised base box for your project you could have create a `config
     # Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
     upload_size: 512M
 
-    # Values: normal, base
+    # Values: normal, base, custom
     _mode: base
 
     extensions:
@@ -59,6 +59,15 @@ To create a customised base box for your project you could have create a `config
         - chassis/xdebug
         - chassis/tester
         - chassis/sequelpro
+
+If you have your own box in Vagrant Cloud or you wish to use another vendors Vagrant Cloud box then you can use a
+`custom` box in your `config.local.yaml`::
+
+    # Values: normal, base, custom
+    _mode: custom
+
+    # The box you'd like to use.
+    box: bento/ubuntu-21.10
 
 wp-config.php
 -------------
