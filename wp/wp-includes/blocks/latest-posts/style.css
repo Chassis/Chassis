@@ -153,21 +153,16 @@
 .wp-block-latest-posts__featured-image.alignleft {
   /*rtl:ignore*/
   margin-right: 1em;
+  /*rtl:ignore*/
+  float: left;
 }
 .wp-block-latest-posts__featured-image.alignright {
   /*rtl:ignore*/
   margin-left: 1em;
+  /*rtl:ignore*/
+  float: right;
 }
 .wp-block-latest-posts__featured-image.aligncenter {
   margin-bottom: 1em;
   text-align: center;
-}
-
-.block-editor-image-alignment-control__row .components-base-control__field {
-  display: flex;
-  justify-content: space-between;
-  align-items: center;
-}
-.block-editor-image-alignment-control__row .components-base-control__field .components-base-control__label {
-  margin-bottom: 0;
 }

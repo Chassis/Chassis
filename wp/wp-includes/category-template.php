@@ -103,12 +103,12 @@ function get_the_category( $post_id = false ) {
  *
  * @since 0.71
  *
- * @param int $cat_ID Category ID.
+ * @param int $cat_id Category ID.
  * @return string|WP_Error Category name on success, WP_Error on failure.
  */
-function get_the_category_by_ID( $cat_ID ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
-	$cat_ID   = (int) $cat_ID;
-	$category = get_term( $cat_ID );
+function get_the_category_by_ID( $cat_id ) { // phpcs:ignore WordPress.NamingConventions.ValidFunctionName.FunctionNameInvalid
+	$cat_id   = (int) $cat_id;
+	$category = get_term( $cat_id );
 
 	if ( is_wp_error( $category ) ) {
 		return $category;
@@ -331,6 +331,8 @@ function category_description( $category = 0 ) {
  *                                           Default false (create select element even if no categories are found).
  *     @type bool         $required          Whether the `<select>` element should have the HTML5 'required' attribute.
  *                                           Default false.
+ *     @type Walker       $walker            Walker object to use to build the output. Default empty which results in a
+ *                                           Walker_CategoryDropdown instance being used.
  * }
  * @return string HTML dropdown list of categories.
  */
@@ -518,6 +520,8 @@ function wp_dropdown_categories( $args = '' ) {
  *                                               to disable. Default 'Categories'.
  *     @type bool|int     $use_desc_for_title    Whether to use the category description as the title attribute.
  *                                               Accepts 0, 1, or their bool equivalents. Default 1.
+ *     @type Walker       $walker                Walker object to use to build the output. Default empty which results
+ *                                               in a Walker_Category instance being used.
  * }
  * @return void|string|false Void if 'echo' argument is true, HTML list of categories if 'echo' is false.
  *                           False if the taxonomy does not exist.
