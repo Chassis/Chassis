@@ -44,7 +44,10 @@ class chassis::php (
 		"${php_package}-common",
 		"${php_package}-xml",
 		"${php_package}-mbstring",
-		"${php_package}-zip"
+		"${php_package}-zip",
+		"${php_package}-json",
+		"${php_package}-opcache",
+		"${php_package}-readline"
 	]
 
 	if ! defined( Package["${php_package}-cli"] ) {
