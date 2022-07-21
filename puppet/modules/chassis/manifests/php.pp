@@ -38,19 +38,33 @@ class chassis::php (
 	$php_package = "php${short_ver}"
 	$php_dir = "php/${short_ver}"
 
-	# Prepare our array of PHP packages
+	# Prepare our array of PHP common packages
 	$common_packages = [
 		"${php_package}-fpm",
 		"${php_package}-common",
 		"${php_package}-xml",
 		"${php_package}-mbstring",
-		"${php_package}-zip"
+		"${php_package}-zip",
+		"${php_package}-opcache",
+		"${php_package}-readline"
 	]
 
+	# Merge in php-json if the version is less than 8.0.
+	# 8.0 and upwards comes bundled with php-json
+	if ( $short_ver in [ '7.4', '7.3', '7.2', '7.1', '7.0', '5.6' ] ) {
+		$packages = concat( $common_packages, [ "${php_package}-json" ] )
+	}
+
+	# Some of the Chassis extensions define php-cli so let's check for that to prevent failures.
 	if ! defined( Package["${php_package}-cli"] ) {
-		$packages = concat( $common_packages, [ "${php_package}-cli" ] )
+		# Because we can't reassign variables in Puppet we have to do some more logic to come up with the core php packages.
+		if defined('$packages') {
+			$core_packages = concat($packages, [ "${php_package}-cli" ])
+		} else {
+			$core_packages = concat($common_packages, [ "${php_package}-cli" ])
+		}
 	} else {
-		$packages = $common_packages
+		$core_packages = $packages
 	}
 
 	$prefixed_extensions = prefix( $extensions, "${php_package}-" )
@@ -62,8 +76,8 @@ class chassis::php (
 	$php_versions_to_remove = delete( $php_versions, $short_ver )
 
 	# Hold the packages at the necessary version.
-	apt::pin { $packages:
-		packages => $packages,
+	apt::pin { $core_packages:
+		packages => $core_packages,
 		version  => $package_version,
 		priority => 1001,
 	}
@@ -74,13 +88,13 @@ class chassis::php (
 	}
 
 	# Grab the packages at the given versions
-	package { $packages:
+	package { $core_packages:
 		# Hold at the given version
 		ensure          => 'latest',
 		install_options => '--force-yes',
 		notify          => Service["${php_package}-fpm"],
 		require         => [
-			Apt::Pin[$packages],
+			Apt::Pin[$core_packages],
 			Apt::Ppa['ppa:ondrej/php'],
 			Apt::Ppa['ppa:ondrej/php-qa'],
 			Class['apt::update'],
@@ -113,7 +127,7 @@ class chassis::php (
 		install_options => '--force-yes',
 
 		require         => [
-			Package[ $packages ],
+			Package[ $core_packages ],
 			Apt::Pin[ $prefixed_extensions ]
 		]
 	}
