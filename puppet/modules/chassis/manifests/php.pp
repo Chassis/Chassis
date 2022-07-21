@@ -57,7 +57,12 @@ class chassis::php (
 
 	# Some of the Chassis extensions define php-cli so let's check for that to prevent failures.
 	if ! defined( Package["${php_package}-cli"] ) {
-		$core_packages = concat( $packages, [ "${php_package}-cli" ] )
+		# Because we can't reassign variables in Puppet we have to do some more logic to come up with the core php packages.
+		if defined('$packages') {
+			$core_packages = concat($packages, [ "${php_package}-cli" ])
+		} else {
+			$core_packages = concat($common_packages, [ "${php_package}-cli" ])
+		}
 	} else {
 		$core_packages = $packages
 	}
