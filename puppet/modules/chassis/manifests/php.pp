@@ -57,7 +57,7 @@ class chassis::php (
 
 	# Some of the Chassis extensions define php-cli so let's check for that to prevent failures.
 	if ! defined( Package["${php_package}-cli"] ) {
-		$core_packages = concat( $common_packages, [ "${php_package}-cli" ] )
+		$core_packages = concat( $packages, [ "${php_package}-cli" ] )
 	} else {
 		$core_packages = $packages
 	}
