@@ -3,7 +3,7 @@ class chassis::hosts(
 	$aliases = [],
 	$subdomains = false,
 ) {
-	package { [ 'avahi-daemon', 'python3-pip', 'python-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
+	package { [ 'avahi-daemon', 'python3-pip', 'python3-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
 		ensure => latest,
 	}
 
@@ -37,7 +37,7 @@ class chassis::hosts(
 		enable  => true,
 		require => [
 			Package[ 'avahi-daemon' ],
-			Package[ 'python-avahi' ],
+			Package[ 'python3-avahi' ],
 			File[ '/lib/systemd/system/chassis-hosts.service' ],
 			Exec['restart-avahi']
 		],

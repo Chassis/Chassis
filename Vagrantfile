@@ -122,7 +122,7 @@ Vagrant.configure("2") do |config|
 		config.vm.box = CONF['box']
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-20.04"
+		config.vm.box = "bento/ubuntu-22.04"
 	end
 
 	# The Parallels Provider uses a different naming scheme.
