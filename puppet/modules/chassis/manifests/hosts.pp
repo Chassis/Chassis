@@ -3,8 +3,39 @@ class chassis::hosts(
 	$aliases = [],
 	$subdomains = false,
 ) {
-	package { [ 'avahi-daemon', 'python3-pip', 'python-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
-		ensure => latest,
+
+	# Jammy Jellyfish configurations.
+	case $::lsbdistcodename {
+		'jammy': {
+			# Jammy Jellyfish has access to the python3-avahi package so install it.
+			package { 'python3-avahi':
+				ensure  => latest,
+			}
+			# Enable ssh-rsa on Jammy Jellyfish
+			file { "/etc/ssh/sshd_config.d/ssh-rsa.conf":
+				content => template('chassis/ssh-rsa.conf.erb'),
+				notify  => Exec['restart-ssh']
+			}
+			# Restart ssh.
+			exec {'restart-ssh':
+				path        => '/bin',
+				command     => 'systemctl restart ssh',
+			}
+		}
+	  default: {
+			# Add a PPA so we can ensure we install python3-avahi.
+			apt::ppa { 'ppa:yavdr/experimental-main':
+				require => Class['apt']
+			}
+			package { 'python3-avahi':
+				ensure  => latest,
+				require => Apt::Ppa['ppa:yavdr/experimental-main']
+			}
+	  }
+	}
+
+	package { [ 'avahi-daemon', 'python3-pip', 'pkg-config', 'libdbus-glib-1-dev' ]:
+		ensure  => latest
 	}
 
 	ensure_packages( ['mdns-publisher'], {
@@ -37,11 +68,10 @@ class chassis::hosts(
 		enable  => true,
 		require => [
 			Package[ 'avahi-daemon' ],
-			Package[ 'python-avahi' ],
+			Package[ 'python3-avahi' ],
 			File[ '/lib/systemd/system/chassis-hosts.service' ],
 			Exec['restart-avahi']
 		],
 	}
-
 
 }
