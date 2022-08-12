@@ -10,6 +10,16 @@ class chassis::hosts(
 			package { 'python3-avahi':
 				ensure  => latest,
 			}
+			exec {'restart-ssh':
+				path        => '/bin',
+				command     => 'systemctl restart ssh',
+			}
+
+			# Enable ssh-rsa on Jammy Jellyfish
+			file { "/etc/ssh/sshd_config.d/ssh-rsa.conf":
+				content => template('chassis/ssh-rsa.conf.erb'),
+				notify  => Exec['restart-ssh']
+			}
 		}
 	  default: {
 			# Add a PPA so we can ensure we install python3-avahi.
