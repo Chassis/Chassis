@@ -4,14 +4,27 @@ class chassis::hosts(
 	$subdomains = false,
 ) {
 
-	# Add a PPA so we can ensure we install python3-avahi.
-	apt::ppa { 'ppa:yavdr/experimental-main':
-		require => Class['apt']
+	# Jammy Jellyfish has access to the python3-avahi package but the older distros don't.
+	case $::lsbdistcodename {
+		'jammy': {
+			package { 'python3-avahi':
+				ensure  => latest,
+			}
+		}
+	  default: {
+			# Add a PPA so we can ensure we install python3-avahi.
+			apt::ppa { 'ppa:yavdr/experimental-main':
+				require => Class['apt']
+			}
+			package { 'python3-avahi':
+				ensure  => latest,
+				require => Apt::Ppa['ppa:yavdr/experimental-main']
+			}
+	  }
 	}
 
-	package { [ 'avahi-daemon', 'python3-pip', 'python3-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
-		ensure  => latest,
-		require => Apt::Ppa['ppa:yavdr/experimental-main'],
+	package { [ 'avahi-daemon', 'python3-pip', 'pkg-config', 'libdbus-glib-1-dev' ]:
+		ensure  => latest
 	}
 
 	ensure_packages( ['mdns-publisher'], {
