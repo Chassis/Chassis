@@ -38,7 +38,11 @@ if [[ ! -f /etc/chassis-updated ]]; then
 	# Update apt
 	sudo apt-get update
 
+	# Install puppet
 	sudo apt-get -q -y install puppet
+
+	# Remove any existing SSH keys to ensure that vagrant commands work on Jammy Jellyfish as well.
+	sudo ssh-add -D
 
 	touch /etc/chassis-updated
 fi

@@ -140,10 +140,6 @@ Vagrant.configure("2") do |config|
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
 
-	# For Ubuntu 22.04 (Jammy Jellyfish) we need these so we can run `vagrant provision` correctly.
-	config.ssh.username = "vagrant"
-	config.ssh.password = "vagrant"
-
 	# Disable updating of Virtual Box Guest Additions for faster provisioning.
 	if Vagrant.has_plugin?("vagrant-vbguest")
 		config.vbguest.auto_update = false
