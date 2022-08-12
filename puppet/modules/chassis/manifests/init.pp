@@ -29,6 +29,17 @@ class chassis {
 		command     => 'systemctl restart avahi-daemon.service',
 	}
 
+	exec {'restart-ssh':
+		path        => '/bin',
+		command     => 'systemctl restart ssh',
+	}
+
+	# Enable ssh-rsa on Jammy Jellyfish
+	file { "/etc/ssh/sshd_config.d/ssh-rsa.conf":
+		content => template('chassis/ssh-rsa.conf.erb'),
+		notify  => Exec['restart-ssh']
+	}
+
 	service { 'nginx':
 		ensure     => running,
 		enable     => true,
