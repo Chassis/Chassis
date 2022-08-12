@@ -4,21 +4,22 @@ class chassis::hosts(
 	$subdomains = false,
 ) {
 
-	# Jammy Jellyfish has access to the python3-avahi package but the older distros don't.
+	# Jammy Jellyfish configurations.
 	case $::lsbdistcodename {
 		'jammy': {
+			# Jammy Jellyfish has access to the python3-avahi package so install it.
 			package { 'python3-avahi':
 				ensure  => latest,
 			}
-			exec {'restart-ssh':
-				path        => '/bin',
-				command     => 'systemctl restart ssh',
-			}
-
 			# Enable ssh-rsa on Jammy Jellyfish
 			file { "/etc/ssh/sshd_config.d/ssh-rsa.conf":
 				content => template('chassis/ssh-rsa.conf.erb'),
 				notify  => Exec['restart-ssh']
+			}
+			# Restart ssh.
+			exec {'restart-ssh':
+				path        => '/bin',
+				command     => 'systemctl restart ssh',
 			}
 		}
 	  default: {
@@ -72,6 +73,5 @@ class chassis::hosts(
 			Exec['restart-avahi']
 		],
 	}
-
 
 }
