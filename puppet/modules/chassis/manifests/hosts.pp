@@ -3,8 +3,15 @@ class chassis::hosts(
 	$aliases = [],
 	$subdomains = false,
 ) {
+
+	# Add a PPA so we can ensure we install python3-avahi.
+	apt::ppa { 'ppa:yavdr/experimental-main':
+		require => Class['apt']
+	}
+
 	package { [ 'avahi-daemon', 'python3-pip', 'python3-avahi', 'pkg-config', 'libdbus-glib-1-dev' ]:
-		ensure => latest,
+		ensure  => latest,
+		require => Apt::Ppa['ppa:yavdr/experimental-main'],
 	}
 
 	ensure_packages( ['mdns-publisher'], {
