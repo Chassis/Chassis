@@ -12,6 +12,7 @@
  *
  * @since 5.5.0
  */
+#[AllowDynamicProperties]
 final class WP_Block_Patterns_Registry {
 	/**
 	 * Registered block patterns array.
@@ -104,6 +105,7 @@ final class WP_Block_Patterns_Registry {
 			$pattern_properties,
 			array( 'name' => $pattern_name )
 		);
+
 		$this->registered_patterns[ $pattern_name ] = $pattern;
 
 		// If the pattern is registered inside an action other than `init`, store it
