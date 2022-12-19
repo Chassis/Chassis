@@ -265,6 +265,31 @@ options::
 
 (Again, don't forget to include all lines, and use spaces for indentation.)
 
+---------------------
+MariaDB Configuration
+---------------------
+
+.. py:data:: mysql
+
+You can change the default database flavour to be MariaDB by overridding the default
+MySQL settings::
+
+   mysql:
+       package_name:
+           mariadb-server
+       mysqld:
+           log-error:
+               /var/log/mysql/mariadb.log
+           pid-file:
+               /var/run/mysqld/mysqld.pid
+           ssl-disable:
+               true
+       mysqld_safe:
+           log-error:
+               /var/log/mysql/mariadb.log
+
+(Again, don't forget to include all lines, and use spaces for indentation.)
+
 -----------------
 Custom Host Names
 -----------------
