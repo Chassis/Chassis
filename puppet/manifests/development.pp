@@ -41,16 +41,24 @@ $mysql_defaults = {
 		'collation-server'              => $config[database][collation],
 		'character-set-server'          => $config[database][charset],
 		'default_authentication_plugin' => 'mysql_native_password'
-	}
+	},
 }
 
-# Allow MySql options to be added or overridden.
+# Allow MySQL options to be added or overridden.
 $mysql_overrides = merge( $mysql_defaults, $config['mysql'] )
+
+# Allow MySQL package name to be overridden so we can easily support MariaDB.
+if $config['mysql'] and $config['mysql']['package_name'] != undef {
+	$mysql_package_name_overrides = $config['mysql']['package_name']
+} else {
+	$mysql_package_name_overrides = 'mysql-server'
+}
 
 class { 'mysql::server':
 	root_password    => 'password',
 	restart          => true,
-	override_options => $mysql_overrides
+	override_options => $mysql_overrides,
+	package_name     => $mysql_package_name_overrides
 }
 
 class { 'chassis':
