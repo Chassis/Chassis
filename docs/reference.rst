@@ -111,6 +111,25 @@ There are three logs that we synchronise for you:
 2. ``logs/nginx/error.log`` - This shows any errors that have occurred.
 3. ``logs/nginx/access.log`` = This shows details of any requests that Nginx has served.
 
+Vagrant gets stuck on `default: SSH auth method: private key` on Windows machines
+---------------------------------------------------------------------------------
+::
+
+  $ vagrant up
+  default: SSH auth method: private key
+
+To resolve this issue you'll need to do the following:
+
+1. Click the Search icon.
+2. Type Turn Windows features on or off in the search field.
+3. Click Open.
+      .. image:: _static/windows_features_1.jpeg
+4. Uncheck both Virtual Machine Platform and Windows Hypervisor Platform.
+      .. image:: _static/windows_features_2.jpeg
+5. Click OK and restart your computer.
+6. Change directories back to your Chassis project and run ``vagrant up``.
+
+
 Character encoding on Windows machines
 --------------------------------------
 

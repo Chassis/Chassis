@@ -49,6 +49,8 @@ Otherwise, you need to install Bonjour on your system. The easiest way to
 do this is to `install Bonjour Print Services`_. If you'd prefer not to do this, you
 can follow `these instructions <Bonjour_>`_ to install just Bonjour.
 
+We also have some additional `troubleshooting information`_.
+
 Linux
 -----
 * Install `VirtualBox`_
@@ -67,6 +69,7 @@ Linux
 .. _Parallels Desktop for Mac Pro Edition: https://buy.parallels.com/329/purl-pd17f-pro1y
 .. _Base Box: https://docs.chassis.io/en/latest/config/#base-box-mode
 .. _configuration: https://docs.chassis.io/en/latest/config/
+.. _troubleshooting information: https://docs.chassis.io/en/latest/reference/#troubleshooting
 
 
 Installing
@@ -170,6 +173,6 @@ If you ever want to update Chassis, here's a quick two-step procedure::
 
    # Update submodules (Puppet modules)
    git submodule update --init
-   
+
    # Update WP
    git pull
