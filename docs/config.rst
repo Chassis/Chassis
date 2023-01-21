@@ -269,7 +269,7 @@ options::
 MariaDB Configuration
 ---------------------
 
-.. py:data:: mysql
+.. py:data:: mariadb
 
 You can change the default database flavour to be MariaDB by overridding the default
 MySQL settings::
