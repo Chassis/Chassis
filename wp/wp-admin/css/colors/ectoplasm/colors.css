@@ -3,6 +3,10 @@
  * Button mixin- creates a button effect with correct
  * highlights/shadows, based on a base color.
  */
+/**
+ * This function name uses British English to maintain backward compatibility, as developers
+ * may use the function in their own admin CSS files. See #56811.
+ */
 body {
   background: #f1f1f1;
 }
@@ -707,14 +711,14 @@ div#wp-responsive-toggle a:before {
 
 /* Welcome Panel */
 .welcome-panel {
-  background-color: #523f6d;
+  background-color: #413256;
 }
 
-.welcome-panel-header-image circle {
-  stroke: rgba(255, 255, 255, 0.5);
+.welcome-panel-header-image .curve,
+.welcome-panel-header-image .dot {
   fill: #523f6d;
 }
 
 [class*=welcome-panel-icon] {
-  background-color: rgba(255, 255, 255, 0.5);
+  background-color: #523f6d;
 }
