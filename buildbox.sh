@@ -17,19 +17,19 @@ if [ ! $VM_STATUS ]; then
 fi
 
 # Delete the chassis-provisioned and any custom config files as we don't want that in the base box.
-/usr/local/bin/vagrant ssh -- -t 'sudo apt-get update; sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
+/usr/local/bin/vagrant ssh -- -c 'cd /home/vagrant; sudo apt-get update; sudo rm -f /etc/chassis-provisioned; sudo rm -f /vagrant/content/config.local.yaml; sudo rm -f /vagrant/content/config.yaml; '
 
 echo "\033[0;32mAny custom .yaml files have now been deleted.\033[0m"
 
 # Clear any logs and errors that might be on the box.
 
-/usr/local/bin/vagrant ssh -- -t 'sudo rm -f /etc/chassis-provisioned; sudo rm -f /var/log/php/*; sudo rm -f /var/log/nginx/*;'
+/usr/local/bin/vagrant ssh -- -c 'cd /home/vagrant; sudo rm -f /etc/chassis-provisioned; sudo rm -f /var/log/php/*; sudo rm -f /var/log/nginx/*;'
 
 echo "\033[0;32mAny PHP and Nginx logs have been deleted.\033[0m"
 
 # Delete the WordPress database.
 
-/usr/local/bin/vagrant ssh -- -t 'wp db drop --yes'
+/usr/local/bin/vagrant ssh -- -c 'cd /home/vagrant; wp db drop --yes'
 
 echo "\033[0;32mThe WordPress database has been successfully dropped.\033[0m"
 
@@ -39,13 +39,13 @@ echo "\033[0;32mWe are now ready to halt the VM and generate the base box.\033[0
 
 echo "\033[0;32mInitialising box cleanup...\033[0m"
 
-/usr/local/bin/vagrant ssh -- -t 'sudo sh /vagrant/cleanup.sh'
+/usr/local/bin/vagrant ssh -- -c 'cd /home/vagrant; sudo sh /vagrant/cleanup.sh'
 
 echo "\033[0;32mBox cleanup completed.\033[0m"
 
 echo "\033[0;32mInitialising box minimisation...\033[0m"
 
-/usr/local/bin/vagrant ssh -- -t 'sudo sh /vagrant/minimise.sh'
+/usr/local/bin/vagrant ssh -- -c 'cd /home/vagrant; sudo sh /vagrant/minimise.sh'
 
 echo "\033[0;32mBox minimisation completed.\033[0m"
 
