@@ -176,3 +176,21 @@ If you ever want to update Chassis, here's a quick two-step procedure::
 
    # Update WP
    git pull
+
+
+Reinstall
+_________
+
+During the development of plugins, it's often necessary to fill the WordPress
+databases with a bunch of test content, often using the `wp * generate` commands.
+You will often want to reset your WordPress install back to a clean state and not
+want to do a full `vagrant destroy -y && vagrant up` to do so. We have made a script
+that you can run to do this for you.
+
+To run the script, simply run the following command::
+
+	$ vagrant ssh
+	$ sh reinstall.sh
+	$ Drop all WordPress tables and reinstall? [y/N] y
+
+This will drop all WordPress tables and reinstall WordPress.
