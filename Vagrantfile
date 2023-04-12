@@ -237,7 +237,7 @@ Vagrant.configure("2") do |config|
 	end
 
 	# Change directories to /vagrant and use the correct shell.
-	if CONF['extensions'] and CONF['extensions'].grep(/fish/)
+	if CONF['extensions'] and CONF['extensions'].include?("fish") or CONF['extensions'].include?("chassis/fish")
 		config.ssh.extra_args = ["-t", "cd /vagrant; fish --login"]
 	else
 		config.ssh.extra_args = ["-t", "cd /vagrant; bash --login"]
