@@ -25,6 +25,11 @@ DESTROY=$(ask "Drop all WordPress tables and reinstall?")
 
 if [ ! -z $DESTROY ]; then
 	wp db clean --yes
+	cd extensions
+	EXTENSIONS="/vagrant/puppet/modules:"
+	for d in * ; do
+	EXTENSIONS="${EXTENSIONS}/vagrant/extensions/${d}/modules:"
+	done
 	# Reinstall WordPress with Puppet
-	sudo puppet apply --basemodulepath /vagrant/puppet/modules:/vagrant/extensions/example/modules --confdir /vagrant/puppet /vagrant/puppet/manifests
+	sudo puppet apply --basemodulepath $EXTENSIONS --confdir /vagrant/puppet /vagrant/puppet/manifests
 fi
