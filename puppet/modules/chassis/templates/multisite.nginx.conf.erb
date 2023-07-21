@@ -1,7 +1,7 @@
 server {
 	listen 80;
 	listen [::]:80;
-	server_name <%= @server_name %> *.ngrok.io;
+	server_name <%= @server_name %> *.ngrok.io *.ngrok-free.app;
 	root <%= @location %>;
 	client_max_body_size <%= @upload_size %>;
 
