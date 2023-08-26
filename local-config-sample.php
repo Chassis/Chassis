@@ -10,3 +10,6 @@ define( 'AUTOMATIC_UPDATER_DISABLED', true );
 
 // You'll probably want debug logging during development
 define( 'WP_DEBUG_LOG', true );
+
+// You'll probably want development mode.
+define( 'WP_DEVELOPMENT_MODE', 'all' );
