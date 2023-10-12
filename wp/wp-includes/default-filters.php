@@ -533,6 +533,9 @@ add_action( 'admin_enqueue_scripts', '_wp_customize_loader_settings' );
 add_action( 'delete_attachment', '_delete_attachment_theme_mod' );
 add_action( 'transition_post_status', '_wp_keep_alive_customize_changeset_dependent_auto_drafts', 20, 3 );
 
+// Block Theme Previews.
+add_action( 'plugins_loaded', 'wp_initialize_theme_preview_hooks', 1 );
+
 // Calendar widget cache.
 add_action( 'save_post', 'delete_get_calendar_cache' );
 add_action( 'delete_post', 'delete_get_calendar_cache' );
@@ -611,6 +614,15 @@ add_filter( 'style_loader_src', 'wp_style_loader_src', 10, 2 );
 
 add_action( 'wp_head', 'wp_maybe_inline_styles', 1 ); // Run for styles enqueued in <head>.
 add_action( 'wp_footer', 'wp_maybe_inline_styles', 1 ); // Run for late-loaded styles in the footer.
+
+/*
+ * Block specific actions and filters.
+ */
+
+// Footnotes Block.
+add_action( 'init', '_wp_footnotes_kses_init' );
+add_action( 'set_current_user', '_wp_footnotes_kses_init' );
+add_filter( 'force_filtered_html_on_import', '_wp_footnotes_force_filtered_html_on_import_filter', 999 );
 
 /*
  * Disable "Post Attributes" for wp_navigation post type. The attributes are
