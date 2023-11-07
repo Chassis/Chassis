@@ -467,22 +467,6 @@ class WP_REST_Server {
 		$this->set_status( $code );
 
 		/**
-		 * Filters whether the REST API request has already been served.
-		 *
-		 * Allow sending the request manually - by returning true, the API result
-		 * will not be sent to the client.
-		 *
-		 * @since 4.4.0
-		 *
-		 * @param bool             $served  Whether the request has already been served.
-		 *                                           Default false.
-		 * @param WP_HTTP_Response $result  Result to send to the client. Usually a `WP_REST_Response`.
-		 * @param WP_REST_Request  $request Request used to generate the response.
-		 * @param WP_REST_Server   $server  Server instance.
-		 */
-		$served = apply_filters( 'rest_pre_serve_request', false, $result, $request, $this );
-
-		/**
 		 * Filters whether to send nocache headers on a REST API request.
 		 *
 		 * @since 4.4.0
@@ -503,6 +487,22 @@ class WP_REST_Server {
 				}
 			}
 		}
+
+		/**
+		 * Filters whether the REST API request has already been served.
+		 *
+		 * Allow sending the request manually - by returning true, the API result
+		 * will not be sent to the client.
+		 *
+		 * @since 4.4.0
+		 *
+		 * @param bool             $served  Whether the request has already been served.
+		 *                                           Default false.
+		 * @param WP_HTTP_Response $result  Result to send to the client. Usually a `WP_REST_Response`.
+		 * @param WP_REST_Request  $request Request used to generate the response.
+		 * @param WP_REST_Server   $server  Server instance.
+		 */
+		$served = apply_filters( 'rest_pre_serve_request', false, $result, $request, $this );
 
 		if ( ! $served ) {
 			if ( 'HEAD' === $request->get_method() ) {
@@ -1085,7 +1085,6 @@ class WP_REST_Server {
 
 			foreach ( $handlers as $handler ) {
 				$callback = $handler['callback'];
-				$response = null;
 
 				// Fallback to GET method if no HEAD method is registered.
 				$checked_method = $method;
@@ -1279,10 +1278,23 @@ class WP_REST_Server {
 		);
 
 		$response = new WP_REST_Response( $available );
-		$response->add_link( 'help', 'https://developer.wordpress.org/rest-api/' );
-		$this->add_active_theme_link_to_index( $response );
-		$this->add_site_logo_to_index( $response );
-		$this->add_site_icon_to_index( $response );
+
+		$fields = isset( $request['_fields'] ) ? $request['_fields'] : '';
+		$fields = wp_parse_list( $fields );
+		if ( empty( $fields ) ) {
+			$fields[] = '_links';
+		}
+
+		if ( $request->has_param( '_embed' ) ) {
+			$fields[] = '_embedded';
+		}
+
+		if ( rest_is_field_included( '_links', $fields ) || rest_is_field_included( '_embedded', $fields ) ) {
+			$response->add_link( 'help', 'https://developer.wordpress.org/rest-api/' );
+			$this->add_active_theme_link_to_index( $response );
+			$this->add_site_logo_to_index( $response );
+			$this->add_site_icon_to_index( $response );
+		}
 
 		/**
 		 * Filters the REST API root index data.

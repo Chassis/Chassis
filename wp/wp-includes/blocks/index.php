@@ -91,7 +91,7 @@ function register_core_block_style_handles() {
 		}
 	}
 
-	$register_style = static function( $name, $filename, $style_handle ) use ( $blocks_url, $suffix, $wp_styles, $files ) {
+	$register_style = static function ( $name, $filename, $style_handle ) use ( $blocks_url, $suffix, $wp_styles, $files ) {
 		$style_path = "{$name}/{$filename}{$suffix}.css";
 		$path       = wp_normalize_path( BLOCKS_PATH . $style_path );
 
@@ -106,11 +106,11 @@ function register_core_block_style_handles() {
 		$wp_styles->add( $style_handle, $blocks_url . $style_path );
 		$wp_styles->add_data( $style_handle, 'path', $path );
 
-		$rtl_file = str_replace( "{$suffix}.css", "-rtl{$suffix}.css", $path );
+		$rtl_file = "{$name}/{$filename}-rtl{$suffix}.css";
 		if ( is_rtl() && in_array( $rtl_file, $files, true ) ) {
 			$wp_styles->add_data( $style_handle, 'rtl', 'replace' );
 			$wp_styles->add_data( $style_handle, 'suffix', $suffix );
-			$wp_styles->add_data( $style_handle, 'path', $rtl_file );
+			$wp_styles->add_data( $style_handle, 'path', str_replace( "{$suffix}.css", "-rtl{$suffix}.css", $path ) );
 		}
 	};
 
