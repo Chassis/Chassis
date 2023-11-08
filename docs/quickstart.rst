@@ -133,7 +133,7 @@ What's in the box?
 By default we want to keep Chassis lean, below is a list of what we include:
 
 * `WordPress`_ (latest stable version)
-* `PHP`_ (version 7.4) (includes the `cURL <cURL extension_>`_ and `GD`_ extensions)
+* `PHP`_ (version 8.1) (includes the `cURL <cURL extension_>`_ and `GD`_ extensions)
 * `nginx`_
 * `MySQL`_
 * `WP-CLI`_ - A command line tool for WordPress.

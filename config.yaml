@@ -10,7 +10,7 @@
 
 # Add a version for Chassis for when we upgrade Ubuntu distributions.
 # We did start tagging releases a while back: https://github.com/Chassis/Chassis/releases
-version: 5.3.0
+version: 5.4.0
 
 # Domain names to use for Vagrant
 #
@@ -111,7 +111,7 @@ synced_folders:
 
 # PHP version
 # Values: 5.6, 7.0, 7.1, 7.2, 7.3, 7.4, 8.0, 8.1, 8.2, 8.3 (or 5.6.30)
-php: 7.4
+php: 8.1
 
 # Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
 upload_size: 1024M
@@ -146,7 +146,6 @@ nfs: No
 
 # Values: normal, base, custom
 _mode: normal
-
 # Custom Box
 #
 # You can use this setting to use any box that's available on Vagrant Cloud.
