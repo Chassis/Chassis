@@ -1,0 +1,60 @@
+name: wordpress-upgrade-check
+run-name: WordPress Upgrade Check
+on:
+  schedule:
+    # Check for WordPress updates every hour.
+    - cron: 0 * * * *
+jobs:
+  maybe-update-wordpress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Compare Versions
+        id: compare-versions
+        uses: actions/checkout@v4
+      # Install jq to parse JSON.
+      - run: sudo apt-get install jq
+      - run: echo "CURRENT_WP_VERSION=$(curl -s https://api.wordpress.org/core/version-check/1.7/ | jq -r '.offers[0].current')" >> "$GITHUB_ENV"
+      - run: echo "Current WordPress version is ${{ env.CURRENT_WP_VERSION }}"
+      # Install yq to parse YAML.
+      - run: wget https://github.com/mikefarah/yq/releases/download/v4.40.5/yq_linux_amd64.tar.gz -O - | tar xz && sudo mv yq_linux_amd64 /usr/bin/yq
+      - run: echo "CHASSIS_WP_VERSION=$(yq .wp_version config.yaml)" >> "$GITHUB_ENV"
+      - run: echo "Chassis WordPress version is ${{ env.CHASSIS_WP_VERSION }}"
+      - name: Update WordPress subtree
+        id: update-wordpress
+        uses: actions/checkout@v4
+      - run: |
+          if [ bc <<< "${{ env.CURRENT_WP_VERSION }}>${{ env.CHASSIS_WP_VERSION }}" ];then
+            # Set repo and PR title.
+            REPO="Chassis/Chassis"
+            PR_TITLE="Update WordPress version to $CURRENT_WP_VERSION"
+            # Fetch PRs from GitHub API
+            PRs=$(curl -s -H "Accept: application/vnd.github.v3+json" -H "Authorization: Bearer ${{ secrets.GITHUB_TOKEN }}" https://api.github.com/repos/$REPO/pulls)
+            # Check if a PR with the same title already exists because if it does then we can bail.
+            if echo "$PRs" | jq -r '.[].title' | grep -q "^$PR_TITLE$"; then
+              # We already have an pending update.
+              echo "A PR to update WordPress already exists."
+            else
+              # Update WordPress.
+              echo "Updating WordPress subtree..."
+              git config --global user.email chassis+bot@chassis.io
+              git config --global user.name "Chassis Bot"
+              git checkout -b update-wordpress-$CURRENT_WP_VERSION
+              # Remove the old WordPress version and add the new one.
+              sudo rm -r wp
+              git add wp
+              git commit -m "Remove old WordPress version"
+              git subtree add --prefix=wp --squash https://github.com/WordPress/WordPress.git $CURRENT_WP_VERSION
+              # Update the config.yaml file for the latest WordPress version.
+              sed -i "s/wp_version: $CHASSIS_WP_VERSION/wp_version: $CURRENT_WP_VERSION/" config.yaml
+              git add config.yaml
+              git commit -m "Update WordPress version to $CURRENT_WP_VERSION"
+              # Push changes to GitHub.
+              git push origin update-wordpress-$CURRENT_WP_VERSION
+              # Create a new PR and assign it to Bronson and Wilbert.
+              gh pr create --title "$PR_TITLE" --repo $REPO --body "This PR updates the WordPress version to $CURRENT_WP_VERSION" -r BronsonQuick,peterwilsoncc
+            fi
+          else
+            echo "WordPress Versions are the same. No update required."
+          fi
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
