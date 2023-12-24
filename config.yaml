@@ -12,6 +12,9 @@
 # We did start tagging releases a while back: https://github.com/Chassis/Chassis/releases
 version: 5.4.0
 
+# WordPress Version
+wp_version: 6.4.2
+
 # Domain names to use for Vagrant
 #
 # The first name will be used as the machine's name, subsequent names will be
