@@ -127,11 +127,11 @@ Vagrant.configure("2") do |config|
 
 	# The Parallels Provider uses a different naming scheme.
 	config.vm.provider :parallels do |_v, override|
-		# Vagrant currently runs under Rosetta on M1 devices. As a result,
+		# Vagrant currently runs under Rosetta on Apple Silicon devices. As a result,
 		# this seems to be the most reliable way to detect whether or not we're
 		# running under ARM64.
 		if Etc.uname[:version].include? 'ARM64'
-			override.vm.box = 'mpasternak/focal64-arm'
+			override.vm.box = 'bento/ubuntu-22.04-arm64'
 		end
 	end
 
