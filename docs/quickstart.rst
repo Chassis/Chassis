@@ -27,7 +27,7 @@ MacOS Intel chips
 * Install `VirtualBox`_
 * Install `Vagrant`_
 
-MacOS M1 chips
+MacOS Apple Silicon (M1/M2/M3) chips
 --------------
 
 * Install `Parallels Desktop for Mac Pro Edition`_
