@@ -1,5 +1,4 @@
-name: wordpress-upgrade-check
-run-name: WordPress Upgrade Check
+name: Ensure WordPress is up to date
 
 on: push
 
