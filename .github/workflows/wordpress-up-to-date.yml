@@ -60,7 +60,7 @@ jobs:
           LATEST_WP_VERSION=${{ env.LATEST_WP_VERSION }}
           INSTALLED_WP_VERSION=${{ env.INSTALLED_WP_VERSION }}
           PR_TITLE="Update WordPress to $LATEST_WP_VERSION"
-          PR_BODY="This PR updates WordPress to $LATEST_WP_VERSION"
+          PR_BODY="This PR updates WordPress to [WordPress $LATEST_WP_VERSION](https://github.com/WordPress/WordPress/releases/tag/$LATEST_WP_VERSION)."
           git config --global user.email chassis+bot@chassis.io
           git config --global user.name "Chassis Bot"
           git checkout -b update-wordpress-$LATEST_WP_VERSION
