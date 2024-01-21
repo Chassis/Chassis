@@ -69,4 +69,4 @@ jobs:
           git commit -m "Uninstall WordPress $INSTALLED_WP_VERSION"
           git subtree add --prefix=wp --squash https://github.com/WordPress/WordPress.git $LATEST_WP_VERSION
 
-          gh pr create --title "$PR_TITLE" --body "$PR_BODY" --base master --head "$GITHUB_REF" -r BronsonQuick,peterwilsoncc
+          gh pr create --title "$PR_TITLE" --body "$PR_BODY" --base master -r peterwilsoncc
