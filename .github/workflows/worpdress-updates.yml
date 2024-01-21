@@ -1,0 +1,21 @@
+name: wordpress-upgrade-check
+run-name: WordPress Upgrade Check
+
+on: push
+
+jobs:
+  maybe-update-wordpress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - name: Check for latest WordPress release
+        run: |
+          CURRENT_WP_VERSION=$(curl -s https://api.wordpress.org/core/version-check/1.7/ | jq -r '.offers[0].current')
+          echo "CURRENT_WP_VERSION=$CURRENT_WP_VERSION" >> "$GITHUB_ENV"
+          echo "Latest WordPress Release: $CURRENT_WP_VERSION"
+
