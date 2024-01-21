@@ -15,12 +15,11 @@ jobs:
           php-version: '8.1'
       - name: Check for latest WordPress release
         run: |
-          CURRENT_WP_VERSION=$(curl -s https://api.wordpress.org/core/version-check/1.7/ | jq -r '.offers[0].current')
-          echo "CURRENT_WP_VERSION=$CURRENT_WP_VERSION" >> "$GITHUB_ENV"
-          echo "Latest WordPress Release: $CURRENT_WP_VERSION"
+          LATEST_WP_VERSION=$(curl -s https://api.wordpress.org/core/version-check/1.7/ | jq -r '.offers[0].current')
+          echo "LATEST_WP_VERSION=$LATEST_WP_VERSION" >> "$GITHUB_ENV"
+          echo "Latest WordPress Release: $LATEST_WP_VERSION"
       - name: Check currently installed version of WordPress
         run: |
           INSTALLED_WP_VERSION=$(php -r 'require "wp/wp-includes/version.php"; echo $wp_version;')
           echo "INSTALLED_WP_VERSION=$INSTALLED_WP_VERSION" >> "$GITHUB_ENV"
           echo "Installed WordPress Version: $INSTALLED_WP_VERSION"
-
