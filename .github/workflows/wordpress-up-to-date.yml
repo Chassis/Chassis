@@ -1,0 +1,74 @@
+name: Ensure WordPress is up to date
+
+on:
+  schedule:
+    - cron: '0 * * * *'
+  workflow_dispatch:
+
+jobs:
+  maybe-update-wordpress:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout
+        uses: actions/checkout@v2
+      - name: Install PHP
+        uses: shivammathur/setup-php@v2
+        with:
+          php-version: '8.1'
+      - name: Check for latest WordPress release
+        run: |
+          LATEST_WP_VERSION=$(curl -s https://api.wordpress.org/core/version-check/1.7/ | jq -r '.offers[0].current')
+          echo "LATEST_WP_VERSION=$LATEST_WP_VERSION" >> "$GITHUB_ENV"
+          echo "Latest WordPress Release: $LATEST_WP_VERSION"
+      - name: Check currently installed version of WordPress
+        run: |
+          INSTALLED_WP_VERSION=$(php -r 'require "wp/wp-includes/version.php"; echo $wp_version;')
+          echo "INSTALLED_WP_VERSION=$INSTALLED_WP_VERSION" >> "$GITHUB_ENV"
+          echo "Installed WordPress Version: $INSTALLED_WP_VERSION"
+      - name: WordPress is up to date
+        run: |
+          LATEST_WP_VERSION=${{ env.LATEST_WP_VERSION }}
+          INSTALLED_WP_VERSION=${{ env.INSTALLED_WP_VERSION }}
+          UPGRADE=$(php -r "echo version_compare('$LATEST_WP_VERSION', '$INSTALLED_WP_VERSION', '>') ? '1' : '0';")
+          if [ "$UPGRADE" -eq 1 ]; then
+            # Exit with a non-zero exit code to trigger a workflow failure
+            echo "WordPress needs to be updated"
+            exit 1
+          else
+            # Exit with a zero exit code to trigger a workflow success
+            echo "WordPress is up to date"
+            exit 0
+          fi
+      - name: Pull request exists
+        if: ${{ failure() }}
+        run: |
+          LATEST_WP_VERSION=${{ env.LATEST_WP_VERSION }}
+          PR_TITLE="Update WordPress to $LATEST_WP_VERSION"
+          ## Check if PR already exists
+          PR_EXISTS=$(gh pr list --state open --title "$PR_TITLE" --json number | jq -r '.[0].number')
+          if [ -z "$PR_EXISTS" ]; then
+            ## Exit with a non-zero exit code to trigger a workflow failure
+            echo "PR does not exist"
+            exit 1
+          else
+            ## Exit with a zero exit code to trigger a workflow success
+            echo "PR exists"
+            exit 0
+          fi
+      - name: Create a PR
+        if: ${{ failure() }}
+        env:
+          GITHUB_TOKEN: ${{ secrets.GITHUB_TOKEN }}
+        run: |
+          LATEST_WP_VERSION=${{ env.LATEST_WP_VERSION }}
+          INSTALLED_WP_VERSION=${{ env.INSTALLED_WP_VERSION }}
+          PR_TITLE="Update WordPress to $LATEST_WP_VERSION"
+          PR_BODY="This PR updates WordPress to [WordPress $LATEST_WP_VERSION](https://github.com/WordPress/WordPress/releases/tag/$LATEST_WP_VERSION)."
+          git config --global user.email chassis+bot@chassis.io
+          git config --global user.name "Chassis Bot"
+          git checkout -b update-wordpress-$LATEST_WP_VERSION
+          git rm -r wp
+          git commit -m "Uninstall WordPress $INSTALLED_WP_VERSION"
+          git subtree add --prefix=wp --squash https://github.com/WordPress/WordPress.git $LATEST_WP_VERSION
+          git push origin update-wordpress-$LATEST_WP_VERSION
+          gh pr create --title "$PR_TITLE" --body "$PR_BODY" --base main --repo Chassis/Chassis -r peterwilsoncc,BronsonQuick
