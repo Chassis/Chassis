@@ -45,8 +45,8 @@ jobs:
           LATEST_WP_VERSION=${{ env.LATEST_WP_VERSION }}
           PR_TITLE="Update WordPress to $LATEST_WP_VERSION"
           ## Check if PR already exists
-          PR_EXISTS=$(gh pr list --state open --title "$PR_TITLE" --json number | jq -r '.[0].number')
-          if [ -z "$PR_EXISTS" ]; then
+          PR_EXISTS=$(gh pr list --state open --head update-wordpress-$LATEST_WP_VERSION --json number | jq -r '.[0].number')
+          if [ "$PR_EXISTS" == "null" ]; then
             ## Exit with a non-zero exit code to trigger a workflow failure
             echo "PR does not exist"
             exit 1
