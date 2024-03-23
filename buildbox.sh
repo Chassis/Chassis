@@ -59,6 +59,6 @@ vagrant package --output "chassis-$NOW.box"
 
 echo "\n\033[0;32mCommencing upload of the new Chassis box to Vagrant Cloud..."
 
-vagrant cloud publish chassis/chassis $VERSION virtualbox chassis-$NOW.box --release
+vagrant cloud publish chassis/chassis $VERSION virtualbox chassis-$NOW.box --release --force --no-direct-upload --architecture unknown
 
 echo "\n\033[0;32mUpload complete!"
