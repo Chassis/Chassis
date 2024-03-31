@@ -11,6 +11,16 @@ VM_STATUS=`vagrant status --machine-readable | grep state,running`
 # Create a timestamp to use in the boxes filename.
 NOW=`date +%Y-%m-%d-%H:%M:%S`
 
+CHIP_TYPE=`uname -m`
+
+if [ $CHIP_TYPE == "arm64" ]; then
+	PROVIDER="parallels"
+	BOX="chassis/chassis-arm64"
+else
+	PROVIDER="virtualbox"
+	BOX="chassis/chassis"
+fi
+
 if [ ! $VM_STATUS ]; then
 	echo "\033[0;32mWe need to boot up your Vagrant box to ensure some files have been deleted before generating the new base box."
 	vagrant up
@@ -57,8 +67,8 @@ VERSION=5.4.2
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
 
-echo "\n\033[0;32mCommencing upload of the new Chassis box to Vagrant Cloud..."
+echo "\n\033[0;32mCommencing upload of the new $BOX version $VERSION for $PROVIDER to Vagrant Cloud..."
 
-vagrant cloud publish chassis/chassis $VERSION virtualbox chassis-$NOW.box --release --force --no-direct-upload --architecture unknown
+vagrant cloud publish $BOX $VERSION $PROVIDER chassis-$NOW.box --release --force --no-direct-upload --architecture unknown
 
 echo "\n\033[0;32mUpload complete!"
