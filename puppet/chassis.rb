@@ -153,11 +153,6 @@ module Chassis
 
 	def self.normalize_config(config)
 
-		# Set the default mode to base if we're on ARM64. This is for M1/M2 Macs.
-		if Etc.uname[:version].include? 'ARM64'
-			config['_mode'] = 'base'
-		end
-
 		# Set all the auto_update keys to false.
 		if config["auto_update"] == false
 			config["auto_update"] = {}
