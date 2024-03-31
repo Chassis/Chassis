@@ -67,8 +67,8 @@ VERSION=5.4.2
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
 
-echo "\n\033[0;32mCommencing upload of the new $BOX version $VERSION for $PROVIDER to Vagrant Cloud..."
+echo "\n\033[0;32mCommencing upload of the new $BOX version $VERSION for $PROVIDER to Vagrant Cloud...\033[0m"
 
 vagrant cloud publish $BOX $VERSION $PROVIDER chassis-$NOW.box --release --force --no-direct-upload --architecture unknown
 
-echo "\n\033[0;32mUpload complete!"
+echo "\n\033[0;32mUpload complete!\033[0m"
