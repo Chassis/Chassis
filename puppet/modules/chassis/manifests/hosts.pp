@@ -5,7 +5,7 @@ class chassis::hosts(
 ) {
 
 	# Jammy Jellyfish configurations.
-	case $::lsbdistcodename {
+	case $facts['os']['distro']['codename'] {
 		'jammy': {
 			# Jammy Jellyfish has access to the python3-avahi package so install it.
 			package { 'python3-avahi':
@@ -38,7 +38,7 @@ class chassis::hosts(
 		ensure  => latest
 	}
 
-	ensure_packages( ['mdns-publisher'], {
+	stdlib::ensure_packages( ['mdns-publisher'], {
 		ensure   => present,
 		provider => 'pip3',
 		require  => [ Package['python3-pip'], Package['libdbus-glib-1-dev'] ],

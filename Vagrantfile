@@ -122,7 +122,7 @@ Vagrant.configure("2") do |config|
 		config.vm.box = CONF['box']
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-22.04"
+		config.vm.box = "bento/ubuntu-24.04"
 	end
 
 	# The Parallels Provider uses a different naming scheme.
@@ -134,7 +134,7 @@ Vagrant.configure("2") do |config|
 			if CONF['_mode'] == "normal"
 				override.vm.box = 'chassis/chassis-arm64'
 			else
-				override.vm.box = 'bento/ubuntu-22.04-arm64'
+				override.vm.box = 'bento/ubuntu-24.04-arm64'
 			end
 		end
 	end

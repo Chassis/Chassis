@@ -45,7 +45,7 @@ $mysql_defaults = {
 }
 
 # Allow MySQL options to be added or overridden.
-$mysql_overrides = merge( $mysql_defaults, $config['mysql'] )
+$mysql_overrides = stdlib::merge( $mysql_defaults, $config['mysql'] )
 
 # Allow MySQL package name to be overridden so we can easily support MariaDB.
 if $config['mysql'] and $config['mysql']['package_name'] != undef {

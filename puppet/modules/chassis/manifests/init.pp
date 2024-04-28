@@ -46,4 +46,5 @@ class chassis {
 		require => Package['nginx'],
 		notify  => Service['nginx']
 	}
+	
 }
