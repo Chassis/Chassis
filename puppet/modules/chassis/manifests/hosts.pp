@@ -6,7 +6,7 @@ class chassis::hosts(
 
 	# Jammy Jellyfish configurations.
 	case $facts['os']['distro']['codename'] {
-		'jammy': {
+		'jammy', 'noble' : {
 			# Jammy Jellyfish has access to the python3-avahi package so install it.
 			package { 'python3-avahi':
 				ensure  => latest,
