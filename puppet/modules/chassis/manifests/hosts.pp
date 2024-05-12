@@ -38,19 +38,19 @@ class chassis::hosts(
 		ensure  => latest
 	}
 
-	stdlib::ensure_packages( ['mdns-publisher'], {
-		ensure   => present,
-		provider => 'pip3',
-		require  => [ Package['python3-pip'], Package['libdbus-glib-1-dev'] ],
-	})
+#	stdlib::ensure_packages( ['mdns-publisher'], {
+#		ensure   => present,
+#		provider => 'pip3',
+#		require  => [ Package['python3-pip'], Package['libdbus-glib-1-dev'] ],
+#	})
 
-	file { '/lib/systemd/system/chassis-hosts.service':
-		ensure  => 'file',
-		mode    => '0644',
-		content => template('chassis/chassis-hosts.service.erb'),
-		notify  => Service['chassis-hosts'],
-		require => Package['mdns-publisher'],
-	}
+#	file { '/lib/systemd/system/chassis-hosts.service':
+#		ensure  => 'file',
+#		mode    => '0644',
+#		content => template('chassis/chassis-hosts.service.erb'),
+#		notify  => Service['chassis-hosts'],
+#		require => Package['mdns-publisher'],
+#	}
 
 	if ( $subdomains ) {
 		file { '/vagrant/local-config-hosts.php':
@@ -63,15 +63,15 @@ class chassis::hosts(
 		}
 	}
 
-	service { 'chassis-hosts':
-		ensure  => running,
-		enable  => true,
-		require => [
-			Package[ 'avahi-daemon' ],
-			Package[ 'python3-avahi' ],
-			File[ '/lib/systemd/system/chassis-hosts.service' ],
-			Exec['restart-avahi']
-		],
-	}
+	# service { 'chassis-hosts':
+	# 	ensure  => running,
+	# 	enable  => true,
+	# 	require => [
+	# 		Package[ 'avahi-daemon' ],
+	# 		Package[ 'python3-avahi' ],
+	# 		File[ '/lib/systemd/system/chassis-hosts.service' ],
+	# 		Exec['restart-avahi']
+	# 	],
+	# }
 
 }

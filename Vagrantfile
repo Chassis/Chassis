@@ -125,20 +125,6 @@ Vagrant.configure("2") do |config|
 		config.vm.box = "bento/ubuntu-24.04"
 	end
 
-	# The Parallels Provider uses a different naming scheme.
-	config.vm.provider :parallels do |_v, override|
-		# Vagrant currently runs under Rosetta on Apple Silicon devices. As a result,
-		# this seems to be the most reliable way to detect whether or not we're
-		# running under ARM64.
-		if Etc.uname[:version].include? 'ARM64'
-			if CONF['_mode'] == "normal"
-				override.vm.box = 'chassis/chassis-arm64'
-			else
-				override.vm.box = 'bento/ubuntu-24.04-arm64'
-			end
-		end
-	end
-
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
 
