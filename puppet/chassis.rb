@@ -253,6 +253,14 @@ module Chassis
 	end
 
 	def self.install_extension(extension)
+		# Check if we have a specific version/branch
+		if extension =~ /\@/
+			branch = '-b ' + extension.split('@').last
+			extension = extension.gsub(/@.+/, '')
+		else
+			branch = ''
+		end
+
 		# Perform checks for various forms of extension definition.
 		if extension =~ /^[\w-]+$/ # Chassis official extension, like 'nodejs'.
 			repo = 'https://github.com/chassis/' + extension
@@ -291,7 +299,7 @@ module Chassis
 			puts("\e[0m")
 		end
 
-		system("git clone %s %s --recursive" % [repo, Shellwords.escape(folder)] ) unless File.exist?( folder )
+		system("git clone %s %s %s --recursive" % [repo, Shellwords.escape(folder), branch] ) unless File.exist?( folder )
 
 		# Install dependencies for this extension.
 		self.install_dependencies(extension)
