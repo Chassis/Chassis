@@ -18,6 +18,13 @@ class chassis::php (
     ],
   }
 
+  apt::ppa { 'ppa:ondrej/php-qa':
+    require => [
+      Package[$apt::ppa_package],
+      Class['apt'],
+    ],
+  }
+
   if $version =~ /^(\d+)\.(\d+)$/ {
     $package_version = "${version}.*"
     $short_ver = $version
@@ -89,6 +96,7 @@ class chassis::php (
     require         => [
       Apt::Pin[$core_packages],
       Apt::Ppa['ppa:ondrej/php'],
+      Apt::Ppa['ppa:ondrej/php-qa'],
       Class['apt::update'],
       Chassis::Remove_php_version[$php_versions_to_remove]
     ],
