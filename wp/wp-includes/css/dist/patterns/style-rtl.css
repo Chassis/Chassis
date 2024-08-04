@@ -8,7 +8,7 @@
   --wp-admin-border-width-focus:2px;
   --wp-block-synced-color:#7a00df;
   --wp-block-synced-color--rgb:122, 0, 223;
-  --wp-bound-block-color:#9747ff;
+  --wp-bound-block-color:var(--wp-block-synced-color);
 }
 @media (min-resolution:192dpi){
   :root{
@@ -51,4 +51,22 @@
   .patterns-rename-pattern-category-modal__validation-message{
     width:320px;
   }
+}
+
+.pattern-overrides-control__allow-overrides-button{
+  justify-content:center;
+  width:100%;
+}
+
+.patterns-pattern-overrides-toolbar-indicator__popover .components-popover__content{
+  min-width:260px;
+  padding:16px;
+}
+
+.patterns-pattern-overrides-toolbar-indicator .patterns-pattern-overrides-toolbar-indicator-icon.has-colors svg{
+  fill:var(--wp-block-synced-color);
+}
+
+.editor-collapsible-block-toolbar .patterns-pattern-overrides-toolbar-indicator{
+  height:32px;
 }

@@ -10,7 +10,8 @@ define chassis::remove_php_version {
     '8.0',
     '8.1',
     '8.2',
-    '8.3'
+    '8.3',
+    '8.4'
     : {
       package { ["php${name}-fpm", "php${name}-cli", "php${name}-common"]:
         ensure => absent,
