@@ -18,12 +18,12 @@ class chassis::php (
     ],
   }
 
-  apt::ppa { 'ppa:ondrej/php-qa':
-    require => [
-      Package[$apt::ppa_package],
-      Class['apt'],
-    ],
-  }
+  # apt::ppa { 'ppa:ondrej/php-qa':
+  #   require => [
+  #     Package[$apt::ppa_package],
+  #     Class['apt'],
+  #   ],
+  # }
 
   if $version =~ /^(\d+)\.(\d+)$/ {
     $package_version = "${version}.*"
@@ -91,12 +91,12 @@ class chassis::php (
   package { $core_packages:
     # Hold at the given version
     ensure          => 'latest',
-    install_options => '--force-yes',
+    install_options => '--allow-change-held-packages',
     notify          => Service["${php_package}-fpm"],
     require         => [
       Apt::Pin[$core_packages],
       Apt::Ppa['ppa:ondrej/php'],
-      Apt::Ppa['ppa:ondrej/php-qa'],
+      # Apt::Ppa['ppa:ondrej/php-qa'],
       Class['apt::update'],
       Chassis::Remove_php_version[$php_versions_to_remove]
     ],
@@ -124,7 +124,7 @@ class chassis::php (
   package { $prefixed_extensions:
     # Hold at the given version
     ensure          => 'latest',
-    install_options => '--force-yes',
+    install_options => '--allow-change-held-packages',
 
     require         => [
       Package[$core_packages],

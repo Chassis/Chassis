@@ -55,10 +55,20 @@ if $config['mysql'] and $config['mysql']['package_name'] != undef {
 }
 
 class { 'mysql::server':
+  service_name     => 'mysql',
 	root_password    => 'password',
 	restart          => true,
 	override_options => $mysql_overrides,
 	package_name     => $mysql_package_name_overrides
+}
+
+class { 'mysql::client':
+	package_name => 'mysql-client'
+}
+
+class { 'mysql::bindings':
+	client_dev_package_name => 'libmysqlclient-dev',
+	daemon_dev_package_name => 'libmysqld-dev'
 }
 
 class { 'chassis':

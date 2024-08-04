@@ -41,9 +41,6 @@ if [[ ! -f /etc/chassis-updated ]]; then
 	# Install puppet
 	sudo apt-get -q -y install puppet
 
-	# Create directory for MySql
-	sudo mkdir /var/log/mysql
-
 	touch /etc/chassis-updated
 fi
 
