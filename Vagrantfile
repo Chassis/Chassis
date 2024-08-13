@@ -145,6 +145,17 @@ Vagrant.configure("2") do |config|
 		end
 	end
 
+	config.vm.provider "parallels" do |prl|
+		# Use memory and CPU settings from yaml config file.
+		# The Virtual Machine customizations use `virtualbox` as
+		# the key for backward compatibility but apply to the
+		# Parallels provider too.
+		if CONF['virtualbox']
+			prl.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
+			prl.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
+		end
+	end
+
 	# Enable SSH forwarding
 	config.ssh.forward_agent = true
 
