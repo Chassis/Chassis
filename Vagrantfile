@@ -54,7 +54,7 @@ Vagrant.configure("2") do |config|
 		config.vm.define CONF['machine_name']
 	end
 
-	# Convert old VM customisations to new format for backwards compatibility.
+	# Convert old VM customisations for backwards compatibility.
 	if CONF["virtualbox"]
 		CONF["virtualmachine"] = CONF["virtualbox"]
 	end
