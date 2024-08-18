@@ -19,12 +19,12 @@ version: 5.4.2
 #
 # (When overriding, include vagrant.local if you need it)
 hosts:
-    - vagrant.local
+  - vagrant.local
 
 # Site Configuration
 # (When overriding, include all values)
 website:
-    name: Chassis Site
+  name: Chassis Site
 
 # IP address to use on the private network
 #

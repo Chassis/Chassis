@@ -515,17 +515,17 @@ Machine Customisations
 
 The underlying virtual machine managed by Vagrant can be customised, but depends on which provider you are using.
 
-----------
-VirtualBox
-----------
+-------------------------------------------
+Virtual Machines - VirtualBox and Parallels
+-------------------------------------------
 
-.. py:data:: virtualbox
+.. py:data:: virtualmachine
 
-When using VirtualBox, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the VirtualBox defaults (1024 MB of RAM, and 2 vCPUs).
+When using VirtualBox or Parallels, you can customise how much memory (in megabytes) and how many virtual CPUs will be assigned to the machine. The default values for both (``null``) are to use the defaults are (1024 MB of RAM, and 2 vCPUs).
 
 .. code-block:: yaml
 
-   virtualbox:
+   virtualmachine:
       memory: null
       cpus: null
 
