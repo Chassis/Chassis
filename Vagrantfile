@@ -54,6 +54,11 @@ Vagrant.configure("2") do |config|
 		config.vm.define CONF['machine_name']
 	end
 
+	# Convert old VM customisations to new format for backwards compatibility.
+	if CONF["virtualbox"]
+		CONF["virtualmachine"] = CONF["virtualbox"]
+	end
+
 	config.trigger.before [ :provision, :up, :halt ] do |trigger|
 		deprecated_extensions = ''
 		if CONF["version"] >= 3 && ! CONF["extensions"].nil?
@@ -65,6 +70,10 @@ Vagrant.configure("2") do |config|
 				end
 			end
 			trigger.warn = "#{deprecated_extensions}"
+		end
+		# Warn about deprecated 'virtualbox' setting.
+		if CONF["virtualbox"]
+			trigger.warn = "The 'virtualbox' settings in your yaml configuration file has been deprecated. Please change it to 'virtualmachine' instead.\n"
 		end
 	end
 
@@ -90,9 +99,9 @@ Vagrant.configure("2") do |config|
 		vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
 
 		# Customisations from config.local.yaml
-		if CONF['virtualbox']
-			vb.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
-			vb.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
+		if CONF['virtualmachine']
+			vb.memory = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
+			vb.cpus = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
 		end
 
 		# Set the machine name for the VirtualBox GUI.
@@ -150,9 +159,9 @@ Vagrant.configure("2") do |config|
 		# The Virtual Machine customizations use `virtualbox` as
 		# the key for backward compatibility but apply to the
 		# Parallels provider too.
-		if CONF['virtualbox']
-			prl.memory = CONF['virtualbox']['memory'] if CONF['virtualbox']['memory']
-			prl.cpus = CONF['virtualbox']['cpus'] if CONF['virtualbox']['cpus']
+		if CONF['virtualmachine']
+			prl.memory = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
+			prl.cpus = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
 		end
 	end
 

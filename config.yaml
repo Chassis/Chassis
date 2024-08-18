@@ -125,7 +125,7 @@ machine_name: default
 # Applies to both the virtualbox an parallels providers. The key is
 # `virtualbox` for both to maintain backwards compatibility.
 # (When overriding, include all values)
-virtualbox:
+virtualmachine:
     # Memory, in megabytes.
     #
     # (e.g. 1024)
