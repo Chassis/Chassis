@@ -156,9 +156,6 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provider "parallels" do |prl|
 		# Use memory and CPU settings from yaml config file.
-		# The Virtual Machine customizations use `virtualbox` as
-		# the key for backward compatibility but apply to the
-		# Parallels provider too.
 		if CONF['virtualmachine']
 			prl.memory = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
 			prl.cpus = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
