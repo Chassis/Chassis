@@ -71,7 +71,7 @@ Vagrant.configure("2") do |config|
 			end
 			trigger.warn = "#{deprecated_extensions}"
 		end
-		# Warn about deprecated 'virtualbox' setting.
+		# Warn about deprecated 'virtualbox' setting if it's present.
 		if CONF["virtualbox"]
 			trigger.warn = "The 'virtualbox' settings in your yaml configuration file has been deprecated. Please change it to 'virtualmachine' instead.\n"
 		end
