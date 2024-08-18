@@ -99,6 +99,7 @@ Vagrant.configure("2") do |config|
 		vb.customize [ "guestproperty", "set", :id, "/VirtualBox/GuestAdd/VBoxService/--timesync-set-threshold", 1000 ]
 
 		# Customisations from config.local.yaml
+		# The `virtualbox` value has been deprecated to use `virtualmachine`.
 		if CONF['virtualmachine']
 			vb.memory = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
 			vb.cpus = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
@@ -156,6 +157,7 @@ Vagrant.configure("2") do |config|
 
 	config.vm.provider "parallels" do |prl|
 		# Use memory and CPU settings from yaml config file.
+		# The `virtualbox` value has been deprecated to use `virtualmachine`.
 		if CONF['virtualmachine']
 			prl.memory = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
 			prl.cpus = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
