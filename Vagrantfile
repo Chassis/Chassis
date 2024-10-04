@@ -265,6 +265,18 @@ Vagrant.configure("2") do |config|
 		end
 	end
 
+	config.vm.provider :vmware_desktop do |_v, override|
+		mount_opts = CONF['nfs'] ? [] : ["umask=777"]
+		synced_folders.each do |from, to|
+			override.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs'], :group => 'www-data', :owner => 'vagrant'
+		end
+	end
+
+	config.vm.provider :vmware_desktop do |vmware|
+		vmware.vmx["ethernet0.pcislotnumber"] = "160"
+		vmware.vmx["ethernet1.pcislotnumber"] = "224"
+	end
+
 	# Change directories to /vagrant and use the correct shell.
 	if CONF['extensions'] and (CONF['extensions'].include? "fish" or CONF['extensions'].include? "chassis/fish")
 		config.ssh.extra_args = ["-t", "cd /vagrant; fish -l"]
