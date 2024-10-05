@@ -155,12 +155,36 @@ Vagrant.configure("2") do |config|
 		end
 	end
 
+	# The vmware_desktop Provider overrides.
+	config.vm.provider :vmware_desktop do |_v, override|
+
+		# Vagrant currently runs under Rosetta on Apple Silicon devices. As a result,
+		# this seems to be the most reliable way to detect whether or not we're
+		# running under ARM64.
+		if Etc.uname[:version].include? 'ARM64'
+			if CONF['_mode'] == "normal"
+				override.vm.box = 'chassis/chassis-arm64'
+			else
+				override.vm.box = 'bento/ubuntu-23.04-arm64'
+			end
+		end
+	end
+
 	config.vm.provider "parallels" do |prl|
 		# Use memory and CPU settings from yaml config file.
 		# The `virtualbox` value has been deprecated to use `virtualmachine`.
 		if CONF['virtualmachine']
 			prl.memory = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
 			prl.cpus = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
+		end
+	end
+
+	config.vm.provider "vmware_desktop" do |v|
+		# Use memory and CPU settings from yaml config file.
+		# The `virtualbox` value has been deprecated to use `virtualmachine`.
+		if CONF['virtualmachine']
+			v.vmx["memsize"] = CONF['virtualmachine']['memory'] if CONF['virtualmachine']['memory']
+			v.vmx["numvcpus"] = CONF['virtualmachine']['cpus'] if CONF['virtualmachine']['cpus']
 		end
 	end
 
@@ -266,7 +290,7 @@ Vagrant.configure("2") do |config|
 	end
 
 	config.vm.provider :vmware_desktop do |_v, override|
-		mount_opts = CONF['nfs'] ? [] : ["umask=777"]
+		mount_opts = CONF['nfs'] ? [] : ["umask=002"]
 		synced_folders.each do |from, to|
 			override.vm.synced_folder from, to, :mount_options => mount_opts, :nfs => CONF['nfs'], :group => 'www-data', :owner => 'vagrant'
 		end
@@ -276,6 +300,7 @@ Vagrant.configure("2") do |config|
 		vmware.vmx["ethernet0.pcislotnumber"] = "160"
 		vmware.vmx["ethernet1.pcislotnumber"] = "224"
 	end
+
 
 	# Change directories to /vagrant and use the correct shell.
 	if CONF['extensions'] and (CONF['extensions'].include? "fish" or CONF['extensions'].include? "chassis/fish")
