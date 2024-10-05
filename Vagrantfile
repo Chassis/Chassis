@@ -165,7 +165,7 @@ Vagrant.configure("2") do |config|
 			if CONF['_mode'] == "normal"
 				override.vm.box = 'chassis/chassis-arm64'
 			else
-				override.vm.box = 'bento/ubuntu-23.04-arm64'
+				override.vm.box = 'bento/ubuntu-24.04-arm64'
 			end
 		end
 	end
