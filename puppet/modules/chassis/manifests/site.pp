@@ -47,11 +47,6 @@ define chassis::site (
 	}
 
 	wp::site { $wpdir:
-		url            => "http://${name}/",
-		sitename       => $sitename,
-		require        => Mysql::Db[$database],
-		admin_user     => $admin_user,
-		admin_email    => $admin_email,
-		admin_password => $admin_password,
+		require        => Mysql::Db[$database]
 	}
 }
