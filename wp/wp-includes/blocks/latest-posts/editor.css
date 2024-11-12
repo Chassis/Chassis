@@ -6,13 +6,6 @@
   display:inline;
 }
 
-.editor-latest-posts-image-alignment-control .components-base-control__label{
-  display:block;
-}
-.editor-latest-posts-image-alignment-control .components-toolbar{
-  border-radius:2px;
-}
-
 :root :where(.wp-block-latest-posts){
   padding-left:2.5em;
 }
