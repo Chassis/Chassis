@@ -46,7 +46,12 @@ define chassis::site (
 		grant     => ['all'],
 	}
 
-	wp::site { $wpdir:
-		require        => Mysql::Db[$database]
+	wp::core { $wpdir:
+		url            => "http://${name}/",
+		sitename       => $sitename,
+		require        => Mysql::Db[$database],
+		admin_user     => $admin_user,
+		admin_email    => $admin_email,
+		admin_password => $admin_password,
 	}
 }
