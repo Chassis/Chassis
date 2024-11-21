@@ -1157,6 +1157,33 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 		$token_type = $this->get_token_type();
 
 		switch ( $token_type ) {
+			case '#doctype':
+				$doctype = $this->get_doctype_info();
+				if ( null === $doctype ) {
+					break;
+				}
+
+				$html .= '<!DOCTYPE';
+
+				if ( $doctype->name ) {
+					$html .= " {$doctype->name}";
+				}
+
+				if ( null !== $doctype->public_identifier ) {
+					$quote = str_contains( $doctype->public_identifier, '"' ) ? "'" : '"';
+					$html .= " PUBLIC {$quote}{$doctype->public_identifier}{$quote}";
+				}
+				if ( null !== $doctype->system_identifier ) {
+					if ( null === $doctype->public_identifier ) {
+						$html .= ' SYSTEM';
+					}
+					$quote = str_contains( $doctype->system_identifier, '"' ) ? "'" : '"';
+					$html .= " {$quote}{$doctype->system_identifier}{$quote}";
+				}
+
+				$html .= '>';
+				break;
+
 			case '#text':
 				$html .= htmlspecialchars( $this->get_modifiable_text(), ENT_QUOTES | ENT_SUBSTITUTE | ENT_HTML5, 'UTF-8' );
 				break;
@@ -1172,10 +1199,6 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 
 			case '#cdata-section':
 				$html .= "<![CDATA[{$this->get_modifiable_text()}]]>";
-				break;
-
-			case 'html':
-				$html .= '<!DOCTYPE html>';
 				break;
 		}
 
