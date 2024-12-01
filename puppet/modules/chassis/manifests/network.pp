@@ -51,7 +51,7 @@ define chassis::network (
 		grant      => ['all'],
 	}
 
-	wp::site { $wpdir:
+	wp::core { $wpdir:
 		url            => "http://${name}/",
 		name           => 'Vagrant Site',
 		require        => Mysql::Db[$database],
