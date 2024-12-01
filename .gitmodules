@@ -16,3 +16,6 @@
 [submodule "puppet/modules/staging"]
 	path = puppet/modules/staging
 	url = https://github.com/voxpupuli/puppet-staging.git
+[submodule "puppet/modules/archive"]
+	path = puppet/modules/archive
+	url = https://github.com/voxpupuli/puppet-archive
