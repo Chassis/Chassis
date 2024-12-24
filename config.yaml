@@ -121,8 +121,11 @@ upload_size: 1024M
 # NOTE: If changed the machine will need to be re-created and should ideally be destroyed before any change
 machine_name: default
 
-# VirtualBox-specific customisations.
-virtualbox:
+# Virtual Machine customisations.
+# Applies to both the virtualbox and parallels providers. The key is
+# `virtualbox` for both to maintain backwards compatibility.
+# (When overriding, include all values)
+virtualmachine:
     # Memory, in megabytes.
     #
     # (e.g. 1024)

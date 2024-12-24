@@ -225,7 +225,7 @@ p {
 	margin: 1.1em 0;
 }
 
-.login h1.admin-email__heading {
+.login .admin-email__heading {
 	border-bottom: 1px #f0f0f1 solid;
 	color: #50575e;
 	font-weight: normal;

@@ -9,7 +9,7 @@ Networking
 ----------
 
 Chassis VMs use the networking features provided by Vagrant and the underlying
-VM management (VirtualBox, VMWare Fusion, etc). The VM is connected to the host
+VM management (VirtualBox, Parallels, VMWare Fusion, etc). The VM is connected to the host
 using a `private network`_, with a dynamically assigned IP address (unless a
 static IP is :ref:`specified in your config <config-ip>`).
 
