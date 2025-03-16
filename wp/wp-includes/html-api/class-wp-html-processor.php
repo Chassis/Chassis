@@ -557,6 +557,10 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			return false;
 		}
 
+		if ( isset( $query['tag_name'] ) ) {
+			$query['tag_name'] = strtoupper( $query['tag_name'] );
+		}
+
 		$needs_class = ( isset( $query['class_name'] ) && is_string( $query['class_name'] ) )
 			? $query['class_name']
 			: null;
@@ -604,6 +608,22 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	}
 
 	/**
+	 * Finds the next token in the HTML document.
+	 *
+	 * This doesn't currently have a way to represent non-tags and doesn't process
+	 * semantic rules for text nodes. For access to the raw tokens consider using
+	 * WP_HTML_Tag_Processor instead.
+	 *
+	 * @since 6.5.0 Added for internal support; do not use.
+	 * @since 6.7.2 Refactored so subclasses may extend.
+	 *
+	 * @return bool Whether a token was parsed.
+	 */
+	public function next_token(): bool {
+		return $this->next_visitable_token();
+	}
+
+	/**
 	 * Ensures internal accounting is maintained for HTML semantic rules while
 	 * the underlying Tag Processor class is seeking to a bookmark.
 	 *
@@ -611,13 +631,18 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 	 * semantic rules for text nodes. For access to the raw tokens consider using
 	 * WP_HTML_Tag_Processor instead.
 	 *
-	 * @since 6.5.0 Added for internal support; do not use.
+	 * Note that this method may call itself recursively. This is why it is not
+	 * implemented as {@see WP_HTML_Processor::next_token()}, which instead calls
+	 * this method similarly to how {@see WP_HTML_Tag_Processor::next_token()}
+	 * calls the {@see WP_HTML_Tag_Processor::base_class_next_token()} method.
+	 *
+	 * @since 6.7.2 Added for internal support.
 	 *
 	 * @access private
 	 *
 	 * @return bool
 	 */
-	public function next_token(): bool {
+	private function next_visitable_token(): bool {
 		$this->current_element = null;
 
 		if ( isset( $this->last_error ) ) {
@@ -635,7 +660,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 		 *       tokens works in the meantime and isn't obviously wrong.
 		 */
 		if ( empty( $this->element_queue ) && $this->step() ) {
-			return $this->next_token();
+			return $this->next_visitable_token();
 		}
 
 		// Process the next event on the queue.
@@ -646,7 +671,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 				continue;
 			}
 
-			return empty( $this->element_queue ) ? false : $this->next_token();
+			return empty( $this->element_queue ) ? false : $this->next_visitable_token();
 		}
 
 		$is_pop = WP_HTML_Stack_Event::POP === $this->current_element->operation;
@@ -657,7 +682,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 		 * the breadcrumbs.
 		 */
 		if ( 'root-node' === $this->current_element->token->bookmark_name ) {
-			return $this->next_token();
+			return $this->next_visitable_token();
 		}
 
 		// Adjust the breadcrumbs for this event.
@@ -669,7 +694,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 
 		// Avoid sending close events for elements which don't expect a closing.
 		if ( $is_pop && ! $this->expects_closer( $this->current_element->token ) ) {
-			return $this->next_token();
+			return $this->next_visitable_token();
 		}
 
 		return true;
@@ -800,7 +825,7 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 			// Doctype declarations.
 			'html' === $token_name ||
 			// Void elements.
-			self::is_void( $token_name ) ||
+			( 'html' === $token_namespace && self::is_void( $token_name ) ) ||
 			// Special atomic elements.
 			( 'html' === $token_namespace && in_array( $token_name, array( 'IFRAME', 'NOEMBED', 'NOFRAMES', 'SCRIPT', 'STYLE', 'TEXTAREA', 'TITLE', 'XMP' ), true ) ) ||
 			// Self-closing elements in foreign content.
@@ -5330,52 +5355,92 @@ class WP_HTML_Processor extends WP_HTML_Tag_Processor {
 		 * and computation time.
 		 */
 		if ( 'backward' === $direction ) {
+
 			/*
-			 * Instead of clearing the parser state and starting fresh, calling the stack methods
-			 * maintains the proper flags in the parser.
+			 * When moving backward, stateful stacks should be cleared.
 			 */
 			foreach ( $this->state->stack_of_open_elements->walk_up() as $item ) {
-				if ( 'context-node' === $item->bookmark_name ) {
-					break;
-				}
-
 				$this->state->stack_of_open_elements->remove_node( $item );
 			}
 
 			foreach ( $this->state->active_formatting_elements->walk_up() as $item ) {
-				if ( 'context-node' === $item->bookmark_name ) {
-					break;
-				}
-
 				$this->state->active_formatting_elements->remove_node( $item );
 			}
 
-			parent::seek( 'context-node' );
-			$this->state->insertion_mode = WP_HTML_Processor_State::INSERTION_MODE_IN_BODY;
-			$this->state->frameset_ok    = true;
-			$this->element_queue         = array();
-			$this->current_element       = null;
+			/*
+			 * **After** clearing stacks, more processor state can be reset.
+			 * This must be done after clearing the stack because those stacks generate events that
+			 * would appear on a subsequent call to `next_token()`.
+			 */
+			$this->state->frameset_ok                       = true;
+			$this->state->stack_of_template_insertion_modes = array();
+			$this->state->head_element                      = null;
+			$this->state->form_element                      = null;
+			$this->state->current_token                     = null;
+			$this->current_element                          = null;
+			$this->element_queue                            = array();
 
-			if ( isset( $this->context_node ) ) {
-				$this->breadcrumbs = array_slice( $this->breadcrumbs, 0, 2 );
+			/*
+			 * The absence of a context node indicates a full parse.
+			 * The presence of a context node indicates a fragment parser.
+			 */
+			if ( null === $this->context_node ) {
+				$this->change_parsing_namespace( 'html' );
+				$this->state->insertion_mode = WP_HTML_Processor_State::INSERTION_MODE_INITIAL;
+				$this->breadcrumbs           = array();
+
+				$this->bookmarks['initial'] = new WP_HTML_Span( 0, 0 );
+				parent::seek( 'initial' );
+				unset( $this->bookmarks['initial'] );
 			} else {
-				$this->breadcrumbs = array();
+
+				/*
+				 * Push the root-node (HTML) back onto the stack of open elements.
+				 *
+				 * Fragment parsers require this extra bit of setup.
+				 * It's handled in full parsers by advancing the processor state.
+				 */
+				$this->state->stack_of_open_elements->push(
+					new WP_HTML_Token(
+						'root-node',
+						'HTML',
+						false
+					)
+				);
+
+				$this->change_parsing_namespace(
+					$this->context_node->integration_node_type
+						? 'html'
+						: $this->context_node->namespace
+				);
+
+				if ( 'TEMPLATE' === $this->context_node->node_name ) {
+					$this->state->stack_of_template_insertion_modes[] = WP_HTML_Processor_State::INSERTION_MODE_IN_TEMPLATE;
+				}
+
+				$this->reset_insertion_mode_appropriately();
+				$this->breadcrumbs = array_slice( $this->breadcrumbs, 0, 2 );
+				parent::seek( $this->context_node->bookmark_name );
 			}
 		}
 
-		// When moving forwards, reparse the document until reaching the same location as the original bookmark.
-		if ( $bookmark_starts_at === $this->bookmarks[ $this->state->current_token->bookmark_name ]->start ) {
-			return true;
-		}
-
-		while ( $this->next_token() ) {
+		/*
+		 * Here, the processor moves forward through the document until it matches the bookmark.
+		 * do-while is used here because the processor is expected to already be stopped on
+		 * a token than may match the bookmarked location.
+		 */
+		do {
+			/*
+			 * The processor will stop on virtual tokens, but bookmarks may not be set on them.
+			 * They should not be matched when seeking a bookmark, skip them.
+			 */
+			if ( $this->is_virtual() ) {
+				continue;
+			}
 			if ( $bookmark_starts_at === $this->bookmarks[ $this->state->current_token->bookmark_name ]->start ) {
-				while ( isset( $this->current_element ) && WP_HTML_Stack_Event::POP === $this->current_element->operation ) {
-					$this->current_element = array_shift( $this->element_queue );
-				}
 				return true;
 			}
-		}
+		} while ( $this->next_token() );
 
 		return false;
 	}
