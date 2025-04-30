@@ -54,13 +54,43 @@ require_once ABSPATH . 'wp-admin/admin-header.php';
 			<a href="contribute.php" class="nav-tab"><?php _e( 'Get Involved' ); ?></a>
 		</nav>
 
+		<div class="about__section changelog has-subtle-background-color">
+			<div class="column">
+				<h2><?php _e( 'Maintenance and Security Release' ); ?></h2>
+				<p>
+					<?php
+					printf(
+						/* translators: 1: WordPress version number, 2: Plural number of bugs. */
+						_n(
+							'<strong>Version %1$s</strong> addressed %2$s bug.',
+							'<strong>Version %1$s</strong> addressed %2$s bugs.',
+							16
+						),
+						'6.8.1',
+						'15'
+					);
+					?>
+					<?php
+					printf(
+						/* translators: %s: HelpHub URL. */
+						__( 'For more information, see <a href="%s">the release notes</a>.' ),
+						sprintf(
+							/* translators: %s: WordPress version. */
+							esc_url( __( 'https://wordpress.org/support/wordpress-version/version-%s/' ) ),
+							sanitize_title( '6.8.1' )
+						)
+					);
+					?>
+				</p>
+			</div>
+		</div>
+
 		<div class="about__section has-1-column">
 			<div class="column">
 				<h2><?php _e( 'A release polished to a high sheen.' ); ?></h2>
 				<p class="is-subheading"><?php _e( 'WordPress 6.8 polishes and refines the tools you use every day, making your site faster, more secure, and easier to manage.' ); ?></p>
 				<p><?php _e( 'The Style Book now has a structured layout and works with Classic themes, giving you more control over global styles.' ); ?></p>
-				<p><?php _e( 'Speculative loading speeds up navigation by preloading links before users navigate to them, while bcrypt hashing strengthens password security automatically.' ); ?></p>
-				<p><?php _e( 'Behind the scenes, database optimizations improve performance, and a new security warning system helps prevent vulnerabilities before they become a problem.' ); ?></p>
+				<p><?php _e( 'Speculative loading speeds up navigation by preloading links before users navigate to them, bcrypt hashing strengthens password security automatically, and database optimizations improve performance.' ); ?></p>
 			</div>
 		</div>
 
