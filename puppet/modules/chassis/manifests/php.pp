@@ -39,7 +39,7 @@ class chassis::php (
   $php_dir = "php/${short_ver}"
 
   # Prepare our array of PHP common packages
-  $common_packages = [
+  $common_packages_base  = [
     "${php_package}-fpm",
     "${php_package}-common",
     "${php_package}-xml",
@@ -49,10 +49,19 @@ class chassis::php (
     "${php_package}-readline",
   ]
 
+  # If PHP 8.5, exclude opcache
+  if ( $short_ver == '8.5') {
+    $common_packages = delete($common_packages_base, "${php_package}-opcache")
+  } else {
+    $common_packages = $common_packages_base
+  }
+
+
+
   # Merge in php-json if the version is less than 8.0.
   # 8.0 and upwards comes bundled with php-json
   if ( $short_ver in ['7.4', '7.3', '7.2', '7.1', '7.0', '5.6']) {
-    $packages = concat( $common_packages, ["${php_package}-json"])
+    $packages = concat($common_packages, ["${php_package}-json"])
   }
 
   # Some of the Chassis extensions define php-cli so let's check for that to prevent failures.
