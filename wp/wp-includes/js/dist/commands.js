@@ -101,7 +101,8 @@ __webpack_require__.d(__webpack_exports__, {
   privateApis: () => (/* reexport */ privateApis),
   store: () => (/* reexport */ store),
   useCommand: () => (/* reexport */ useCommand),
-  useCommandLoader: () => (/* reexport */ useCommandLoader)
+  useCommandLoader: () => (/* reexport */ useCommandLoader),
+  useCommands: () => (/* reexport */ useCommands)
 });
 
 // NAMESPACE OBJECT: ./node_modules/@wordpress/commands/build-module/store/actions.js
@@ -133,28 +134,26 @@ __webpack_require__.d(private_actions_namespaceObject, {
   setContext: () => (setContext)
 });
 
-;// CONCATENATED MODULE: ./node_modules/cmdk/dist/chunk-NZJY6EH4.mjs
+;// external "ReactJSXRuntime"
+const external_ReactJSXRuntime_namespaceObject = window["ReactJSXRuntime"];
+;// ./node_modules/cmdk/dist/chunk-NZJY6EH4.mjs
 var U=1,Y=.9,H=.8,J=.17,p=.1,u=.999,$=.9999;var k=.99,m=/[\\\/_+.#"@\[\(\{&]/,B=/[\\\/_+.#"@\[\(\{&]/g,K=/[\s-]/,X=/[\s-]/g;function G(_,C,h,P,A,f,O){if(f===C.length)return A===_.length?U:k;var T=`${A},${f}`;if(O[T]!==void 0)return O[T];for(var L=P.charAt(f),c=h.indexOf(L,A),S=0,E,N,R,M;c>=0;)E=G(_,C,h,P,c+1,f+1,O),E>S&&(c===A?E*=U:m.test(_.charAt(c-1))?(E*=H,R=_.slice(A,c-1).match(B),R&&A>0&&(E*=Math.pow(u,R.length))):K.test(_.charAt(c-1))?(E*=Y,M=_.slice(A,c-1).match(X),M&&A>0&&(E*=Math.pow(u,M.length))):(E*=J,A>0&&(E*=Math.pow(u,c-A))),_.charAt(c)!==C.charAt(f)&&(E*=$)),(E<p&&h.charAt(c-1)===P.charAt(f+1)||P.charAt(f+1)===P.charAt(f)&&h.charAt(c-1)!==P.charAt(f))&&(N=G(_,C,h,P,c+1,f+2,O),N*p>E&&(E=N*p)),E>S&&(S=E),c=h.indexOf(L,c+1);return O[T]=S,S}function D(_){return _.toLowerCase().replace(X," ")}function W(_,C,h){return _=h&&h.length>0?`${_+" "+h.join(" ")}`:_,G(_,C,D(_),D(C),0,0,{})}
 
-;// CONCATENATED MODULE: ./node_modules/@babel/runtime/helpers/esm/extends.js
+;// ./node_modules/@babel/runtime/helpers/esm/extends.js
 function _extends() {
-  _extends = Object.assign ? Object.assign.bind() : function (target) {
-    for (var i = 1; i < arguments.length; i++) {
-      var source = arguments[i];
-      for (var key in source) {
-        if (Object.prototype.hasOwnProperty.call(source, key)) {
-          target[key] = source[key];
-        }
-      }
+  return _extends = Object.assign ? Object.assign.bind() : function (n) {
+    for (var e = 1; e < arguments.length; e++) {
+      var t = arguments[e];
+      for (var r in t) ({}).hasOwnProperty.call(t, r) && (n[r] = t[r]);
     }
-    return target;
-  };
-  return _extends.apply(this, arguments);
+    return n;
+  }, _extends.apply(null, arguments);
 }
-;// CONCATENATED MODULE: external "React"
+
+;// external "React"
 const external_React_namespaceObject = window["React"];
 var external_React_namespaceObject_0 = /*#__PURE__*/__webpack_require__.t(external_React_namespaceObject, 2);
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/primitive/dist/index.mjs
+;// ./node_modules/@radix-ui/primitive/dist/index.mjs
 function $e42e1063c40fb3ef$export$b9ecd428b558ff10(originalEventHandler, ourEventHandler, { checkForDefaultPrevented: checkForDefaultPrevented = true  } = {}) {
     return function handleEvent(event) {
         originalEventHandler === null || originalEventHandler === void 0 || originalEventHandler(event);
@@ -166,7 +165,7 @@ function $e42e1063c40fb3ef$export$b9ecd428b558ff10(originalEventHandler, ourEven
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-compose-refs/dist/index.mjs
+;// ./node_modules/@radix-ui/react-compose-refs/dist/index.mjs
 
 
 
@@ -197,7 +196,7 @@ function $e42e1063c40fb3ef$export$b9ecd428b558ff10(originalEventHandler, ourEven
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-context/dist/index.mjs
+;// ./node_modules/@radix-ui/react-context/dist/index.mjs
 
 
 
@@ -325,7 +324,7 @@ function $c512c27ab02ef895$export$fd42f52fd3ae1109(rootComponentName, defaultCon
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-use-layout-effect/dist/index.mjs
+;// ./node_modules/@radix-ui/react-use-layout-effect/dist/index.mjs
 
 
 
@@ -341,7 +340,7 @@ function $c512c27ab02ef895$export$fd42f52fd3ae1109(rootComponentName, defaultCon
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-id/dist/index.mjs
+;// ./node_modules/@radix-ui/react-id/dist/index.mjs
 
 
 
@@ -365,7 +364,7 @@ function $1746a345f3d73bb7$export$f680877a34711e37(deterministicId) {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-use-callback-ref/dist/index.mjs
+;// ./node_modules/@radix-ui/react-use-callback-ref/dist/index.mjs
 
 
 
@@ -388,7 +387,7 @@ function $1746a345f3d73bb7$export$f680877a34711e37(deterministicId) {
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-use-controllable-state/dist/index.mjs
+;// ./node_modules/@radix-ui/react-use-controllable-state/dist/index.mjs
 
 
 
@@ -441,9 +440,9 @@ function $71cd76cc60e0454e$var$useUncontrolledState({ defaultProp: defaultProp ,
 
 
 
-;// CONCATENATED MODULE: external "ReactDOM"
+;// external "ReactDOM"
 const external_ReactDOM_namespaceObject = window["ReactDOM"];
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-slot/dist/index.mjs
+;// ./node_modules/@radix-ui/react-slot/dist/index.mjs
 
 
 
@@ -532,7 +531,7 @@ const $5e63c961fc1ce211$export$be92b6f5f03c0fe9 = (/* unused pure expression or 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-primitive/dist/index.mjs
+;// ./node_modules/@radix-ui/react-primitive/dist/index.mjs
 
 
 
@@ -628,7 +627,7 @@ const $8927f6f2acc4f386$var$NODES = [
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-use-escape-keydown/dist/index.mjs
+;// ./node_modules/@radix-ui/react-use-escape-keydown/dist/index.mjs
 
 
 
@@ -655,7 +654,7 @@ const $8927f6f2acc4f386$var$NODES = [
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs
+;// ./node_modules/@radix-ui/react-dismissable-layer/dist/index.mjs
 
 
 
@@ -938,7 +937,7 @@ const $5cb92bef7577960e$export$aecb2ddcb55c95be = (/* unused pure expression or 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-focus-scope/dist/index.mjs
+;// ./node_modules/@radix-ui/react-focus-scope/dist/index.mjs
 
 
 
@@ -1230,7 +1229,7 @@ const $d3863c46a17e8a28$export$be92b6f5f03c0fe9 = (/* unused pure expression or 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-portal/dist/index.mjs
+;// ./node_modules/@radix-ui/react-portal/dist/index.mjs
 
 
 
@@ -1259,7 +1258,7 @@ const $f1701beae083dbae$export$602eac185826482c = /*#__PURE__*/ (0,external_Reac
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-presence/dist/index.mjs
+;// ./node_modules/@radix-ui/react-presence/dist/index.mjs
 
 
 
@@ -1398,7 +1397,7 @@ $921a889cee6df7e8$export$99c2b779aa4e8b8b.displayName = 'Presence';
 
 
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-focus-guards/dist/index.mjs
+;// ./node_modules/@radix-ui/react-focus-guards/dist/index.mjs
 
 
 
@@ -1437,7 +1436,7 @@ const $3db38b7d1fb3fe6a$export$be92b6f5f03c0fe9 = (/* unused pure expression or 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/tslib/tslib.es6.mjs
+;// ./node_modules/tslib/tslib.es6.mjs
 /******************************************************************************
 Copyright (c) Microsoft Corporation.
 
@@ -1840,7 +1839,7 @@ function __rewriteRelativeImportExtension(path, preserveJsx) {
   __rewriteRelativeImportExtension,
 });
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll-bar/dist/es2015/constants.js
+;// ./node_modules/react-remove-scroll-bar/dist/es2015/constants.js
 var zeroRightClassName = 'right-scroll-bar-position';
 var fullWidthClassName = 'width-before-scroll-bar';
 var noScrollbarsClassName = 'with-scroll-bars-hidden';
@@ -1850,7 +1849,7 @@ var noScrollbarsClassName = 'with-scroll-bars-hidden';
  */
 var removedBarSizeVariable = '--removed-body-scroll-bar-size';
 
-;// CONCATENATED MODULE: ./node_modules/use-callback-ref/dist/es2015/assignRef.js
+;// ./node_modules/use-callback-ref/dist/es2015/assignRef.js
 /**
  * Assigns a value for a given ref, no matter of the ref format
  * @param {RefObject} ref - a callback function or ref object
@@ -1874,7 +1873,7 @@ function assignRef(ref, value) {
     return ref;
 }
 
-;// CONCATENATED MODULE: ./node_modules/use-callback-ref/dist/es2015/useRef.js
+;// ./node_modules/use-callback-ref/dist/es2015/useRef.js
 
 /**
  * creates a MutableRef with ref change callback
@@ -1915,7 +1914,7 @@ function useCallbackRef(initialValue, callback) {
     return ref.facade;
 }
 
-;// CONCATENATED MODULE: ./node_modules/use-callback-ref/dist/es2015/useMergeRef.js
+;// ./node_modules/use-callback-ref/dist/es2015/useMergeRef.js
 
 
 
@@ -1962,7 +1961,7 @@ function useMergeRefs(refs, defaultValue) {
     return callbackRef;
 }
 
-;// CONCATENATED MODULE: ./node_modules/use-sidecar/dist/es2015/medium.js
+;// ./node_modules/use-sidecar/dist/es2015/medium.js
 
 function ItoI(a) {
     return a;
@@ -2042,11 +2041,11 @@ function createSidecarMedium(options) {
     return medium;
 }
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/medium.js
+;// ./node_modules/react-remove-scroll/dist/es2015/medium.js
 
 var effectCar = createSidecarMedium();
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/UI.js
+;// ./node_modules/react-remove-scroll/dist/es2015/UI.js
 
 
 
@@ -2084,7 +2083,7 @@ RemoveScroll.classNames = {
 };
 
 
-;// CONCATENATED MODULE: ./node_modules/use-sidecar/dist/es2015/exports.js
+;// ./node_modules/use-sidecar/dist/es2015/exports.js
 
 
 var SideCar = function (_a) {
@@ -2104,7 +2103,7 @@ function exportSidecar(medium, exported) {
     return SideCar;
 }
 
-;// CONCATENATED MODULE: ./node_modules/get-nonce/dist/es2015/index.js
+;// ./node_modules/get-nonce/dist/es2015/index.js
 var currentNonce;
 var setNonce = function (nonce) {
     currentNonce = nonce;
@@ -2119,7 +2118,7 @@ var getNonce = function () {
     return undefined;
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-style-singleton/dist/es2015/singleton.js
+;// ./node_modules/react-style-singleton/dist/es2015/singleton.js
 
 function makeStyleTag() {
     if (!document)
@@ -2169,7 +2168,7 @@ var stylesheetSingleton = function () {
     };
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-style-singleton/dist/es2015/hook.js
+;// ./node_modules/react-style-singleton/dist/es2015/hook.js
 
 
 /**
@@ -2193,7 +2192,7 @@ var styleHookSingleton = function () {
     };
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-style-singleton/dist/es2015/component.js
+;// ./node_modules/react-style-singleton/dist/es2015/component.js
 
 /**
  * create a Component to add styles on demand
@@ -2211,12 +2210,12 @@ var styleSingleton = function () {
     return Sheet;
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-style-singleton/dist/es2015/index.js
+;// ./node_modules/react-style-singleton/dist/es2015/index.js
 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll-bar/dist/es2015/utils.js
+;// ./node_modules/react-remove-scroll-bar/dist/es2015/utils.js
 var zeroGap = {
     left: 0,
     top: 0,
@@ -2247,7 +2246,7 @@ var getGapWidth = function (gapMode) {
     };
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll-bar/dist/es2015/component.js
+;// ./node_modules/react-remove-scroll-bar/dist/es2015/component.js
 
 
 
@@ -2302,13 +2301,13 @@ var RemoveScrollBar = function (_a) {
     return external_React_namespaceObject.createElement(Style, { styles: getStyles(gap, !noRelative, gapMode, !noImportant ? '!important' : '') });
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll-bar/dist/es2015/index.js
+;// ./node_modules/react-remove-scroll-bar/dist/es2015/index.js
 
 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/aggresiveCapture.js
+;// ./node_modules/react-remove-scroll/dist/es2015/aggresiveCapture.js
 var passiveSupported = false;
 if (typeof window !== 'undefined') {
     try {
@@ -2329,7 +2328,7 @@ if (typeof window !== 'undefined') {
 }
 var nonPassive = passiveSupported ? { passive: false } : false;
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/handleScroll.js
+;// ./node_modules/react-remove-scroll/dist/es2015/handleScroll.js
 var alwaysContainsScroll = function (node) {
     // textarea will always _contain_ scroll inside self. It only can be hidden
     return node.tagName === 'TEXTAREA';
@@ -2427,7 +2426,7 @@ var handleScroll = function (axis, endTarget, event, sourceDelta, noOverscroll) 
     return shouldCancelScroll;
 };
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/SideEffect.js
+;// ./node_modules/react-remove-scroll/dist/es2015/SideEffect.js
 
 
 
@@ -2575,13 +2574,13 @@ function RemoveScrollSideCar(props) {
         removeScrollBar ? external_React_namespaceObject.createElement(RemoveScrollBar, { gapMode: "margin" }) : null));
 }
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/sidecar.js
+;// ./node_modules/react-remove-scroll/dist/es2015/sidecar.js
 
 
 
 /* harmony default export */ const sidecar = (exportSidecar(effectCar, RemoveScrollSideCar));
 
-;// CONCATENATED MODULE: ./node_modules/react-remove-scroll/dist/es2015/Combination.js
+;// ./node_modules/react-remove-scroll/dist/es2015/Combination.js
 
 
 
@@ -2590,7 +2589,7 @@ var ReactRemoveScroll = external_React_namespaceObject.forwardRef(function (prop
 ReactRemoveScroll.classNames = RemoveScroll.classNames;
 /* harmony default export */ const Combination = (ReactRemoveScroll);
 
-;// CONCATENATED MODULE: ./node_modules/aria-hidden/dist/es2015/index.js
+;// ./node_modules/aria-hidden/dist/es2015/index.js
 var getDefaultParent = function (originalTarget) {
     if (typeof document === 'undefined') {
         return null;
@@ -2758,7 +2757,7 @@ var suppressOthers = function (originalTarget, parentNode, markerName) {
     return (supportsInert() ? inertOthers : hideOthers)(originalTarget, parentNode, markerName);
 };
 
-;// CONCATENATED MODULE: ./node_modules/@radix-ui/react-dialog/dist/index.mjs
+;// ./node_modules/@radix-ui/react-dialog/dist/index.mjs
 
 
 
@@ -3123,89 +3122,48 @@ const $5d3850c4d0b4e6c7$export$f39c2d165cd861fe = (/* unused pure expression or 
 
 
 
-;// CONCATENATED MODULE: ./node_modules/cmdk/dist/index.mjs
+;// ./node_modules/cmdk/dist/index.mjs
 var V='[cmdk-group=""]',dist_X='[cmdk-group-items=""]',ge='[cmdk-group-heading=""]',dist_Y='[cmdk-item=""]',le=`${dist_Y}:not([aria-disabled="true"])`,Q="cmdk-item-select",M="data-value",Re=(r,o,n)=>W(r,o,n),ue=external_React_namespaceObject.createContext(void 0),dist_G=()=>external_React_namespaceObject.useContext(ue),de=external_React_namespaceObject.createContext(void 0),Z=()=>external_React_namespaceObject.useContext(de),fe=external_React_namespaceObject.createContext(void 0),me=external_React_namespaceObject.forwardRef((r,o)=>{let n=dist_k(()=>{var e,s;return{search:"",value:(s=(e=r.value)!=null?e:r.defaultValue)!=null?s:"",filtered:{count:0,items:new Map,groups:new Set}}}),u=dist_k(()=>new Set),c=dist_k(()=>new Map),d=dist_k(()=>new Map),f=dist_k(()=>new Set),p=pe(r),{label:v,children:b,value:l,onValueChange:y,filter:S,shouldFilter:C,loop:L,disablePointerSelection:ee=!1,vimBindings:j=!0,...H}=r,te=external_React_namespaceObject.useId(),$=external_React_namespaceObject.useId(),K=external_React_namespaceObject.useId(),x=external_React_namespaceObject.useRef(null),g=Me();T(()=>{if(l!==void 0){let e=l.trim();n.current.value=e,h.emit()}},[l]),T(()=>{g(6,re)},[]);let h=external_React_namespaceObject.useMemo(()=>({subscribe:e=>(f.current.add(e),()=>f.current.delete(e)),snapshot:()=>n.current,setState:(e,s,i)=>{var a,m,R;if(!Object.is(n.current[e],s)){if(n.current[e]=s,e==="search")z(),q(),g(1,U);else if(e==="value"&&(i||g(5,re),((a=p.current)==null?void 0:a.value)!==void 0)){let E=s!=null?s:"";(R=(m=p.current).onValueChange)==null||R.call(m,E);return}h.emit()}},emit:()=>{f.current.forEach(e=>e())}}),[]),B=external_React_namespaceObject.useMemo(()=>({value:(e,s,i)=>{var a;s!==((a=d.current.get(e))==null?void 0:a.value)&&(d.current.set(e,{value:s,keywords:i}),n.current.filtered.items.set(e,ne(s,i)),g(2,()=>{q(),h.emit()}))},item:(e,s)=>(u.current.add(e),s&&(c.current.has(s)?c.current.get(s).add(e):c.current.set(s,new Set([e]))),g(3,()=>{z(),q(),n.current.value||U(),h.emit()}),()=>{d.current.delete(e),u.current.delete(e),n.current.filtered.items.delete(e);let i=O();g(4,()=>{z(),(i==null?void 0:i.getAttribute("id"))===e&&U(),h.emit()})}),group:e=>(c.current.has(e)||c.current.set(e,new Set),()=>{d.current.delete(e),c.current.delete(e)}),filter:()=>p.current.shouldFilter,label:v||r["aria-label"],disablePointerSelection:ee,listId:te,inputId:K,labelId:$,listInnerRef:x}),[]);function ne(e,s){var a,m;let i=(m=(a=p.current)==null?void 0:a.filter)!=null?m:Re;return e?i(e,n.current.search,s):0}function q(){if(!n.current.search||p.current.shouldFilter===!1)return;let e=n.current.filtered.items,s=[];n.current.filtered.groups.forEach(a=>{let m=c.current.get(a),R=0;m.forEach(E=>{let P=e.get(E);R=Math.max(P,R)}),s.push([a,R])});let i=x.current;A().sort((a,m)=>{var P,_;let R=a.getAttribute("id"),E=m.getAttribute("id");return((P=e.get(E))!=null?P:0)-((_=e.get(R))!=null?_:0)}).forEach(a=>{let m=a.closest(dist_X);m?m.appendChild(a.parentElement===m?a:a.closest(`${dist_X} > *`)):i.appendChild(a.parentElement===i?a:a.closest(`${dist_X} > *`))}),s.sort((a,m)=>m[1]-a[1]).forEach(a=>{let m=x.current.querySelector(`${V}[${M}="${encodeURIComponent(a[0])}"]`);m==null||m.parentElement.appendChild(m)})}function U(){let e=A().find(i=>i.getAttribute("aria-disabled")!=="true"),s=e==null?void 0:e.getAttribute(M);h.setState("value",s||void 0)}function z(){var s,i,a,m;if(!n.current.search||p.current.shouldFilter===!1){n.current.filtered.count=u.current.size;return}n.current.filtered.groups=new Set;let e=0;for(let R of u.current){let E=(i=(s=d.current.get(R))==null?void 0:s.value)!=null?i:"",P=(m=(a=d.current.get(R))==null?void 0:a.keywords)!=null?m:[],_=ne(E,P);n.current.filtered.items.set(R,_),_>0&&e++}for(let[R,E]of c.current)for(let P of E)if(n.current.filtered.items.get(P)>0){n.current.filtered.groups.add(R);break}n.current.filtered.count=e}function re(){var s,i,a;let e=O();e&&(((s=e.parentElement)==null?void 0:s.firstChild)===e&&((a=(i=e.closest(V))==null?void 0:i.querySelector(ge))==null||a.scrollIntoView({block:"nearest"})),e.scrollIntoView({block:"nearest"}))}function O(){var e;return(e=x.current)==null?void 0:e.querySelector(`${dist_Y}[aria-selected="true"]`)}function A(){var e;return Array.from((e=x.current)==null?void 0:e.querySelectorAll(le))}function W(e){let i=A()[e];i&&h.setState("value",i.getAttribute(M))}function J(e){var R;let s=O(),i=A(),a=i.findIndex(E=>E===s),m=i[a+e];(R=p.current)!=null&&R.loop&&(m=a+e<0?i[i.length-1]:a+e===i.length?i[0]:i[a+e]),m&&h.setState("value",m.getAttribute(M))}function oe(e){let s=O(),i=s==null?void 0:s.closest(V),a;for(;i&&!a;)i=e>0?we(i,V):Ie(i,V),a=i==null?void 0:i.querySelector(le);a?h.setState("value",a.getAttribute(M)):J(e)}let ie=()=>W(A().length-1),ae=e=>{e.preventDefault(),e.metaKey?ie():e.altKey?oe(1):J(1)},se=e=>{e.preventDefault(),e.metaKey?W(0):e.altKey?oe(-1):J(-1)};return external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:o,tabIndex:-1,...H,"cmdk-root":"",onKeyDown:e=>{var s;if((s=H.onKeyDown)==null||s.call(H,e),!e.defaultPrevented)switch(e.key){case"n":case"j":{j&&e.ctrlKey&&ae(e);break}case"ArrowDown":{ae(e);break}case"p":case"k":{j&&e.ctrlKey&&se(e);break}case"ArrowUp":{se(e);break}case"Home":{e.preventDefault(),W(0);break}case"End":{e.preventDefault(),ie();break}case"Enter":if(!e.nativeEvent.isComposing&&e.keyCode!==229){e.preventDefault();let i=O();if(i){let a=new Event(Q);i.dispatchEvent(a)}}}}},external_React_namespaceObject.createElement("label",{"cmdk-label":"",htmlFor:B.inputId,id:B.labelId,style:De},v),F(r,e=>external_React_namespaceObject.createElement(de.Provider,{value:h},external_React_namespaceObject.createElement(ue.Provider,{value:B},e))))}),be=external_React_namespaceObject.forwardRef((r,o)=>{var K,x;let n=external_React_namespaceObject.useId(),u=external_React_namespaceObject.useRef(null),c=external_React_namespaceObject.useContext(fe),d=dist_G(),f=pe(r),p=(x=(K=f.current)==null?void 0:K.forceMount)!=null?x:c==null?void 0:c.forceMount;T(()=>{if(!p)return d.item(n,c==null?void 0:c.id)},[p]);let v=ve(n,u,[r.value,r.children,u],r.keywords),b=Z(),l=dist_D(g=>g.value&&g.value===v.current),y=dist_D(g=>p||d.filter()===!1?!0:g.search?g.filtered.items.get(n)>0:!0);external_React_namespaceObject.useEffect(()=>{let g=u.current;if(!(!g||r.disabled))return g.addEventListener(Q,S),()=>g.removeEventListener(Q,S)},[y,r.onSelect,r.disabled]);function S(){var g,h;C(),(h=(g=f.current).onSelect)==null||h.call(g,v.current)}function C(){b.setState("value",v.current,!0)}if(!y)return null;let{disabled:L,value:ee,onSelect:j,forceMount:H,keywords:te,...$}=r;return external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:N([u,o]),...$,id:n,"cmdk-item":"",role:"option","aria-disabled":!!L,"aria-selected":!!l,"data-disabled":!!L,"data-selected":!!l,onPointerMove:L||d.disablePointerSelection?void 0:C,onClick:L?void 0:S},r.children)}),he=external_React_namespaceObject.forwardRef((r,o)=>{let{heading:n,children:u,forceMount:c,...d}=r,f=external_React_namespaceObject.useId(),p=external_React_namespaceObject.useRef(null),v=external_React_namespaceObject.useRef(null),b=external_React_namespaceObject.useId(),l=dist_G(),y=dist_D(C=>c||l.filter()===!1?!0:C.search?C.filtered.groups.has(f):!0);T(()=>l.group(f),[]),ve(f,p,[r.value,r.heading,v]);let S=external_React_namespaceObject.useMemo(()=>({id:f,forceMount:c}),[c]);return external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:N([p,o]),...d,"cmdk-group":"",role:"presentation",hidden:y?void 0:!0},n&&external_React_namespaceObject.createElement("div",{ref:v,"cmdk-group-heading":"","aria-hidden":!0,id:b},n),F(r,C=>external_React_namespaceObject.createElement("div",{"cmdk-group-items":"",role:"group","aria-labelledby":n?b:void 0},external_React_namespaceObject.createElement(fe.Provider,{value:S},C))))}),ye=external_React_namespaceObject.forwardRef((r,o)=>{let{alwaysRender:n,...u}=r,c=external_React_namespaceObject.useRef(null),d=dist_D(f=>!f.search);return!n&&!d?null:external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:N([c,o]),...u,"cmdk-separator":"",role:"separator"})}),Ee=external_React_namespaceObject.forwardRef((r,o)=>{let{onValueChange:n,...u}=r,c=r.value!=null,d=Z(),f=dist_D(l=>l.search),p=dist_D(l=>l.value),v=dist_G(),b=external_React_namespaceObject.useMemo(()=>{var y;let l=(y=v.listInnerRef.current)==null?void 0:y.querySelector(`${dist_Y}[${M}="${encodeURIComponent(p)}"]`);return l==null?void 0:l.getAttribute("id")},[]);return external_React_namespaceObject.useEffect(()=>{r.value!=null&&d.setState("search",r.value)},[r.value]),external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.input,{ref:o,...u,"cmdk-input":"",autoComplete:"off",autoCorrect:"off",spellCheck:!1,"aria-autocomplete":"list",role:"combobox","aria-expanded":!0,"aria-controls":v.listId,"aria-labelledby":v.labelId,"aria-activedescendant":b,id:v.inputId,type:"text",value:c?r.value:f,onChange:l=>{c||d.setState("search",l.target.value),n==null||n(l.target.value)}})}),Se=external_React_namespaceObject.forwardRef((r,o)=>{let{children:n,label:u="Suggestions",...c}=r,d=external_React_namespaceObject.useRef(null),f=external_React_namespaceObject.useRef(null),p=dist_G();return external_React_namespaceObject.useEffect(()=>{if(f.current&&d.current){let v=f.current,b=d.current,l,y=new ResizeObserver(()=>{l=requestAnimationFrame(()=>{let S=v.offsetHeight;b.style.setProperty("--cmdk-list-height",S.toFixed(1)+"px")})});return y.observe(v),()=>{cancelAnimationFrame(l),y.unobserve(v)}}},[]),external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:N([d,o]),...c,"cmdk-list":"",role:"listbox","aria-label":u,id:p.listId},F(r,v=>external_React_namespaceObject.createElement("div",{ref:N([f,p.listInnerRef]),"cmdk-list-sizer":""},v)))}),Ce=external_React_namespaceObject.forwardRef((r,o)=>{let{open:n,onOpenChange:u,overlayClassName:c,contentClassName:d,container:f,...p}=r;return external_React_namespaceObject.createElement($5d3850c4d0b4e6c7$export$be92b6f5f03c0fe9,{open:n,onOpenChange:u},external_React_namespaceObject.createElement($5d3850c4d0b4e6c7$export$602eac185826482c,{container:f},external_React_namespaceObject.createElement($5d3850c4d0b4e6c7$export$c6fdb837b070b4ff,{"cmdk-overlay":"",className:c}),external_React_namespaceObject.createElement($5d3850c4d0b4e6c7$export$7c6e2c02157bb7d2,{"aria-label":r.label,"cmdk-dialog":"",className:d},external_React_namespaceObject.createElement(me,{ref:o,...p}))))}),xe=external_React_namespaceObject.forwardRef((r,o)=>dist_D(u=>u.filtered.count===0)?external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:o,...r,"cmdk-empty":"",role:"presentation"}):null),Pe=external_React_namespaceObject.forwardRef((r,o)=>{let{progress:n,children:u,label:c="Loading...",...d}=r;return external_React_namespaceObject.createElement($8927f6f2acc4f386$export$250ffa63cdc0d034.div,{ref:o,...d,"cmdk-loading":"",role:"progressbar","aria-valuenow":n,"aria-valuemin":0,"aria-valuemax":100,"aria-label":c},F(r,f=>external_React_namespaceObject.createElement("div",{"aria-hidden":!0},f)))}),He=Object.assign(me,{List:Se,Item:be,Input:Ee,Group:he,Separator:ye,Dialog:Ce,Empty:xe,Loading:Pe});function we(r,o){let n=r.nextElementSibling;for(;n;){if(n.matches(o))return n;n=n.nextElementSibling}}function Ie(r,o){let n=r.previousElementSibling;for(;n;){if(n.matches(o))return n;n=n.previousElementSibling}}function pe(r){let o=external_React_namespaceObject.useRef(r);return T(()=>{o.current=r}),o}var T=typeof window=="undefined"?external_React_namespaceObject.useEffect:external_React_namespaceObject.useLayoutEffect;function dist_k(r){let o=external_React_namespaceObject.useRef();return o.current===void 0&&(o.current=r()),o}function N(r){return o=>{r.forEach(n=>{typeof n=="function"?n(o):n!=null&&(n.current=o)})}}function dist_D(r){let o=Z(),n=()=>r(o.snapshot());return external_React_namespaceObject.useSyncExternalStore(o.subscribe,n,n)}function ve(r,o,n,u=[]){let c=external_React_namespaceObject.useRef(),d=dist_G();return T(()=>{var v;let f=(()=>{var b;for(let l of n){if(typeof l=="string")return l.trim();if(typeof l=="object"&&"current"in l)return l.current?(b=l.current.textContent)==null?void 0:b.trim():c.current}})(),p=u.map(b=>b.trim());d.value(r,f,p),(v=o.current)==null||v.setAttribute(M,f),c.current=f}),c}var Me=()=>{let[r,o]=external_React_namespaceObject.useState(),n=dist_k(()=>new Map);return T(()=>{n.current.forEach(u=>u()),n.current=new Map},[r]),(u,c)=>{n.current.set(u,c),o({})}};function Te(r){let o=r.type;return typeof o=="function"?o(r.props):"render"in o?o.render(r.props):r}function F({asChild:r,children:o},n){return r&&external_React_namespaceObject.isValidElement(o)?external_React_namespaceObject.cloneElement(Te(o),{ref:o.ref},n(o.props.children)):n(o)}var De={position:"absolute",width:"1px",height:"1px",padding:"0",margin:"-1px",overflow:"hidden",clip:"rect(0, 0, 0, 0)",whiteSpace:"nowrap",borderWidth:"0"};
 
-;// CONCATENATED MODULE: ./node_modules/clsx/dist/clsx.mjs
+;// ./node_modules/clsx/dist/clsx.mjs
 function r(e){var t,f,n="";if("string"==typeof e||"number"==typeof e)n+=e;else if("object"==typeof e)if(Array.isArray(e)){var o=e.length;for(t=0;t<o;t++)e[t]&&(f=r(e[t]))&&(n&&(n+=" "),n+=f)}else for(f in e)e[f]&&(n&&(n+=" "),n+=f);return n}function clsx(){for(var e,t,f=0,n="",o=arguments.length;f<o;f++)(e=arguments[f])&&(t=r(e))&&(n&&(n+=" "),n+=t);return n}/* harmony default export */ const dist_clsx = (clsx);
-;// CONCATENATED MODULE: external ["wp","data"]
+;// external ["wp","data"]
 const external_wp_data_namespaceObject = window["wp"]["data"];
-;// CONCATENATED MODULE: external ["wp","element"]
+;// external ["wp","element"]
 const external_wp_element_namespaceObject = window["wp"]["element"];
-;// CONCATENATED MODULE: external ["wp","i18n"]
+;// external ["wp","i18n"]
 const external_wp_i18n_namespaceObject = window["wp"]["i18n"];
-;// CONCATENATED MODULE: external ["wp","components"]
+;// external ["wp","components"]
 const external_wp_components_namespaceObject = window["wp"]["components"];
-;// CONCATENATED MODULE: external ["wp","keyboardShortcuts"]
+;// external ["wp","keyboardShortcuts"]
 const external_wp_keyboardShortcuts_namespaceObject = window["wp"]["keyboardShortcuts"];
-;// CONCATENATED MODULE: ./node_modules/@wordpress/icons/build-module/icon/index.js
-/**
- * WordPress dependencies
- */
+;// ./node_modules/@wordpress/icons/build-module/icon/index.js
+
+var icon_default = (0,external_wp_element_namespaceObject.forwardRef)(
+  ({ icon, size = 24, ...props }, ref) => {
+    return (0,external_wp_element_namespaceObject.cloneElement)(icon, {
+      width: size,
+      height: size,
+      ...props,
+      ref
+    });
+  }
+);
 
 
-/** @typedef {{icon: JSX.Element, size?: number} & import('@wordpress/primitives').SVGProps} IconProps */
-
-/**
- * Return an SVG icon.
- *
- * @param {IconProps}                                 props icon is the SVG component to render
- *                                                          size is a number specifiying the icon size in pixels
- *                                                          Other props will be passed to wrapped SVG component
- * @param {import('react').ForwardedRef<HTMLElement>} ref   The forwarded ref to the SVG element.
- *
- * @return {JSX.Element}  Icon component
- */
-function Icon({
-  icon,
-  size = 24,
-  ...props
-}, ref) {
-  return (0,external_wp_element_namespaceObject.cloneElement)(icon, {
-    width: size,
-    height: size,
-    ...props,
-    ref
-  });
-}
-/* harmony default export */ const icon = ((0,external_wp_element_namespaceObject.forwardRef)(Icon));
-
-;// CONCATENATED MODULE: external ["wp","primitives"]
+;// external ["wp","primitives"]
 const external_wp_primitives_namespaceObject = window["wp"]["primitives"];
-;// CONCATENATED MODULE: external "ReactJSXRuntime"
-const external_ReactJSXRuntime_namespaceObject = window["ReactJSXRuntime"];
-;// CONCATENATED MODULE: ./node_modules/@wordpress/icons/build-module/library/search.js
-/**
- * WordPress dependencies
- */
+;// ./node_modules/@wordpress/icons/build-module/library/search.js
 
 
-const search = /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_primitives_namespaceObject.SVG, {
-  xmlns: "http://www.w3.org/2000/svg",
-  viewBox: "0 0 24 24",
-  children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_primitives_namespaceObject.Path, {
-    d: "M13 5c-3.3 0-6 2.7-6 6 0 1.4.5 2.7 1.3 3.7l-3.8 3.8 1.1 1.1 3.8-3.8c1 .8 2.3 1.3 3.7 1.3 3.3 0 6-2.7 6-6S16.3 5 13 5zm0 10.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5z"
-  })
-});
-/* harmony default export */ const library_search = (search);
-
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/store/reducer.js
-/**
- * WordPress dependencies
- */
+var search_default = /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_primitives_namespaceObject.SVG, { xmlns: "http://www.w3.org/2000/svg", viewBox: "0 0 24 24", children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_primitives_namespaceObject.Path, { d: "M13 5c-3.3 0-6 2.7-6 6 0 1.4.5 2.7 1.3 3.7l-3.8 3.8 1.1 1.1 3.8-3.8c1 .8 2.3 1.3 3.7 1.3 3.3 0 6-2.7 6-6S16.3 5 13 5zm0 10.5c-2.5 0-4.5-2-4.5-4.5s2-4.5 4.5-4.5 4.5 2 4.5 4.5-2 4.5-4.5 4.5z" }) });
 
 
-/**
- * Reducer returning the registered commands
- *
- * @param {Object} state  Current state.
- * @param {Object} action Dispatched action.
- *
- * @return {Object} Updated state.
- */
+;// ./node_modules/@wordpress/commands/build-module/store/reducer.js
+
 function commands(state = {}, action) {
   switch (action.type) {
-    case 'REGISTER_COMMAND':
+    case "REGISTER_COMMAND":
       return {
         ...state,
         [action.name]: {
@@ -3214,32 +3172,20 @@ function commands(state = {}, action) {
           searchLabel: action.searchLabel,
           context: action.context,
           callback: action.callback,
-          icon: action.icon
+          icon: action.icon,
+          keywords: action.keywords
         }
       };
-    case 'UNREGISTER_COMMAND':
-      {
-        const {
-          [action.name]: _,
-          ...remainingState
-        } = state;
-        return remainingState;
-      }
+    case "UNREGISTER_COMMAND": {
+      const { [action.name]: _, ...remainingState } = state;
+      return remainingState;
+    }
   }
   return state;
 }
-
-/**
- * Reducer returning the command loaders
- *
- * @param {Object} state  Current state.
- * @param {Object} action Dispatched action.
- *
- * @return {Object} Updated state.
- */
 function commandLoaders(state = {}, action) {
   switch (action.type) {
-    case 'REGISTER_COMMAND_LOADER':
+    case "REGISTER_COMMAND_LOADER":
       return {
         ...state,
         [action.name]: {
@@ -3248,47 +3194,25 @@ function commandLoaders(state = {}, action) {
           hook: action.hook
         }
       };
-    case 'UNREGISTER_COMMAND_LOADER':
-      {
-        const {
-          [action.name]: _,
-          ...remainingState
-        } = state;
-        return remainingState;
-      }
+    case "UNREGISTER_COMMAND_LOADER": {
+      const { [action.name]: _, ...remainingState } = state;
+      return remainingState;
+    }
   }
   return state;
 }
-
-/**
- * Reducer returning the command palette open state.
- *
- * @param {Object} state  Current state.
- * @param {Object} action Dispatched action.
- *
- * @return {boolean} Updated state.
- */
 function isOpen(state = false, action) {
   switch (action.type) {
-    case 'OPEN':
+    case "OPEN":
       return true;
-    case 'CLOSE':
+    case "CLOSE":
       return false;
   }
   return state;
 }
-
-/**
- * Reducer returning the command palette's active context.
- *
- * @param {Object} state  Current state.
- * @param {Object} action Dispatched action.
- *
- * @return {boolean} Updated state.
- */
-function context(state = 'root', action) {
+function context(state = "root", action) {
   switch (action.type) {
-    case 'SET_CONTEXT':
+    case "SET_CONTEXT":
       return action.context;
   }
   return state;
@@ -3299,248 +3223,107 @@ const reducer = (0,external_wp_data_namespaceObject.combineReducers)({
   isOpen,
   context
 });
-/* harmony default export */ const store_reducer = (reducer);
+var reducer_default = reducer;
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/store/actions.js
-/** @typedef {import('@wordpress/keycodes').WPKeycodeModifier} WPKeycodeModifier */
 
-/**
- * Configuration of a registered keyboard shortcut.
- *
- * @typedef {Object} WPCommandConfig
- *
- * @property {string}      name        Command name.
- * @property {string}      label       Command label.
- * @property {string=}     searchLabel Command search label.
- * @property {string=}     context     Command context.
- * @property {JSX.Element} icon        Command icon.
- * @property {Function}    callback    Command callback.
- * @property {boolean}     disabled    Whether to disable the command.
- */
-
-/**
- * @typedef {(search: string) => WPCommandConfig[]} WPCommandLoaderHook hoo
- */
-
-/**
- * Command loader config.
- *
- * @typedef {Object} WPCommandLoaderConfig
- *
- * @property {string}              name     Command loader name.
- * @property {string=}             context  Command loader context.
- * @property {WPCommandLoaderHook} hook     Command loader hook.
- * @property {boolean}             disabled Whether to disable the command loader.
- */
-
-/**
- * Returns an action object used to register a new command.
- *
- * @param {WPCommandConfig} config Command config.
- *
- * @return {Object} action.
- */
+;// ./node_modules/@wordpress/commands/build-module/store/actions.js
 function registerCommand(config) {
   return {
-    type: 'REGISTER_COMMAND',
+    type: "REGISTER_COMMAND",
     ...config
   };
 }
-
-/**
- * Returns an action object used to unregister a command.
- *
- * @param {string} name Command name.
- *
- * @return {Object} action.
- */
 function unregisterCommand(name) {
   return {
-    type: 'UNREGISTER_COMMAND',
+    type: "UNREGISTER_COMMAND",
     name
   };
 }
-
-/**
- * Register command loader.
- *
- * @param {WPCommandLoaderConfig} config Command loader config.
- *
- * @return {Object} action.
- */
 function registerCommandLoader(config) {
   return {
-    type: 'REGISTER_COMMAND_LOADER',
+    type: "REGISTER_COMMAND_LOADER",
     ...config
   };
 }
-
-/**
- * Unregister command loader hook.
- *
- * @param {string} name Command loader name.
- *
- * @return {Object} action.
- */
 function unregisterCommandLoader(name) {
   return {
-    type: 'UNREGISTER_COMMAND_LOADER',
+    type: "UNREGISTER_COMMAND_LOADER",
     name
   };
 }
-
-/**
- * Opens the command palette.
- *
- * @return {Object} action.
- */
 function actions_open() {
   return {
-    type: 'OPEN'
+    type: "OPEN"
   };
 }
-
-/**
- * Closes the command palette.
- *
- * @return {Object} action.
- */
 function actions_close() {
   return {
-    type: 'CLOSE'
+    type: "CLOSE"
   };
 }
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/store/selectors.js
-/**
- * WordPress dependencies
- */
 
+;// ./node_modules/@wordpress/commands/build-module/store/selectors.js
 
-/**
- * Returns the registered static commands.
- *
- * @param {Object}  state      State tree.
- * @param {boolean} contextual Whether to return only contextual commands.
- *
- * @return {import('./actions').WPCommandConfig[]} The list of registered commands.
- */
-const getCommands = (0,external_wp_data_namespaceObject.createSelector)((state, contextual = false) => Object.values(state.commands).filter(command => {
-  const isContextual = command.context && command.context === state.context;
-  return contextual ? isContextual : !isContextual;
-}), state => [state.commands, state.context]);
-
-/**
- * Returns the registered command loaders.
- *
- * @param {Object}  state      State tree.
- * @param {boolean} contextual Whether to return only contextual command loaders.
- *
- * @return {import('./actions').WPCommandLoaderConfig[]} The list of registered command loaders.
- */
-const getCommandLoaders = (0,external_wp_data_namespaceObject.createSelector)((state, contextual = false) => Object.values(state.commandLoaders).filter(loader => {
-  const isContextual = loader.context && loader.context === state.context;
-  return contextual ? isContextual : !isContextual;
-}), state => [state.commandLoaders, state.context]);
-
-/**
- * Returns whether the command palette is open.
- *
- * @param {Object} state State tree.
- *
- * @return {boolean} Returns whether the command palette is open.
- */
+const getCommands = (0,external_wp_data_namespaceObject.createSelector)(
+  (state, contextual = false) => Object.values(state.commands).filter((command) => {
+    const isContextual = command.context && command.context === state.context;
+    return contextual ? isContextual : !isContextual;
+  }),
+  (state) => [state.commands, state.context]
+);
+const getCommandLoaders = (0,external_wp_data_namespaceObject.createSelector)(
+  (state, contextual = false) => Object.values(state.commandLoaders).filter((loader) => {
+    const isContextual = loader.context && loader.context === state.context;
+    return contextual ? isContextual : !isContextual;
+  }),
+  (state) => [state.commandLoaders, state.context]
+);
 function selectors_isOpen(state) {
   return state.isOpen;
 }
-
-/**
- * Returns whether the active context.
- *
- * @param {Object} state State tree.
- *
- * @return {string} Context.
- */
 function getContext(state) {
   return state.context;
 }
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/store/private-actions.js
-/**
- * Sets the active context.
- *
- * @param {string} context Context.
- *
- * @return {Object} action.
- */
+
+;// ./node_modules/@wordpress/commands/build-module/store/private-actions.js
 function setContext(context) {
   return {
-    type: 'SET_CONTEXT',
+    type: "SET_CONTEXT",
     context
   };
 }
 
-;// CONCATENATED MODULE: external ["wp","privateApis"]
+
+;// external ["wp","privateApis"]
 const external_wp_privateApis_namespaceObject = window["wp"]["privateApis"];
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/lock-unlock.js
-/**
- * WordPress dependencies
- */
+;// ./node_modules/@wordpress/commands/build-module/lock-unlock.js
 
-const {
-  lock,
-  unlock
-} = (0,external_wp_privateApis_namespaceObject.__dangerousOptInToUnstableAPIsOnlyForCoreModules)('I acknowledge private features are not for use in themes or plugins and doing so will break in the next version of WordPress.', '@wordpress/commands');
-
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/store/index.js
-/**
- * WordPress dependencies
- */
+const { lock, unlock } = (0,external_wp_privateApis_namespaceObject.__dangerousOptInToUnstableAPIsOnlyForCoreModules)(
+  "I acknowledge private features are not for use in themes or plugins and doing so will break in the next version of WordPress.",
+  "@wordpress/commands"
+);
 
 
-/**
- * Internal dependencies
- */
+;// ./node_modules/@wordpress/commands/build-module/store/index.js
 
 
 
 
 
-const STORE_NAME = 'core/commands';
 
-/**
- * Store definition for the commands namespace.
- *
- * @see https://github.com/WordPress/gutenberg/blob/HEAD/packages/data/README.md#createReduxStore
- *
- * @type {Object}
- *
- * @example
- * ```js
- * import { store as commandsStore } from '@wordpress/commands';
- * import { useDispatch } from '@wordpress/data';
- * ...
- * const { open: openCommandCenter } = useDispatch( commandsStore );
- * ```
- */
+const STORE_NAME = "core/commands";
 const store = (0,external_wp_data_namespaceObject.createReduxStore)(STORE_NAME, {
-  reducer: store_reducer,
+  reducer: reducer_default,
   actions: actions_namespaceObject,
   selectors: selectors_namespaceObject
 });
 (0,external_wp_data_namespaceObject.register)(store);
 unlock(store).registerPrivateActions(private_actions_namespaceObject);
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/components/command-menu.js
-/**
- * External dependencies
- */
 
-
-
-/**
- * WordPress dependencies
- */
+;// ./node_modules/@wordpress/commands/build-module/components/command-menu.js
 
 
 
@@ -3548,362 +3331,300 @@ unlock(store).registerPrivateActions(private_actions_namespaceObject);
 
 
 
-/**
- * Internal dependencies
- */
 
 
 
-
-const inputLabel = (0,external_wp_i18n_namespaceObject.__)('Search commands and settings');
-function CommandMenuLoader({
-  name,
-  search,
-  hook,
-  setLoader,
-  close
-}) {
-  var _hook;
-  const {
-    isLoading,
-    commands = []
-  } = (_hook = hook({
-    search
-  })) !== null && _hook !== void 0 ? _hook : {};
+const inputLabel = (0,external_wp_i18n_namespaceObject.__)("Search commands and settings");
+function CommandMenuLoader({ name, search, hook, setLoader, close }) {
+  const { isLoading, commands = [] } = hook({ search }) ?? {};
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     setLoader(name, isLoading);
   }, [setLoader, name, isLoading]);
   if (!commands.length) {
     return null;
   }
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_ReactJSXRuntime_namespaceObject.Fragment, {
-    children: commands.map(command => {
-      var _command$searchLabel;
-      return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(He.Item, {
-        value: (_command$searchLabel = command.searchLabel) !== null && _command$searchLabel !== void 0 ? _command$searchLabel : command.label,
-        onSelect: () => command.callback({
-          close
-        }),
-        id: command.name,
-        children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)(external_wp_components_namespaceObject.__experimentalHStack, {
+  return /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(external_ReactJSXRuntime_namespaceObject.Fragment, { children: commands.map((command) => /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+    He.Item,
+    {
+      value: command.searchLabel ?? command.label,
+      keywords: command.keywords,
+      onSelect: () => command.callback({ close }),
+      id: command.name,
+      children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsxs)(
+        external_wp_components_namespaceObject.__experimentalHStack,
+        {
           alignment: "left",
-          className: dist_clsx('commands-command-menu__item', {
-            'has-icon': command.icon
+          className: dist_clsx("commands-command-menu__item", {
+            "has-icon": command.icon
           }),
-          children: [command.icon && /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(icon, {
-            icon: command.icon
-          }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)("span", {
-            children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.TextHighlight, {
-              text: command.label,
-              highlight: search
-            })
-          })]
-        })
-      }, command.name);
-    })
-  });
+          children: [
+            command.icon && /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(icon_default, { icon: command.icon }),
+            /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)("span", { children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+              external_wp_components_namespaceObject.TextHighlight,
+              {
+                text: command.label,
+                highlight: search
+              }
+            ) })
+          ]
+        }
+      )
+    },
+    command.name
+  )) });
 }
-function CommandMenuLoaderWrapper({
-  hook,
-  search,
-  setLoader,
-  close
-}) {
-  // The "hook" prop is actually a custom React hook
-  // so to avoid breaking the rules of hooks
-  // the CommandMenuLoaderWrapper component need to be
-  // remounted on each hook prop change
-  // We use the key state to make sure we do that properly.
+function CommandMenuLoaderWrapper({ hook, search, setLoader, close }) {
   const currentLoaderRef = (0,external_wp_element_namespaceObject.useRef)(hook);
   const [key, setKey] = (0,external_wp_element_namespaceObject.useState)(0);
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     if (currentLoaderRef.current !== hook) {
       currentLoaderRef.current = hook;
-      setKey(prevKey => prevKey + 1);
+      setKey((prevKey) => prevKey + 1);
     }
   }, [hook]);
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(CommandMenuLoader, {
-    hook: currentLoaderRef.current,
-    search: search,
-    setLoader: setLoader,
-    close: close
-  }, key);
+  return /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+    CommandMenuLoader,
+    {
+      hook: currentLoaderRef.current,
+      search,
+      setLoader,
+      close
+    },
+    key
+  );
 }
-function CommandMenuGroup({
-  isContextual,
-  search,
-  setLoader,
-  close
-}) {
-  const {
-    commands,
-    loaders
-  } = (0,external_wp_data_namespaceObject.useSelect)(select => {
-    const {
-      getCommands,
-      getCommandLoaders
-    } = select(store);
-    return {
-      commands: getCommands(isContextual),
-      loaders: getCommandLoaders(isContextual)
-    };
-  }, [isContextual]);
+function CommandMenuGroup({ isContextual, search, setLoader, close }) {
+  const { commands, loaders } = (0,external_wp_data_namespaceObject.useSelect)(
+    (select) => {
+      const { getCommands, getCommandLoaders } = select(store);
+      return {
+        commands: getCommands(isContextual),
+        loaders: getCommandLoaders(isContextual)
+      };
+    },
+    [isContextual]
+  );
   if (!commands.length && !loaders.length) {
     return null;
   }
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)(He.Group, {
-    children: [commands.map(command => {
-      var _command$searchLabel2;
-      return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(He.Item, {
-        value: (_command$searchLabel2 = command.searchLabel) !== null && _command$searchLabel2 !== void 0 ? _command$searchLabel2 : command.label,
-        onSelect: () => command.callback({
-          close
-        }),
+  return /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsxs)(He.Group, { children: [
+    commands.map((command) => /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+      He.Item,
+      {
+        value: command.searchLabel ?? command.label,
+        keywords: command.keywords,
+        onSelect: () => command.callback({ close }),
         id: command.name,
-        children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)(external_wp_components_namespaceObject.__experimentalHStack, {
-          alignment: "left",
-          className: dist_clsx('commands-command-menu__item', {
-            'has-icon': command.icon
-          }),
-          children: [command.icon && /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(icon, {
-            icon: command.icon
-          }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)("span", {
-            children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.TextHighlight, {
-              text: command.label,
-              highlight: search
-            })
-          })]
-        })
-      }, command.name);
-    }), loaders.map(loader => /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(CommandMenuLoaderWrapper, {
-      hook: loader.hook,
-      search: search,
-      setLoader: setLoader,
-      close: close
-    }, loader.name))]
-  });
+        children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsxs)(
+          external_wp_components_namespaceObject.__experimentalHStack,
+          {
+            alignment: "left",
+            className: dist_clsx("commands-command-menu__item", {
+              "has-icon": command.icon
+            }),
+            children: [
+              command.icon && /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(icon_default, { icon: command.icon }),
+              /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)("span", { children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+                external_wp_components_namespaceObject.TextHighlight,
+                {
+                  text: command.label,
+                  highlight: search
+                }
+              ) })
+            ]
+          }
+        )
+      },
+      command.name
+    )),
+    loaders.map((loader) => /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+      CommandMenuLoaderWrapper,
+      {
+        hook: loader.hook,
+        search,
+        setLoader,
+        close
+      },
+      loader.name
+    ))
+  ] });
 }
-function CommandInput({
-  isOpen,
-  search,
-  setSearch
-}) {
+function CommandInput({ isOpen, search, setSearch }) {
   const commandMenuInput = (0,external_wp_element_namespaceObject.useRef)();
-  const _value = dist_D(state => state.value);
+  const _value = dist_D((state) => state.value);
   const selectedItemId = (0,external_wp_element_namespaceObject.useMemo)(() => {
-    const item = document.querySelector(`[cmdk-item=""][data-value="${_value}"]`);
-    return item?.getAttribute('id');
+    const item = document.querySelector(
+      `[cmdk-item=""][data-value="${_value}"]`
+    );
+    return item?.getAttribute("id");
   }, [_value]);
   (0,external_wp_element_namespaceObject.useEffect)(() => {
-    // Focus the command palette input when mounting the modal.
     if (isOpen) {
       commandMenuInput.current.focus();
     }
   }, [isOpen]);
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(He.Input, {
-    ref: commandMenuInput,
-    value: search,
-    onValueChange: setSearch,
-    placeholder: inputLabel,
-    "aria-activedescendant": selectedItemId,
-    icon: search
-  });
+  return /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+    He.Input,
+    {
+      ref: commandMenuInput,
+      value: search,
+      onValueChange: setSearch,
+      placeholder: inputLabel,
+      "aria-activedescendant": selectedItemId,
+      icon: search
+    }
+  );
 }
-
-/**
- * @ignore
- */
 function CommandMenu() {
-  const {
-    registerShortcut
-  } = (0,external_wp_data_namespaceObject.useDispatch)(external_wp_keyboardShortcuts_namespaceObject.store);
-  const [search, setSearch] = (0,external_wp_element_namespaceObject.useState)('');
-  const isOpen = (0,external_wp_data_namespaceObject.useSelect)(select => select(store).isOpen(), []);
-  const {
-    open,
-    close
-  } = (0,external_wp_data_namespaceObject.useDispatch)(store);
+  const { registerShortcut } = (0,external_wp_data_namespaceObject.useDispatch)(external_wp_keyboardShortcuts_namespaceObject.store);
+  const [search, setSearch] = (0,external_wp_element_namespaceObject.useState)("");
+  const isOpen = (0,external_wp_data_namespaceObject.useSelect)(
+    (select) => select(store).isOpen(),
+    []
+  );
+  const { open, close } = (0,external_wp_data_namespaceObject.useDispatch)(store);
   const [loaders, setLoaders] = (0,external_wp_element_namespaceObject.useState)({});
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     registerShortcut({
-      name: 'core/commands',
-      category: 'global',
-      description: (0,external_wp_i18n_namespaceObject.__)('Open the command palette.'),
+      name: "core/commands",
+      category: "global",
+      description: (0,external_wp_i18n_namespaceObject.__)("Open the command palette."),
       keyCombination: {
-        modifier: 'primary',
-        character: 'k'
+        modifier: "primary",
+        character: "k"
       }
     });
   }, [registerShortcut]);
-  (0,external_wp_keyboardShortcuts_namespaceObject.useShortcut)('core/commands', /** @type {import('react').KeyboardEventHandler} */
-  event => {
-    // Bails to avoid obscuring the effect of the preceding handler(s).
-    if (event.defaultPrevented) {
-      return;
+  (0,external_wp_keyboardShortcuts_namespaceObject.useShortcut)(
+    "core/commands",
+    /** @type {import('react').KeyboardEventHandler} */
+    (event) => {
+      if (event.defaultPrevented) {
+        return;
+      }
+      event.preventDefault();
+      if (isOpen) {
+        close();
+      } else {
+        open();
+      }
+    },
+    {
+      bindGlobal: true
     }
-    event.preventDefault();
-    if (isOpen) {
-      close();
-    } else {
-      open();
-    }
-  }, {
-    bindGlobal: true
-  });
-  const setLoader = (0,external_wp_element_namespaceObject.useCallback)((name, value) => setLoaders(current => ({
-    ...current,
-    [name]: value
-  })), []);
+  );
+  const setLoader = (0,external_wp_element_namespaceObject.useCallback)(
+    (name, value) => setLoaders((current) => ({
+      ...current,
+      [name]: value
+    })),
+    []
+  );
   const closeAndReset = () => {
-    setSearch('');
+    setSearch("");
     close();
   };
   if (!isOpen) {
     return false;
   }
-  const onKeyDown = event => {
+  const onKeyDown = (event) => {
     if (
-    // Ignore keydowns from IMEs
-    event.nativeEvent.isComposing ||
-    // Workaround for Mac Safari where the final Enter/Backspace of an IME composition
-    // is `isComposing=false`, even though it's technically still part of the composition.
-    // These can only be detected by keyCode.
-    event.keyCode === 229) {
+      // Ignore keydowns from IMEs
+      event.nativeEvent.isComposing || // Workaround for Mac Safari where the final Enter/Backspace of an IME composition
+      // is `isComposing=false`, even though it's technically still part of the composition.
+      // These can only be detected by keyCode.
+      event.keyCode === 229
+    ) {
       event.preventDefault();
     }
   };
   const isLoading = Object.values(loaders).some(Boolean);
-  return /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(external_wp_components_namespaceObject.Modal, {
-    className: "commands-command-menu",
-    overlayClassName: "commands-command-menu__overlay",
-    onRequestClose: closeAndReset,
-    __experimentalHideHeader: true,
-    contentLabel: (0,external_wp_i18n_namespaceObject.__)('Command palette'),
-    children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)("div", {
-      className: "commands-command-menu__container",
-      children: /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)(He, {
-        label: inputLabel,
-        onKeyDown: onKeyDown,
-        children: [/*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)("div", {
-          className: "commands-command-menu__header",
-          children: [/*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(CommandInput, {
-            search: search,
-            setSearch: setSearch,
-            isOpen: isOpen
-          }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(icon, {
-            icon: library_search
-          })]
-        }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsxs)(He.List, {
-          label: (0,external_wp_i18n_namespaceObject.__)('Command suggestions'),
-          children: [search && !isLoading && /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(He.Empty, {
-            children: (0,external_wp_i18n_namespaceObject.__)('No results found.')
-          }), /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(CommandMenuGroup, {
-            search: search,
-            setLoader: setLoader,
-            close: closeAndReset,
-            isContextual: true
-          }), search && /*#__PURE__*/(0,external_ReactJSXRuntime_namespaceObject.jsx)(CommandMenuGroup, {
-            search: search,
-            setLoader: setLoader,
-            close: closeAndReset
-          })]
-        })]
-      })
-    })
-  });
+  return /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+    external_wp_components_namespaceObject.Modal,
+    {
+      className: "commands-command-menu",
+      overlayClassName: "commands-command-menu__overlay",
+      onRequestClose: closeAndReset,
+      __experimentalHideHeader: true,
+      contentLabel: (0,external_wp_i18n_namespaceObject.__)("Command palette"),
+      children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)("div", { className: "commands-command-menu__container", children: /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsxs)(He, { label: inputLabel, onKeyDown, children: [
+        /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsxs)("div", { className: "commands-command-menu__header", children: [
+          /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+            icon_default,
+            {
+              className: "commands-command-menu__header-search-icon",
+              icon: search_default
+            }
+          ),
+          /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+            CommandInput,
+            {
+              search,
+              setSearch,
+              isOpen
+            }
+          )
+        ] }),
+        /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsxs)(He.List, { label: (0,external_wp_i18n_namespaceObject.__)("Command suggestions"), children: [
+          search && !isLoading && /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(He.Empty, { children: (0,external_wp_i18n_namespaceObject.__)("No results found.") }),
+          /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+            CommandMenuGroup,
+            {
+              search,
+              setLoader,
+              close: closeAndReset,
+              isContextual: true
+            }
+          ),
+          search && /* @__PURE__ */ (0,external_ReactJSXRuntime_namespaceObject.jsx)(
+            CommandMenuGroup,
+            {
+              search,
+              setLoader,
+              close: closeAndReset
+            }
+          )
+        ] })
+      ] }) })
+    }
+  );
 }
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/hooks/use-command-context.js
-/**
- * WordPress dependencies
- */
+
+;// ./node_modules/@wordpress/commands/build-module/hooks/use-command-context.js
 
 
 
-/**
- * Internal dependencies
- */
 
-
-
-/**
- * Sets the active context of the command palette
- *
- * @param {string} context Context to set.
- */
 function useCommandContext(context) {
-  const {
-    getContext
-  } = (0,external_wp_data_namespaceObject.useSelect)(store);
+  const { getContext } = (0,external_wp_data_namespaceObject.useSelect)(store);
   const initialContext = (0,external_wp_element_namespaceObject.useRef)(getContext());
-  const {
-    setContext
-  } = unlock((0,external_wp_data_namespaceObject.useDispatch)(store));
+  const { setContext } = unlock((0,external_wp_data_namespaceObject.useDispatch)(store));
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     setContext(context);
   }, [context, setContext]);
-
-  // This effects ensures that on unmount, we restore the context
-  // that was set before the component actually mounts.
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     const initialContextRef = initialContext.current;
     return () => setContext(initialContextRef);
   }, [setContext]);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/private-apis.js
-/**
- * Internal dependencies
- */
+
+;// ./node_modules/@wordpress/commands/build-module/private-apis.js
 
 
-
-/**
- * @private
- */
 const privateApis = {};
 lock(privateApis, {
   useCommandContext: useCommandContext
 });
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/hooks/use-command.js
-/**
- * WordPress dependencies
- */
+
+;// ./node_modules/@wordpress/commands/build-module/hooks/use-command.js
 
 
 
-/**
- * Internal dependencies
- */
-
-
-/**
- * Attach a command to the command palette. Used for static commands.
- *
- * @param {import('../store/actions').WPCommandConfig} command command config.
- *
- * @example
- * ```js
- * import { useCommand } from '@wordpress/commands';
- * import { plus } from '@wordpress/icons';
- *
- * useCommand( {
- *     name: 'myplugin/my-command-name',
- *     label: __( 'Add new post' ),
- *	   icon: plus,
- *     callback: ({ close }) => {
- *         document.location.href = 'post-new.php';
- *         close();
- *     },
- * } );
- * ```
- */
 function useCommand(command) {
-  const {
-    registerCommand,
-    unregisterCommand
-  } = (0,external_wp_data_namespaceObject.useDispatch)(store);
+  const { registerCommand, unregisterCommand } = (0,external_wp_data_namespaceObject.useDispatch)(store);
   const currentCallbackRef = (0,external_wp_element_namespaceObject.useRef)(command.callback);
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     currentCallbackRef.current = command.callback;
@@ -3918,100 +3639,75 @@ function useCommand(command) {
       label: command.label,
       searchLabel: command.searchLabel,
       icon: command.icon,
+      keywords: command.keywords,
       callback: (...args) => currentCallbackRef.current(...args)
     });
     return () => {
       unregisterCommand(command.name);
     };
-  }, [command.name, command.label, command.searchLabel, command.icon, command.context, command.disabled, registerCommand, unregisterCommand]);
+  }, [
+    command.name,
+    command.label,
+    command.searchLabel,
+    command.icon,
+    command.context,
+    command.keywords,
+    command.disabled,
+    registerCommand,
+    unregisterCommand
+  ]);
+}
+function useCommands(commands) {
+  const { registerCommand, unregisterCommand } = (0,external_wp_data_namespaceObject.useDispatch)(store);
+  const currentCallbacksRef = (0,external_wp_element_namespaceObject.useRef)({});
+  (0,external_wp_element_namespaceObject.useEffect)(() => {
+    if (!commands) {
+      return;
+    }
+    commands.forEach((command) => {
+      if (command.callback) {
+        currentCallbacksRef.current[command.name] = command.callback;
+      }
+    });
+  }, [commands]);
+  (0,external_wp_element_namespaceObject.useEffect)(() => {
+    if (!commands) {
+      return;
+    }
+    commands.forEach((command) => {
+      if (command.disabled) {
+        return;
+      }
+      registerCommand({
+        name: command.name,
+        context: command.context,
+        label: command.label,
+        searchLabel: command.searchLabel,
+        icon: command.icon,
+        keywords: command.keywords,
+        callback: (...args) => {
+          const callback = currentCallbacksRef.current[command.name];
+          if (callback) {
+            callback(...args);
+          }
+        }
+      });
+    });
+    return () => {
+      commands.forEach((command) => {
+        unregisterCommand(command.name);
+      });
+    };
+  }, [commands, registerCommand, unregisterCommand]);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/hooks/use-command-loader.js
-/**
- * WordPress dependencies
- */
+
+;// ./node_modules/@wordpress/commands/build-module/hooks/use-command-loader.js
 
 
 
-/**
- * Internal dependencies
- */
-
-
-/**
- * Attach a command loader to the command palette. Used for dynamic commands.
- *
- * @param {import('../store/actions').WPCommandLoaderConfig} loader command loader config.
- *
- * @example
- * ```js
- * import { useCommandLoader } from '@wordpress/commands';
- * import { post, page, layout, symbolFilled } from '@wordpress/icons';
- *
- * const icons = {
- *     post,
- *     page,
- *     wp_template: layout,
- *     wp_template_part: symbolFilled,
- * };
- *
- * function usePageSearchCommandLoader( { search } ) {
- *     // Retrieve the pages for the "search" term.
- *     const { records, isLoading } = useSelect( ( select ) => {
- *         const { getEntityRecords } = select( coreStore );
- *         const query = {
- *             search: !! search ? search : undefined,
- *             per_page: 10,
- *             orderby: search ? 'relevance' : 'date',
- *         };
- *         return {
- *             records: getEntityRecords( 'postType', 'page', query ),
- *             isLoading: ! select( coreStore ).hasFinishedResolution(
- *                 'getEntityRecords',
- *                 'postType', 'page', query ]
- *             ),
- *         };
- *     }, [ search ] );
- *
- *     // Create the commands.
- *     const commands = useMemo( () => {
- *         return ( records ?? [] ).slice( 0, 10 ).map( ( record ) => {
- *             return {
- *                 name: record.title?.rendered + ' ' + record.id,
- *                 label: record.title?.rendered
- *                     ? record.title?.rendered
- *                     : __( '(no title)' ),
- *                 icon: icons[ postType ],
- *                 callback: ( { close } ) => {
- *                     const args = {
- *                         postType,
- *                         postId: record.id,
- *                         ...extraArgs,
- *                     };
- *                     document.location = addQueryArgs( 'site-editor.php', args );
- *                     close();
- *                 },
- *             };
- *         } );
- *     }, [ records, history ] );
- *
- *     return {
- *         commands,
- *         isLoading,
- *     };
- * }
- *
- * useCommandLoader( {
- *     name: 'myplugin/page-search',
- *     hook: usePageSearchCommandLoader,
- * } );
- * ```
- */
 function useCommandLoader(loader) {
-  const {
-    registerCommandLoader,
-    unregisterCommandLoader
-  } = (0,external_wp_data_namespaceObject.useDispatch)(store);
+  const { registerCommandLoader, unregisterCommandLoader } = (0,external_wp_data_namespaceObject.useDispatch)(store);
   (0,external_wp_element_namespaceObject.useEffect)(() => {
     if (loader.disabled) {
       return;
@@ -4024,10 +3720,19 @@ function useCommandLoader(loader) {
     return () => {
       unregisterCommandLoader(loader.name);
     };
-  }, [loader.name, loader.hook, loader.context, loader.disabled, registerCommandLoader, unregisterCommandLoader]);
+  }, [
+    loader.name,
+    loader.hook,
+    loader.context,
+    loader.disabled,
+    registerCommandLoader,
+    unregisterCommandLoader
+  ]);
 }
 
-;// CONCATENATED MODULE: ./node_modules/@wordpress/commands/build-module/index.js
+
+;// ./node_modules/@wordpress/commands/build-module/index.js
+
 
 
 

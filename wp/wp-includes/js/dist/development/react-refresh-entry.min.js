@@ -9,24 +9,13 @@
 /******/ (() => { // webpackBootstrap
 /******/ 	var __webpack_modules__ = ({
 
-/***/ "react-refresh/runtime":
-/*!**************************************!*\
-  !*** external "ReactRefreshRuntime" ***!
-  \**************************************/
-/***/ ((module) => {
-
-"use strict";
-module.exports = window["ReactRefreshRuntime"];
-
-/***/ }),
-
 /***/ "./node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js":
 /*!***************************************************************************************!*\
   !*** ./node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js ***!
   \***************************************************************************************/
 /***/ ((__unused_webpack_module, __unused_webpack_exports, __webpack_require__) => {
 
-eval("/* global __react_refresh_library__ */\n\nconst safeThis = __webpack_require__(/*! core-js-pure/features/global-this */ \"./node_modules/core-js-pure/features/global-this.js\");\nconst RefreshRuntime = __webpack_require__(/*! react-refresh/runtime */ \"react-refresh/runtime\");\n\nif (true) {\n  if (typeof safeThis !== 'undefined') {\n    var $RefreshInjected$ = '__reactRefreshInjected';\n    // Namespace the injected flag (if necessary) for monorepo compatibility\n    if (typeof __react_refresh_library__ !== 'undefined' && __react_refresh_library__) {\n      $RefreshInjected$ += '_' + __react_refresh_library__;\n    }\n\n    // Only inject the runtime if it hasn't been injected\n    if (!safeThis[$RefreshInjected$]) {\n      // Inject refresh runtime into global scope\n      RefreshRuntime.injectIntoGlobalHook(safeThis);\n\n      // Mark the runtime as injected to prevent double-injection\n      safeThis[$RefreshInjected$] = true;\n    }\n  }\n}\n\n\n//# sourceURL=webpack://WordPress/./node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js?");
+eval("/* global __react_refresh_library__ */\n\nif (true) {\n  const safeThis = __webpack_require__(/*! core-js-pure/features/global-this */ \"./node_modules/core-js-pure/features/global-this.js\");\n  const RefreshRuntime = __webpack_require__(/*! react-refresh/runtime */ \"react-refresh/runtime\");\n\n  if (typeof safeThis !== 'undefined') {\n    var $RefreshInjected$ = '__reactRefreshInjected';\n    // Namespace the injected flag (if necessary) for monorepo compatibility\n    if (typeof __react_refresh_library__ !== 'undefined' && __react_refresh_library__) {\n      $RefreshInjected$ += '_' + __react_refresh_library__;\n    }\n\n    // Only inject the runtime if it hasn't been injected\n    if (!safeThis[$RefreshInjected$]) {\n      // Inject refresh runtime into global scope\n      RefreshRuntime.injectIntoGlobalHook(safeThis);\n\n      // Mark the runtime as injected to prevent double-injection\n      safeThis[$RefreshInjected$] = true;\n    }\n  }\n}\n\n\n//# sourceURL=webpack://WordPress/./node_modules/@pmmmwh/react-refresh-webpack-plugin/client/ReactRefreshEntry.js?");
 
 /***/ }),
 
@@ -643,6 +632,17 @@ eval("\n// TODO: Remove from `core-js@4`\n__webpack_require__(/*! ../modules/es.
 
 "use strict";
 eval("\nvar parent = __webpack_require__(/*! ../es/global-this */ \"./node_modules/core-js-pure/es/global-this.js\");\n\nmodule.exports = parent;\n\n\n//# sourceURL=webpack://WordPress/./node_modules/core-js-pure/stable/global-this.js?");
+
+/***/ }),
+
+/***/ "react-refresh/runtime":
+/*!**************************************!*\
+  !*** external "ReactRefreshRuntime" ***!
+  \**************************************/
+/***/ ((module) => {
+
+"use strict";
+module.exports = window["ReactRefreshRuntime"];
 
 /***/ })
 

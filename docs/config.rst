@@ -100,7 +100,7 @@ To switch to 5.6 for example:
 
 You can use either a two-part version (``5.6``) or a three-part version
 (``5.6.1``) if you want to pick specifc versions. We support any version between
-5.6.0 and 8.4.x.
+5.6.0 and 8.5.x.
 
 --------------------
 PHP File Upload Size

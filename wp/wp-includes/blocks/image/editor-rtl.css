@@ -34,15 +34,6 @@ figure.wp-block-image:not(.wp-block){
   opacity:.1;
 }
 
-.wp-block-image .components-resizable-box__container{
-  display:table;
-}
-.wp-block-image .components-resizable-box__container img{
-  display:block;
-  height:inherit;
-  width:inherit;
-}
-
 .block-editor-block-list__block[data-type="core/image"] .block-editor-block-toolbar .block-editor-url-input__button-modal{
   left:0;
   margin:-1px 0;
@@ -114,6 +105,10 @@ figure.wp-block-image:not(.wp-block){
 .wp-block-image__zoom .components-popover__content{
   min-width:260px;
   overflow:visible !important;
+}
+
+.wp-block-image__toolbar_content_textarea__container{
+  padding:8px;
 }
 
 .wp-block-image__toolbar_content_textarea{
