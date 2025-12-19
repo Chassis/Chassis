@@ -132,14 +132,10 @@ Vagrant.configure("2") do |config|
 		config.vm.box = CONF['box']
 	else
 		# We <3 Ubuntu LTS
-		if Etc.uname[:version].include? 'ARM64'
-			if CONF['_mode'] == "normal"
-				config.vm.box = 'chassis/chassis-arm64'
-			else
-				config.vm.box = 'net9/ubuntu-24.04-arm64'
-			end
+		if CONF['_mode'] == "normal"
+			config.vm.box = 'chassis/chassis-arm64'
 		else
-			config.vm.box = "bento/ubuntu-24.04"
+			config.vm.box = 'bento/ubuntu-24.04'
 		end
 	end
 
