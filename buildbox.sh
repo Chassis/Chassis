@@ -10,10 +10,8 @@ VM_STATUS=`vagrant status --machine-readable | grep state,running`
 
 # Create a timestamp to use in the boxes filename.
 NOW=`date +%Y-%m-%d-%H:%M:%S`
-
+BOX="chassis/chassis"
 CHIP_TYPE=`uname -m`
-
-PROVIDER="virtualbox"
 
 if [ $CHIP_TYPE == "arm64" ]; then
 	ARCHITECTURE="arm64"
@@ -69,6 +67,6 @@ vagrant package --output "chassis-$NOW.box"
 
 echo "\n\033[0;32mCommencing upload of the new $BOX version $VERSION for $PROVIDER to Vagrant Cloud...\033[0m"
 
-vagrant cloud publish $BOX $VERSION $PROVIDER chassis-$NOW.box --release --force --no-direct-upload --architecture $ARCHITECTURE
+vagrant cloud publish $BOX $VERSION virtualbox chassis-$NOW.box --release --force --no-direct-upload --architecture $ARCHITECTURE
 
 echo "\n\033[0;32mUpload complete!\033[0m"
