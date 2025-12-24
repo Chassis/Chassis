@@ -21,6 +21,7 @@ class { 'chassis::php':
 	extensions   => $php_extensions,
 	version      => $config[php],
 	upload_size  => $config[upload_size],
+	memory_limit => $config[memory_limit],
 	require => [
 		Class['apt'],
 	]
@@ -87,6 +88,7 @@ chassis::wp { $config['hosts'][0]:
 	wpdir               => $config[mapped_paths][wp],
 	contentdir          => $config[mapped_paths][content],
 	upload_size         => $config[upload_size],
+	memory_limit        => $config[memory_limit],
 	hosts               => $config[hosts],
 	database            => $config[database][name],
 	database_user       => $config[database][user],

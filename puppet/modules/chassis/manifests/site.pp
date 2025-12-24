@@ -4,6 +4,7 @@ define chassis::site (
 	$wpdir,
 	$contentdir,
 	$upload_size,
+	$memory_limit,
 	$hosts = [],
 	$database = 'wordpress',
 	$database_user = 'root',

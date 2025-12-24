@@ -3,6 +3,7 @@ define chassis::network (
 	$location,
 	$contentdir,
 	$upload_size,
+	$memory_limit,
 	$subdomains = false,
 	$wpdir = 'wp',
 	$hosts = [],
