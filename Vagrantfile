@@ -127,13 +127,13 @@ Vagrant.configure("2") do |config|
 		config.vm.box_download_insecure = true
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
-		config.vm.box_version = ">= 5.0, < 6.0"
+		config.vm.box_version = ">= 6.0, < 7.0"
 	elsif CONF['_mode'] == "custom"
 		config.vm.box = CONF['box']
 	else
 		# We <3 Ubuntu LTS
 		if CONF['_mode'] == "normal"
-			config.vm.box = 'chassis/chassis-arm64'
+			config.vm.box = 'chassis/chassis'
 		else
 			config.vm.box = 'bento/ubuntu-24.04'
 		end
