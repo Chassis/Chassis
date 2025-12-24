@@ -1,6 +1,7 @@
 # Setup up everything that relates to PHP
 class chassis::php (
   $upload_size,
+  $memory_limit,
   $extensions = [],
   $version = '8.3',
 ) {

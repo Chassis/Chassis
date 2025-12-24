@@ -117,6 +117,20 @@ To switch to 100M for example:
 1. Add ``upload_size: 100M`` to one of your ``.yaml`` files.
 2. Run ``vagrant provision``
 
+----------------
+PHP Memory Limit
+----------------
+
+.. py:data:: memory_limit
+
+A PHP memory limit of 512M is included with Chassis by default. This sets
+``memory_limit`` in ``php.ini``.
+
+To switch to 1024M for example:
+
+1. Add ``memory_limit: 1024M`` to one of your ``.yaml`` files.
+2. Run ``vagrant provision``
+
 **Note**: Additional ``php.ini`` settings can be configured by using the `Chassis Phpini`_ extension.
 
 .. _Chassis Phpini: https://github.com/Chassis/phpini

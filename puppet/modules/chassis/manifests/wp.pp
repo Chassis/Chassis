@@ -2,6 +2,7 @@
 define chassis::wp (
 	$location,
 	$upload_size,
+	$memory_limit,
 	$wpdir = 'wp',
 	$contentdir = 'content',
 	$hosts = [],
@@ -30,6 +31,7 @@ define chassis::wp (
 			wpdir               => $wpdir,
 			contentdir          => $contentdir,
 			upload_size         => $upload_size,
+			memory_limit        => $memory_limit,
 			hosts               => $hosts,
 			database            => $database,
 			database_user       => $database_user,
@@ -52,6 +54,7 @@ define chassis::wp (
 			wpdir               => $wpdir,
 			contentdir          => $contentdir,
 			upload_size         => $upload_size,
+			memory_limit        => $memory_limit,
 			hosts               => $hosts,
 			database            => $database,
 			database_user       => $database_user,
