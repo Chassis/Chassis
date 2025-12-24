@@ -116,6 +116,10 @@ php: 8.3
 # Maximum file upload size. This will set post_max_size and upload_max_filesize in PHP and client_max_body_size in Nginx.
 upload_size: 1024M
 
+# Memory limit for PHP scripts. This will set memory_limit in PHP.
+# Values: e.g. 512M, 1024M, 2048M
+memory_limit: 512M
+
 # Vagrant machine name
 # This can be any string and helps to identify a specific VM
 # NOTE: If changed the machine will need to be re-created and should ideally be destroyed before any change
