@@ -101,7 +101,7 @@ class chassis::php (
   package { $core_packages:
     # Hold at the given version
     ensure          => 'latest',
-    install_options => '--force-yes',
+    install_options => '--allow-change-held-packages',
     notify          => Service["${php_package}-fpm"],
     require         => [
       Apt::Pin[$core_packages],
@@ -134,7 +134,7 @@ class chassis::php (
   package { $prefixed_extensions:
     # Hold at the given version
     ensure          => 'latest',
-    install_options => '--force-yes',
+    install_options => '--allow-change-held-packages',
 
     require         => [
       Package[$core_packages],

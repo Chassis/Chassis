@@ -127,31 +127,15 @@ Vagrant.configure("2") do |config|
 		config.vm.box_download_insecure = true
 		# Use the Chassis box we've built with the default config.
 		config.vm.box = "chassis/chassis"
-		config.vm.box_version = ">= 5.0, < 6.0"
+		config.vm.box_version = ">= 6.0, < 7.0"
 	elsif CONF['_mode'] == "custom"
 		config.vm.box = CONF['box']
 	else
 		# We <3 Ubuntu LTS
-		config.vm.box = "bento/ubuntu-22.04"
-	end
-
-	# The Parallels Provider overrides.
-	config.vm.provider :parallels do |_v, override|
-		# Add port forwarding for ssh.
-		# This method is used rather than config.ssh.forward_agent to work around
-		# an issue with the Vagrant Parallels provider.
-		override.ssh.forward_agent = false
-		override.vm.network "forwarded_port", guest: 22, host: 2222, auto_correct: true
-
-		# Vagrant currently runs under Rosetta on Apple Silicon devices. As a result,
-		# this seems to be the most reliable way to detect whether or not we're
-		# running under ARM64.
-		if Etc.uname[:version].include? 'ARM64'
-			if CONF['_mode'] == "normal"
-				override.vm.box = 'chassis/chassis-arm64'
-			else
-				override.vm.box = 'bento/ubuntu-22.04-arm64'
-			end
+		if CONF['_mode'] == "normal"
+			config.vm.box = 'chassis/chassis'
+		else
+			config.vm.box = 'bento/ubuntu-24.04'
 		end
 	end
 
@@ -176,10 +160,15 @@ Vagrant.configure("2") do |config|
 	config.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
 
 	# Having access would be nice.
-	if CONF['ip'] == "dhcp"
+	if CONF['ip'] == "dhcp" and ! Etc.uname[:version].include? 'ARM64'
 		config.vm.network :private_network, type: "dhcp"
 	else
-		config.vm.network :private_network, ip: CONF['ip']
+		# Apple Silicon DHCP is broken in VirtualBox, so force a static IP.
+		if CONF['ip'] == "dhcp"
+			config.vm.network :private_network, ip: "192.168.1.110"
+		else
+			config.vm.network :private_network, ip: CONF['ip']
+		end
 	end
 	config.vm.hostname = CONF['hosts'][0]
 	# Before any other provisioning, ensure that we're up-to-date

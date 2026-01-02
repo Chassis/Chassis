@@ -21,21 +21,11 @@ Prerequisites
 
 Before using Chassis, this is how your system should be set up:
 
-MacOS Intel chips
+MacOS Intel and Apple Silicon (M1/M2/M3) chips
 -----------------
 
 * Install `VirtualBox`_
 * Install `Vagrant`_
-
-MacOS Apple Silicon (M1/M2/M3) chips
---------------
-
-* Install `Parallels Desktop for Mac Pro Edition`_
-* Install `Vagrant`_
-* Install the Vagrant Parallels plugin::
-
-    $ vagrant plugin install vagrant-parallels
-* Change the `Base Box`_ mode to be ``_mode: base`` in one of your `configuration`_ files.
 
 Windows
 -------

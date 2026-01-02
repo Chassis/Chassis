@@ -10,15 +10,13 @@ VM_STATUS=`vagrant status --machine-readable | grep state,running`
 
 # Create a timestamp to use in the boxes filename.
 NOW=`date +%Y-%m-%d-%H:%M:%S`
-
+BOX="chassis/chassis"
 CHIP_TYPE=`uname -m`
 
 if [ $CHIP_TYPE == "arm64" ]; then
-	PROVIDER="parallels"
-	BOX="chassis/chassis-arm64"
+	ARCHITECTURE="arm64"
 else
-	PROVIDER="virtualbox"
-	BOX="chassis/chassis"
+	ARCHITECTURE="amd64"
 fi
 
 if [ ! $VM_STATUS ]; then
@@ -62,13 +60,13 @@ echo "\033[0;32mBox minimisation completed.\033[0m"
 vagrant halt
 
 # The version number of the base box.
-VERSION=5.4.2
+VERSION=6.0.0
 
 ## Build the base box
 vagrant package --output "chassis-$NOW.box"
 
 echo "\n\033[0;32mCommencing upload of the new $BOX version $VERSION for $PROVIDER to Vagrant Cloud...\033[0m"
 
-vagrant cloud publish $BOX $VERSION $PROVIDER chassis-$NOW.box --release --force --no-direct-upload --architecture unknown
+vagrant cloud publish $BOX $VERSION virtualbox chassis-$NOW.box --release --force --no-direct-upload --architecture $ARCHITECTURE
 
 echo "\n\033[0;32mUpload complete!\033[0m"
