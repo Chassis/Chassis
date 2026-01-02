@@ -160,10 +160,15 @@ Vagrant.configure("2") do |config|
 	config.vm.network "forwarded_port", guest: 80, host: 8000, auto_correct: true
 
 	# Having access would be nice.
-	if CONF['ip'] == "dhcp"
+	if CONF['ip'] == "dhcp" and ! Etc.uname[:version].include? 'ARM64'
 		config.vm.network :private_network, type: "dhcp"
 	else
-		config.vm.network :private_network, ip: CONF['ip']
+		# Apple Silicon DHCP is broken in VirtualBox, so force a static IP.
+		if CONF['ip'] == "dhcp"
+			config.vm.network :private_network, ip: "192.168.1.110"
+		else
+			config.vm.network :private_network, ip: CONF['ip']
+		end
 	end
 	config.vm.hostname = CONF['hosts'][0]
 	# Before any other provisioning, ensure that we're up-to-date

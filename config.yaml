@@ -31,7 +31,7 @@ website:
 # DHCP is used by default to assign IP addresses dynamically, override only if
 # you need a static IP for your box.
 #
-# Values: "dhcp", or any valid IP. e.g. 192.168.56.0
+# Values: "dhcp", or any valid IP. e.g. 192.168.1.10
 ip: dhcp
 
 # Ubuntu mirror to use during provisioning
