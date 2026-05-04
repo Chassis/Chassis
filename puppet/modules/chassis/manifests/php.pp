@@ -4,26 +4,22 @@ class chassis::php (
   $memory_limit,
   $extensions = [],
   $version = '8.3',
+  $use_ppa = true,
 ) {
-  # Ensure add-apt-repository is actually available.
-  if !defined(Package[$apt::ppa_package]) {
-    package { $apt::ppa_package:
-      ensure => latest,
+  if $use_ppa {
+    # Ensure add-apt-repository is actually available.
+    if !defined(Package[$apt::ppa_package]) {
+      package { $apt::ppa_package:
+        ensure => latest,
+      }
     }
-  }
 
-  apt::ppa { 'ppa:ondrej/php':
-    require => [
-      Package[$apt::ppa_package],
-      Class['apt'],
-    ],
-  }
-
-  apt::ppa { 'ppa:ondrej/php-qa':
-    require => [
-      Package[$apt::ppa_package],
-      Class['apt'],
-    ],
+    apt::ppa { 'ppa:ondrej/php':
+      require => [
+        Package[$apt::ppa_package],
+        Class['apt'],
+      ],
+    }
   }
 
   if $version =~ /^(\d+)\.(\d+)$/ {
@@ -98,18 +94,23 @@ class chassis::php (
   }
 
   # Grab the packages at the given versions
+  $ppa_require = $use_ppa ? {
+    true  => [Apt::Ppa['ppa:ondrej/php']],
+    false => [],
+  }
   package { $core_packages:
     # Hold at the given version
     ensure          => 'latest',
     install_options => '--allow-change-held-packages',
     notify          => Service["${php_package}-fpm"],
-    require         => [
-      Apt::Pin[$core_packages],
-      Apt::Ppa['ppa:ondrej/php'],
-      Apt::Ppa['ppa:ondrej/php-qa'],
-      Class['apt::update'],
-      Chassis::Remove_php_version[$php_versions_to_remove]
-    ],
+    require         => concat(
+      [
+        Apt::Pin[$core_packages],
+        Class['apt::update'],
+        Chassis::Remove_php_version[$php_versions_to_remove]
+      ],
+      $ppa_require
+    ),
   }
 
   # Tell wp module what package to use.

@@ -17,9 +17,18 @@ if $loadable_extensions {
 }
 include apt
 
+if $config[php] =~ Hash {
+	$php_version = $config[php][version]
+	$php_use_ppa = pick($config[php][use_ppa], true)
+} else {
+	$php_version = $config[php]
+	$php_use_ppa = true
+}
+
 class { 'chassis::php':
 	extensions   => $php_extensions,
-	version      => $config[php],
+	version      => $php_version,
+	use_ppa      => $php_use_ppa,
 	upload_size  => $config[upload_size],
 	memory_limit => $config[memory_limit],
 	require => [
