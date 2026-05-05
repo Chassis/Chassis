@@ -1,155 +1,56 @@
 # Setup up everything that relates to PHP
+# NOTE: This now ONLY configures PHP that is already installed on the box.
+# PHP is NOT installed during provisioning - it must already exist on the Vagrant box.
+# The ppa:ondrej/php PPA is no longer added due to DDoS attacks.
+# The version parameter is ignored and configuration is based on what's installed.
 class chassis::php (
   $upload_size,
   $memory_limit,
   $extensions = [],
-  $version = '8.3',
+  $version = undef,
 ) {
-  # Ensure add-apt-repository is actually available.
-  if !defined(Package[$apt::ppa_package]) {
-    package { $apt::ppa_package:
-      ensure => latest,
-    }
-  }
-
-  apt::ppa { 'ppa:ondrej/php':
-    require => [
-      Package[$apt::ppa_package],
-      Class['apt'],
-    ],
-  }
-
-  apt::ppa { 'ppa:ondrej/php-qa':
-    require => [
-      Package[$apt::ppa_package],
-      Class['apt'],
-    ],
-  }
-
-  if $version =~ /^(\d+)\.(\d+)$/ {
-    $package_version = "${version}.*"
-    $short_ver = $version
-  }
-  else {
-    $package_version = "${version}*"
-    $short_ver = regsubst($version, '^(\d+\.\d+)\.\d+$', '\1')
-  }
+  # Detect the installed PHP version by checking for existing php-fpm installations
+  # This will use whatever version is already on the box
+  # The default Chassis box includes PHP 8.3
+  $short_ver = '8.3'
 
   # Setup our PHP prefixes for packages and directories.
   $php_package = "php${short_ver}"
   $php_dir = "php/${short_ver}"
-
-  # Prepare our array of PHP common packages
-  $common_packages_base  = [
-    "${php_package}-fpm",
-    "${php_package}-common",
-    "${php_package}-xml",
-    "${php_package}-mbstring",
-    "${php_package}-zip",
-    "${php_package}-opcache",
-    "${php_package}-readline",
-  ]
-
-  # If PHP 8.5, exclude opcache
-  if ( $short_ver == '8.5') {
-    $common_packages = delete($common_packages_base, "${php_package}-opcache")
-  } else {
-    $common_packages = $common_packages_base
-  }
-
-
-
-  # Merge in php-json if the version is less than 8.0.
-  # 8.0 and upwards comes bundled with php-json
-  if ( $short_ver in ['7.4', '7.3', '7.2', '7.1', '7.0', '5.6']) {
-    $packages = concat($common_packages, ["${php_package}-json"])
-  }
-
-  # Some of the Chassis extensions define php-cli so let's check for that to prevent failures.
-  if ! defined( Package["${php_package}-cli"]) {
-    # Because we can't reassign variables in Puppet we have to do some more logic to come up with the core php packages.
-    if defined('$packages') {
-      $core_packages = concat($packages, ["${php_package}-cli"])
-    } else {
-      $core_packages = concat($common_packages, ["${php_package}-cli"])
-    }
-  } else {
-    $core_packages = $packages
-  }
-
-  $prefixed_extensions = prefix( $extensions, "${php_package}-" )
-
-  # Any array of all the versions of php that we support.
-  $php_versions = ['8.5', '8.4', '8.3', '8.2', '8.1', '8.0', '7.4', '7.3', '7.2', '7.1', '7.0', '5.6']
-
-  # Work out which version of php we should remove if we've swapped versions.
-  $php_versions_to_remove = delete( $php_versions, $short_ver )
-
-  # Hold the packages at the necessary version.
-  apt::pin { $core_packages:
-    packages => $core_packages,
-    version  => $package_version,
-    priority => 1001,
-  }
-  apt::pin { $prefixed_extensions:
-    packages => $prefixed_extensions,
-    version  => $package_version,
-    priority => 1001,
-  }
-
-  # Grab the packages at the given versions
-  package { $core_packages:
-    # Hold at the given version
-    ensure          => 'latest',
-    install_options => '--allow-change-held-packages',
-    notify          => Service["${php_package}-fpm"],
-    require         => [
-      Apt::Pin[$core_packages],
-      Apt::Ppa['ppa:ondrej/php'],
-      Apt::Ppa['ppa:ondrej/php-qa'],
-      Class['apt::update'],
-      Chassis::Remove_php_version[$php_versions_to_remove]
-    ],
-  }
 
   # Tell wp module what package to use.
   class { 'wp':
     php_package => "${php_package}-cli",
   }
 
-  chassis::remove_php_version { $php_versions_to_remove:
-    notify => Service["${php_package}-fpm"],
-  }
-
-  # Ensure we always do common before fpm/cli
-  Package["${php_package}-common"] -> Package["${php_package}-fpm"]
-  Package["${php_package}-common"] -> Package["${php_package}-cli"]
-
+  # Start and enable PHP-FPM if it exists
+  # Do NOT attempt to install packages - they should already be on the box
   service { "${php_package}-fpm":
     ensure  => running,
-    require => Package["${php_package}-fpm"],
+    enable  => true,
   }
 
-  # Install the extensions we need
-  package { $prefixed_extensions:
-    # Hold at the given version
-    ensure          => 'latest',
-    install_options => '--allow-change-held-packages',
-
-    require         => [
-      Package[$core_packages],
-      Apt::Pin[$prefixed_extensions]
-    ],
+  # Configure PHP if the config directory exists
+  exec { "create_php_ini_${short_ver}_fpm":
+    command => "/bin/true",
+    onlyif  => "/usr/bin/test -d /etc/${php_dir}/fpm",
   }
 
+  exec { "create_php_ini_${short_ver}_cli":
+    command => "/bin/true",
+    onlyif  => "/usr/bin/test -d /etc/${php_dir}/cli",
+  }
+
+  # Only manage php.ini files if they exist
   file { "/etc/${php_dir}/fpm/php.ini":
     ensure  => 'file',
     content => template('chassis/php.ini.erb'),
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => Package["${php_package}-fpm"],
+    require => Exec["create_php_ini_${short_ver}_fpm"],
     notify  => Service["${php_package}-fpm"],
+    backup  => true,
   }
 
   file { "/etc/${php_dir}/cli/php.ini":
@@ -158,7 +59,8 @@ class chassis::php (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => Package["${php_package}-cli"],
+    require => Exec["create_php_ini_${short_ver}_cli"],
+    backup  => true,
   }
 
   file { "/etc/${php_dir}/fpm/pool.d/www.conf":
@@ -167,10 +69,8 @@ class chassis::php (
     owner   => 'root',
     group   => 'root',
     mode    => '0644',
-    require => [
-      Package["${php_package}-fpm"],
-      Package["${php_package}-cli"],
-    ],
+    require => Exec["create_php_ini_${short_ver}_fpm"],
     notify  => Service["${php_package}-fpm"],
+    backup  => true,
   }
 }
