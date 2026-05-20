@@ -315,7 +315,7 @@ if ( ! function_exists( 'twentyfourteen_font_url' ) ) :
 	 * @since Twenty Fourteen 1.0
 	 * @since Twenty Fourteen 3.6 Replaced Google URL with self-hosted fonts.
 	 *
-	 * @return string
+	 * @return string Font stylesheet URL or empty string if disabled.
 	 */
 	function twentyfourteen_font_url() {
 		$font_url = '';
@@ -345,7 +345,7 @@ function twentyfourteen_scripts() {
 	wp_enqueue_style( 'genericons', get_template_directory_uri() . '/genericons/genericons.css', array(), '20251101' );
 
 	// Load our main stylesheet.
-	wp_enqueue_style( 'twentyfourteen-style', get_stylesheet_uri(), array(), '20251202' );
+	wp_enqueue_style( 'twentyfourteen-style', get_stylesheet_uri(), array(), '20260520' );
 
 	// Theme block stylesheet.
 	wp_enqueue_style( 'twentyfourteen-block-style', get_template_directory_uri() . '/css/blocks.css', array( 'twentyfourteen-style' ), '20250715' );
@@ -755,6 +755,8 @@ if ( ! class_exists( 'Featured_Content' ) && 'plugins.php' !== $GLOBALS['pagenow
  * `is_customize_preview` function was introduced.
  *
  * @global WP_Customize_Manager $wp_customize Customizer object.
+ *
+ * @return bool Whether the site is being previewed in the Customizer.
  */
 if ( ! function_exists( 'is_customize_preview' ) ) :
 	function is_customize_preview() {
