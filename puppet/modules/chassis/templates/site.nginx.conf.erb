@@ -16,7 +16,7 @@ server {
 	proxy_read_timeout          300;
 	send_timeout                300;
 
-	include /etc/nginx/sites-available/<%= @fqdn %>.d/*;
+	include /etc/nginx/sites-available/<%= @facts['networking']['fqdn'] %>.d/*;
 
 	location / {
 		index index.php index.html index.htm;
