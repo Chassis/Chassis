@@ -1,1 +1,0 @@
-// Internet Explorer support was removed.
